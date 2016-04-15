@@ -1,7 +1,7 @@
 var Discord = require("discord.js");
 var bot = new Discord.Client();
 var fs = require('fs');
-var wolfram = require('wolfram-alpha').createClient("9ELUAU-P4A5KX6WP9");
+var wolfram = require('wolfram-alpha').createClient("");
 var random
 var Joinedchannel = ""
 var filesloc = "C:/Users/Garrett/Desktop/FireBot/files/"
@@ -198,4 +198,4 @@ bot.on("message", function (msg) {
 		}
 	}
 });
-bot.loginWithToken("MTY5OTk4MzczNTY1MzY2Mjcy.CfCdQw.rgdlHZkF3mnSJAAe9mCEJjl029I");
+bot.loginWithToken("");
