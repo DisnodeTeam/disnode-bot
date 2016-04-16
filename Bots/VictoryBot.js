@@ -8,7 +8,8 @@ var avatar = "";
 var commandPrefix = "!";
 
 var Commands = [
-  {cmd:"test", run: cmdTest}
+  {cmd:"test", run: cmdTest},
+  {cmd:"joinVoice", run: joinVoice}
 ];
 
 var CommandHandler = new Disnode.CommandHandler(commandPrefix, Commands);
@@ -27,11 +28,15 @@ var OnBotReady = function(){
 
 var OnBotMessage = function(msg){
   console.log("[VictoryBot] Recieved Msg!");
-  CommandHandler.RunMessage(msg.content);
+  CommandHandler.RunMessage(msg);
 }
 
 function cmdTest(){
   console.log("TEST COMMAND");
 }
 
+function joinVoice(msg){
+  var Manger = new Disnode.VoiceManager(bot);
+  Manger.JoinChannel("Base of Operations",msg.channel.server);
+}
 StartBot();

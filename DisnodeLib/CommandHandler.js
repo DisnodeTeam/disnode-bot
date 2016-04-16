@@ -13,8 +13,9 @@ class CommandHandler{
   }
 
   // Parse the message and run any commands it contains
-  RunMessage(msgContent){
+  RunMessage(msg){
     // Get the prefix
+    var msgContent = msg.content;
     var firstLetter = msgContent.substring(0,1)
 
     // Check if it is the prefix, else ignore
@@ -35,7 +36,7 @@ class CommandHandler{
         // Get the command
         var commandObject = GetCommand(command, this.list);
         // Run the command
-        commandObject.run();
+        commandObject.run(msg);
       }
     }
   }
