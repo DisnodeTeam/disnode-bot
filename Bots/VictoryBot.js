@@ -2,7 +2,7 @@ var Disnode = require("../DisnodeLib/Disnode.js");
 var Discord = require("Discord.js");
 
 var bot = new Discord.Client();
-var token = "MTcwMDIwODA3MTk4NjM4MDgw.CfCntw.lUVQYtFJ-Jh2flq0-TXRUImjkZw";
+var token = "";
 var name = "";
 var avatar = "";
 var commandPrefix = "!";
