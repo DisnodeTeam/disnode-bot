@@ -71,7 +71,9 @@ function cmdTest(){
 }
 
 function joinVoice(msg, parms){
-  VoiceManager.JoinChannel(parms[0],msg.channel.server);
+  Disnode.CommonCommands.JoinVoice(VoiceManager, msg,parms,function(){
+    console.log("JOINED!");
+  });
 }
 
 
