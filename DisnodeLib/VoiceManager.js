@@ -5,19 +5,25 @@ class VoiceManager {
     this.bot = bot;
     this.retry = true;
   }
-  SetOnVoiceJoin(onVoiceJoin){
-    this.onVoiceJoin = onVoiceJoin;
+
+  OnVoiceJoin(VoiceChannel, user){
+    if(user.username == this.follow){
+      this.JoinChannelWithId(VoiceChannel);
+    }
   }
-  SetOnVoiceLeave(onVoiceLeave){
-    this.onVoiceLeave = onVoiceLeave;
+
+  OnVoiceLeave(VoiceChannel, user){
+    if(user.username == this.follow){
+        this.LeaveChannel(VoiceChannel);
+    }
   }
 
   Follow(user){
-    this.follow = true;
+    this.follow = user;
   }
 
   UnFollow(){
-    this.follow = true;
+    this.follow = "";
   }
 
 
@@ -37,13 +43,16 @@ class VoiceManager {
         console.log(nameConvert);
         this.JoinChannel(nameConvert, server)
         this.retry = false;
-        console.log("RETRY!");
       }
     }
   }
 
+  JoinChannelWithId(id){
+    this.bot.joinVoiceChannel(id);
+  }
+
   LeaveChannel(id){
-    this.bot.leaveVoiceChannel(currentChannel);
+    this.bot.leaveVoiceChannel(id);
     this.currentChannel = "";
 
   }
