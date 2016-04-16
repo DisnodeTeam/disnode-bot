@@ -3,6 +3,7 @@
 class VoiceManager {
   constructor(bot){
     this.bot = bot;
+    this.retry = true;
   }
   SetOnVoiceJoin(onVoiceJoin){
     this.onVoiceJoin = onVoiceJoin;
@@ -31,6 +32,13 @@ class VoiceManager {
       console.log(this.bot);
     }else{
       console.log("[VoiceManager] Failed to Find Server: " + id);
+      if(this.retry){
+        var nameConvert = name.replace(/-/g, " ");
+        console.log(nameConvert);
+        this.JoinChannel(nameConvert, server)
+        this.retry = false;
+        console.log("RETRY!");
+      }
     }
   }
 

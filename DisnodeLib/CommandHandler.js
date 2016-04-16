@@ -25,7 +25,8 @@ class CommandHandler{
       // Check if the message has a space, require for command parsing
       if(CheckSpace(msgContent)){
         // Get command string as anything before the first space
-        command = msgContent.substring(1,msgContent.indexOf(" ") -1);
+        command = msgContent.substring(1,msgContent.indexOf(" "));
+        console.log(command);
       }else {
         // Get the command as just the string (minus the prefix)
         command = msgContent.substring(1);
@@ -36,7 +37,7 @@ class CommandHandler{
         // Get the command
         var commandObject = GetCommand(command, this.list);
         // Run the command
-        commandObject.run(msg);
+        commandObject.run(msg, GetParmas(msgContent));
       }
     }
   }
@@ -68,5 +69,23 @@ function GetCommand(toSearch, list){
     }
   }
   return returnCommand;
+}
+
+function GetParmas(raw){
+  var parms = [];
+  var lastSpace;
+  var end;
+  while(!end){
+    var beginSpace = raw.indexOf(" ", lastSpace + 1);
+    var endSpace = raw.indexOf(" ", beginSpace + 1);
+    if(endSpace == -1){
+      endSpace = raw.length;
+      end= true;
+    }
+    var pam = raw.substring(beginSpace + 1, endSpace);
+    parms.push(pam);
+    lastSpace = beginSpace;
+  }
+  return parms;
 }
 module.exports.CommandHandler = CommandHandler;

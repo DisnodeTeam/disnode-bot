@@ -35,8 +35,11 @@ function cmdTest(){
   console.log("TEST COMMAND");
 }
 
-function joinVoice(msg){
+function joinVoice(msg, parms){
   var Manger = new Disnode.VoiceManager(bot);
-  Manger.JoinChannel("Base of Operations",msg.channel.server);
+  Manger.JoinChannel(parms[0],msg.channel.server);
 }
+
+
+
 StartBot();
