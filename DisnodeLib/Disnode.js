@@ -6,3 +6,7 @@ module.exports.VoiceManager = VoiceManager;
 
 var CommonCommands = require("./CommonCommands.js");
 module.exports.CommonCommands = CommonCommands;
+
+
+var YoutubeManager = require("./YoutubeManager.js").Downloader;
+module.exports.YoutubeManager = YoutubeManager;

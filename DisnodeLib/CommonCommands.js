@@ -13,3 +13,13 @@ function cmdJoinVoice(voiceManager, msg, parms, cb){
 		if(cb){cb(msg,parms);}
 	}
 }
+
+exports.JoinVoice = cmdJoinVoice;
+function cmdDownloadYT(ytManager, msg, parms, cb){
+
+  var firstSpace =msg.indexOf(" ");
+  var link = msg.substring(firstSpace + 1, msg.indexOf(" ", firstSpace + 1));
+  var file = msg.substring(msg.indexOf(" ",msg.indexOf(link)) + 1,cmd.content.length);
+
+	ytManager.Download(link, file);
+}
