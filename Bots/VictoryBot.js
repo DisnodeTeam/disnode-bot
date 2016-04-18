@@ -4,7 +4,7 @@ var YoutubeMp3Downloader = require('youtube-mp3-downloader');
 var fs = require('fs');
   var walk = require('walk')
 var bot = new Discord.Client();
-var token = "MTcwMDIwODA3MTk4NjM4MDgw.CfXhsg.IE2sRoFeBGJnxLZn1QZjwyUgDTY";
+var token = "";
 var name = "";
 var avatar = "";
 var commandPrefix = "!";
@@ -140,9 +140,7 @@ function cmdPlay(msg, parms){
 			//checks to see if they are in the same channel
 			bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
 			//path is the path to the audio directory
-			AudioPlayer.playFile(msg, parms,"../Audio/", bot);
-
-
+			AudioPlayer.playFile("../Audio/", parms, bot);
 		}else {
 			bot.sendMessage(msg.channel, "``` Bot is not connected to a voice channel ```");
 		}
@@ -166,7 +164,7 @@ function cmdStop(msg, parms){
 			//checks to see if they are in the same channel
 			bot.sendMessage(msg.channel, "``` Stopping Audio Playback```");
 			//path is the path to the audio directory
-			AudioPlayer.stopPlaying(msg, parms, bot);
+			AudioPlayer.stopPlaying(bot);
 
 
 		}else {
