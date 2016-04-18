@@ -2,6 +2,7 @@ var Disnode = require("../DisnodeLib/Disnode.js");
 var Discord = require("Discord.js");
 var YoutubeMp3Downloader = require('youtube-mp3-downloader');
 var fs = require('fs');
+  var walk = require('walk')
 var bot = new Discord.Client();
 var token = "MTcwMDIwODA3MTk4NjM4MDgw.CfXhsg.IE2sRoFeBGJnxLZn1QZjwyUgDTY";
 var name = "";
@@ -18,6 +19,7 @@ var Commands = [
   {cmd: "help",      run: cmdHelp,       desc: "List All Commands",     usage:commandPrefix+"help"},
   {cmd: "play",      run: cmdPlay,       desc: "Play Audio Clip",       usage:commandPrefix+"play [Clip Name]"},
   {cmd: "stop",      run: cmdStop,       desc: "Stop Audio Clip",       usage:commandPrefix+"stop"},
+  {cmd: "list",      run: cmdListAudio,  desc: "List All Audio Clips",  usage:commandPrefix+"list"},
 ];
 
 var CommandHandler = new Disnode.CommandHandler(commandPrefix, Commands);
@@ -144,6 +146,18 @@ function cmdPlay(msg, parms){
 		}else {
 			bot.sendMessage(msg.channel, "``` Bot is not connected to a voice channel ```");
 		}
+}
+
+function cmdListAudio(msg,parms){
+  var SendString = "``` === AUDIO CLIPS === \n";
+  AudioPlayer.listAll(walk,"../Audio/", function(name){
+    SendString = SendString + "-"+name+ "\n";
+    console.log(name);
+  }, function(){
+    SendString = SendString + "```";
+    bot.sendMessage(msg.channel, SendString);
+  });
+
 }
 
 function cmdStop(msg, parms){
