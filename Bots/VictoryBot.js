@@ -1,7 +1,7 @@
 var Disnode = require("../DisnodeLib/Disnode.js");
 var Discord = require("Discord.js");
 var YoutubeMp3Downloader = require('youtube-mp3-downloader');
-
+var fs = require('fs');
 var bot = new Discord.Client();
 var token = "MTcwMDIwODA3MTk4NjM4MDgw.CfXhsg.IE2sRoFeBGJnxLZn1QZjwyUgDTY";
 var name = "";
@@ -9,17 +9,19 @@ var avatar = "";
 var commandPrefix = "!";
 var VoiceManager= new Disnode.VoiceManager(bot);
 var Commands = [
-  {cmd:"test", run: cmdTest, desc: "Test Command"},
-  {cmd:"joinVoice", run: joinVoice, desc: "Join Voice", usage:commandPrefix+"joinVoice [Voice Channel Name ('-' instead of spaces.)]"},
-  {cmd: "follow", run: cmdFollow, desc: "Follow User",usage:commandPrefix+"follow"},
-  {cmd: "unfollow", run: cmdUnFollow, desc: "UNFollow User",usage:commandPrefix+"unfollow"},
-  {cmd: "joinme", run: cmdJoinMe,desc: "Join Users Voice",usage:commandPrefix+"joinme"},
-  {cmd: "yt", run: cmdDownloadYT,desc: "Download Youtube Clip",usage:commandPrefix+"yt [Video ID] [Command/Clip Name]"},
-  {cmd: "help", run: cmdHelp,desc: "List All Commands",usage:commandPrefix+"help"},
+  {cmd: "test",      run: cmdTest,       desc: "Test Command"},
+  {cmd: "joinVoice", run: joinVoice,     desc: "Join Voice",            usage:commandPrefix+"joinVoice [Voice Channel Name ('-' instead of spaces.)]"},
+  {cmd: "follow",    run: cmdFollow,     desc: "Follow User",           usage:commandPrefix+"follow"},
+  {cmd: "unfollow",  run: cmdUnFollow,   desc: "UNFollow User",         usage:commandPrefix+"unfollow"},
+  {cmd: "joinme",    run: cmdJoinMe,     desc: "Join Users Voice",      usage:commandPrefix+"joinme"},
+  {cmd: "yt",        run: cmdDownloadYT, desc: "Download Youtube Clip", usage:commandPrefix+"yt [Video ID] [Command/Clip Name]"},
+  {cmd: "help",      run: cmdHelp,       desc: "List All Commands",     usage:commandPrefix+"help"},
+  {cmd: "play",      run: cmdPlay,       desc: "Play Audio Clip",       usage:commandPrefix+"play [Clip Name]"},
+  {cmd: "stop",      run: cmdStop,       desc: "Stop Audio Clip",       usage:commandPrefix+"stop"},
 ];
 
 var CommandHandler = new Disnode.CommandHandler(commandPrefix, Commands);
-
+var AudioPlayer= new Disnode.AudioPlayer(bot, fs);
 var YD = new YoutubeMp3Downloader({
   "ffmpegPath": "../libmeg/bin/ffmpeg.exe", // Where is the FFmpeg binary located?
   "outputPath": "../audio/", // Where should the downloaded and encoded files be stored?
@@ -130,4 +132,31 @@ function cmdHelp(message){
   bot.sendMessage(message.channel, SendString);
 }
 
+function cmdPlay(msg, parms){
+			//checks to see if user is in a voice channel
+		if (bot.voiceConnection){
+			//checks to see if they are in the same channel
+			bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
+			//path is the path to the audio directory
+			AudioPlayer.playFile(msg, parms,"../Audio/", bot);
+
+
+		}else {
+			bot.sendMessage(msg.channel, "``` Bot is not connected to a voice channel ```");
+		}
+}
+
+function cmdStop(msg, parms){
+			//checks to see if user is in a voice channel
+		if (bot.voiceConnection){
+			//checks to see if they are in the same channel
+			bot.sendMessage(msg.channel, "``` Stopping Audio Playback```");
+			//path is the path to the audio directory
+			AudioPlayer.stopPlaying(msg, parms, bot);
+
+
+		}else {
+			bot.sendMessage(msg.channel, "``` Bot is not connected to a voice channel ```");
+		}
+}
 StartBot();

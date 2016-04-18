@@ -10,6 +10,11 @@ class AudioPlayer {
 		console.log(path + parms[0] + ".mp3")
 		connection.playFile(path + parms[0] + ".mp3", 1);
 	}
+
+	stopPlaying(msg, parms,bot){
+		var connection = bot.internal.voiceConnection;
+		connection.stopPlaying();
+	}
 }
 
 module.exports.AudioPlayer = AudioPlayer;
