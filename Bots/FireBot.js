@@ -9,6 +9,7 @@ var commandPrefix = "#";
 var VoiceManager= new Disnode.VoiceManager(bot);
 var Commands = [
 	{cmd:"test", run: cmdTest},
+	{cmd:"dc", run: cmdDC},
 ];
 var CommandHandler = new Disnode.CommandHandler(commandPrefix, Commands);
 
@@ -34,8 +35,16 @@ var OnVoiceLeave = function(channel, user){
 	VoiceManager.OnVoiceLeave(channel, user);
 }
 
-function cmdTest(){
+function cmdTest(msg){
 	bot.sendMessage(msg.channel, "``` Test Complete ```");
+}
+function cmdDC(msg, parms){
+	if (msg.author.name =="FireGamer3"){
+		bot.sendMessage(msg.channel, "``` Disconnecting ```");
+		bot.logout();
+	}else {
+		bot.sendMessage(msg.channel, "I can't let you do that! " + msg.author);
+	}
 }
 
 StartBot();
