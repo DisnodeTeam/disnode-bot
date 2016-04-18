@@ -23,3 +23,11 @@ function cmdDownloadYT(ytManager, msg, parms, cb){
 
 	ytManager.Download(link, file);
 }
+
+exports.Help = cmdHelp;
+function cmdHelp(commands,msg,parms,cb){
+	for (var i = 0; i < commands.length; i++) {
+		var cmd = commands[i];
+		cb(cmd.cmd, cmd.desc,cmd.usage );
+	}
+}

@@ -9,12 +9,13 @@ var avatar = "";
 var commandPrefix = "!";
 var VoiceManager= new Disnode.VoiceManager(bot);
 var Commands = [
-  {cmd:"test", run: cmdTest},
-  {cmd:"joinVoice", run: joinVoice},
-  {cmd: "follow", run: cmdFollow},
-  {cmd: "unfollow", run: cmdUnFollow},
-  {cmd: "joinme", run: cmdJoinMe},
-  {cmd: "yt", run: cmdDownloadYT},
+  {cmd:"test", run: cmdTest, desc: "Test Command"},
+  {cmd:"joinVoice", run: joinVoice, desc: "Join Voice", usage:commandPrefix+"joinVoice [Voice Channel Name ('-' instead of spaces.)]"},
+  {cmd: "follow", run: cmdFollow, desc: "Follow User",usage:commandPrefix+"follow"},
+  {cmd: "unfollow", run: cmdUnFollow, desc: "UNFollow User",usage:commandPrefix+"unfollow"},
+  {cmd: "joinme", run: cmdJoinMe,desc: "Join Users Voice",usage:commandPrefix+"joinme"},
+  {cmd: "yt", run: cmdDownloadYT,desc: "Download Youtube Clip",usage:commandPrefix+"yt [Video ID] [Command/Clip Name]"},
+  {cmd: "help", run: cmdHelp,desc: "List All Commands",usage:commandPrefix+"help"},
 ];
 
 var CommandHandler = new Disnode.CommandHandler(commandPrefix, Commands);
@@ -119,6 +120,14 @@ function cmdDownloadYT(message) {
   ytManager.Download(link, file);
 }
 
-
+function cmdHelp(message){
+  var SendString = "``` === HELP === \n";
+  Disnode.CommonCommands.Help(Commands,message,[],function(cmd,desc,use){
+    SendString = SendString + "-"+commandPrefix+cmd+" : "+desc+" - " + use + "\n";
+    SendString = SendString + " ---------------------------- \n";
+  });
+  SendString = SendString + "```";
+  bot.sendMessage(message.channel, SendString);
+}
 
 StartBot();
