@@ -38,11 +38,12 @@ class VoiceManager {
       console.log(this.bot);
     }else{
       console.log("[VoiceManager] Failed to Find Server: " + id);
-      if(this.retry){
+      if(this.retry == true){
         var nameConvert = name.replace(/-/g, " ");
         console.log(nameConvert);
-        this.JoinChannel(nameConvert, server)
         this.retry = false;
+        this.JoinChannel(nameConvert, server)
+
       }
     }
   }
