@@ -6,8 +6,24 @@ class AudioPlayer {
 	}
 	playFile(path, parms, bot){
 		var connection = bot.internal.voiceConnection;
-		console.log(path + parms[0] + ".mp3")
-		connection.playFile(path + parms[0] + ".mp3", 1);
+		console.log(path + parms[0] + ".mp3");
+		var volume = 0.8;
+		if(parms[1]){
+			if(parseFloat(parms[1])){
+				volume = parseFloat(parms[1]);
+				console.log("[AudioPlayer] Set volume:" + volume);
+				connection.setVolume(volume);
+			}else{
+				console.log("[AudioPlay] Secound Parms not Float");
+			}
+			var converted = parseFloat(parms[1]);
+
+		}
+		else{
+			console.log("[AudioPlay] No Volume Parm");
+		}
+		connection.playFile(path + parms[0] + ".mp3", volume);
+		console.log("Playing At: " + volume);
 	}
 
 	stopPlaying(bot){
