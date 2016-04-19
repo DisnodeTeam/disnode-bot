@@ -12,3 +12,6 @@ module.exports.AudioPlayer = AudioPlayer;
 
 var YoutubeManager = require("./YoutubeManager.js").Downloader;
 module.exports.YoutubeManager = YoutubeManager;
+
+var Wolfram = require("./Wolfram.js").Wolfram;
+module.exports.Wolfram = Wolfram;
