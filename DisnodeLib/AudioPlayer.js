@@ -35,7 +35,7 @@ class AudioPlayer {
 		var walker;
 		walker = walk.walk(path);
 		walker.on("file", function(root, fileStats, next){
-			var command = "!play "+fileStats.name.substring(0,fileStats.name.indexOf("."));
+			var command = "play "+fileStats.name.substring(0,fileStats.name.indexOf("."));
 			callback(command);
 			next();
 		});

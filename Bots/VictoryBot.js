@@ -148,7 +148,7 @@ function cmdPlay(msg, parms){
 
 function cmdListAudio(msg,parms){
   var SendString = "``` === AUDIO CLIPS === \n";
-  AudioPlayer.listAll(walk,"../Audio/", function(name){
+  AudioPlayer.listAll(walk, "../Audio/", function(name){
     SendString = SendString + "-"+name+ "\n";
     console.log(name);
   }, function(){

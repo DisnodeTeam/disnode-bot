@@ -84,9 +84,17 @@ function cmdHelp(msg){
 }
 function cmdPLAY(msg, parms){
 	if (msg.author.voiceChannel){
-		bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
-		AudioPlayer.playFile(path, parms, bot);
-		
+		if(parms[1]){
+			if(parseInt(parms[1]) <= 2){
+				bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
+				AudioPlayer.playFile(path, parms, bot);
+			}else {
+				bot.sendMessage(msg.channel, "``` Volume too loud! (over 2) ```");
+			}
+		}else {
+			bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
+			AudioPlayer.playFile(path, parms, bot);
+		}
 	}else {
 		bot.sendMessage(msg.channel, "``` You are not in a voice Channel ```");
 	}
@@ -112,11 +120,11 @@ function cmdWA(msg, parms){
 	});
 }
 function cmdDownloadYT(msg) {
-	var msg = msg.content;
+	var Mess = msg.content;
 
-	var firstSpace =msg.indexOf(" ");
-	var link = msg.substring(firstSpace + 1, msg.indexOf(" ", firstSpace + 1));
-	var file = msg.substring(msg.indexOf(" ",msg.indexOf(link)) + 1,msg.length);
+	var firstSpace =Mess.indexOf(" ");
+	var link = Mess.substring(firstSpace + 1, Mess.indexOf(" ", firstSpace + 1));
+	var file = Mess.substring(Mess.indexOf(" ",Mess.indexOf(link)) + 1,Mess.length);
 
 	var progressMessage;
 
@@ -129,7 +137,7 @@ function cmdDownloadYT(msg) {
 	});
 
 	ytManager.SetOnFinished(function(data){
-		bot.updateMessage(progressMessage, "``` Finished. Use '!play "+file+"'```");
+		bot.updateMessage(progressMessage, "``` Finished. Use '#play "+file+"'```");
 	});
 	ytManager.SetOnError(function(error){
 		bot.updateMessage(progressMessage, error);
@@ -145,8 +153,8 @@ function cmdDownloadYT(msg) {
 }
 function cmdListAudio(msg,parms){
 	var SendString = "``` === AUDIO CLIPS === \n";
-	AudioPlayer.listAll(walk,"./Audio/", function(name){
-		SendString = SendString + "-"+name+ "\n";
+	AudioPlayer.listAll(walk, "./Audio/", function(name){
+		SendString = SendString + "-" + commandPrefix + name+ "\n";
 		console.log(name);
 	}, function(){
 		SendString = SendString + "```";
