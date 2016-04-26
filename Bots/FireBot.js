@@ -13,6 +13,7 @@ var token = "";
 var name = "";
 var avatar = "";
 var commandPrefix = "#";
+var VoiceConn = [];
 
 var VoiceManager= new Disnode.VoiceManager(bot);
 var AudioPlayer= new Disnode.AudioPlayer(bot, fs);
@@ -101,12 +102,24 @@ function cmdPLAY(msg, parms){
 }
 function cmdJV(msg, parms){
 	if (msg.author.voiceChannel){
-		VoiceManager.JoinChannelWithId(msg.author.voiceChannel);
+		id = msg.author.voiceChannel;
+		VoiceManager.JoinChannelWithId(id);
+		VoiceConn.push(id);
+		bot.sendMessage(msg.channel, "``` Joined the channel you are in! [Debug] " + VoiceConn + "```");
+	}else {
+		bot.sendMessage(msg.channel, "``` You are not in a voice Channel ```");
 	}
 }
 function cmdLV(msg){
 	if (msg.author.voiceChannel){
-		
+		id = msg.author.voiceChannel;
+		VoiceConn.forEach(function(value){
+				if (value = id){
+					VoiceManager.LeaveChannel(id);
+					VoiceConn.splice(VoiceConn.indexOf(id), 1);
+					bot.sendMessage(msg.channel, "``` left the channel you are in! [Debug] " + VoiceConn +"```");
+				}
+		});
 	}
 }
 function cmdWA(msg, parms){
