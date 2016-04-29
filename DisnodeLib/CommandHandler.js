@@ -76,15 +76,45 @@ function GetParmas(raw){
   var lastSpace;
   var end;
   while(!end){
-    var beginSpace = raw.indexOf(" ", lastSpace + 1);
-    var endSpace = raw.indexOf(" ", beginSpace + 1);
-    if(endSpace == -1){
-      endSpace = raw.length;
-      end= true;
+    console.log("=========== NEW LOOP ==============");
+    var beginSpace;
+    var endSpace;
+
+    var beginQuote = raw.indexOf('"', beginSpace)  +1;
+    var endQuote = raw.indexOf('"', beginQuote + 1);
+
+    if(beginQuote != -1 && endQuote != -1){
+      console.log("QUOTE_FOUND");
+      beginSpace = beginQuote;
+      endSpace = endQuote;
+
+    }else{
+      console.log("QUOTE_NOT_FOUND");
+      beginSpace =raw.indexOf(" ", lastSpace);
+      if(beginSpace == -1){
+        endSpace = -1;
+      }
+      else{
+        endSpace = raw.indexOf(" ", beginSpace + 1);
+      }
+
     }
-    var pam = raw.substring(beginSpace + 1, endSpace);
+    
+    if(endSpace == -1){
+
+      end= true;
+
+    }
+
+    var pam;
+    console.log("BEGIN_SPACE: " + beginSpace);
+    console.log("END_SPACE: " + endSpace);
+    pam = raw.substring(beginSpace, endSpace);
+    console.log("PAM: " + pam);
+    lastSpace = endSpace ;
+    console.log("LAST_SPACE: " + lastSpace);
     parms.push(pam);
-    lastSpace = beginSpace;
+
   }
   return parms;
 }
