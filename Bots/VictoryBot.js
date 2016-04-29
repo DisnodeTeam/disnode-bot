@@ -1,6 +1,8 @@
 var Disnode = require("../DisnodeLib/Disnode.js");
 var Discord = require("Discord.js");
 var YoutubeMp3Downloader = require('youtube-mp3-downloader');
+var wimageid = "img";
+var wolframapi = require('wolfram-alpha').createClient("L7GEPP-V87J3T9WL6");
 var fs = require('fs');
   var walk = require('walk')
 var bot = new Discord.Client();
@@ -9,6 +11,7 @@ var name = "";
 var avatar = "";
 var commandPrefix = "!";
 var VoiceManager= new Disnode.VoiceManager(bot);
+var wolfram= new Disnode.Wolfram(wolframapi);
 var Commands = [
   {cmd: "test",      run: cmdTest,       desc: "Test Command"},
   {cmd: "joinVoice", run: joinVoice,     desc: "Join Voice",            usage:commandPrefix+"joinVoice [Voice Channel Name ('-' instead of spaces.)]"},
@@ -20,6 +23,7 @@ var Commands = [
   {cmd: "play",      run: cmdPlay,       desc: "Play Audio Clip",       usage:commandPrefix+"play [Clip Name]"},
   {cmd: "stop",      run: cmdStop,       desc: "Stop Audio Clip",       usage:commandPrefix+"stop"},
   {cmd: "list",      run: cmdListAudio,  desc: "List All Audio Clips",  usage:commandPrefix+"list"},
+  {cmd:"wold", 		run: cmdWA,			desc: "Pulls Information from Wolfram Alpha",	usage:commandPrefix+"wa [option1 option2] [Options: int (e.g. 1,2,3) or " + wimageid + " for imgaes]"},
 ];
 
 var CommandHandler = new Disnode.CommandHandler(commandPrefix, Commands);
@@ -65,6 +69,18 @@ function cmdFollow(msg){
   bot.sendMessage(msg.channel, "``` Following: "+msg.author.username+".```");
   cmdJoinMe(msg);
 }
+
+function cmdWA(msg, parms){
+	var wolfmsg;
+	bot.sendMessage(msg.channel, "``` Waiting on Wolfram API Q: " + parms[0] +" Options: " + parms[1] + " " + parms[2] + " ```", function(err, sent) {
+		wolfmsg = sent;
+		console.log(err);
+	});
+	wolfram.makeRequest(parms, wimageid, function(text){
+		bot.updateMessage(wolfmsg, text);
+	});
+}
+
 
 function cmdJoinMe(msg){
   for (var i = 0; i < msg.channel.server.members.length; i++) {
@@ -118,7 +134,7 @@ function cmdDownloadYT(message) {
     console.log(progress.progress.percentage);
     if(progress.progress.percentage != 100){
       var percent = Math.round(progress.progress.percentage);
-      bot.updateMessage(progressMessage, "```Downloading..."+percent + "%```");
+      //bot.updateMessage(progressMessage, "```Downloading..."+percent + "%```");
     }
   });
   ytManager.Download(link, file);
