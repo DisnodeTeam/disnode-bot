@@ -28,16 +28,18 @@ var YD = new YoutubeMp3Downloader({
 var ytManager = new Disnode.YoutubeManager(YD);
 
 var Commands = [
-	{cmd:"test", 	run: cmdTest,		desc: "Test Command"},
-	{cmd: "help",   run: cmdHelp,       desc: "List All Commands",     					usage:commandPrefix+"help"},
-	{cmd:"dc", 		run: cmdDC,			desc: "Disconnects the bot for shutdown",		usage:commandPrefix+"dc [Only FireGamer3 may use this command]"},
-	{cmd:"play", 	run: cmdPLAY,		desc: "Play audio clip",						usage:commandPrefix+"play [FileName ('-' instead of spaces.)]"},
-	{cmd:"jv", 		run: cmdJV,			desc: "Joins voice channel",					usage:commandPrefix+"jv [Voice Channel Name ('-' instead of spaces.)]"},
-	{cmd:"lv", 		run: cmdLV,			desc: "Leaves voice channel",					usage:commandPrefix+"lv [Voice Channel Name ('-' instead of spaces.)]"},
+	{cmd:"test", 	run: cmdTest,			desc: "Test Command"},
+	{cmd: "help",   run: cmdHelp,  	     desc: "List All Commands",     								usage:commandPrefix+"help"},
+	{cmd:"dc", 		run: cmdDC,			desc: "Disconnects the bot for shutdown",			usage:commandPrefix+"dc [Only FireGamer3 may use this command]"},
+	{cmd:"play", 	run: cmdPLAY,		desc: "Play audio clip",										usage:commandPrefix+"play [FileName ('-' instead of spaces.)]"},
+	{cmd:"jv", 		run: cmdJV,			desc: "Joins voice channel",								usage:commandPrefix+"jv [Voice Channel Name ('-' instead of spaces.)]"},
+	{cmd:"lv", 		run: cmdLV,			desc: "Leaves voice channel",							usage:commandPrefix+"lv [Voice Channel Name ('-' instead of spaces.)]"},
 	{cmd:"wa", 		run: cmdWA,			desc: "Pulls Information from Wolfram Alpha",	usage:commandPrefix+"wa [option1 option2] [Options: int (e.g. 1,2,3) or " + wimageid + " for imgaes]"},
-	{cmd: "yt",     run: cmdDownloadYT, desc: "Download Youtube Clip", 					usage:commandPrefix+"yt [Video ID] [Command/Clip Name]"},
-	{cmd: "stop",   run: cmdStop,       desc: "Stop Audio Clip",      					usage:commandPrefix+"stop"},
-	{cmd: "list",   run: cmdListAudio,  desc: "List All Audio Clips",  					usage:commandPrefix+"list"},	
+	{cmd: "yt",     run: cmdDownloadYT, desc: "Download Youtube Clip", 						usage:commandPrefix+"yt [Video ID] [Command/Clip Name]"},
+	{cmd: "stop",   run: cmdStop,       desc: "Stop Audio Clip",      								usage:commandPrefix+"stop"},
+	{cmd: "list",   run: cmdListAudio,  desc: "List All Audio Clips",  								usage:commandPrefix+"list"},
+	{cmd: "add",   run: cmdADD,  desc: "Shows the Oauth2 link",  							usage:commandPrefix+"add"},
+	{cmd: "game",   run: cmdGAME,  desc: "SSet the bot's current game",  							usage:commandPrefix+"game [game] only FireGamer3 allowed"},
 ];
 var CommandHandler = new Disnode.CommandHandler(commandPrefix, Commands);
 
@@ -50,16 +52,18 @@ function StartBot(){
 }
 
 var OnBotReady = function(){
-	console.log("FireBot is Ready to take in commands!");
+	console.log("[FB - General] Ready");
 }
 var OnBotMessage = function(msg){
-	console.log("[MSG] " + msg.content);
+	console.log("[FB - MSG] " + msg.content);
 	CommandHandler.RunMessage(msg);
 }
 var OnVoiceJoin = function(channel, user){
+	console.log("[FB - Voice] User: " + user.name + " joined the voice channel: " + channel);
 	VoiceManager.OnVoiceJoin(channel, user);
 }
 var OnVoiceLeave = function(channel, user){
+	console.log("[FB - Voice] User: " + user.name + " left the voice channel: " + channel);
 	VoiceManager.OnVoiceLeave(channel, user);
 }
 
@@ -86,12 +90,12 @@ function cmdHelp(msg){
 function cmdPLAY(msg, parms){
 	if (msg.author.voiceChannel){
 		if(parms[1]){
-			if(parseInt(parms[1]) <= 2){
 				bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
-				AudioPlayer.playFile(path, parms, bot);
-			}else {
-				bot.sendMessage(msg.channel, "``` Volume too loud! (over 2) ```");
-			}
+				AudioPlayer.playFile(path, parms, bot, function cb(text){
+					if(text === "loud"){
+						bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
+					}
+				});
 		}else {
 			bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
 			AudioPlayer.playFile(path, parms, bot);
@@ -183,6 +187,17 @@ function cmdStop(msg, parms){
 		AudioPlayer.stopPlaying(bot);
 	}else {
 		bot.sendMessage(msg.channel, "``` Bot is not connected to a voice channel ```");
+	}
+}
+function cmdADD(msg) {
+	bot.sendMessage(msg.channel, "Here, " + msg.author + " this is the link to add me to your server! https://discordapp.com/oauth2/authorize?&client_id=169998277847023617&scope=bot&permissions=0");
+}
+function cmdGAME(msg,parms) {
+		if (msg.author.name =="FireGamer3"){
+		bot.sendMessage(msg.channel, "``` Setting game to:  " + parms[0] + "```");
+		bot.setPlayingGame(parms[0], function(error){});
+	}else {
+		bot.sendMessage(msg.channel, "I can't let you do that! " + msg.author);
 	}
 }
 StartBot();

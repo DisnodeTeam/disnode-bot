@@ -4,8 +4,36 @@ class AudioPlayer {
 		this.bot = bot;
 		this.fs = fs;
 	}
-	playFile(path, parms, bot){
+	playFile(path, parms, bot, cb){
 		var connection = bot.internal.voiceConnection;
+		console.log(path + parms[0] + ".mp3");
+		var volume = 0.8;
+		if(parms[1]){
+			if(parseFloat(parms[1])){
+				if(parseFloat(parms[1]) <= 3){
+					volume = parseFloat(parms[1]);
+					console.log("[AudioPlayer] Set volume:" + volume);
+					connection.setVolume(volume);
+				}else{
+					console.log("[AudioPlay] Volume over threshold! Remains default");
+					// Callback used for in execution for more info loud is used as a keyword so the bot can use it's own message
+					cb("loud");
+				}
+			}else{
+				console.log("[AudioPlay] Second Parms not Float");
+			}
+			var converted = parseFloat(parms[1]);
+
+		}
+		else{
+			console.log("[AudioPlay] No Volume Parm");
+		}
+		connection.playFile(path + parms[0] + ".mp3", volume);
+		console.log("Playing At: " + volume);
+	}
+	// Unused right now but will be used later
+	playFileWithID(path, parms, bot, id){
+		var connection = bot.internal.voiceConnection.voiceChannel(id);
 		console.log(path + parms[0] + ".mp3");
 		var volume = 0.8;
 		if(parms[1]){
@@ -25,7 +53,6 @@ class AudioPlayer {
 		connection.playFile(path + parms[0] + ".mp3", volume);
 		console.log("Playing At: " + volume);
 	}
-
 	stopPlaying(bot){
 		var connection = bot.internal.voiceConnection;
 		connection.stopPlaying();

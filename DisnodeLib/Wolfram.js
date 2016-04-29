@@ -3,7 +3,6 @@
 class Wolfram {
 	constructor(wolframapi){
 		this.wolframapi = wolframapi;
-		console.log("Wolfram constructor: " + wolframapi);
 	}
 	
 	//Makes a request based on params (empty = normal lookup, int = limited lookup, img = images only, and you can combine)

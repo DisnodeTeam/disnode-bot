@@ -156,7 +156,12 @@ function cmdPlay(msg, parms){
 			//checks to see if they are in the same channel
 			bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
 			//path is the path to the audio directory
-			AudioPlayer.playFile("../Audio/", parms, bot);
+			AudioPlayer.playFile("../Audio/", parms, bot, function cb(text){
+				if(text === "loud"){
+					//generic message you can change if you want
+					bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
+				}
+			});
 		}else {
 			bot.sendMessage(msg.channel, "``` Bot is not connected to a voice channel ```");
 		}
