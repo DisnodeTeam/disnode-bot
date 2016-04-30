@@ -22,7 +22,7 @@ class Downloader {
 
   Download(id, name) {
     this.id = id;
-    this.name = name;
+    this.name = name.replace(/['"]+/g, '');
     this.YD.download(this.id, this.name + ".mp3");
     this.YD.on("finished", this.OnFinished);
 
