@@ -28,18 +28,18 @@ var YD = new YoutubeMp3Downloader({
 var ytManager = new Disnode.YoutubeManager(YD);
 
 var Commands = [
-	{cmd:"test", 	run: cmdTest,			desc: "Test Command"},
-	{cmd: "help",   run: cmdHelp,  	     desc: "List All Commands",     								usage:commandPrefix+"help"},
-	{cmd:"dc", 		run: cmdDC,			desc: "Disconnects the bot for shutdown",			usage:commandPrefix+"dc [Only FireGamer3 may use this command]"},
-	{cmd:"play", 	run: cmdPLAY,		desc: "Play audio clip",										usage:commandPrefix+"play [FileName ('-' instead of spaces.)]"},
-	{cmd:"jv", 		run: cmdJV,			desc: "Joins voice channel",								usage:commandPrefix+"jv [Voice Channel Name ('-' instead of spaces.)]"},
-	{cmd:"lv", 		run: cmdLV,			desc: "Leaves voice channel",							usage:commandPrefix+"lv [Voice Channel Name ('-' instead of spaces.)]"},
-	{cmd:"wa", 		run: cmdWA,			desc: "Pulls Information from Wolfram Alpha",	usage:commandPrefix+"wa [option1 option2] [Options: int (e.g. 1,2,3) or " + wimageid + " for imgaes]"},
-	{cmd: "yt",     run: cmdDownloadYT, desc: "Download Youtube Clip", 						usage:commandPrefix+"yt [Video ID] [Command/Clip Name]"},
-	{cmd: "stop",   run: cmdStop,       desc: "Stop Audio Clip",      								usage:commandPrefix+"stop"},
-	{cmd: "list",   run: cmdListAudio,  desc: "List All Audio Clips",  								usage:commandPrefix+"list"},
-	{cmd: "add",   run: cmdADD,  desc: "Shows the Oauth2 link",  							usage:commandPrefix+"add"},
-	{cmd: "game",   run: cmdGAME,  desc: "SSet the bot's current game",  							usage:commandPrefix+"game [game] only FireGamer3 allowed"},
+	{cmd:"test",run: cmdTest,desc: "Test Command",usage:commandPrefix+"test"},
+	{cmd: "help",run: cmdHelp,desc: "List All Commands",usage:commandPrefix+"help"},
+	{cmd:"dc",run: cmdDC,desc: "Disconnects the bot for shutdown",usage:commandPrefix+"dc [Only FireGamer3 may use this command]"},
+	{cmd:"play",run: cmdPLAY,desc: "Play audio clip",usage:commandPrefix+"play [FileName ('-' instead of spaces.)]"},
+	{cmd:"jv",run: cmdJV,desc: "Joins voice channel",usage:commandPrefix+"jv [Voice Channel Name ('-' instead of spaces.)]"},
+	{cmd:"lv",run: cmdLV,desc: "Leaves voice channel",usage:commandPrefix+"lv [Voice Channel Name ('-' instead of spaces.)]"},
+	{cmd:"wa",run: cmdWA,desc: "Pulls Information from Wolfram Alpha",usage:commandPrefix+"wa [option1 option2] [Options: int (e.g. 1,2,3) or " + wimageid + " for imgaes]"},
+	{cmd: "yt",run: cmdDownloadYT,desc: "Download Youtube Clip",usage:commandPrefix+"yt [Video ID] [Command/Clip Name]"},
+	{cmd: "stop",run: cmdStop,desc: "Stop Audio Clip",usage:commandPrefix+"stop"},
+	{cmd: "list",run: cmdListAudio,desc: "List All Audio Clips",usage:commandPrefix+"list"},
+	{cmd: "add",run: cmdADD,desc: "Shows the Oauth2 link",usage:commandPrefix+"add"},
+	{cmd: "game",run: cmdGAME,desc: "Set the bot's current game",usage:commandPrefix+"game [game] only FireGamer3 allowed"},
 ];
 var CommandHandler = new Disnode.CommandHandler(commandPrefix, Commands);
 
@@ -68,7 +68,8 @@ var OnVoiceLeave = function(channel, user){
 }
 
 function cmdTest(msg){
-	bot.sendMessage(msg.channel, "``` Test Complete ```");
+	bot.sendMessage(msg.channel, "``` Test: " + bot.voiceConnections + "  ```");
+
 }
 function cmdDC(msg, parms){
 	if (msg.author.name =="FireGamer3"){
@@ -88,21 +89,47 @@ function cmdHelp(msg){
 	bot.sendMessage(msg.channel, SendString);
 }
 function cmdPLAY(msg, parms){
-	if (msg.author.voiceChannel){
+  console.log("[FB - Log] Parms: "+ parms[0] + " " + parms[1]);
+  var found = false;
+  var id;
+  bot.voiceConnections.forEach(function(value){
+    console.log("[FB - Log] VoiceConnection: "+ value.voiceChannel);
+    if(value.voiceChannel == msg.author.voiceChannel){
+      console.log("[FB - Log] VoiceMatch: "+ value.voiceChannel + " " + msg.author.voiceChannel);
+      found = true;
+      id = value.voiceChannel;
+    }
+  });
+  if(found){
+    if(parms[1]){
+        bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
+        AudioPlayer.playFileWithID(path, parms, bot, id, function cb(text){
+            if(text === "loud"){
+              bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
+            }
+        });
+    }else {
+      bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
+      AudioPlayer.playFile(path, parms, bot, function cb(text){});
+    }
+  }else{
+    bot.sendMessage(msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
+  }
+	/* if (msg.author.voiceChannel){
 		if(parms[1]){
 				bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
 				AudioPlayer.playFile(path, parms, bot, function cb(text){
-					if(text === "loud"){
-						bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
-					}
+						if(text === "loud"){
+							bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
+						}
 				});
 		}else {
 			bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
-			AudioPlayer.playFile(path, parms, bot);
+			AudioPlayer.playFile(path, parms, bot, function cb(text){});
 		}
 	}else {
 		bot.sendMessage(msg.channel, "``` You are not in a voice Channel ```");
-	}
+	} */
 }
 function cmdJV(msg, parms){
 	if (msg.author.voiceChannel){
