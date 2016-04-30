@@ -11,10 +11,10 @@ var VoiceManager= new Disnode.VoiceManager(bot);
 var AudioPlayer= new Disnode.AudioPlayer(bot, fs);
 //also start loading the YouTube downloader for mp3 support
 var YD = new YoutubeMp3Downloader({
-  "ffmpegPath": "C:/Users/Garrett/Desktop/FireBot/libmeg/bin/ffmpeg.exe", // Where is the FFmpeg binary located?
+  "ffmpegPath": "../libmeg/bin/ffmpeg.exe", // Where is the FFmpeg binary located. (We Include it for you *your welcome*)
   "outputPath": "C:/Users/Garrett/Desktop/FireBot/Audio/", // Where should the downloaded and encoded files be stored?
   "youtubeVideoQuality": "highest", // What video quality should be used?
   "queueParallelism": 2, // How many parallel downloads/encodes should be started?
-  "progressTimeout": 1000 // How long should be the interval of the progress reports
+  "progressTimeout": 1000 // How long should be the interval of the progress reports.
 });
 var ytManager = new Disnode.YoutubeManager(YD);

@@ -96,8 +96,7 @@ function GetParmas(raw){
          end = true;
        }
 
-
-       var param = raw.substring(BeginSpace , EndSpace);
+       var param = raw.substring(BeginSpace + 1, EndSpace);
        var containsQuoteIndex = param.indexOf('"');
 
        console.log(" PreQuoteCheck: ");
@@ -124,7 +123,6 @@ function GetParmas(raw){
 
            console.log(" ");
          }
-
        }
 
        lastSpace = EndSpace;
