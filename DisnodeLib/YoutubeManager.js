@@ -26,9 +26,7 @@ class Downloader {
     this.YD.download(this.id, this.name + ".mp3");
     this.YD.on("finished", this.OnFinished);
 
-    this.YD.on("error", function(error) {
-      OnError(error);
-    });
+    this.YD.on("error", this.OnError);
 
     this.YD.on("progress",this.OnProgress);
   }
