@@ -92,46 +92,31 @@ function cmdPLAY(msg, parms){
   console.log("[FB - Log] Parms: "+ parms[0] + " " + parms[1]);
   var found = false;
   var id;
-  var channel;
-  bot.voiceConnections.forEach(function(value){
-    console.log("[FB - Log] VoiceConnection: "+ value.voiceChannel);
-    if(value.voiceChannel == msg.author.voiceChannel){
-      console.log("[FB - Log] VoiceMatch: "+ value.voiceChannel + " " + msg.author.voiceChannel);
+  VoiceManager.checkForUserInSameServer(bot, msg, function cb(returnID){
+    console.log("[FB - Log] Callback: " + returnID);
+    id = returnID;
+    console.log("[FB - Log] ID:" + id);
+    if(id == 0){
+      found = false;
+    }else{
       found = true;
-      id = value.voiceChannel;
-      channel = value;
     }
   });
   if(found){
     if(parms[1]){
         bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
-        AudioPlayer.playFileWithID(path, parms, bot, id, function cb(text){
+        AudioPlayer.playFile(path, parms, bot, id, function cb(text){
             if(text === "loud"){
               bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
             }
         });
     }else {
       bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
-      AudioPlayer.playFile(path, parms, bot, function cb(text){});
+      AudioPlayer.playFile(path, parms, bot, id, function cb(text){});
     }
   }else{
     bot.sendMessage(msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
   }
-	/* if (msg.author.voiceChannel){
-		if(parms[1]){
-				bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
-				AudioPlayer.playFile(path, parms, bot, function cb(text){
-						if(text === "loud"){
-							bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
-						}
-				});
-		}else {
-			bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
-			AudioPlayer.playFile(path, parms, bot, function cb(text){});
-		}
-	}else {
-		bot.sendMessage(msg.channel, "``` You are not in a voice Channel ```");
-	} */
 }
 function cmdJV(msg, parms){
 	if (msg.author.voiceChannel){
@@ -208,15 +193,24 @@ function cmdListAudio(msg,parms){
 	});
 }
 function cmdStop(msg, parms){
-		//checks to see if user is in a voice channel
-	if (bot.voiceConnection){
-		//checks to see if they are in the same channel
-		bot.sendMessage(msg.channel, "``` Stopping Audio Playback```");
-		//path is the path to the audio directory
-		AudioPlayer.stopPlaying(bot);
-	}else {
-		bot.sendMessage(msg.channel, "``` Bot is not connected to a voice channel ```");
-	}
+  var found = false;
+  var id;
+  VoiceManager.checkForUserInSameServer(bot, msg, function cb(returnID){
+    console.log("[FB - Log] Callback: " + returnID);
+    id = returnID;
+    console.log("[FB - Log] ID:" + id);
+    if(id == 0){
+      found = false;
+    }else{
+      found = true;
+    }
+  });
+  if(found){
+    bot.sendMessage(msg.channel, "``` Playback stopped! ```");
+    AudioPlayer.stopPlaying(bot, id);
+  } else {
+    bot.sendMessage(msg.channel, "``` You must be inside a channel that the bot is in to stop playback ```");
+  }
 }
 function cmdADD(msg) {
 	bot.sendMessage(msg.channel, "Here, " + msg.author + " this is the link to add me to your server! https://discordapp.com/oauth2/authorize?&client_id=169998277847023617&scope=bot&permissions=0");

@@ -151,20 +151,34 @@ function cmdHelp(message){
 }
 
 function cmdPlay(msg, parms){
-			//checks to see if user is in a voice channel
-		if (bot.voiceConnection){
-			//checks to see if they are in the same channel
-			bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
-			//path is the path to the audio directory
-			AudioPlayer.playFile("../Audio/", parms, bot, function cb(text){
-				if(text === "loud"){
-					//generic message you can change if you want
-					bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
-				}
-			});
-		}else {
-			bot.sendMessage(msg.channel, "``` Bot is not connected to a voice channel ```");
-		}
+  console.log("[VB - Log] Parms: "+ parms[0] + " " + parms[1]);
+  var found = false;
+  var id;
+  VoiceManager.checkForUserInSameServer(bot, msg, function cb(returnID){
+    console.log("[VB - Log] Callback: " + returnID);
+    id = returnID;
+    console.log("[VB - Log] ID:" + id);
+    if(id == 0){
+      found = false;
+    }else{
+      found = true;
+    }
+  });
+  if(found){
+    if(parms[1]){
+        bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
+        AudioPlayer.playFile(path, parms, bot, id, function cb(text){
+            if(text === "loud"){
+              bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
+            }
+        });
+    }else {
+      bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
+      AudioPlayer.playFile(path, parms, bot, id, function cb(text){});
+    }
+  }else{
+    bot.sendMessage(msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
+  }
 }
 
 function cmdListAudio(msg,parms){
@@ -197,16 +211,23 @@ function cmdListAudio(msg,parms){
 }
 
 function cmdStop(msg, parms){
-			//checks to see if user is in a voice channel
-		if (bot.voiceConnection){
-			//checks to see if they are in the same channel
-			bot.sendMessage(msg.channel, "``` Stopping Audio Playback```");
-			//path is the path to the audio directory
-			AudioPlayer.stopPlaying(bot);
-
-
-		}else {
-			bot.sendMessage(msg.channel, "``` Bot is not connected to a voice channel ```");
-		}
+  var found = false;
+  var id;
+  VoiceManager.checkForUserInSameServer(bot, msg, function cb(returnID){
+    console.log("[VB - Log] Callback: " + returnID);
+    id = returnID;
+    console.log("[VB - Log] ID:" + id);
+    if(id == 0){
+      found = false;
+    }else{
+      found = true;
+    }
+  });
+  if(found){
+    bot.sendMessage(msg.channel, "``` Playback stopped! ```");
+    AudioPlayer.stopPlaying(bot, id);
+  } else {
+    bot.sendMessage(msg.channel, "``` You must be inside a channel that the bot is in to stop playback ```");
+  }
 }
 StartBot();
