@@ -168,10 +168,27 @@ function cmdPlay(msg, parms){
 }
 
 function cmdListAudio(msg,parms){
-  var SendString = "``` === AUDIO CLIPS === \n";
+  var Page = 1;
+  if(parms[0]){
+    Page = parseInt(parms[0]);
+  }
+
+
+  var ResultsPerPage = 15;
+  var Start = (Page * ResultsPerPage) - ResultsPerPage;
+  var CurrentIndex = 0;
+
+  var SendString = "``` === AUDIO CLIPS (Page: "+Page+")=== \n";
   AudioPlayer.listAll(walk, "../Audio/", function(name){
-    SendString = SendString + "-"+name+ "\n";
-    console.log(name);
+    CurrentIndex++;
+    if(CurrentIndex >= Start)
+    {
+      if(CurrentIndex < Start + ResultsPerPage)
+      {
+        SendString = SendString + "-"+name+ "\n";
+      }
+    }
+
   }, function(){
     SendString = SendString + "```";
     bot.sendMessage(msg.channel, SendString);
