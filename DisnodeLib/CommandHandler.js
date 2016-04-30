@@ -73,48 +73,82 @@ function GetCommand(toSearch, list){
 
 function GetParmas(raw){
   var parms = [];
-  var lastSpace;
-  var end;
+  var lastSpace = -1;
+  var end = false;
   while(!end){
-    console.log("=========== NEW LOOP ==============");
-    var beginSpace;
-    var endSpace;
+    console.log("=========== NEW PARM LOOP ==============");
 
-    var beginQuote = raw.indexOf('"', beginSpace)  +1;
-    var endQuote = raw.indexOf('"', beginQuote + 1);
 
-    if(beginQuote != -1 && endQuote != -1){
-      console.log("QUOTE_FOUND");
-      beginSpace = beginQuote;
-      endSpace = endQuote;
+    var BeginSpace = raw.indexOf(" ", lastSpace);
+    var EndSpace = -1;
+    if(BeginSpace != -1){
+       EndSpace = raw.indexOf(" ", BeginSpace + 1);
+       console.log("EndSpace: " + EndSpace);
+
+       console.log("Begin Var State: ");
+       console.log(" -- BeginSpace: " + BeginSpace);
+       console.log(" -- EndSpace: " + EndSpace);
+       console.log(" -- lastSpace: " + lastSpace);
+       console.log("");
+
+       if(EndSpace == -1){
+         EndSpace = raw.length;
+         end = true;
+       }
+
+
+       var param = raw.substring(BeginSpace , EndSpace);
+       var containsQuoteIndex = param.indexOf('"');
+
+       console.log(" PreQuoteCheck: ");
+       console.log(" -- param: " + param );
+       console.log(" -- containsQuoteIndex: " + containsQuoteIndex + "\n");
+
+       var BeginQuote = -1;
+       var EndQuote = -1;
+       if(containsQuoteIndex != -1){
+         BeginQuote = raw.indexOf('"', BeginSpace);
+
+         console.log("QUOTE_FOUND");
+         console.log(" -- BeginQuote: "+ BeginQuote);
+         console.log(" ");
+         EndQuote = raw.indexOf('"', BeginQuote + 1);
+
+         if(EndQuote != -1){
+           console.log("END_QUOTE_FOUND");
+           BeginSpace = BeginQuote;
+           EndSpace = EndQuote;
+           param = raw.substring(BeginSpace + 1, EndSpace);
+           console.log(" -- Param: " + param);
+           console.log(" -- EndQuote: " + EndQuote);
+
+           console.log(" ");
+         }
+
+       }
+
+       lastSpace = EndSpace;
+
+       if(param != ""){
+         parms.push(param);
+       }else{
+         console.log("NULL_PARAM");
+         console.log(" ");
+       }
+
+       console.log("End Var State: ");
+       console.log(" -- BeginSpace: " + BeginSpace);
+       console.log(" -- EndSpace: " + EndSpace);
+       console.log(" -- lastSpace: " + lastSpace);
+       console.log(" -- BeginQuote: " + BeginQuote);
+       console.log(" -- EndQuote: " + EndQuote);
+       console.log(" -- End: " + end);
+       console.log(" ");
 
     }else{
-      console.log("QUOTE_NOT_FOUND");
-      beginSpace =raw.indexOf(" ", lastSpace);
-      if(beginSpace == -1){
-        endSpace = -1;
-      }
-      else{
-        endSpace = raw.indexOf(" ", beginSpace + 1);
-      }
-
+      console.log("BEGIN_SPACE_NULL \n");
+      end = true;
     }
-    
-    if(endSpace == -1){
-
-      end= true;
-
-    }
-
-    var pam;
-    console.log("BEGIN_SPACE: " + beginSpace);
-    console.log("END_SPACE: " + endSpace);
-    pam = raw.substring(beginSpace, endSpace);
-    console.log("PAM: " + pam);
-    lastSpace = endSpace ;
-    console.log("LAST_SPACE: " + lastSpace);
-    parms.push(pam);
-
   }
   return parms;
 }

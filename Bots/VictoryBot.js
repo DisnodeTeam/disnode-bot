@@ -97,8 +97,8 @@ function cmdUnFollow(msg){
 VoiceManager.UnFollow(msg.client.user.username);
 bot.sendMessage(msg.channel, "``` Stopped Following: "+msg.author.username+".```");
 }
-function cmdTest(){
-  console.log("TEST COMMAND");
+function cmdTest(msg, parm){
+  bot.sendMessage(msg.channel, "TestCommand ("+parm.length+"): " + parm);
 }
 
 function joinVoice(msg, parms){
