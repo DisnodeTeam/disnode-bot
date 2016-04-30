@@ -92,12 +92,14 @@ function cmdPLAY(msg, parms){
   console.log("[FB - Log] Parms: "+ parms[0] + " " + parms[1]);
   var found = false;
   var id;
+  var channel;
   bot.voiceConnections.forEach(function(value){
     console.log("[FB - Log] VoiceConnection: "+ value.voiceChannel);
     if(value.voiceChannel == msg.author.voiceChannel){
       console.log("[FB - Log] VoiceMatch: "+ value.voiceChannel + " " + msg.author.voiceChannel);
       found = true;
       id = value.voiceChannel;
+      channel = value;
     }
   });
   if(found){

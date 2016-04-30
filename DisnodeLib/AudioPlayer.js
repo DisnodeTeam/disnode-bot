@@ -33,7 +33,15 @@ class AudioPlayer {
 	}
 	// Unused right now but will be used later
 	playFileWithID(path, parms, bot, id, cb){
-		var connection = bot.internal.voiceConnection.voiceChannel(id);
+		var i = 0;
+		var f = false;
+		while(!f){
+			if(bot.voiceConnections[i].voiceChannel == id){
+				f = true;
+				var connection = bot.voiceConnections[i];
+			}
+			i++;
+		}
 		console.log(path + parms[0] + ".mp3");
 		var volume = 0.8;
 		if(parms[1]){
