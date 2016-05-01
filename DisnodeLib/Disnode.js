@@ -1,3 +1,7 @@
+/*
+  This is the core file for disnode. it brings all of the other library files into one and allows anything referencing
+  disnode to call each file
+*/
 var CommandHandler = require("./CommandHandler.js").CommandHandler;
 module.exports.CommandHandler = CommandHandler;
 
