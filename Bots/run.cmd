@@ -1,0 +1,2 @@
+node FireBot.js
+pause

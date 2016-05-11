@@ -19,3 +19,6 @@ module.exports.YoutubeManager = YoutubeManager;
 
 var Wolfram = require("./Wolfram.js").Wolfram;
 module.exports.Wolfram = Wolfram;
+
+var MiniGameComp = require("./MiniGameComp.js").MiniGameComp;
+module.exports.MiniGameComp = MiniGameComp;
