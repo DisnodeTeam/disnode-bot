@@ -46,6 +46,7 @@ var Commands = [
 	{cmd: "list",run: cmdListAudio,desc: "List All Audio Clips",usage:commandPrefix+"list"},
 	{cmd: "add",run: cmdADD,desc: "Shows the Oauth2 link",usage:commandPrefix+"add"},
 	{cmd: "game",run: cmdGAME,desc: "Set the bot's current game",usage:commandPrefix+"game [game] only FireGamer3 allowed"},
+  {cmd: "spam",run: cmdSPAM,desc: "Grabs the attention of the specified user",usage:commandPrefix+"spam @mention_someone (FireGamer3)"},
   {cmd: "fg",run: cmdFG,desc: "FireBot Game (mini game)",usage:commandPrefix+"fg"},
 ];
 var CommandHandler = new Disnode.CommandHandler(commandPrefix, Commands);
@@ -76,8 +77,8 @@ var OnVoiceLeave = function(channel, user){
 	VoiceManager.OnVoiceLeave(channel, user);
 }
 
-function cmdTest(msg){
-	bot.sendMessage(msg.channel, "``` Test: " + bot.voiceConnections + "  ```");
+function cmdTest(msg, parms){
+	bot.sendMessage(msg.channel, "``` Test: with ("+ parms.length +") Parms, they are:" + parms + " ```");
 
 }
 function cmdDC(msg, parms){
@@ -229,12 +230,25 @@ function cmdADD(msg) {
 	bot.sendMessage(msg.channel, "Here, " + msg.author + " this is the link to add me to your server! https://discordapp.com/oauth2/authorize?&client_id=169998277847023617&scope=bot&permissions=0");
 }
 function cmdGAME(msg,parms) {
-		if (msg.author.name =="FireGamer3"){
+	if (msg.author.name =="FireGamer3"){
 		bot.sendMessage(msg.channel, "``` Setting game to:  " + parms[0] + "```");
 		bot.setPlayingGame(parms[0], function(error){});
 	}else {
 		bot.sendMessage(msg.channel, "I can't let you do that! " + msg.author);
 	}
+}
+function cmdSPAM(msg, parms){
+  if (msg.author.name =="FireGamer3"){
+    if(parms[0]){
+      for(var i = 0; i <= 10; i++){
+        bot.sendMessage(msg.channel, "HEY! " + parms[0] + " " + msg.author + " Wanted your attention!");
+      }
+    }else {
+      bot.sendMessage(msg.channel, "no Parms!");
+    }
+  }else {
+    bot.sendMessage(msg.channel, "I can't let you do that! " + msg.author);
+  }
 }
 function cmdFG(msg,parms){
   var f = false;
@@ -249,14 +263,14 @@ function cmdFG(msg,parms){
   });
   if(!f){
     bot.sendMessage(msg.channel, "``` Adding to UserDB:\n id: " + msg.author.id + "\n Cash: $" + 1000 + "\n XP: " + 0 + "\n LV:" + 1 + "\n HP:" + 10 + "\n Attack:" + 1 + " ```");
-    MiniGame.AddUser(msg.author.id,1000,0,1,10,1, function cb(callback){
+    MiniGame.AddUser(msg.author.id,msg.author.name,1000,0,1,10,1, function cb(callback){
       UserDB.push(callback);
       console.dir(UserDB);
     });
   }else if(f){
     if(!parms[0]){
       var lvup = (10 * UserDB[index].lvl) - UserDB[index].exp;
-      bot.sendMessage(msg.channel, "``` You were found in UserDB:\n id: " + UserDB[index].id + "\n Cash: $" + UserDB[index].cash + "\n XP: " + UserDB[index].exp + "\n Xp to next LV: " + lvup + "\n LV:" + UserDB[index].lvl + "\n HP:" + UserDB[index].hp + "\n Attack:" + UserDB[index].atk + " ```");
+      bot.sendMessage(msg.channel, "``` You were found in UserDB:\n id: " + UserDB[index].id + "\n Friendly Name: " + UserDB[index].Username + "\n Cash: $" + UserDB[index].cash + "\n XP: " + UserDB[index].exp + "\n Xp to next LV: " + lvup + "\n LV:" + UserDB[index].lvl + "\n HP:" + UserDB[index].hp + "\n Attack:" + UserDB[index].atk + " ```");
     }else if(parms[0] == "fight"){
       bot.sendMessage(msg.channel, "``` Fights will come soon ```");
     }
