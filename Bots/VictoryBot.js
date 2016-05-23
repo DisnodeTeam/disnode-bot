@@ -44,13 +44,15 @@ function StartBot(){
   bot.on("message", OnBotMessage);
   bot.on('voiceJoin', OnVoiceJoin);
   bot.on('voiceLeave', OnVoiceLeave);
-
+  bot.on('error', error);
 }
 
 var OnBotReady = function(){
   console.log("[VictoryBot] Ready!");
 }
-
+var error = function(errorobj){
+  console.log("[VictoryBot] :" + errorobj);
+}
 var OnBotMessage = function(msg){
   console.log("[VictoryBot] Recieved Msg!");
   CommandHandler.RunMessage(msg);

@@ -3,6 +3,7 @@ var Discord = require("Discord.js");
 var fs = require('fs');
 var jsf = require('jsonfile');
 var walk = require('walk')
+var ytStream = require('youtube-audio-stream')
 var YoutubeMp3Downloader = require('youtube-mp3-downloader');
 
 var MoneyTick;
@@ -57,10 +58,13 @@ function StartBot(){
 	bot.on("message", OnBotMessage);
 	bot.on('voiceJoin', OnVoiceJoin);
 	bot.on('voiceLeave', OnVoiceLeave);
+  bot.on('error', error);
 
   UserDB = jsf.readFileSync("UserDB.json");
 }
-
+var error = function(errorobj){
+  console.log("[FB - Error] :" + errorobj);
+}
 var OnBotReady = function(){
 	console.log("[FB - General] Ready");
 }
@@ -117,20 +121,34 @@ function cmdPLAY(msg, parms){
     }
   });
   if(found){
-    if(parms[1]){
-        bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
-        AudioPlayer.playFile(path, parms, bot, id, function cb(text){
-            if(text === "loud"){
-              bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
-            }
+    if(parms[0] == "yt"){
+      if(parms[2]){
+        bot.sendMessage(msg.channel, "``` Playing Stream: " + parms[1] + "| \nThis is a test command please DO NOT USE #stop as it will crash FireBot ```");
+        AudioPlayer.playStream(ytStream, parms, bot, id, function cb(text){
+          if(text === "loud"){
+            bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
+          }
         });
+      }else {
+        bot.sendMessage(msg.channel, "``` Playing Stream: " + parms[1] + "| \nThis is a test command please DO NOT USE #stop as it will crash FireBot ```");
+        AudioPlayer.playStream(ytStream, parms, bot, id, function cb(text){});
+      }
     }else {
-      bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
-      AudioPlayer.playFile(path, parms, bot, id, function cb(text){});
+      if(parms[1]){
+          bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
+          AudioPlayer.playFile(path, parms, bot, id, function cb(text){
+              if(text === "loud"){
+                bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
+              }
+          });
+      }else {
+        bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
+        AudioPlayer.playFile(path, parms, bot, id, function cb(text){});
+      }
     }
-  }else{
-    bot.sendMessage(msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
-  }
+    }else{
+      bot.sendMessage(msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
+    }
 }
 function cmdJV(msg, parms){
 	if (msg.author.voiceChannel){
@@ -146,7 +164,7 @@ function cmdLV(msg){
 	if (msg.author.voiceChannel){
 		id = msg.author.voiceChannel;
 		VoiceConn.forEach(function(value){
-				if (value = id){
+				if (value == id){
 					VoiceManager.LeaveChannel(id);
 					VoiceConn.splice(VoiceConn.indexOf(id), 1);
 					bot.sendMessage(msg.channel, "``` left the channel you are in! [Debug] " + VoiceConn +"```");
