@@ -26,7 +26,7 @@ var Commands = [
   {cmd: "play",      run: cmdPlay,       desc: "Play Audio Clip",       usage:commandPrefix+"play [Clip Name]"},
   {cmd: "stop",      run: cmdStop,       desc: "Stop Audio Clip",       usage:commandPrefix+"stop"},
   {cmd: "list",      run: cmdListAudio,  desc: "List All Audio Clips",  usage:commandPrefix+"list"},
-  {cmd: "setbot",      run: cmdSetChannel,  desc: "Set Bot Text Channel",  usage:commandPrefix+"list"},
+  {cmd: "setbot",      run: cmdSetChannel,  desc: "Set Bot Text Channel",  usage:commandPrefix+"setbot"},
   {cmd: "createPlaylist",      run: cmdNewPlaylist,  desc: "Creates New Playlist",  usage:commandPrefix+"createPlayList [name] [anyoneEdit]"},
   {cmd:"wa", 		run: cmdWA,			desc: "Pulls Information from Wolfram Alpha",	usage:commandPrefix+"wa [option1 option2] [Options: int (e.g. 1,2,3) or " + wimageid + " for imgaes]"},
 ];

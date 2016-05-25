@@ -200,14 +200,32 @@ function cmdDownloadYT(msg) {
 	ytManager.Download(link, file);
 }
 function cmdListAudio(msg,parms){
-	var SendString = "``` === AUDIO CLIPS === \n";
-	AudioPlayer.listAll(walk, path, function(name){
-		SendString = SendString + "-" + commandPrefix + name+ "\n";
-		console.log(name);
-	}, function(){
-		SendString = SendString + "```";
-		bot.sendMessage(msg.channel, SendString);
-	});
+  var Page = 1;
+  if(parms[0]){
+    Page = parseInt(parms[0]);
+  }
+
+
+  var ResultsPerPage = 15;
+  var Start = (Page * ResultsPerPage) - ResultsPerPage;
+  var CurrentIndex = 0;
+
+  var SendString = "``` === AUDIO CLIPS (Page: "+Page+")=== \n";
+  AudioPlayer.listAll(walk, "../Audio/", function(name){
+    CurrentIndex++;
+    if(CurrentIndex >= Start)
+    {
+      if(CurrentIndex < Start + ResultsPerPage)
+      {
+        SendString = SendString + "-"+name+ "\n";
+      }
+    }
+
+  }, function(){
+    SendString = SendString + "```";
+    bot.sendMessage(msg.channel, SendString);
+  });
+
 }
 function cmdStop(msg, parms){
   var found = false;
