@@ -2,6 +2,7 @@ var Disnode = require("../DisnodeLib/Disnode.js");
 var Discord = require("Discord.js");
 var YoutubeMp3Downloader = require('youtube-mp3-downloader');
 var wimageid = "img";
+var jsf = require('jsonfile');
 var wolframapi = require('wolfram-alpha').createClient("L7GEPP-V87J3T9WL6");
 var fs = require('fs');
   var walk = require('walk')
@@ -13,6 +14,7 @@ var BotChat;
 var commandPrefix = "!";
 var VoiceManager= new Disnode.VoiceManager(bot);
 var wolfram= new Disnode.Wolfram(wolframapi);
+var PlaylistManager = new Disnode.PlaylistManager(bot,jsf,"Playlist.json");
 var Commands = [
   {cmd: "test",      run: cmdTest,       desc: "Test Command"},
   {cmd: "joinVoice", run: joinVoice,     desc: "Join Voice",            usage:commandPrefix+"joinVoice [Voice Channel Name ('-' instead of spaces.)]"},
@@ -25,11 +27,10 @@ var Commands = [
   {cmd: "stop",      run: cmdStop,       desc: "Stop Audio Clip",       usage:commandPrefix+"stop"},
   {cmd: "list",      run: cmdListAudio,  desc: "List All Audio Clips",  usage:commandPrefix+"list"},
   {cmd: "setbot",      run: cmdSetChannel,  desc: "Set Bot Text Channel",  usage:commandPrefix+"list"},
-  {cmd:"wold", 		run: cmdWA,			desc: "Pulls Information from Wolfram Alpha",	usage:commandPrefix+"wa [option1 option2] [Options: int (e.g. 1,2,3) or " + wimageid + " for imgaes]"},
+  {cmd: "createPlaylist",      run: cmdNewPlaylist,  desc: "Creates New Playlist",  usage:commandPrefix+"createPlayList [name] [anyoneEdit]"},
+  {cmd:"wa", 		run: cmdWA,			desc: "Pulls Information from Wolfram Alpha",	usage:commandPrefix+"wa [option1 option2] [Options: int (e.g. 1,2,3) or " + wimageid + " for imgaes]"},
 ];
 
-var CommandHandler = new Disnode.CommandHandler(commandPrefix, Commands);
-var AudioPlayer= new Disnode.AudioPlayer(bot, fs);
 var YD = new YoutubeMp3Downloader({
   "ffmpegPath": "../libmeg/bin/ffmpeg.exe", // Where is the FFmpeg binary located?
   "outputPath": "../audio/", // Where should the downloaded and encoded files be stored?
@@ -37,6 +38,11 @@ var YD = new YoutubeMp3Downloader({
   "queueParallelism": 2, // How many parallel downloads/encodes should be started?
   "progressTimeout": 1000 // How long should be the interval of the progress reports
 });
+
+
+var CommandHandler = new Disnode.CommandHandler(commandPrefix, Commands);
+var AudioPlayer= new Disnode.AudioPlayer(bot, fs);
+
 
 var ytManager = new Disnode.YoutubeManager(YD);
 
@@ -51,6 +57,7 @@ function StartBot(){
 
 var OnBotReady = function(){
   console.log("[VictoryBot] Ready!");
+  PlaylistManager.loadPlaylists();
 }
 var error = function(errorobj){
   console.log("[VictoryBot] :" + errorobj);
@@ -255,5 +262,29 @@ function cmdStop(msg, parms){
 function cmdSetChannel(msg){
   BotChat = msg.channel;
   bot.sendMessage(msg.channel, "```Setting Bot Text Channel to This```")
+}
+function cmdNewPlaylist(msg,parms) {
+  var name = parms[0];
+  if(!name)
+  {
+    bot.sendMessage(msg.channel, "```NO NAME ENTERED!!! ```");
+  }
+  var anyoneEdit;
+  if(parms[1])
+  {
+    if(Boolean(parms[1]))
+    {
+      anyoneEdit = Boolean(parms[1]);
+    }
+    else{
+      bot.sendMessage(msg.channel, "```ENTER BOOL ```");
+    }
+  }
+  else{
+    anyoneEdit = true;
+    bot.sendMessage(msg.channel, "```ANYONE CAN EDIT!!! ```");
+  }
+  PlaylistManager.newPlayList(name, anyoneEdit, msg.author);
+
 }
 StartBot();

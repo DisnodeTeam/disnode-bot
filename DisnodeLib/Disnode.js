@@ -22,3 +22,7 @@ module.exports.Wolfram = Wolfram;
 
 var MiniGameComp = require("./MiniGameComp.js").MiniGameComp;
 module.exports.MiniGameComp = MiniGameComp;
+
+
+var PlaylistManager = require("./PlaylistManager.js").PlaylistManager;
+module.exports.PlaylistManager = PlaylistManager;
