@@ -3,7 +3,6 @@ var Discord = require("Discord.js");
 var fs = require('fs');
 var jsf = require('jsonfile');
 var walk = require('walk')
-var ytStream = require('youtube-audio-stream')
 var YoutubeMp3Downloader = require('youtube-mp3-downloader');
 
 var MoneyTick;
@@ -101,7 +100,7 @@ function cmdHelp(msg){
 	var SendString = "``` === HELP === \n";
 	Disnode.CommonCommands.Help(Commands,msg,[],function(cmd,desc,use){
 		SendString = SendString + "-"+commandPrefix+cmd+" : "+desc+" - " + use + "\n";
-		SendString = SendString + " ---------------------------- \n";
+		SendString = SendString + "\n";
 	});
 	SendString = SendString + "```";
 	bot.sendMessage(msg.channel, SendString);
@@ -121,19 +120,6 @@ function cmdPLAY(msg, parms){
     }
   });
   if(found){
-    if(parms[0] == "yt"){
-      if(parms[2]){
-        bot.sendMessage(msg.channel, "``` Playing Stream: " + parms[1] + "| \nThis is a test command please DO NOT USE #stop as it will crash FireBot ```");
-        AudioPlayer.playStream(ytStream, parms, bot, id, function cb(text){
-          if(text === "loud"){
-            bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
-          }
-        });
-      }else {
-        bot.sendMessage(msg.channel, "``` Playing Stream: " + parms[1] + "| \nThis is a test command please DO NOT USE #stop as it will crash FireBot ```");
-        AudioPlayer.playStream(ytStream, parms, bot, id, function cb(text){});
-      }
-    }else {
       if(parms[1]){
           bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
           AudioPlayer.playFile(path, parms, bot, id, function cb(text){
@@ -145,7 +131,6 @@ function cmdPLAY(msg, parms){
         bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
         AudioPlayer.playFile(path, parms, bot, id, function cb(text){});
       }
-    }
     }else{
       bot.sendMessage(msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
     }
