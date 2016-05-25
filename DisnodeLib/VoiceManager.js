@@ -63,8 +63,8 @@ class VoiceManager {
     }
   }
 
-  JoinChannelWithId(id){
-    this.bot.joinVoiceChannel(id);
+  JoinChannelWithId(id,cb){
+    this.bot.joinVoiceChannel(id,cb);
   }
 
   LeaveChannel(id){

@@ -5,6 +5,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		this.fs = fs;
 	}
 	playFile(path, parms, bot, id, cb){ //Plays an audio file
+		console.log("[AudioPlayer] Playing Audio File");
 		/*
 			path is the directory where audio files are stored
 			parms is the auto filtered paramaters from the message
@@ -16,7 +17,9 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		// sets up the variable and verify the voiceConnection it needs to use
 		this.findConection(bot, id, function cb(c){
 			connection = c; //verified connection is sent back in the callback
+			console.log("FOUND!?!?");
 		});
+
 		console.log(path + parms[0] + ".mp3"); // Console logs the full path to the audio file
 		// START OF VOLUME CHECKING
 		var volume = 0.8; //Default Volume

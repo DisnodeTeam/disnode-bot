@@ -9,6 +9,7 @@ var bot = new Discord.Client();
 var token = "MTcwMDIwODA3MTk4NjM4MDgw.CfdSKQ.3mA4PpT_6OhNQTt4Pis0pWtlZvk";
 var name = "";
 var avatar = "";
+var BotChat;
 var commandPrefix = "!";
 var VoiceManager= new Disnode.VoiceManager(bot);
 var wolfram= new Disnode.Wolfram(wolframapi);
@@ -23,6 +24,7 @@ var Commands = [
   {cmd: "play",      run: cmdPlay,       desc: "Play Audio Clip",       usage:commandPrefix+"play [Clip Name]"},
   {cmd: "stop",      run: cmdStop,       desc: "Stop Audio Clip",       usage:commandPrefix+"stop"},
   {cmd: "list",      run: cmdListAudio,  desc: "List All Audio Clips",  usage:commandPrefix+"list"},
+  {cmd: "setbot",      run: cmdSetChannel,  desc: "Set Bot Text Channel",  usage:commandPrefix+"list"},
   {cmd:"wold", 		run: cmdWA,			desc: "Pulls Information from Wolfram Alpha",	usage:commandPrefix+"wa [option1 option2] [Options: int (e.g. 1,2,3) or " + wimageid + " for imgaes]"},
 ];
 
@@ -59,6 +61,12 @@ var OnBotMessage = function(msg){
 }
 
 var OnVoiceJoin = function(channel, user){
+  if(user.username == 'VictoryForPhil')
+  {
+    bot.sendMessage(BotChat,"!joinme VictoryForPhil");
+    bot.sendMessage(BotChat,"!play PhilsHere");
+
+  }
   VoiceManager.OnVoiceJoin(channel, user);
 }
 
@@ -84,15 +92,26 @@ function cmdWA(msg, parms){
 }
 
 
-function cmdJoinMe(msg){
-  for (var i = 0; i < msg.channel.server.members.length; i++) {
+function cmdJoinMe(msg, parms){
+  if(parms[0])
+  {
+    for (var i = 0; i < msg.channel.server.members.length; i++) {
+      var user = msg.channel.server.members[i];
+      if(user.username == parms[0]){
+        if(user.voiceChannel){
+          VoiceManager.JoinChannelWithId(user.voiceChannel);
+        }
+      }
+    }
+  }else{
+    for (var i = 0; i < msg.channel.server.members.length; i++) {
     var user = msg.channel.server.members[i];
     if(user.username == msg.author.username){
       if(user.voiceChannel){
         VoiceManager.JoinChannelWithId(user.voiceChannel);
       }
     }
-  }
+  }}
 }
 
 function cmdUnFollow(msg){
@@ -231,5 +250,10 @@ function cmdStop(msg, parms){
   } else {
     bot.sendMessage(msg.channel, "``` You must be inside a channel that the bot is in to stop playback ```");
   }
+}
+
+function cmdSetChannel(msg){
+  BotChat = msg.channel;
+  bot.sendMessage(msg.channel, "```Setting Bot Text Channel to This```")
 }
 StartBot();
