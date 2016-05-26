@@ -5,6 +5,7 @@ var jsf = require('jsonfile');
 var walk = require('walk')
 var YoutubeMp3Downloader = require('youtube-mp3-downloader');
 
+var BotChat = "185184873470754816";
 var MoneyTick;
 var AutoSave;
 var expTick;
@@ -48,6 +49,7 @@ var Commands = [
 	{cmd: "game",run: cmdGAME,desc: "Set the bot's current game",usage:commandPrefix+"game [game] only FireGamer3 allowed"},
   {cmd: "spam",run: cmdSPAM,desc: "Grabs the attention of the specified user",usage:commandPrefix+"spam @mention_someone (FireGamer3)"},
   {cmd: "fg",run: cmdFG,desc: "FireBot Game (mini game)",usage:commandPrefix+"fg"},
+  {cmd: "bc",run: cmdBC,desc: "Sets BotChat",usage:commandPrefix+"bc"},
 ];
 var CommandHandler = new Disnode.CommandHandler(commandPrefix, Commands);
 
@@ -69,10 +71,28 @@ var OnBotReady = function(){
 }
 var OnBotMessage = function(msg){
 	console.log("[FB - MSG] " + msg.content);
-	CommandHandler.RunMessage(msg);
+  if(msg.author.name == "FireBot"){
+    if(BotChat != null){
+      if(msg.channel.id == BotChat){
+        CommandHandler.RunMessage(msg);
+      }
+    }
+  }else {
+    CommandHandler.RunMessage(msg);
+  }
 }
 var OnVoiceJoin = function(channel, user){
 	console.log("[FB - Voice] User: " + user.name + " joined the voice channel: " + channel);
+  if(user.username == "FireGamer3" && BotChat != null){
+    id = user.voiceChannel;
+		VoiceManager.JoinChannelWithId(id);
+    setTimeout(function(){
+      bot.sendMessage(BotChat, "#play FireJoin 1.0")
+    }, 500);
+    setTimeout(function(){
+      VoiceManager.LeaveChannel(id);
+    }, 12500);
+  }
 	VoiceManager.OnVoiceJoin(channel, user);
 }
 var OnVoiceLeave = function(channel, user){
@@ -296,6 +316,10 @@ function cmdFG(msg,parms){
       bot.sendMessage(msg.channel, "``` Fights will come soon ```");
     }
   }
+}
+function cmdBC(msg,parms){
+  BotChat = msg.channel;
+  bot.sendMessage(msg.channel, "```Setting Bot Text Channel to This```")
 }
 StartBot();
 var SetupInts = function (){
