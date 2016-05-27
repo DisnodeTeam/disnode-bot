@@ -3,7 +3,7 @@ var Discord = require("Discord.js");
 var YoutubeMp3Downloader = require('youtube-mp3-downloader');
 var wimageid = "img";
 var jsf = require('jsonfile');
-var wolframapi = require('wolfram-alpha').createClient("L7GEPP-GTU279TUK8");
+var wolframapi = require('wolfram-alpha').createClient("");
 var Cleverbot = require('cleverbot-node')
 var CBot = new Cleverbot;
 var isCleverActive = false;
@@ -11,7 +11,7 @@ var cleverChannelID = "";
 var fs = require('fs');
   var walk = require('walk')
 var bot = new Discord.Client();
-var token = "MTcwMDIwODA3MTk4NjM4MDgw.CilHZg.3L8earmLjfxI8R1JDHh7G2lhXno";
+var token = "";
 var name = "";
 var avatar = "";
 var BotChat;
