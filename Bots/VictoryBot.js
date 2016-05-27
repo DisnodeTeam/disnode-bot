@@ -15,6 +15,13 @@ var commandPrefix = "!";
 var VoiceManager= new Disnode.VoiceManager(bot);
 var wolfram= new Disnode.Wolfram(wolframapi);
 var PlaylistManager = new Disnode.PlaylistManager(bot,jsf,"Playlist.json");
+
+var Cleverbot = require('cleverbot-node')
+var CBot = new Cleverbot;
+var isCleverActive = false;
+var cleverChannelID = "";
+Cleverbot.prepare(function(){});
+
 var Commands = [
   {cmd: "test",      run: cmdTest,       desc: "Test Command"},
   {cmd: "joinVoice", run: joinVoice,     desc: "Join Voice",            usage:commandPrefix+"joinVoice [Voice Channel Name ('-' instead of spaces.)]"},
@@ -29,6 +36,7 @@ var Commands = [
   {cmd: "setbot",      run: cmdSetChannel,  desc: "Set Bot Text Channel",  usage:commandPrefix+"setbot"},
   {cmd: "createPlaylist",      run: cmdNewPlaylist,  desc: "Creates New Playlist",  usage:commandPrefix+"createPlayList [name] [anyoneEdit]"},
   {cmd:"wa", 		run: cmdWA,			desc: "Pulls Information from Wolfram Alpha",	usage:commandPrefix+"wa [option1 option2] [Options: int (e.g. 1,2,3) or " + wimageid + " for imgaes]"},
+  {cmd: "clever",run: cmdClever,desc: "Starts and ends a cleverbot convo.",usage:commandPrefix+"clever"},
 ];
 
 var YD = new YoutubeMp3Downloader({
@@ -63,6 +71,14 @@ var error = function(errorobj){
   console.log("[VictoryBot] :" + errorobj);
 }
 var OnBotMessage = function(msg){
+  if(msg.author.name != "Victory Bot"){
+    if(isCleverActive && msg.channel.id == cleverChannelID){
+      CleverManager.sendMsg(msg.content,function callB(reply){
+        bot.sendMessage(msg.channel, reply);
+        console.log("[VB - Cleverbot] " + reply);
+      });
+    }
+  }
   console.log("[VictoryBot] Recieved Msg!");
   CommandHandler.RunMessage(msg);
 }
@@ -286,5 +302,17 @@ function cmdNewPlaylist(msg,parms) {
   }
   PlaylistManager.newPlayList(name, anyoneEdit, msg.author);
 
+}
+function cmdClever(msg,parms){
+  if(isCleverActive){
+    isCleverActive = false;
+    cleverChannelID = "";
+    bot.sendMessage(msg.channel, "```Cleverbot is no longer active in this channel```")
+  }else {
+    isCleverActive = true;
+    cleverChannelID = msg.channel.id;
+    bot.sendMessage(msg.channel, "```Cleverbot is now active in this channel Say stuff and Cleverbot will reply```")
+
+  }
 }
 StartBot();

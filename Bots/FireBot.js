@@ -6,6 +6,7 @@ var walk = require('walk')
 var YoutubeMp3Downloader = require('youtube-mp3-downloader');
 
 var BotChat = "185184873470754816";
+var doAudioPlay = false;
 var MoneyTick;
 var AutoSave;
 var expTick;
@@ -83,7 +84,7 @@ var OnBotMessage = function(msg){
 }
 var OnVoiceJoin = function(channel, user){
 	console.log("[FB - Voice] User: " + user.name + " joined the voice channel: " + channel);
-  if(user.username == "FireGamer3" && BotChat != null){
+  if(user.username == "FireGamer3" && BotChat != null && doAudioPlay){
     id = user.voiceChannel;
 		VoiceManager.JoinChannelWithId(id);
     setTimeout(function(){
@@ -92,6 +93,16 @@ var OnVoiceJoin = function(channel, user){
     setTimeout(function(){
       VoiceManager.LeaveChannel(id);
     }, 12500);
+  }
+  if(user.username == "SDC" && BotChat != null && doAudioPlay){
+    id = user.voiceChannel;
+		VoiceManager.JoinChannelWithId(id);
+    setTimeout(function(){
+      bot.sendMessage(BotChat, "#play SDJoin 1.0")
+    }, 500);
+    setTimeout(function(){
+      VoiceManager.LeaveChannel(id);
+    }, 10500);
   }
 	VoiceManager.OnVoiceJoin(channel, user);
 }
@@ -318,8 +329,15 @@ function cmdFG(msg,parms){
   }
 }
 function cmdBC(msg,parms){
-  BotChat = msg.channel;
-  bot.sendMessage(msg.channel, "```Setting Bot Text Channel to This```")
+  if(msg.author.name == "FireGamer3"){
+    if(doAudioPlay){
+      doAudioPlay = false;
+      bot.sendMessage(msg.channel, "```Voice Channel Join message Disabled ```")
+    }else{
+      doAudioPlay = true;
+      bot.sendMessage(msg.channel, "```Voice Channel Join message Enabled ```")
+    }
+  }
 }
 StartBot();
 var SetupInts = function (){
