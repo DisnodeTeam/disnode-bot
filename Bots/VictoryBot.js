@@ -3,11 +3,11 @@ var Discord = require("Discord.js");
 var YoutubeMp3Downloader = require('youtube-mp3-downloader');
 var wimageid = "img";
 var jsf = require('jsonfile');
-var wolframapi = require('wolfram-alpha').createClient("L7GEPP-V87J3T9WL6");
+var wolframapi = require('wolfram-alpha').createClient("NEW_KEY_NICE_TRY");
 var fs = require('fs');
   var walk = require('walk')
 var bot = new Discord.Client();
-var token = "MTcwMDIwODA3MTk4NjM4MDgw.CfdSKQ.3mA4PpT_6OhNQTt4Pis0pWtlZvk";
+var token = "NEW_KEY_NICE_TRY";
 var name = "";
 var avatar = "";
 var BotChat;
