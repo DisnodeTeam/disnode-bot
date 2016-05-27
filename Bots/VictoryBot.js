@@ -3,11 +3,15 @@ var Discord = require("Discord.js");
 var YoutubeMp3Downloader = require('youtube-mp3-downloader');
 var wimageid = "img";
 var jsf = require('jsonfile');
-var wolframapi = require('wolfram-alpha').createClient("NEW_KEY_NICE_TRY");
+var wolframapi = require('wolfram-alpha').createClient("L7GEPP-GTU279TUK8");
+var Cleverbot = require('cleverbot-node')
+var CBot = new Cleverbot;
+var isCleverActive = false;
+var cleverChannelID = "";
 var fs = require('fs');
   var walk = require('walk')
 var bot = new Discord.Client();
-var token = "NEW_KEY_NICE_TRY";
+var token = "MTcwMDIwODA3MTk4NjM4MDgw.CilHZg.3L8earmLjfxI8R1JDHh7G2lhXno";
 var name = "";
 var avatar = "";
 var BotChat;
@@ -15,11 +19,8 @@ var commandPrefix = "!";
 var VoiceManager= new Disnode.VoiceManager(bot);
 var wolfram= new Disnode.Wolfram(wolframapi);
 var PlaylistManager = new Disnode.PlaylistManager(bot,jsf,"Playlist.json");
+var CleverManager = new Disnode.CleverManager(CBot,Cleverbot);
 
-var Cleverbot = require('cleverbot-node')
-var CBot = new Cleverbot;
-var isCleverActive = false;
-var cleverChannelID = "";
 Cleverbot.prepare(function(){});
 
 var Commands = [
@@ -71,12 +72,15 @@ var error = function(errorobj){
   console.log("[VictoryBot] :" + errorobj);
 }
 var OnBotMessage = function(msg){
-  if(msg.author.name != "Victory Bot"){
-    if(isCleverActive && msg.channel.id == cleverChannelID){
+  if(msg.author.name == "Victory Bot"){
+    if(isCleverActive && msg.channel.id == "185614233168248833"){
+      setTimeout(function(){
       CleverManager.sendMsg(msg.content,function callB(reply){
-        bot.sendMessage(msg.channel, reply);
+
+          bot.sendMessage("185614233168248833", reply);
         console.log("[VB - Cleverbot] " + reply);
       });
+    },1500);
     }
   }
   console.log("[VictoryBot] Recieved Msg!");
@@ -311,7 +315,12 @@ function cmdClever(msg,parms){
   }else {
     isCleverActive = true;
     cleverChannelID = msg.channel.id;
-    bot.sendMessage(msg.channel, "```Cleverbot is now active in this channel Say stuff and Cleverbot will reply```")
+    if(parms[0] != null)
+    {
+      bot.sendMessage("185614233168248833", "```"+parms[0]+"```")
+    }else{
+      bot.sendMessage(msg.channel, "```Cleverbot is now active in this channel Say stuff and Cleverbot will reply```")
+    }
 
   }
 }
