@@ -317,7 +317,7 @@ function cmdClever(msg,parms){
     cleverChannelID = msg.channel.id;
     if(parms[0] != null)
     {
-      bot.sendMessage("185614233168248833", "```"+parms[0]+"```")
+      bot.sendMessage("185614233168248833", parms[0])
     }else{
       bot.sendMessage(msg.channel, "```Cleverbot is now active in this channel Say stuff and Cleverbot will reply```")
     }
