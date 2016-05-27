@@ -3,9 +3,9 @@ var Discord = require("Discord.js");
 var fs = require('fs');
 var jsf = require('jsonfile');
 var walk = require('walk')
-var ytStream = require('youtube-audio-stream')
 var YoutubeMp3Downloader = require('youtube-mp3-downloader');
 
+var BotChat = "185184873470754816";
 var MoneyTick;
 var AutoSave;
 var expTick;
@@ -49,6 +49,7 @@ var Commands = [
 	{cmd: "game",run: cmdGAME,desc: "Set the bot's current game",usage:commandPrefix+"game [game] only FireGamer3 allowed"},
   {cmd: "spam",run: cmdSPAM,desc: "Grabs the attention of the specified user",usage:commandPrefix+"spam @mention_someone (FireGamer3)"},
   {cmd: "fg",run: cmdFG,desc: "FireBot Game (mini game)",usage:commandPrefix+"fg"},
+  {cmd: "bc",run: cmdBC,desc: "Sets BotChat",usage:commandPrefix+"bc"},
 ];
 var CommandHandler = new Disnode.CommandHandler(commandPrefix, Commands);
 
@@ -70,10 +71,28 @@ var OnBotReady = function(){
 }
 var OnBotMessage = function(msg){
 	console.log("[FB - MSG] " + msg.content);
-	CommandHandler.RunMessage(msg);
+  if(msg.author.name == "FireBot"){
+    if(BotChat != null){
+      if(msg.channel.id == BotChat){
+        CommandHandler.RunMessage(msg);
+      }
+    }
+  }else {
+    CommandHandler.RunMessage(msg);
+  }
 }
 var OnVoiceJoin = function(channel, user){
 	console.log("[FB - Voice] User: " + user.name + " joined the voice channel: " + channel);
+  if(user.username == "FireGamer3" && BotChat != null){
+    id = user.voiceChannel;
+		VoiceManager.JoinChannelWithId(id);
+    setTimeout(function(){
+      bot.sendMessage(BotChat, "#play FireJoin 1.0")
+    }, 500);
+    setTimeout(function(){
+      VoiceManager.LeaveChannel(id);
+    }, 12500);
+  }
 	VoiceManager.OnVoiceJoin(channel, user);
 }
 var OnVoiceLeave = function(channel, user){
@@ -101,7 +120,7 @@ function cmdHelp(msg){
 	var SendString = "``` === HELP === \n";
 	Disnode.CommonCommands.Help(Commands,msg,[],function(cmd,desc,use){
 		SendString = SendString + "-"+commandPrefix+cmd+" : "+desc+" - " + use + "\n";
-		SendString = SendString + " ---------------------------- \n";
+		SendString = SendString + "\n";
 	});
 	SendString = SendString + "```";
 	bot.sendMessage(msg.channel, SendString);
@@ -121,19 +140,6 @@ function cmdPLAY(msg, parms){
     }
   });
   if(found){
-    if(parms[0] == "yt"){
-      if(parms[2]){
-        bot.sendMessage(msg.channel, "``` Playing Stream: " + parms[1] + "| \nThis is a test command please DO NOT USE #stop as it will crash FireBot ```");
-        AudioPlayer.playStream(ytStream, parms, bot, id, function cb(text){
-          if(text === "loud"){
-            bot.sendMessage(msg.channel, "``` Volume over threshold of 2! Remains default (0.8) ```");
-          }
-        });
-      }else {
-        bot.sendMessage(msg.channel, "``` Playing Stream: " + parms[1] + "| \nThis is a test command please DO NOT USE #stop as it will crash FireBot ```");
-        AudioPlayer.playStream(ytStream, parms, bot, id, function cb(text){});
-      }
-    }else {
       if(parms[1]){
           bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
           AudioPlayer.playFile(path, parms, bot, id, function cb(text){
@@ -145,7 +151,6 @@ function cmdPLAY(msg, parms){
         bot.sendMessage(msg.channel, "``` Playing File: " + parms[0] + ".mp3 ```");
         AudioPlayer.playFile(path, parms, bot, id, function cb(text){});
       }
-    }
     }else{
       bot.sendMessage(msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
     }
@@ -215,14 +220,32 @@ function cmdDownloadYT(msg) {
 	ytManager.Download(link, file);
 }
 function cmdListAudio(msg,parms){
-	var SendString = "``` === AUDIO CLIPS === \n";
-	AudioPlayer.listAll(walk, path, function(name){
-		SendString = SendString + "-" + commandPrefix + name+ "\n";
-		console.log(name);
-	}, function(){
-		SendString = SendString + "```";
-		bot.sendMessage(msg.channel, SendString);
-	});
+  var Page = 1;
+  if(parms[0]){
+    Page = parseInt(parms[0]);
+  }
+
+
+  var ResultsPerPage = 15;
+  var Start = (Page * ResultsPerPage) - ResultsPerPage;
+  var CurrentIndex = 0;
+
+  var SendString = "``` === AUDIO CLIPS (Page: "+Page+")=== \n";
+  AudioPlayer.listAll(walk, "../Audio/", function(name){
+    CurrentIndex++;
+    if(CurrentIndex >= Start)
+    {
+      if(CurrentIndex < Start + ResultsPerPage)
+      {
+        SendString = SendString + "-"+name+ "\n";
+      }
+    }
+
+  }, function(){
+    SendString = SendString + "```";
+    bot.sendMessage(msg.channel, SendString);
+  });
+
 }
 function cmdStop(msg, parms){
   var found = false;
@@ -293,6 +316,10 @@ function cmdFG(msg,parms){
       bot.sendMessage(msg.channel, "``` Fights will come soon ```");
     }
   }
+}
+function cmdBC(msg,parms){
+  BotChat = msg.channel;
+  bot.sendMessage(msg.channel, "```Setting Bot Text Channel to This```")
 }
 StartBot();
 var SetupInts = function (){
