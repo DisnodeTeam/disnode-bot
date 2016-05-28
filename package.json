@@ -1,0 +1,22 @@
+{
+  "name": "disnode",
+  "version": "1.0.0",
+  "description": "",
+  "main": "DiscordBot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AtecStudios/Disnode.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AtecStudios/Disnode/issues"
+  },
+  "homepage": "https://github.com/AtecStudios/Disnode#readme",
+  "dependencies": {
+    "discord.js": "^7.0.0"
+  }
+}
