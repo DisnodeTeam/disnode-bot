@@ -49,10 +49,7 @@ class DiscordBot extends EventEmitter{
     }
     this.emit("Bot_RawMessage", msg);
   }
-  botMessage(parsedMsg){
-    this.emit("Bot_Message", parsedMsg);
-  }
-
+  
   enableCommandHandler(options){
     var self = this;
 
