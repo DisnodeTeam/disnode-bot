@@ -6,7 +6,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		this.path = path;
 		console.log("[AudioPlayer] Init Audio Player");
 	}
-	playFile(name, parms, id, cb){ //Plays an audio file
+	playFile(name, parms, defaultVolume, maxVolume, id, cb){ //Plays an audio file
 		var self = this;
 		console.log("[AudioPlayer] Playing Audio File");
 		/*
@@ -25,25 +25,25 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		var path = self.path + name;
 		console.log(path + parms[0] + ".mp3"); // Console logs the full path to the audio file
 		// START OF VOLUME CHECKING
-		var volume = 0.8; //Default Volume
+		var volume = defaultVolume; //Default Volume
 		connection.setVolume(volume); // sets the volume
 		if(parms[1]){ // If there is a second parm
 			if(parseFloat(parms[1])){ //can it be parsed to a float?
-				if(parseFloat(parms[1]) <= 3){ // checks to see if the float is less than then threshold
+				if(parseFloat(parms[1]) <= maxVolume){ // checks to see if the float is less than then threshold
 					volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
 					console.log("[AudioPlayer] Set volume:" + volume); // logs the volume change
 					connection.setVolume(volume); // actually sets the volume
 				}else{ // if the parsed float is over the threshold
-					console.log("[AudioPlay] Volume over threshold! Remains default");
+					console.log("[AudioPlayer] Volume over threshold! Remains default");
 					// Callback used for in execution for more info, loud is used as a keyword so the bot can use it's own message
 					cb("loud");
 				}
 			}else{ // if second parm not a float
-				console.log("[AudioPlay] Second Parms not Float");
+				console.log("[AudioPlayer] Second Parms not Float");
 			}
 		}
 		else{ // if there is no second parm at all
-			console.log("[AudioPlay] No Volume Parm");
+			console.log("[AudioPlayer] No Volume Parm");
 		}
 		// END OF VOLUME CHECK
 		connection.playFile(path + parms[0] + ".mp3", volume); // plays the file with the verified connection
@@ -88,7 +88,6 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 	findConection(id, cb){
 		// This function's job is to verify that the given id matches a voice connection and send what voiceConenction it uses through the callback
 		/*
-			bot is the discord.client aka the acual bot
 			id is the  voice id of the voice channel to stop audio playback on
 			cb is the callback used to send the verified connection object back to the function that needs it
 		*/

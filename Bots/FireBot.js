@@ -2,11 +2,11 @@ var DiscordBot = require("../DisnodeLib/DiscordBot.js");
 var bot = new DiscordBot("");
 
 bot.on("Bot_Ready", function(){
-    console.log('[VB - BotReady] Bot Ready.');
+    console.log('[FB - BotReady] Bot Ready.');
 });
 
 bot.on("Bot_Init", function () {
-  console.log("[VB - BotReady] Bot Init.");
+  console.log("[FB - BotReady] Bot Init.");
 
   bot.enableAudioPlayer({path: './Bots/Audio/', maxVolume:2.0});
 
@@ -19,10 +19,8 @@ bot.on("Bot_Init", function () {
   bot.addDefaultCommands();
 });
 
-
-
 bot.on("Bot_RawMessage", function(msg){
-  console.log("[VB - RawMessage] Recieved Raw msg: " + msg.content);
+  console.log("[FB - RawMessage] Recieved Raw msg: " + msg.content);
 });
 
 exports.Start = function () {
