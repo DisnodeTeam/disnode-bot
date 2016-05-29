@@ -3,6 +3,8 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 	constructor(bot, fs){
 		this.bot = bot;
 		this.fs = fs;
+
+		console.log("[AudioPlayer] Init Audio Player");
 	}
 	playFile(path, parms, bot, id, cb){ //Plays an audio file
 		console.log("[AudioPlayer] Playing Audio File");
@@ -104,4 +106,4 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 	}
 }
 
-module.exports.AudioPlayer = AudioPlayer;
+module.exports = AudioPlayer;
