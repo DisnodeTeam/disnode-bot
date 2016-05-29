@@ -49,7 +49,7 @@ class DiscordBot extends EventEmitter{
     }
     this.emit("Bot_RawMessage", msg);
   }
-  
+
   enableCommandHandler(options){
     var self = this;
 
@@ -77,6 +77,11 @@ class DiscordBot extends EventEmitter{
       desc:"Test Command that lists all params.",
       usage:self.command.prefix + "test [parms]"});
 
+    self.command.list.push({cmd:"play",
+      run: (msg) => this.cmdPlay(msg),
+      desc:"Test Command that lists all params.",
+      usage:self.command.prefix + "test [parms]"});
+
     self.command.handler.UpdateList(self.command.list);
   }
   // Enables Audio Player (Takes options obs)
@@ -96,16 +101,30 @@ class DiscordBot extends EventEmitter{
       _this.audioPlayer.path = options.path;
     }else{
       // Else set it to the default
-      _this.audioPlayer.path = "./Audio";
+      _this.audioPlayer.path = "./Audio/";
     }
 
     //Create Audio Player
-    _this.audioPlayer.player = new DisnodeAudioPlayer(_this.bot, FS);
+    _this.audioPlayer.player = new DisnodeAudioPlayer(_this.bot, FS, this.audioPlayer.path);
   }
 
   cmdTest(parsedMsg){
     var self = this;
     self.bot.sendMessage(parsedMsg.msg.channel, "TEST!!!!!!");
+  }
+
+  cmdPlayer(parsedMsg){
+    var self = this;
+    if(!self.audioPlayer && !self.audioPlayer.player){
+      self.bot.sendMessage(parsedMsg.channel, "``` Audio Player not Enabled! ```");
+      return;
+    }
+
+    var fileName = parsedMsg.params[0];
+    self.audioPlayer.playFile(fileName, parsedMsg.params,channelID,function(){
+
+    });
+
   }
 }
 module.exports = DiscordBot;

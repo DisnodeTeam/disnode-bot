@@ -1,12 +1,13 @@
 "use strict"
 class AudioPlayer { //Each of the Library files except Disnode.js are a class based file to keep it independent
-	constructor(bot, fs){
+	constructor(bot, fs,path){
 		this.bot = bot;
 		this.fs = fs;
-
+		this.path = path;
 		console.log("[AudioPlayer] Init Audio Player");
 	}
-	playFile(path, parms, id, cb){ //Plays an audio file
+	playFile(name, parms, id, cb){ //Plays an audio file
+		var self = this;
 		console.log("[AudioPlayer] Playing Audio File");
 		/*
 			path is the directory where audio files are stored
@@ -21,7 +22,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 			connection = c; //verified connection is sent back in the callback
 			console.log("FOUND!?!?");
 		});
-
+		var path = self.path + name;
 		console.log(path + parms[0] + ".mp3"); // Console logs the full path to the audio file
 		// START OF VOLUME CHECKING
 		var volume = 0.8; //Default Volume
