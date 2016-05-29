@@ -3,7 +3,7 @@ var bot = new DiscordBot("");
 
 bot.on("Bot_Ready", function(){
     console.log('[VB - BotReady] Bot Ready.');
-    bot.enableAudioPlayer({path: './Bots/Audio/'});
+    bot.enableAudioPlayer({path: './Bots/Audio/', maxVolume:2.0});
 
     var cmdList = [
       {cmd:"helloworld",run: test,desc: "Hello World Command",usage:"!"+"helloworld"},
@@ -18,17 +18,6 @@ bot.on("Bot_Ready", function(){
 
 bot.on("Bot_Init", function () {
   console.log("[VB - BotReady] Bot Init.");
-
-<<<<<<< HEAD
-  bot.enableAudioPlayer({path: './Bots/Audio/', maxVolume:2.0});
-
-  var cmdList = [
-    {cmd:"helloworld",run: test,desc: "Hello World Command",usage:"!"+"helloworld"},
-    {cmd: "help",run: test,desc: "List All Commands",usage:"!"+"help"},
-  ];
-=======
->>>>>>> origin/master
-
 });
 
 

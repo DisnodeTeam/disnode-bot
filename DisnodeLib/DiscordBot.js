@@ -4,14 +4,9 @@ const Discord = require( "discord.js");
 const FS = require('fs');
 
 const DisnodeAudioPlayer = require("./AudioPlayer.js");
-<<<<<<< HEAD
 const CommandHandler = require("./CommandHandler.js");
-const VoiceManager = require("./VoiceManager.js");
-=======
-const DisnodeCommandHandler = require("./CommandHandler.js");
 const DisnodeVoiceManager = require("./VoiceManager.js");
 
->>>>>>> origin/master
 
 class DiscordBot extends EventEmitter{
   constructor(key){
@@ -56,14 +51,6 @@ class DiscordBot extends EventEmitter{
     this.emit("Bot_RawMessage", msg);
   }
 
-  enableVoiceManager(){
-    var self = this;
-    if(!self.voice){
-      self.voice = {};
-    }
-    self.voice = new VoiceManager(self.bot);
-  }
-
   enableCommandHandler(options){
     var self = this;
 
@@ -77,7 +64,7 @@ class DiscordBot extends EventEmitter{
       self.command.list = [];
     }
 
-    this.command.handler = new DisnodeCommandHandler(options.prefix, self.command.list);
+    this.command.handler = new CommandHandler(options.prefix, self.command.list);
   }
 
   addDefaultCommands(){
@@ -90,6 +77,16 @@ class DiscordBot extends EventEmitter{
       run: (msg) => this.cmdTest(msg),
       desc:"Test Command that lists all params.",
       usage:self.command.prefix + "test [parms]"});
+
+    self.command.list.push({cmd:"jv",
+      run: (msg) => this.cmdJoinVoice(msg),
+      desc:"Joins the voice channel you are connected to.",
+      usage:self.command.prefix + "jv"});
+
+    self.command.list.push({cmd:"lv",
+      run: (msg) => this.cmdLeaveVoice(msg),
+      desc:"Leaves the voice channel you are connected to.",
+      usage:self.command.prefix + "lv"});
 
     self.command.list.push({cmd:"play",
       run: (msg) => this.cmdPlay(msg),
@@ -173,14 +170,14 @@ class DiscordBot extends EventEmitter{
       self.bot.sendMessage(parsedMsg.msg.channel, "``` Audio Player not Enabled! ```");
       return;
     }
-    if(!self.voice){
+    if(!self.voice && !self.voice.manager){
       self.bot.sendMessage(parsedMsg.msg.channel, "``` VoiceManager not Enabled! (VoiceManager is required for AudioPlayer) ```");
       return;
     }
 
     var found = false;
     var channelID;
-    self.voice.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+    self.voice.manager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
       channelID = returnID;
       if(channelID == 0){
         found = false;
@@ -191,19 +188,35 @@ class DiscordBot extends EventEmitter{
 
     var fileName = parsedMsg.params[0];
     if(found){
-      if(parsedMsg.params[1]){
-        self.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3, with a volume of " + parsedMsg.params[1] + " ```");
-        self.audioPlayer.playFile(fileName, parsedMsg.params, self.audioPlayer.defaultVolume,self.audioPlayer.maxVolume, channelID,function(text){
+        self.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3 ```");
+        self.audioPlayer.player.playFile(fileName, parsedMsg.params, self.audioPlayer.defaultVolume, self.audioPlayer.maxVolume, channelID,function(text){
           if(text === "loud"){
             self.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.audioPlayer.maxVolume + "! Remains default (" + self.audioPlayer.defaultVolume +") ```");
           }
         });
-      }else{
-        self.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3 ```");
-        self.audioPlayer.playFile(fileName, parsedMsg.params, self.audioPlayer.defaultVolume, self.audioPlayer.maxVolume, channelID,function(text){};
       }
     }else{
       self.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
+    }
+  }
+
+  cmdJoinVoice(parsedMsg){
+    var self = this;
+  	if(parsedMsg.msg.author.voiceChannel){
+  		id = parsedMsg.msg.author.voiceChannel;
+  		VoiceManager.JoinChannelWithId(id);
+  		self.bot.sendMessage(parsedMsg.msg.channel, "``` Joined the channel you are in! ```");
+  	}else {
+  		bot.sendMessage(parsedMsg.msg.channel, "``` You are not in a voice Channel ```");
+  	}
+
+  }
+  cmdLeaveVoice(parsedMsg){
+    var self = this;
+    if (parsedMsg.msg.author.voiceChannel){
+  		id = parsedMsg.msg.author.voiceChannel;
+      VoiceManager.LeaveChannel(id);
+      self.bot.sendMessage(parsedMsg.msg.channel, "``` Joined the channel you are in! ```");
     }
   }
 
