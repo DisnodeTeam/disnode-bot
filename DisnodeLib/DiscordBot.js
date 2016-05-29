@@ -13,11 +13,39 @@ class DiscordBot extends EventEmitter{
   }
 
   startBot(){
-    var _this = this;
+    var self = this;
 
     this.bot = new Discord.Client();
+
+
     this.bot.loginWithToken(this.key);
-    this.emit("BotReady");
+
+    this.bot.on("ready", () => this.botReady())
+    this.bot.on("message", (msg) => this.botRawMessage(msg));
+
+
+    this.botInit();
+
+  }
+
+  botInit()
+  {
+    var self = this;
+    this.emit("Bot_Init");
+
+  }
+
+  botReady(){
+    var self = this;
+    self.emit("Bot_Ready");
+    console.log("TESD");
+  }
+
+  botRawMessage(msg){
+    this.emit("Bot_RawMessage", msg);
+  }
+  botMessage(parsedMsg){
+    this.emit("Bot_Message", parsedMsg);
   }
 
   // Enables Audio Player (Takes options obs)

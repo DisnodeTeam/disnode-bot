@@ -1,11 +1,20 @@
 var DiscordBot = require("../DisnodeLib/DiscordBot.js");
-var bot = new DiscordBot("");
+
+bot.on("Bot_Ready", function(){
+    console.log('this happens asynchronously');
+});
+
+bot.on("Bot_Init", function () {
+  console.log("[VB - BotReady] Bot Init.");
+});
+
+
+
+bot.on("Bot_RawMessage", function(msg){
+  console.log("[VB - BotReady] Recieved Raw msg: " + msg.content);
+});
 
 exports.Start = function () {
   bot.startBot();
   bot.enableAudioPlayer({path: './Bots/Audio/'});
 };
-
-bot.on("BotReady", function(){
-  console.log("[VB - BotReady] Bot Ready!");
-});
