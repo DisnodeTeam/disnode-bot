@@ -4,8 +4,14 @@ const Discord = require( "discord.js");
 const FS = require('fs');
 
 const DisnodeAudioPlayer = require("./AudioPlayer.js");
+<<<<<<< HEAD
 const CommandHandler = require("./CommandHandler.js");
 const VoiceManager = require("./VoiceManager.js");
+=======
+const DisnodeCommandHandler = require("./CommandHandler.js");
+const DisnodeVoiceManager = require("./VoiceManager.js");
+
+>>>>>>> origin/master
 
 class DiscordBot extends EventEmitter{
   constructor(key){
@@ -40,7 +46,6 @@ class DiscordBot extends EventEmitter{
   botReady(){
     var self = this;
     self.emit("Bot_Ready");
-    console.log("TESD");
   }
 
   botRawMessage(msg){
@@ -72,7 +77,7 @@ class DiscordBot extends EventEmitter{
       self.command.list = [];
     }
 
-    this.command.handler = new CommandHandler(options.prefix, self.command.list);
+    this.command.handler = new DisnodeCommandHandler(options.prefix, self.command.list);
   }
 
   addDefaultCommands(){
@@ -90,6 +95,16 @@ class DiscordBot extends EventEmitter{
       run: (msg) => this.cmdPlay(msg),
       desc:"Plays an audio file.",
       usage:self.command.prefix + "play [filename] [volume]"});
+
+    self.command.list.push({cmd:"follow",
+      run: (msg) => this.cmdFollow(msg),
+      desc:"Test Command that lists all params.",
+      usage:self.command.prefix + "test [parms]"});
+
+    self.command.list.push({cmd:"unfollow",
+      run: (msg) => this.cmdUnfollow(msg),
+      desc:"Test Command that lists all params.",
+      usage:self.command.prefix + "test [parms]"});
 
     self.command.handler.UpdateList(self.command.list);
   }
@@ -131,6 +146,20 @@ class DiscordBot extends EventEmitter{
     }
     //Create Audio Player
     _this.audioPlayer.player = new DisnodeAudioPlayer(_this.bot, FS, this.audioPlayer.path);
+  }
+
+  enableVoiceManager(options){
+    var self = this;
+    if(!self.voice){
+      self.voice = {};
+    }
+    self.voice.manager = new DisnodeVoiceManager(self.bot);
+
+    if(options.voiceEvents){
+      self.voice.voiceEvents = true;
+      self.bot.on("voiceJoin", (c,u)=>self.voice.manager.OnVoiceJoin(c,u));
+      self.bot.on("voiceLeave", (c,u)=>self.voice.manager.OnVoiceLeave(c,u));
+    }
   }
 
   cmdTest(parsedMsg){
@@ -177,5 +206,38 @@ class DiscordBot extends EventEmitter{
       self.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
     }
   }
+
+  cmdFollow(parsedMsg){
+    var self = this;
+    if(self.voice && self.voice.manager){
+      if(self.voice.voiceEvents){
+        self.voice.manager.Follow(parsedMsg.msg.author);
+        console.log("[VoiceManager - CmdFollow ] Following: " + parsedMsg.msg.author.username);
+        self.bot.sendMessage(parsedMsg.msg.channel, "```Following: " + parsedMsg.msg.author.username+"```")
+      }else{
+        console.log("[VoiceManager - CmdFollow ] Voice events no enabled!");
+      }
+    }else{
+      console.log("[VoiceManager - CmdFollow ] No Manager set!");
+    }
+  }
+
+  cmdUnfollow(parsedMsg){
+    var self = this;
+    if(self.voice && self.voice.manager){
+      if(self.voice.voiceEvents){
+        self.voice.manager.Follow(parsedMsg.msg.author);
+        console.log("[VoiceManager - cmdUnfollow ] Unfollow: " + parsedMsg.msg.author.username);
+        self.bot.sendMessage(parsedMsg.msg.channel, "```Unfollow: " + parsedMsg.msg.author.username+"```")
+      }else{
+        console.log("[VoiceManager - cmdUnfollow ] Voice events no enabled!");
+      }
+    }else{
+      console.log("[VoiceManager - cmdUnfollow ] No Manager set!");
+    }
+  }
+
+
+
 }
 module.exports = DiscordBot;
