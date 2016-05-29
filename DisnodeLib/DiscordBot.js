@@ -4,6 +4,7 @@ const Discord = require( "discord.js");
 const FS = require('fs');
 
 const DisnodeAudioPlayer = require("./AudioPlayer.js");
+const CommandHandler = require("./CommandHandler.js");
 
 class DiscordBot extends EventEmitter{
   constructor(key){
@@ -42,12 +43,45 @@ class DiscordBot extends EventEmitter{
   }
 
   botRawMessage(msg){
+    var self = this;
+    if(self.command && self.command.handler){
+      self.command.handler.RunMessage(msg);
+    }
     this.emit("Bot_RawMessage", msg);
   }
   botMessage(parsedMsg){
     this.emit("Bot_Message", parsedMsg);
   }
 
+  enableCommandHandler(options){
+    var self = this;
+
+    if(!self.command){
+      self.command = {};
+    }
+
+    if(options.list){
+      self.command.list = options.list;
+    }else{
+      self.command.list = [];
+    }
+
+    this.command.handler = new CommandHandler(options.prefix, self.command.list);
+  }
+
+  addDefaultCommands(){
+    var self = this;
+    if(!self.command.list){
+      self.command.list = [];
+    }
+
+    self.command.list.push({cmd:"test",
+      run: (msg) => this.cmdTest(msg),
+      desc:"Test Command that lists all params.",
+      usage:self.command.prefix + "test [parms]"});
+
+    self.command.handler.UpdateList(self.command.list);
+  }
   // Enables Audio Player (Takes options obs)
   // Options For AudioPlayer
   // - path: Path of audio files
@@ -70,8 +104,11 @@ class DiscordBot extends EventEmitter{
 
     //Create Audio Player
     _this.audioPlayer.player = new DisnodeAudioPlayer(_this.bot, FS);
+  }
 
-
+  cmdTest(parsedMsg){
+    var self = this;
+    self.bot.sendMessage(parsedMsg.msg.channel, "TEST!!!!!!");
   }
 }
 module.exports = DiscordBot;

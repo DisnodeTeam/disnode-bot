@@ -10,8 +10,22 @@ class CommandHandler{
   constructor(prefix,list){
     this.prefix = prefix;
     this.list = list;
+
+    console.log("[CommandHandler] Init. ");
+    console.log("[CommandHandler] |--- Prefix: " + prefix);
+    for (var i = 0; i < list.length; i++) {
+      console.log("[CommandHandler] |--- Command: " + list[i].cmd);
+    }
   }
 
+  UpdateList(list)
+  {
+    console.log("[CommandHandler] Updating List. ");
+    for (var i = 0; i < list.length; i++) {
+      console.log("[CommandHandler] |--- Command: " + list[i].cmd);
+    }
+    this.list = list
+  }
   // Parse the message and run any commands it contains
   RunMessage(msg){
     // Get the prefix
@@ -37,7 +51,7 @@ class CommandHandler{
         // Get the command
         var commandObject = GetCommand(command, this.list);
         // Run the command
-        commandObject.run(msg, GetParmas(msgContent));
+        commandObject.run({msg: msg, params:GetParmas(msgContent)});
       }
     }
   }
@@ -150,4 +164,4 @@ function GetParmas(raw){
   }
   return parms;
 }
-module.exports.CommandHandler = CommandHandler;
+module.exports = CommandHandler;
