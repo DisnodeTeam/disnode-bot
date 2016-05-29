@@ -6,7 +6,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 
 		console.log("[AudioPlayer] Init Audio Player");
 	}
-	playFile(path, parms, bot, id, cb){ //Plays an audio file
+	playFile(path, parms, id, cb){ //Plays an audio file
 		console.log("[AudioPlayer] Playing Audio File");
 		/*
 			path is the directory where audio files are stored
@@ -17,7 +17,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		*/
 		var connection;
 		// sets up the variable and verify the voiceConnection it needs to use
-		this.findConection(bot, id, function cb(c){
+		this.findConection(id, function cb(c){
 			connection = c; //verified connection is sent back in the callback
 			console.log("FOUND!?!?");
 		});
@@ -49,14 +49,14 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		console.log("Playing At: " + volume); //debug logs the volume
 	}
 
-	stopPlaying(bot, id){ // stops all audio playback in a voiceChannel
+	stopPlaying(id){ // stops all audio playback in a voiceChannel
 		/*
 			bot is the discord.client aka the acual bot
 			id is the  voice id of the voice channel to stop audio playback on
 		*/
 		var connection;
 		// sets up the variable and verify the voiceConnection it needs to use
-		this.findConection(bot, id, function cb(c){
+		this.findConection(this.bot, id, function cb(c){
 			connection = c; //verified connection is sent back in the callback
 		});
 		// uses that verified connection to stop it's playback
@@ -84,7 +84,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 			console.log("DONE");
 		});
 	}
-	findConection(bot, id, cb){
+	findConection(id, cb){
 		// This function's job is to verify that the given id matches a voice connection and send what voiceConenction it uses through the callback
 		/*
 			bot is the discord.client aka the acual bot
@@ -94,9 +94,9 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		var i = 0; // number counting variable
 		var f = false; // f is "found" basically used to stop number counting in the while loop
 		while(!f){ // whie connection isn't found
-			if(bot.voiceConnections[i].voiceChannel == id){ //Cycles through its voice connections for a matching id to the given id
+			if(this.bot.voiceConnections[i].voiceChannel == id){ //Cycles through its voice connections for a matching id to the given id
 				f = true; // we found a matching id
-				var connection = bot.voiceConnections[i]; //sets up a temp variable to store the found id
+				var connection = this.bot.voiceConnections[i]; //sets up a temp variable to store the found id
 				cb(connection); // sends that variable back via a callback
 			} // this is if its not found
 			i++; //adds numbers

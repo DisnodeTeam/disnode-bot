@@ -4,7 +4,7 @@ class Wolfram {
 	constructor(wolframapi){
 		this.wolframapi = wolframapi;
 	}
-	
+
 	//Makes a request based on params (empty = normal lookup, int = limited lookup, img = images only, and you can combine)
 	//callback sends a formatted message
 	//imageIdentity is a string value use to define what its looking for in the parms to lookup and img ex 'img' 'Image'
@@ -58,7 +58,7 @@ class Wolfram {
 				cb(text);
 			});
 		}else {
-			cb("There was an issue with the lookup...");
+			cb("LOOKUP_ERROR");
 		}
 	}
 }

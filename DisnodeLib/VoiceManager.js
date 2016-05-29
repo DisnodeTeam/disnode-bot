@@ -25,10 +25,10 @@ class VoiceManager {
   UnFollow(){
     this.follow = "";
   }
-  checkForUserInSameServer(bot, msg, cb){
+  checkForUserInSameServer(msg, cb){
     var f = false;
     var returnid;
-    bot.voiceConnections.forEach(function(value){
+    this.bot.voiceConnections.forEach(function(value){
       console.log("[VoiceManager] VoiceConnection: "+ value.voiceChannel);
       if(value.voiceChannel == msg.author.voiceChannel){
         console.log("[VoiceManager] VoiceMatch: "+ value.voiceChannel + " " + msg.author.voiceChannel);
@@ -76,7 +76,7 @@ class VoiceManager {
 
 }
 
-function GetServerIDByName(bot, name, server){
+function GetServerIDByName(name, server){
   for (var i = 0; i < server.channels.length; i++) {
     var current = server.channels[i];
     if(current.type == "voice" && current.name == name){
