@@ -73,35 +73,12 @@ class DiscordBot extends EventEmitter{
       self.command.list = [];
     }
 
-    self.command.list.push({cmd:"test",
-      run: (msg) => this.cmdTest(msg),
-      desc:"Test Command that lists all params.",
-      usage:self.command.prefix + "test [parms]"});
-
-    self.command.list.push({cmd:"jv",
-      run: (msg) => this.cmdJoinVoice(msg),
-      desc:"Joins the voice channel you are connected to.",
-      usage:self.command.prefix + "jv"});
-
-    self.command.list.push({cmd:"lv",
-      run: (msg) => this.cmdLeaveVoice(msg),
-      desc:"Leaves the voice channel you are connected to.",
-      usage:self.command.prefix + "lv"});
-
-    self.command.list.push({cmd:"play",
-      run: (msg) => this.cmdPlay(msg),
-      desc:"Plays an audio file.",
-      usage:self.command.prefix + "play [filename] [volume]"});
-
-    self.command.list.push({cmd:"follow",
-      run: (msg) => this.cmdFollow(msg),
-      desc:"Test Command that lists all params.",
-      usage:self.command.prefix + "test [parms]"});
-
-    self.command.list.push({cmd:"unfollow",
-      run: (msg) => this.cmdUnfollow(msg),
-      desc:"Test Command that lists all params.",
-      usage:self.command.prefix + "test [parms]"});
+    self.command.list.push({cmd:"test", run: (msg) => this.cmdTest(msg), desc:"Test Command that lists all params.", usage:self.command.prefix + "test [parms]"});
+    self.command.list.push({cmd:"jv", run: (msg) => this.cmdJoinVoice(msg), desc:"Joins the voice channel you are connected to.", usage:self.command.prefix + "jv"});
+    self.command.list.push({cmd:"lv", run: (msg) => this.cmdLeaveVoice(msg), desc:"Leaves the voice channel you are connected to.", usage:self.command.prefix + "lv"});
+    self.command.list.push({cmd:"play", run: (msg) => this.cmdPlay(msg), desc:"Plays an audio file.", usage:self.command.prefix + "play [filename] [volume]"});
+    self.command.list.push({cmd:"follow", run: (msg) => this.cmdFollow(msg), desc:"Test Command that lists all params.", usage:self.command.prefix + "follow [parms]"});
+    self.command.list.push({cmd:"unfollow", run: (msg) => this.cmdUnfollow(msg), desc:"Test Command that lists all params.", usage:self.command.prefix + "unfollow [parms]"});
 
     self.command.handler.UpdateList(self.command.list);
   }
@@ -202,8 +179,8 @@ class DiscordBot extends EventEmitter{
   cmdJoinVoice(parsedMsg){
     var self = this;
   	if(parsedMsg.msg.author.voiceChannel){
-  		id = parsedMsg.msg.author.voiceChannel;
-  		VoiceManager.JoinChannelWithId(id);
+  		var id = parsedMsg.msg.author.voiceChannel;
+  		self.voice.manager.JoinChannelWithId(id);
   		self.bot.sendMessage(parsedMsg.msg.channel, "``` Joined the channel you are in! ```");
   	}else {
   		bot.sendMessage(parsedMsg.msg.channel, "``` You are not in a voice Channel ```");
@@ -213,10 +190,12 @@ class DiscordBot extends EventEmitter{
   cmdLeaveVoice(parsedMsg){
     var self = this;
     if (parsedMsg.msg.author.voiceChannel){
-  		id = parsedMsg.msg.author.voiceChannel;
-      VoiceManager.LeaveChannel(id);
-      self.bot.sendMessage(parsedMsg.msg.channel, "``` Joined the channel you are in! ```");
-    }
+  		var id = parsedMsg.msg.author.voiceChannel;
+      self.voice.manager.LeaveChannel(id);
+      self.bot.sendMessage(parsedMsg.msg.channel, "``` Left the channel you are in! ```");
+    }else {
+  		bot.sendMessage(parsedMsg.msg.channel, "``` You are not in a voice Channel ```");
+  	}
   }
 
   cmdFollow(parsedMsg){

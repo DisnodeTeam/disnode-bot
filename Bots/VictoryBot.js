@@ -3,7 +3,7 @@ var bot = new DiscordBot("");
 
 bot.on("Bot_Ready", function(){
     console.log('[VB - BotReady] Bot Ready.');
-    bot.enableAudioPlayer({path: './Bots/Audio/', maxVolume:2.0});
+    bot.enableAudioPlayer({path: './Audio/', maxVolume:2.0});
 
     var cmdList = [
       {cmd:"helloworld",run: test,desc: "Hello World Command",usage:"!"+"helloworld"},

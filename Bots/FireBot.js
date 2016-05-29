@@ -4,14 +4,15 @@ var bot = new DiscordBot("");
 bot.on("Bot_Ready", function(){
     console.log('[FB - BotReady] Bot Ready.');
     bot.enableVoiceManager({voiceEvents:true});
-    bot.enableAudioPlayer({path: './Bots/Audio/', maxVolume:2.0});
+    bot.enableAudioPlayer({path: './Audio/', maxVolume:2.0});
 
     var cmdList = [
-      {cmd:"helloworld",run: test,desc: "Hello World Command",usage:"!"+"helloworld"},
-      {cmd: "help",run: test,desc: "List All Commands",usage:"!"+"help"},
+      {cmd:"helloworld",run: test,desc: "Hello World Command",usage:"#"+"helloworld"},
+      {cmd: "help",run: test,desc: "List All Commands",usage:"#"+"help"},
+      {cmd: "dc",run: cmdDC,desc: "List All Commands",usage:"#"+"help"},
     ];
 
-    bot.enableCommandHandler({prefix: "!",list:cmdList});
+    bot.enableCommandHandler({prefix: "#",list:cmdList});
     bot.addDefaultCommands();
 });
 
@@ -32,4 +33,12 @@ exports.Start = function () {
 var test = function(msg)
 {
   bot.bot.sendMessage(msg.msg.channel, "TEST!!!!!!");
+}
+var cmdDC = function(msg){
+  if (msg.msg.author.name =="FireGamer3"){
+		bot.bot.sendMessage(msg.msg.channel, "``` Disconnecting ```");
+		bot.bot.logout();
+	}else {
+		bot.bot.sendMessage(msg.channel, "I can't let you do that! " + msg.author);
+	}
 }

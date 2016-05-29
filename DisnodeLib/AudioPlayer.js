@@ -23,7 +23,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 			console.log("FOUND!?!?");
 		});
 		var path = self.path + name;
-		console.log(path + parms[0] + ".mp3"); // Console logs the full path to the audio file
+		console.log(path + ".mp3"); // Console logs the full path to the audio file
 		// START OF VOLUME CHECKING
 		var volume = defaultVolume; //Default Volume
 		connection.setVolume(volume); // sets the volume
@@ -46,7 +46,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 			console.log("[AudioPlayer] No Volume Parm");
 		}
 		// END OF VOLUME CHECK
-		connection.playFile(path + parms[0] + ".mp3", volume); // plays the file with the verified connection
+		connection.playFile(path + ".mp3", volume); // plays the file with the verified connection
 		console.log("Playing At: " + volume); //debug logs the volume
 	}
 
