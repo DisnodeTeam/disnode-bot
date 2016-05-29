@@ -4,21 +4,29 @@ class VoiceManager {
   constructor(bot){
     this.bot = bot;
     this.retry = true;
+    console.log("[VoiceManager] Init.");
   }
 
   OnVoiceJoin(VoiceChannel, user){
-    if(user.username == this.follow){
+    console.log("[VoiceManager] Voice join");
+    console.log("[VoiceManager] |--- User ["+user+"] " + user.username);
+    console.log("[VoiceManager] |--- Channel ["+VoiceChannel+"] " + VoiceChannel.name);
+    if(user == this.follow){
       this.JoinChannelWithId(VoiceChannel);
     }
   }
 
   OnVoiceLeave(VoiceChannel, user){
-    if(user.username == this.follow){
+    console.log("[VoiceManager] Voice Leave");
+    console.log("[VoiceManager] |--- User ["+user+"] " + user.username);
+    console.log("[VoiceManager] |--- Channel ["+VoiceChannel+"] " + VoiceChannel.name);
+    if(user == this.follow){
         this.LeaveChannel(VoiceChannel);
     }
   }
 
   Follow(user){
+    console.log("[VoiceManager] Follow enabaled for: " + user);
     this.follow = user;
   }
 
@@ -86,4 +94,4 @@ function GetServerIDByName(name, server){
 
 }
 
-module.exports.VoiceManager = VoiceManager;
+module.exports = VoiceManager;
