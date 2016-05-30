@@ -3,29 +3,27 @@ var bot = new DiscordBot("");
 
 bot.on("Bot_Ready", function(){
     console.log('[TB - BotReady] Bot Ready.');
-    bot.enableAudioPlayer({path: './Audio/'});
+
 
     var cmdList = [
       {cmd:"helloworld",run: test,desc: "Hello World Command",usage:"!"+"helloworld"},
-      {cmd: "help",run: test,desc: "List All Commands",usage:"!"+"help"},
+      {cmd: "help",run: test,desc: "List All Commands",usage:"$"+"help"},
     ];
 
-    bot.enableCommandHandler({prefix: "$",list:cmdList});
-    bot.addDefaultCommands();
 
     bot.enableVoiceManager({voiceEvents:true});
+    bot.enableAudioPlayer({path: './Audio/'});
 
-        bot.enableBotCommunication({});
-          bot.enableCleverManager({});
+
+    bot.enableCommandHandler({prefix: "!",list:cmdList});
+    bot.addDefaultCommands();
+    bot.enableBotCommunication({});
+    bot.enableCleverManager({});
 });
 
 bot.on("Bot_Init", function () {
   console.log("[TB - BotReady] Bot Init.");
-
-
 });
-
-
 
 bot.on("Bot_RawMessage", function(msg){
   console.log("[TB - BotReady] Recieved Raw msg: " + msg.content);

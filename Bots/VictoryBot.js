@@ -10,28 +10,23 @@ bot.on("Bot_Ready", function(){
       {cmd: "help",run: test,desc: "List All Commands",usage:"!"+"help"},
     ];
 
-    bot.enableVoiceManager({voiceEvents:true});
 
-    bot.enableBotCommunication();
+    bot.enableVoiceManager({voiceEvents:true});
+    bot.enableAudioPlayer({path: './Audio/'});
+
 
     bot.enableCommandHandler({prefix: "!",list:cmdList});
     bot.addDefaultCommands();
-
-    bot.enableAudioPlayer({path: './Audio/', maxVolume:2.0});
-
+    bot.enableBotCommunication({});
     bot.enableCleverManager({});
-
-
 });
 
 bot.on("Bot_Init", function () {
   console.log("[VB - BotReady] Bot Init.");
 });
 
-
-
 bot.on("Bot_RawMessage", function(msg){
-  console.log("[VB - RawMessage] Recieved Raw msg: " + msg.content);
+  console.log("[VB - BotReady] Recieved Raw msg: " + msg.content);
 });
 
 exports.Start = function () {

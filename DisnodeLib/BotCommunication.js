@@ -39,7 +39,6 @@ class BotCommunication {
     });
   }
 
-
   StartClient() {
     var self = this;
 
@@ -77,6 +76,8 @@ class BotCommunication {
       console.log("[BotCommunication-StartClient] Client Closed");
     });
   }
+  
+
 }
 
 module.exports = BotCommunication;

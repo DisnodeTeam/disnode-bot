@@ -90,20 +90,13 @@ function GetParmas(raw){
   var lastSpace = -1;
   var end = false;
   while(!end){
-    console.log("=========== NEW PARM LOOP ==============");
 
 
     var BeginSpace = raw.indexOf(" ", lastSpace);
     var EndSpace = -1;
     if(BeginSpace != -1){
        EndSpace = raw.indexOf(" ", BeginSpace + 1);
-       console.log("EndSpace: " + EndSpace);
 
-       console.log("Begin Var State: ");
-       console.log(" -- BeginSpace: " + BeginSpace);
-       console.log(" -- EndSpace: " + EndSpace);
-       console.log(" -- lastSpace: " + lastSpace);
-       console.log("");
 
        if(EndSpace == -1){
          EndSpace = raw.length;
@@ -113,27 +106,21 @@ function GetParmas(raw){
        var param = raw.substring(BeginSpace + 1, EndSpace);
        var containsQuoteIndex = param.indexOf('"');
 
-       console.log(" PreQuoteCheck: ");
-       console.log(" -- param: " + param );
-       console.log(" -- containsQuoteIndex: " + containsQuoteIndex + "\n");
+
 
        var BeginQuote = -1;
        var EndQuote = -1;
        if(containsQuoteIndex != -1){
          BeginQuote = raw.indexOf('"', BeginSpace);
 
-         console.log("QUOTE_FOUND");
-         console.log(" -- BeginQuote: "+ BeginQuote);
-         console.log(" ");
+
          EndQuote = raw.indexOf('"', BeginQuote + 1);
 
          if(EndQuote != -1){
-           console.log("END_QUOTE_FOUND");
            BeginSpace = BeginQuote;
            EndSpace = EndQuote;
            param = raw.substring(BeginSpace + 1, EndSpace);
-           console.log(" -- Param: " + param);
-           console.log(" -- EndQuote: " + EndQuote);
+
 
            console.log(" ");
          }
@@ -144,21 +131,12 @@ function GetParmas(raw){
        if(param != ""){
          parms.push(param);
        }else{
-         console.log("NULL_PARAM");
-         console.log(" ");
+
        }
 
-       console.log("End Var State: ");
-       console.log(" -- BeginSpace: " + BeginSpace);
-       console.log(" -- EndSpace: " + EndSpace);
-       console.log(" -- lastSpace: " + lastSpace);
-       console.log(" -- BeginQuote: " + BeginQuote);
-       console.log(" -- EndQuote: " + EndQuote);
-       console.log(" -- End: " + end);
-       console.log(" ");
+
 
     }else{
-      console.log("BEGIN_SPACE_NULL \n");
       end = true;
     }
   }
