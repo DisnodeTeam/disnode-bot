@@ -1,5 +1,5 @@
 var DiscordBot = require("../DisnodeLib/DiscordBot.js");
-var bot = new DiscordBot("MTcwMDIwODA3MTk4NjM4MDgw.Ci1Cfw.KgIpHpETxGuCB6j9pCvoXoxQhG0");
+var bot = new DiscordBot("");
 
 bot.on("Bot_Ready", function(){
     console.log('[VB - BotReady] Bot Ready.');
