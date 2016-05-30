@@ -57,7 +57,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		*/
 		var connection;
 		// sets up the variable and verify the voiceConnection it needs to use
-		this.findConection(this.bot, id, function cb(c){
+		this.findConection(id, function cb(c){
 			connection = c; //verified connection is sent back in the callback
 		});
 		// uses that verified connection to stop it's playback
@@ -86,6 +86,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		});
 	}
 	findConection(id, cb){
+		var self = this;
 		// This function's job is to verify that the given id matches a voice connection and send what voiceConenction it uses through the callback
 		/*
 			id is the  voice id of the voice channel to stop audio playback on
@@ -94,7 +95,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		var i = 0; // number counting variable
 		var f = false; // f is "found" basically used to stop number counting in the while loop
 		while(!f){ // whie connection isn't found
-			if(this.bot.voiceConnections[i].voiceChannel == id){ //Cycles through its voice connections for a matching id to the given id
+			if(self.bot.voiceConnections[i].voiceChannel == id){ //Cycles through its voice connections for a matching id to the given id
 				f = true; // we found a matching id
 				var connection = this.bot.voiceConnections[i]; //sets up a temp variable to store the found id
 				cb(connection); // sends that variable back via a callback
