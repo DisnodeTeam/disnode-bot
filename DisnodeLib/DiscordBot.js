@@ -2,11 +2,13 @@
 const EventEmitter = require("events");
 const Discord = require( "discord.js");
 const FS = require('fs');
+const Cleverbot = require('cleverbot-node');
 
 const DisnodeAudioPlayer = require("./AudioPlayer.js");
 const CommandHandler = require("./CommandHandler.js");
 const DisnodeVoiceManager = require("./VoiceManager.js");
 const DisnodeBotCommunication = require("./BotCommunication.js");
+const CleverManager = require("./CleverManager.js");
 
 class DiscordBot extends EventEmitter{
   constructor(key){
@@ -45,12 +47,28 @@ class DiscordBot extends EventEmitter{
 
   botRawMessage(msg){
     var self = this;
+    self.cleverMessage(msg);
     if(self.command && self.command.handler){
       self.command.handler.RunMessage(msg);
     }
     this.emit("Bot_RawMessage", msg);
   }
-
+  enableCleverManager(options){
+    var self = this;
+    console.log("[Cleverbot] Init");
+    if(!self.clever){
+      self.clever = {};
+    }
+    if(options.channelid){
+      self.clever.channelid = options.channelid;
+    }else{
+      self.clever.channelid = "185614233168248833"
+    }
+    self.clever.bot = new Cleverbot;
+    self.clever.enabled = false;
+    self.clever.manager = new CleverManager(self.clever.bot);
+    Cleverbot.prepare(function(){});
+  }
   enableCommandHandler(options){
     var self = this;
 
@@ -79,6 +97,7 @@ class DiscordBot extends EventEmitter{
 
     self.command.list.push({cmd:"test", run: (msg) => this.cmdTest(msg), desc:"Test Command that lists all params.", usage:self.command.prefix + "test [parms]"});
     self.command.list.push({cmd:"help", run: (msg) => this.cmdHelp(msg), desc:"Displays Help.", usage:self.command.prefix + "help"});
+    self.command.list.push({cmd:"clever", run: (msg) => this.cmdCLEVER(msg), desc:"Cleverbot.", usage:self.command.prefix + "clever [Phrase, or new to refresh cleverbot]"});
     self.command.list.push({cmd:"list", run: (msg) => this.cmdListAudio(msg), desc:"Displays list of Audio Files.", usage:self.command.prefix + "list [page]"});
     self.command.list.push({cmd:"jv", run: (msg) => this.cmdJoinVoice(msg), desc:"Joins the voice channel you are connected to.", usage:self.command.prefix + "jv"});
     self.command.list.push({cmd:"lv", run: (msg) => this.cmdLeaveVoice(msg), desc:"Leaves the voice channel you are connected to.", usage:self.command.prefix + "lv"});
@@ -152,7 +171,38 @@ class DiscordBot extends EventEmitter{
     self.communication.manager = new DisnodeBotCommunication(self.bot.user.id);
     self.communication.manager.Start();
   }
+  cmdCLEVER(parsedMsg){
+    var self = this;
+    if(parsedMsg.params[0] == "new"){
+      self.clever.bot = new Cleverbot;
+      this.bot.sendMessage(parsedMsg.msg.channel, "```Cleverbot has been Refreshed```");
+    }else{
+      if(self.clever.enabled){
+        self.clever.enabled = false;
+        this.bot.sendMessage(parsedMsg.msg.channel, "```Cleverbot is no longer active```");
+      }else {
+        self.clever.enabled = true;
+        self.bot.sendMessage(self.clever.channelid, parsedMsg.params[0]);
 
+      }
+    }
+  }
+  cleverMessage(msg){
+    var self = this;
+    if(!self.clever){
+      return;
+    }
+
+    if(msg.author.name == self.bot.user.username){
+      if(self.clever.enabled && msg.channel.id == self.clever.channelid){
+        setTimeout(function f(){
+          self.clever.manager.sendMsg(msg.content,function cb(reply){
+            self.bot.sendMessage(msg.channel, reply);
+          });
+        }, 1000);
+      }
+    }
+  }
   cmdTest(parsedMsg){
     var self = this;
     self.bot.sendMessage(parsedMsg.msg.channel, "TEST!!!!!!");

@@ -1,8 +1,8 @@
 "use strict"
+
 class CleverManager {
-  constructor(CBot, CleverAPI){
+  constructor(CBot){
     this.cb = CBot;
-    this.capi = CleverAPI;
   }
   sendMsg(Message, cb){
     this.cb.write(Message, function callb(reply){
@@ -11,4 +11,4 @@ class CleverManager {
   }
 }
 
-module.exports.CleverManager = CleverManager;
+module.exports = CleverManager;
