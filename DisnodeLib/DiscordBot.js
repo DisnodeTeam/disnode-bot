@@ -193,7 +193,7 @@ class DiscordBot extends EventEmitter{
       return;
     }
 
-    if(msg.author.name == self.bot.user.username){
+    if(msg.author.name != self.bot.user.username){
       if(self.clever.enabled && msg.channel.id == self.clever.channelid){
         setTimeout(function f(){
           self.clever.manager.sendMsg(msg.content,function cb(reply){

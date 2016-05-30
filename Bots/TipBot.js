@@ -1,5 +1,5 @@
 var DiscordBot = require("../DisnodeLib/DiscordBot.js");
-var bot = new DiscordBot("");
+var bot = new DiscordBot("MTg2NjAzMDIxODEwMDA4MDY0.Ci1B4g.PbBkhtZM6yreIFNfKKGaEU3tolY");
 
 bot.on("Bot_Ready", function(){
     console.log('[TB - BotReady] Bot Ready.');
@@ -10,12 +10,13 @@ bot.on("Bot_Ready", function(){
       {cmd: "help",run: test,desc: "List All Commands",usage:"!"+"help"},
     ];
 
-    bot.enableCommandHandler({prefix: "!",list:cmdList});
+    bot.enableCommandHandler({prefix: "$",list:cmdList});
     bot.addDefaultCommands();
 
     bot.enableVoiceManager({voiceEvents:true});
 
-        bot.enableBotCommunication();
+        bot.enableBotCommunication({});
+          bot.enableCleverManager({});
 });
 
 bot.on("Bot_Init", function () {
