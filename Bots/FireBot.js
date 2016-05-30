@@ -7,9 +7,7 @@ bot.on("Bot_Ready", function(){
     bot.enableAudioPlayer({path: './Audio/', maxVolume:2.0});
 
     var cmdList = [
-      {cmd:"helloworld",run: test,desc: "Hello World Command",usage:"#"+"helloworld"},
-      {cmd: "help",run: test,desc: "List All Commands",usage:"#"+"help"},
-      {cmd: "dc",run: cmdDC,desc: "List All Commands",usage:"#"+"help"},
+      {cmd: "dc",run: cmdDC,desc: "Diconnects bot",usage:"#"+"dc"},
     ];
 
     bot.enableCommandHandler({prefix: "#",list:cmdList});
@@ -30,10 +28,6 @@ exports.Start = function () {
   bot.startBot();
 
 };
-var test = function(msg)
-{
-  bot.bot.sendMessage(msg.msg.channel, "TEST!!!!!!");
-}
 var cmdDC = function(msg){
   if (msg.msg.author.name =="FireGamer3"){
 		bot.bot.sendMessage(msg.msg.channel, "``` Disconnecting ```");
