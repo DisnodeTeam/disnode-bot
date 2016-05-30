@@ -57,14 +57,18 @@ class DiscordBot extends EventEmitter{
     if(!self.command){
       self.command = {};
     }
-
+    if(options.prefix){
+      self.command.prefix = options.prefix;
+    }else{
+      self.command.prefix = "!"
+    }
     if(options.list){
       self.command.list = options.list;
     }else{
       self.command.list = [];
     }
 
-    this.command.handler = new CommandHandler(options.prefix, self.command.list);
+    this.command.handler = new CommandHandler(self.command.prefix, self.command.list);
   }
 
   addDefaultCommands(){
@@ -74,6 +78,7 @@ class DiscordBot extends EventEmitter{
     }
 
     self.command.list.push({cmd:"test", run: (msg) => this.cmdTest(msg), desc:"Test Command that lists all params.", usage:self.command.prefix + "test [parms]"});
+    self.command.list.push({cmd:"help", run: (msg) => this.cmdHelp(msg), desc:"Displays Help.", usage:self.command.prefix + "help"});
     self.command.list.push({cmd:"jv", run: (msg) => this.cmdJoinVoice(msg), desc:"Joins the voice channel you are connected to.", usage:self.command.prefix + "jv"});
     self.command.list.push({cmd:"lv", run: (msg) => this.cmdLeaveVoice(msg), desc:"Leaves the voice channel you are connected to.", usage:self.command.prefix + "lv"});
     self.command.list.push({cmd:"play", run: (msg) => this.cmdPlay(msg), desc:"Plays an audio file.", usage:self.command.prefix + "play [filename] [volume]"});
@@ -120,7 +125,7 @@ class DiscordBot extends EventEmitter{
       _this.audioPlayer.defaultVolume = 0.8;
     }
     //Create Audio Player
-    _this.audioPlayer.player = new DisnodeAudioPlayer(_this.bot, FS, this.audioPlayer.path);
+    _this.audioPlayer.player = new DisnodeAudioPlayer(_this.bot, FS, _this, this.audioPlayer.path);
   }
 
   enableVoiceManager(options){
@@ -141,7 +146,18 @@ class DiscordBot extends EventEmitter{
     var self = this;
     self.bot.sendMessage(parsedMsg.msg.channel, "TEST!!!!!!");
   }
-
+  cmdHelp(parsedMsg){
+    var self = this;
+    var SendString = "``` === HELP === \n";
+    for (var i = 0; i < self.command.list.length; i++) {
+  		var cmd = self.command.list[i];
+  		//cmd.cmd, cmd.desc,cmd.usage
+      SendString = SendString + "-"+self.command.prefix+cmd.cmd+" : "+cmd.desc+" - " + cmd.usage + "\n";
+  		SendString = SendString + "\n";
+  	}
+  	SendString = SendString + "```";
+  	self.bot.sendMessage(parsedMsg.msg.channel, SendString);
+  }
   cmdPlay(parsedMsg){
     var self = this;
     if(!self.audioPlayer && !self.audioPlayer.player){
@@ -153,47 +169,34 @@ class DiscordBot extends EventEmitter{
       return;
     }
 
-    var found = false;
-    var channelID;
-    self.voice.manager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
-      channelID = returnID;
-      if(channelID == 0){
-        found = false;
-      }else{
-        found = true;
+    var fileName = parsedMsg.params[0];
+    self.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3 ```");
+    self.audioPlayer.player.playFile(fileName, parsedMsg, parsedMsg.params, self.audioPlayer.defaultVolume, self.audioPlayer.maxVolume,function(text){
+      if(text === "loud"){
+        self.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.audioPlayer.maxVolume + "! Remains default (" + self.audioPlayer.defaultVolume +") ```");
+      }
+      if(text === "notfound"){
+        self.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
       }
     });
-
-    var fileName = parsedMsg.params[0];
-    if(found){
-        self.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3 ```");
-        self.audioPlayer.player.playFile(fileName, parsedMsg.params, self.audioPlayer.defaultVolume, self.audioPlayer.maxVolume, channelID,function(text){
-          if(text === "loud"){
-            self.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.audioPlayer.maxVolume + "! Remains default (" + self.audioPlayer.defaultVolume +") ```");
-          }
-        });
-    }else{
-      self.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
-    }
   }
   cmdStop(parsedMsg){
     var self = this;
-    var found = false;
-    var channelID;
-    self.voice.manager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
-      channelID = returnID;
-      if(channelID == 0){
-        found = false;
-      }else{
-        found = true;
+    if(!self.audioPlayer && !self.audioPlayer.player){
+      self.bot.sendMessage(parsedMsg.msg.channel, "``` Audio Player not Enabled! ```");
+      return;
+    }
+    if(!self.voice && !self.voice.manager){
+      self.bot.sendMessage(parsedMsg.msg.channel, "``` VoiceManager not Enabled! (VoiceManager is required for AudioPlayer) ```");
+      return;
+    }
+
+    self.bot.sendMessage(parsedMsg.msg.channel, "``` Playback stopped! ```");
+    self.audioPlayer.player.stopPlaying(parsedMsg, function cb(text){
+      if(text === "notfound"){
+        self.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
       }
     });
-    if(found){
-      self.bot.sendMessage(parsedMsg.msg.channel, "``` Playback stopped! ```");
-      self.audioPlayer.player.stopPlaying(channelID);
-    } else {
-      self.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to stop playback ```");
-    }
   }
   cmdJoinVoice(parsedMsg){
     var self = this;

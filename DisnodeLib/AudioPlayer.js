@@ -1,72 +1,94 @@
 "use strict"
 class AudioPlayer { //Each of the Library files except Disnode.js are a class based file to keep it independent
-	constructor(bot, fs,path){
+	constructor(bot, fs, DiscordBOT, path){
 		this.bot = bot;
 		this.fs = fs;
+		this.DiscordBOT = DiscordBOT;
 		this.path = path;
 		console.log("[AudioPlayer] Init Audio Player");
 	}
-	playFile(name, parms, defaultVolume, maxVolume, id, cb){ //Plays an audio file
+	playFile(name, parsedMsg, parms, defaultVolume, maxVolume, cb){ //Plays an audio file
 		var self = this;
-		console.log("[AudioPlayer] Playing Audio File");
-		/*
-			path is the directory where audio files are stored
-			parms is the auto filtered paramaters from the message
-			bot is the discord.client aka the acual bot
-			id is the voice channel id of the voice channel to play a file on which should be found on the bot side
-			cb is a callback function used to send information such as the volume being too loud with a keyword of "loud"
-		*/
-		var connection;
-		// sets up the variable and verify the voiceConnection it needs to use
-		this.findConection(id, function cb(c){
-			connection = c; //verified connection is sent back in the callback
-			console.log("FOUND!?!?");
-		});
-		var path = self.path + name;
-		console.log(path + ".mp3"); // Console logs the full path to the audio file
-		// START OF VOLUME CHECKING
-		var volume = defaultVolume; //Default Volume
-		connection.setVolume(volume); // sets the volume
-		if(parms[1]){ // If there is a second parm
-			if(parseFloat(parms[1])){ //can it be parsed to a float?
-				if(parseFloat(parms[1]) <= maxVolume){ // checks to see if the float is less than then threshold
-					volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
-					console.log("[AudioPlayer] Set volume:" + volume); // logs the volume change
-					connection.setVolume(volume); // actually sets the volume
-				}else{ // if the parsed float is over the threshold
-					console.log("[AudioPlayer] Volume over threshold! Remains default");
-					// Callback used for in execution for more info, loud is used as a keyword so the bot can use it's own message
-					cb("loud");
-				}
-			}else{ // if second parm not a float
-				console.log("[AudioPlayer] Second Parms not Float");
+
+		var found = false;
+		var id;
+		self.DiscordBOT.voice.manager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+			id = returnID;
+			if(id == 0){
+				found = false;
+			}else{
+				found = true;
 			}
+		});
+
+		if(found){
+			console.log("[AudioPlayer] Playing Audio File");
+
+			var connection;
+			// sets up the variable and verify the voiceConnection it needs to use
+			this.findConection(id, function cb(c){
+				connection = c; //verified connection is sent back in the callback
+				console.log("FOUND!?!?");
+			});
+			var path = self.path + name;
+			console.log(path + ".mp3"); // Console logs the full path to the audio file
+			// START OF VOLUME CHECKING
+			var volume = defaultVolume; //Default Volume
+			connection.setVolume(volume); // sets the volume
+			if(parms[1]){ // If there is a second parm
+				if(parseFloat(parms[1])){ //can it be parsed to a float?
+					if(parseFloat(parms[1]) <= maxVolume){ // checks to see if the float is less than then threshold
+						volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
+						console.log("[AudioPlayer] Set volume:" + volume); // logs the volume change
+						connection.setVolume(volume); // actually sets the volume
+					}else{ // if the parsed float is over the threshold
+						console.log("[AudioPlayer] Volume over threshold! Remains default");
+						// Callback used for in execution for more info, loud is used as a keyword so the bot can use it's own message
+						cb("loud");
+					}
+				}else{ // if second parm not a float
+					console.log("[AudioPlayer] Second Parms not Float");
+				}
+			}
+			else{ // if there is no second parm at all
+				console.log("[AudioPlayer] No Volume Parm");
+			}
+			// END OF VOLUME CHECK
+			connection.playFile(path + ".mp3", volume); // plays the file with the verified connection
+			console.log("Playing At: " + volume); //debug logs the volume
+		}else{
+			cb("notfound");
 		}
-		else{ // if there is no second parm at all
-			console.log("[AudioPlayer] No Volume Parm");
-		}
-		// END OF VOLUME CHECK
-		connection.playFile(path + ".mp3", volume); // plays the file with the verified connection
-		console.log("Playing At: " + volume); //debug logs the volume
 	}
 
-	stopPlaying(id){ // stops all audio playback in a voiceChannel
-		/*
-			bot is the discord.client aka the acual bot
-			id is the  voice id of the voice channel to stop audio playback on
-		*/
-		var connection;
-		// sets up the variable and verify the voiceConnection it needs to use
-		this.findConection(id, function cb(c){
-			connection = c; //verified connection is sent back in the callback
+	stopPlaying(parsedMsg, cb){ // stops all audio playback in a voiceChannel
+		var self = this;
+		var found = false;
+		var id;
+		self.DiscordBOT.voice.manager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+			id = returnID;
+			if(id == 0){
+				found = false;
+			}else{
+				found = true;
+			}
 		});
-		// uses that verified connection to stop it's playback
-		try{
-			connection.stopPlaying();
-		}catch (er){
-			console.log("[AudioPlayer] Error: " + err);
+		if(found){
+			var connection;
+			// sets up the variable and verify the voiceConnection it needs to use
+			this.findConection(id, function cb(c){
+				connection = c; //verified connection is sent back in the callback
+			});
+			// uses that verified connection to stop it's playback
+			try{
+				connection.stopPlaying();
+			}catch (er){
+				console.log("[AudioPlayer] Error: " + err);
+			}
+		}else{
+			cb("notfound");
 		}
-	}
+}
 
 	listAll(walk, path, callback, done){
 		var walker;
