@@ -1,4 +1,7 @@
 "use strict"
+
+const walk = require('walk');
+
 class AudioPlayer { //Each of the Library files except Disnode.js are a class based file to keep it independent
 	constructor(bot, fs, DiscordBOT, path){
 		this.bot = bot;
@@ -54,7 +57,9 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 				console.log("[AudioPlayer] No Volume Parm");
 			}
 			// END OF VOLUME CHECK
-			connection.playFile(path + ".mp3", volume); // plays the file with the verified connection
+			connection.playFile(path + ".mp3", volume,function cb(er){
+				console.dir(er);
+			}); // plays the file with the verified connection
 			console.log("Playing At: " + volume); //debug logs the volume
 		}else{
 			cb("notfound");

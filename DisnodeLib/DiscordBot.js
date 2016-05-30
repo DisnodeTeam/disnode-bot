@@ -79,6 +79,7 @@ class DiscordBot extends EventEmitter{
 
     self.command.list.push({cmd:"test", run: (msg) => this.cmdTest(msg), desc:"Test Command that lists all params.", usage:self.command.prefix + "test [parms]"});
     self.command.list.push({cmd:"help", run: (msg) => this.cmdHelp(msg), desc:"Displays Help.", usage:self.command.prefix + "help"});
+    self.command.list.push({cmd:"list", run: (msg) => this.cmdListAudio(msg), desc:"Displays list of Audio Files.", usage:self.command.prefix + "list [page]"});
     self.command.list.push({cmd:"jv", run: (msg) => this.cmdJoinVoice(msg), desc:"Joins the voice channel you are connected to.", usage:self.command.prefix + "jv"});
     self.command.list.push({cmd:"lv", run: (msg) => this.cmdLeaveVoice(msg), desc:"Leaves the voice channel you are connected to.", usage:self.command.prefix + "lv"});
     self.command.list.push({cmd:"play", run: (msg) => this.cmdPlay(msg), desc:"Plays an audio file.", usage:self.command.prefix + "play [filename] [volume]"});
@@ -248,6 +249,35 @@ class DiscordBot extends EventEmitter{
     }else{
       console.log("[VoiceManager - cmdUnfollow ] No Manager set!");
     }
+  }
+  cmdListAudio(parsedMsg){
+    var self = this;
+    var Page = 1;
+    if(parsedMsg.params[0]){
+      Page = parseInt(parsedMsg.params[0]);
+    }
+
+
+    var ResultsPerPage = 15;
+    var Start = (Page * ResultsPerPage) - ResultsPerPage;
+    var CurrentIndex = 0;
+
+    var SendString = "``` === AUDIO CLIPS (Page: "+Page+")=== \n";
+    self.audioPlayer.player.listAll("./Audio/", function(name){
+      CurrentIndex++;
+      if(CurrentIndex >= Start)
+      {
+        if(CurrentIndex < Start + ResultsPerPage)
+        {
+          SendString = SendString + "-"+name+ "\n";
+        }
+      }
+
+    }, function(){
+      SendString = SendString + "```";
+      self.bot.sendMessage(parsedMsg.msg.channel, SendString);
+    });
+
   }
 
 
