@@ -90,7 +90,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		}
 }
 
-	listAll(walk, path, callback, done){
+	listAll(path, callback, done){
 		var walker;
 		walker = walk.walk(path);
 		walker.on("file", function(root, fileStats, next){

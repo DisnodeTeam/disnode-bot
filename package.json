@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/AtecStudios/Disnode#readme",
   "dependencies": {
-    "discord.js": "^7.0.0"
+    "discord.js": "^7.0.0",
+    "walk": "^2.3.9"
   }
 }
