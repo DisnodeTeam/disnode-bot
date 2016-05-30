@@ -14,6 +14,8 @@ bot.on("Bot_Ready", function(){
     bot.addDefaultCommands();
 
     bot.enableVoiceManager({voiceEvents:true});
+
+        bot.enableBotCommunication();
 });
 
 bot.on("Bot_Init", function () {

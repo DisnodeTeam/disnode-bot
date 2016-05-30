@@ -3,17 +3,23 @@ var bot = new DiscordBot("");
 
 bot.on("Bot_Ready", function(){
     console.log('[VB - BotReady] Bot Ready.');
-    bot.enableAudioPlayer({path: './Audio/', maxVolume:2.0});
+
 
     var cmdList = [
       {cmd:"helloworld",run: test,desc: "Hello World Command",usage:"!"+"helloworld"},
       {cmd: "help",run: test,desc: "List All Commands",usage:"!"+"help"},
     ];
 
+    bot.enableVoiceManager({voiceEvents:true});
+
+    bot.enableBotCommunication();
+
     bot.enableCommandHandler({prefix: "!",list:cmdList});
     bot.addDefaultCommands();
 
-    bot.enableVoiceManager({voiceEvents:true});
+    bot.enableAudioPlayer({path: './Audio/', maxVolume:2.0});
+
+
 });
 
 bot.on("Bot_Init", function () {

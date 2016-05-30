@@ -6,7 +6,7 @@ const FS = require('fs');
 const DisnodeAudioPlayer = require("./AudioPlayer.js");
 const CommandHandler = require("./CommandHandler.js");
 const DisnodeVoiceManager = require("./VoiceManager.js");
-
+const DisnodeBotCommunication = require("./BotCommunication.js");
 
 class DiscordBot extends EventEmitter{
   constructor(key){
@@ -141,6 +141,16 @@ class DiscordBot extends EventEmitter{
       self.bot.on("voiceJoin", (c,u)=>self.voice.manager.OnVoiceJoin(c,u));
       self.bot.on("voiceLeave", (c,u)=>self.voice.manager.OnVoiceLeave(c,u));
     }
+  }
+
+  enableBotCommunication(options){
+    var self = this;
+    if(!self.communication){
+      self.communication = {};
+    }
+
+    self.communication.manager = new DisnodeBotCommunication(self.bot.user.id);
+    self.communication.manager.Start();
   }
 
   cmdTest(parsedMsg){
