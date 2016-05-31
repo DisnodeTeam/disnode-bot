@@ -1,9 +1,6 @@
 "use strict";
 const EventEmitter = require("events");
 const Discord = require( "discord.js");
-const FS = require('fs');
-const Cleverbot = require('cleverbot-node');
-const WolframAPI = require('wolfram-alpha');
 
 const DisnodeAudioPlayer = require("./AudioPlayer.js");
 const CommandHandler = require("./CommandHandler.js");
@@ -57,6 +54,7 @@ class DiscordBot extends EventEmitter{
   }
   enableWolfram(options){
     var self = this;
+    const WolframAPI = require('wolfram-alpha');
     console.log("[Wolfram] Init");
     if(!self.wolfram){
       self.wolfram = {};
@@ -72,6 +70,7 @@ class DiscordBot extends EventEmitter{
   }
   enableCleverManager(options){
     var self = this;
+    const Cleverbot = require('cleverbot-node');
     console.log("[Cleverbot] Init");
     if(!self.clever){
       self.clever = {};
@@ -135,6 +134,9 @@ class DiscordBot extends EventEmitter{
   enableAudioPlayer(options){
     // HACK: Set _this
     var _this = this;
+    if(!FS){
+      const FS = require('fs');
+    }
     // Let Audioplayer, else you will get a null error later.
     _this.audioPlayer = {};
 
