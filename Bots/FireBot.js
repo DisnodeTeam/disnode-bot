@@ -5,7 +5,9 @@ bot.on("Bot_Ready", function(){
     console.log('[FB - BotReady] Bot Ready.');
     bot.enableVoiceManager({voiceEvents:true});
     bot.enableAudioPlayer({path: './Audio/', maxVolume:2.0});
-    bot.enableCleverManager({});
+    bot.enableCleverManager({channelid:"ChannelID for cleverbot to talk in"});
+    bot.enableWolfram({key:"API_KEY_HERE"});
+
 
     var cmdList = [
       {cmd: "dc",run: cmdDC,desc: "Diconnects bot",usage:"#"+"dc"},

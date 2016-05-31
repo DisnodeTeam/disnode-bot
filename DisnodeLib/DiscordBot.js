@@ -3,12 +3,14 @@ const EventEmitter = require("events");
 const Discord = require( "discord.js");
 const FS = require('fs');
 const Cleverbot = require('cleverbot-node');
+const WolframAPI = require('wolfram-alpha');
 
 const DisnodeAudioPlayer = require("./AudioPlayer.js");
 const CommandHandler = require("./CommandHandler.js");
 const DisnodeVoiceManager = require("./VoiceManager.js");
 const DisnodeBotCommunication = require("./BotCommunication.js");
 const CleverManager = require("./CleverManager.js");
+const Wolfram = require("./Wolfram.js");
 
 class DiscordBot extends EventEmitter{
   constructor(key){
@@ -53,6 +55,21 @@ class DiscordBot extends EventEmitter{
     }
     this.emit("Bot_RawMessage", msg);
   }
+  enableWolfram(options){
+    var self = this;
+    console.log("[Wolfram] Init");
+    if(!self.wolfram){
+      self.wolfram = {};
+    }
+    if(options.key){
+      self.wolfram.key = options.key;
+    }else{
+      console.log("[Wolfram INIT ERROR] No \'key\' found in options object, cannot use wolfram requests without an API KEY");
+      return;
+    }
+    self.wolfram.api = WolframAPI.createClient(self.wolfram.key);
+    self.wolfram.manager = new Wolfram(self.wolfram.api);
+  }
   enableCleverManager(options){
     var self = this;
     console.log("[Cleverbot] Init");
@@ -62,7 +79,8 @@ class DiscordBot extends EventEmitter{
     if(options.channelid){
       self.clever.channelid = options.channelid;
     }else{
-      self.clever.channelid = "185614233168248833"
+      console.log("[Cleverbot INIT ERROR] No \'channelid\' found in options object, cannot use Cleverbot without a channelid");
+      return;
     }
     self.clever.bot = new Cleverbot;
     self.clever.enabled = false;
@@ -98,6 +116,7 @@ class DiscordBot extends EventEmitter{
     self.command.list.push({cmd:"test", run: (msg) => this.cmdTest(msg), desc:"Test Command that lists all params.", usage:self.command.prefix + "test [parms]"});
     self.command.list.push({cmd:"help", run: (msg) => this.cmdHelp(msg), desc:"Displays Help.", usage:self.command.prefix + "help"});
     self.command.list.push({cmd:"clever", run: (msg) => this.cmdCLEVER(msg), desc:"Cleverbot.", usage:self.command.prefix + "clever [Phrase, or new to refresh cleverbot]"});
+    self.command.list.push({cmd:"wa", run: (msg) => this.cmdWA(msg), desc:"Wolfram Alpha Request.", usage:self.command.prefix + "wa [Question] [Option1] [Option2]"});
     self.command.list.push({cmd:"list", run: (msg) => this.cmdListAudio(msg), desc:"Displays list of Audio Files.", usage:self.command.prefix + "list [page]"});
     self.command.list.push({cmd:"jv", run: (msg) => this.cmdJoinVoice(msg), desc:"Joins the voice channel you are connected to.", usage:self.command.prefix + "jv"});
     self.command.list.push({cmd:"lv", run: (msg) => this.cmdLeaveVoice(msg), desc:"Leaves the voice channel you are connected to.", usage:self.command.prefix + "lv"});
@@ -171,15 +190,42 @@ class DiscordBot extends EventEmitter{
     self.communication.manager = new DisnodeBotCommunication(self.bot.user.id);
     self.communication.manager.Start();
   }
+  cmdWA(parsedMsg){
+    var self = this;
+    if(!self.wolfram){
+      self.bot.sendMessage(parsedMsg.msg.channel, "Wolfram is not enabled on this bot");
+      return;
+    }
+
+    var wolfmsg;
+  	self.bot.sendMessage(parsedMsg.msg.channel, "``` Waiting on Wolfram API Q: " + parsedMsg.params[0] +" Options: " + parsedMsg.params[1] + " " + parsedMsg.params[2] + " ```", function(err, sent) {
+  		wolfmsg = sent;
+  		console.log(err);
+  	});
+  	self.wolfram.manager.makeRequest(parsedMsg.params, "img", function(text){
+      if(text === "NO_QUESTION"){
+        self.bot.updateMessage(wolfmsg, "```You didn't put a question in for wolfram to answer!```");
+      }else if(text === "LOOKUP_ERROR"){
+        self.bot.updateMessage(wolfmsg, "```There was an error when looking up your question sorry!```");
+      }else{
+        self.bot.updateMessage(wolfmsg, text);
+      }
+  	});
+  }
   cmdCLEVER(parsedMsg){
     var self = this;
+    if(!self.clever){
+      self.bot.sendMessage(parsedMsg.msg.channel, "Cleverbot is not enabled on this bot");
+      return;
+    }
+
     if(parsedMsg.params[0] == "new"){
       self.clever.bot = new Cleverbot;
-      this.bot.sendMessage(parsedMsg.msg.channel, "```Cleverbot has been Refreshed```");
+      self.bot.sendMessage(parsedMsg.msg.channel, "```Cleverbot has been Refreshed```");
     }else{
       if(self.clever.enabled){
         self.clever.enabled = false;
-        this.bot.sendMessage(parsedMsg.msg.channel, "```Cleverbot is no longer active```");
+        self.bot.sendMessage(parsedMsg.msg.channel, "```Cleverbot is no longer active```");
       }else {
         self.clever.enabled = true;
         self.bot.sendMessage(self.clever.channelid, parsedMsg.params[0]);

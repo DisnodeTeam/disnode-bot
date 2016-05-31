@@ -18,7 +18,8 @@ bot.on("Bot_Ready", function(){
     bot.enableCommandHandler({prefix: "!",list:cmdList});
     bot.addDefaultCommands();
     bot.enableBotCommunication({});
-    bot.enableCleverManager({});
+    bot.enableCleverManager({channelid:"185614233168248833"});
+    bot.enableWolfram({key:"API_KEY_HERE"});
 });
 
 bot.on("Bot_Init", function () {
