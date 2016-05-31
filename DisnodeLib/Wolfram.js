@@ -11,7 +11,7 @@ class Wolfram {
 	makeRequest(parms, imageIdentity, cb){
 		console.log("[Wolfram] Request: " + this.wolframapi);
 		console.log("[Wolfram] Wolfram request with Q: " + parms[0] + " Options: " + parms[1] + " " + parms[2]);
-		if(!parms[0]){
+		if(parms[0] == null){
 			cb("NO_QUESTION");
 			return;
 		}
