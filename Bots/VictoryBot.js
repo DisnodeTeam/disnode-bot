@@ -14,12 +14,12 @@ bot.on("Bot_Ready", function(){
     bot.enableVoiceManager({voiceEvents:true});
     bot.enableAudioPlayer({path: './Audio/'});
 
-
-    bot.enableCommandHandler({prefix: "!",list:cmdList});
-    bot.addDefaultCommands();
     bot.enableBotCommunication({});
     bot.enableCleverManager({channelid:"185614233168248833"});
     bot.enableWolfram({key:"API_KEY_HERE"});
+    
+    bot.enableCommandHandler({prefix: "!",list:cmdList});
+    bot.addDefaultCommands();
 });
 
 bot.on("Bot_Init", function () {
