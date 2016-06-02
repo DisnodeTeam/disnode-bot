@@ -141,9 +141,7 @@ class DiscordBot extends EventEmitter{
   enableAudioPlayer(options){
     // HACK: Set _this
     var _this = this;
-    if(!FS){
-      const FS = require('fs');
-    }
+    const FS = require('fs');
     // Let Audioplayer, else you will get a null error later.
     _this.audioPlayer = {};
 
