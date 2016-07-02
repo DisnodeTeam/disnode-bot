@@ -7,10 +7,10 @@ class CommandHandler{
   // Prefix: The Command Prefix for this list.
   // List: List of Command Objects
 
-  constructor(prefix,list){
+  constructor(prefix,list, context){
     this.prefix = prefix;
     this.list = list;
-
+    this.context = context;
     console.log("[CommandHandler] Init. ");
     console.log("[CommandHandler] |--- Prefix: " + prefix);
     for (var i = 0; i < list.length; i++) {
@@ -29,6 +29,7 @@ class CommandHandler{
   // Parse the message and run any commands it contains
   RunMessage(msg){
     // Get the prefix
+    var self = this;
     var msgContent = msg.content;
     var firstLetter = msgContent.substring(0,1)
 
@@ -51,7 +52,17 @@ class CommandHandler{
         // Get the command
         var commandObject = GetCommand(command, this.list);
         // Run the command
-        commandObject.run({msg: msg, params:GetParmas(msgContent)});
+        console.log(commandObject.run);
+
+        if(commandObject.require){
+          if(self.context[commandObject.require]){
+            self.context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
+          }else{
+            console.log("NO REQUIREMENT!");
+          }
+        }else{
+          self.context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
+        }
       }
     }
   }

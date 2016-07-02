@@ -7,6 +7,7 @@ const CommandHandler = require("./CommandHandler.js");
 const DisnodeVoiceManager = require("./VoiceManager.js");
 const DisnodeBotCommunication = require("./BotCommunication.js");
 const CleverManager = require("./CleverManager.js");
+const ConfigManager = require("./ConfigManager.js");
 const Wolfram = require("./Wolfram.js");
 
 class DiscordBot extends EventEmitter{
@@ -103,7 +104,7 @@ class DiscordBot extends EventEmitter{
       self.command.list = [];
     }
 
-    this.command.handler = new CommandHandler(self.command.prefix, self.command.list);
+    this.command.handler = new CommandHandler(self.command.prefix, self.command.list, self);
   }
 
   addDefaultCommands(){
@@ -113,7 +114,6 @@ class DiscordBot extends EventEmitter{
     }
 
     self.command.list.push({cmd:"test", run: (msg) => this.cmdTest(msg), desc:"Test Command that lists all params.", usage:self.command.prefix + "test [parms]"});
-    self.command.list.push({cmd:"help", run: (msg) => this.cmdHelp(msg), desc:"Displays Help.", usage:self.command.prefix + "help"});
     if(self.clever){
       self.command.list.push({cmd:"clever", run: (msg) => this.cmdCLEVER(msg), desc:"Cleverbot.", usage:self.command.prefix + "clever [Phrase, or new to refresh cleverbot]"});
     }
@@ -126,7 +126,6 @@ class DiscordBot extends EventEmitter{
       self.command.list.push({cmd:"stop", run: (msg) => this.cmdStop(msg), desc:"Stops all audio.", usage:self.command.prefix + "stop"});
     }
     if(self.voice){
-      self.command.list.push({cmd:"jv", run: (msg) => this.cmdJoinVoice(msg), desc:"Joins the voice channel you are connected to.", usage:self.command.prefix + "jv"});
       self.command.list.push({cmd:"lv", run: (msg) => this.cmdLeaveVoice(msg), desc:"Leaves the voice channel you are connected to.", usage:self.command.prefix + "lv"});
       self.command.list.push({cmd:"follow", run: (msg) => this.cmdFollow(msg), desc:"Test Command that lists all params.", usage:self.command.prefix + "follow [parms]"});
       self.command.list.push({cmd:"unfollow", run: (msg) => this.cmdUnfollow(msg), desc:"Test Command that lists all params.", usage:self.command.prefix + "unfollow [parms]"});
@@ -197,6 +196,15 @@ class DiscordBot extends EventEmitter{
     self.communication.manager = new DisnodeBotCommunication(self.bot.user.id);
     self.communication.manager.Start();
   }
+
+  enableConfigManager(options){
+    var self =this;
+    if(!self.config){
+      self.config = {};
+    }
+    self.config.manager = new ConfigManager(options.path);
+  }
+
   cmdWA(parsedMsg){
     var self = this;
     if(!self.wolfram){
@@ -391,6 +399,11 @@ class DiscordBot extends EventEmitter{
       self.bot.sendMessage(parsedMsg.msg.channel, SendString);
     });
 
+  }
+
+  cmdTestConfig(parsedMsg){
+    var self = this;
+    self.bot.sendMessage(parsedMsg.msg.channel, "Test Worked!");
   }
 
 

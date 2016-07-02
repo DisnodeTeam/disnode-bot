@@ -1,0 +1,8 @@
+{
+  "commands": [
+    {"cmd":"testConfig","run": "cmdTestConfig","desc": "Hello World Command","usage":"helloworld"},
+    {"cmd":"help", "run": "cmdHelp", "desc":"Displays Help.", "usage":"help"},
+    {"cmd":"jv", "run":"cmdJoinVoice", "desc":"Joins the voice channel you are connected to.","usage": "jv", "require":"voice"}
+
+  ]
+}

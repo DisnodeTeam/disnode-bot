@@ -6,8 +6,7 @@ bot.on("Bot_Ready", function(){
 
 
     var cmdList = [
-      {cmd:"helloworld",run: test,desc: "Hello World Command",usage:"!"+"helloworld"},
-      {cmd: "help",run: test,desc: "List All Commands",usage:"!"+"help"},
+
     ];
 
 
@@ -15,13 +14,19 @@ bot.on("Bot_Ready", function(){
     bot.enableAudioPlayer({path: './Audio/'});
 
     bot.enableBotCommunication({});
-    bot.enableCleverManager({channelid:"185614233168248833"});
-    bot.enableWolfram({key:"API_KEY_HERE"});
-    
-    bot.enableCommandHandler({prefix: "!",list:cmdList});
-    bot.addDefaultCommands();
-});
+    bot.enableConfigManager({path:"./VictoryBotConfig.json"});
+    bot.config.manager.loadConfig(OnLoad);
 
+
+});
+var OnLoad = function(){
+  console.log("CONFIG LOADED!");
+  bot.enableCleverManager({channelid:"185614233168248833"});
+  bot.enableWolfram({key:"API_KEY_HERE"});
+
+  bot.enableCommandHandler({prefix: "!",list:bot.config.manager.config.commands});
+  bot.addDefaultCommands();
+}
 bot.on("Bot_Init", function () {
   console.log("[VB - BotReady] Bot Init.");
 });
@@ -37,4 +42,12 @@ exports.Start = function () {
 var test = function(msg)
 {
   bot.bot.sendMessage(msg.msg.channel, "TEST!!!!!!");
+}
+var EditConfig = function(msg){
+  bot.config.manager.config[msg.params[0]] = msg.params[1];
+  bot.config.manager.saveConfig();
+}
+var PrintCommand = function(msg){
+    bot.config.manager.loadConfig();
+    bot.bot.sendMessage(msg.msg.channel, JSON.stringify(bot.config.manager.config));
 }
