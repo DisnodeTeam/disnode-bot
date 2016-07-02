@@ -1,8 +1,7 @@
 {
   "commands": [
-    {"cmd":"testConfig","run": "cmdTestConfig","desc": "Hello World Command","usage":"helloworld"},
     {"cmd":"help", "run": "cmdHelp", "desc":"Displays Help.", "usage":"help"},
-    {"cmd":"jv", "run":"cmdJoinVoice", "desc":"Joins the voice channel you are connected to.","usage": "jv", "require":"voice"}
-
+    {"cmd":"jv", "run":"cmdJoinVoice", "desc":"Joins the voice channel you are connected to.","usage": "jv", "require":"voice"},
+    {"cmd":"test", "run": "cmdTest", "desc":"Test Command that lists all params.", "usage":"test [parms]"},
   ]
 }
