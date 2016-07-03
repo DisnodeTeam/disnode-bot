@@ -256,7 +256,7 @@ class DiscordBot extends EventEmitter{
     for (var i = 0; i < self.command.list.length; i++) {
   		var cmd = self.command.list[i];
   		//cmd.cmd, cmd.desc,cmd.usage
-      SendString = SendString + "-"+self.command.prefix+cmd.cmd+" : "+cmd.desc+" - " + cmd.usage + "\n";
+      SendString = SendString + "-"+self.command.prefix+cmd.cmd+" : "+cmd.desc+" - " + self.command.prefix+ cmd.usage + "\n";
   		SendString = SendString + "\n";
   	}
   	SendString = SendString + "```";
