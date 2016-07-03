@@ -1,7 +1,16 @@
 {
   "commands": [
     {"cmd":"help", "run": "cmdHelp", "desc":"Displays Help.", "usage":"help"},
-    {"cmd":"jv", "run":"cmdJoinVoice", "desc":"Joins the voice channel you are connected to.","usage": "jv", "require":"voice"},
+    {"cmd":"jv", "run":"cmdJoinVoice", "desc":"Joins the voice channel you are connected to.","usage": "jv", "require":["voice"]},
     {"cmd":"test", "run": "cmdTest", "desc":"Test Command that lists all params.", "usage":"test [parms]"},
+    {"cmd":"clever", "run": "cmdCLEVER", "desc":"Cleverbot.", "usage":"clever [Phrase, or new to refresh cleverbot]", "require":["clever"]},
+    {"cmd":"wa", "run": "cmdWA", "desc":"Wolfram Alpha Request.", "usage":"wa [Question] [Option1] [Option2]", "require":["wolfram"]},
+    {"cmd":"list", "run": "cmdListAudio", "desc":"Displays list of Audio Files.", "usage":"list [page]", "require":["voice","audioPlayer"]},
+    {"cmd":"play", "run": "cmdPlay", "desc":"Plays an audio file.", "usage":"play [filename] [volume]","require":["voice","audioPlayer"]},
+    {"cmd":"stop", "run": "cmdStop", "desc":"Stops all audio.", "usage":"stop","require":["voice","audioPlayer"]},
+    {"cmd":"lv", "run":"cmdLeaveVoice", "desc":"Leaves the voice channel you are connected to.", "usage":"lv","require":["voice"]},
+    {"cmd":"follow", "run": "cmdFollow", "desc":"Test Command that lists all params.", "usage":"follow [parms]","require":["voice"]},
+    {"cmd":"unfollow", "run": "cmdUnfollow","desc":"Test Command that lists all params.", "usage":"unfollow [parms]","require":["voice"]}
+
   ]
 }

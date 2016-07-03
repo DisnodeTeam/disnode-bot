@@ -112,23 +112,6 @@ class DiscordBot extends EventEmitter{
     if(!self.command.list){
       self.command.list = [];
     }
-
-    if(self.clever){
-      self.command.list.push({cmd:"clever", run: (msg) => this.cmdCLEVER(msg), desc:"Cleverbot.", usage:self.command.prefix + "clever [Phrase, or new to refresh cleverbot]"});
-    }
-    if(self.wolfram){
-      self.command.list.push({cmd:"wa", run: (msg) => this.cmdWA(msg), desc:"Wolfram Alpha Request.", usage:self.command.prefix + "wa [Question] [Option1] [Option2]"});
-    }
-    if(self.audioPlayer && self.voice){
-      self.command.list.push({cmd:"list", run: (msg) => this.cmdListAudio(msg), desc:"Displays list of Audio Files.", usage:self.command.prefix + "list [page]"});
-      self.command.list.push({cmd:"play", run: (msg) => this.cmdPlay(msg), desc:"Plays an audio file.", usage:self.command.prefix + "play [filename] [volume]"});
-      self.command.list.push({cmd:"stop", run: (msg) => this.cmdStop(msg), desc:"Stops all audio.", usage:self.command.prefix + "stop"});
-    }
-    if(self.voice){
-      self.command.list.push({cmd:"lv", run: (msg) => this.cmdLeaveVoice(msg), desc:"Leaves the voice channel you are connected to.", usage:self.command.prefix + "lv"});
-      self.command.list.push({cmd:"follow", run: (msg) => this.cmdFollow(msg), desc:"Test Command that lists all params.", usage:self.command.prefix + "follow [parms]"});
-      self.command.list.push({cmd:"unfollow", run: (msg) => this.cmdUnfollow(msg), desc:"Test Command that lists all params.", usage:self.command.prefix + "unfollow [parms]"});
-    }
     self.command.handler.UpdateList(self.command.list);
   }
   // Enables Audio Player (Takes options obs)
@@ -337,7 +320,7 @@ class DiscordBot extends EventEmitter{
       self.voice.manager.LeaveChannel(id);
       self.bot.sendMessage(parsedMsg.msg.channel, "``` Left the channel you are in! ```");
     }else {
-  		bot.sendMessage(parsedMsg.msg.channel, "``` You are not in a voice Channel ```");
+  		self.bot.sendMessage(parsedMsg.msg.channel, "``` You are not in a voice Channel ```");
   	}
   }
 

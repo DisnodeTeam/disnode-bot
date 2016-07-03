@@ -55,12 +55,21 @@ class CommandHandler{
         console.log(commandObject.run);
 
         if(commandObject.require){
-          if(self.context[commandObject.require]){
+          var foundAllRequies = true;
+
+          for(var i=0;i<commandObject.require.length;i++){
+            if(!self.context[commandObject.require[i]]){
+              foundAllRequies = false;
+            }
+          }
+
+          if(foundAllRequies){
             self.context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
           }else{
-            console.log("NO REQUIREMENT!");
+            console.log("[CommandHandler] Missing Requirements!");
           }
         }else{
+          console.log("[CommandHandler] No Requirements. Running!");
           self.context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
         }
       }
