@@ -7,14 +7,44 @@ class CommandHandler{
   // Prefix: The Command Prefix for this list.
   // List: List of Command Objects
 
-  constructor(prefix,list){
+  constructor(prefix){
     this.prefix = prefix;
-    this.list = list;
     this.contexts = [];
+    this.list = [];
     console.log("[CommandHandler] Init. ");
     console.log("[CommandHandler] |--- Prefix: " + prefix);
-    for (var i = 0; i < list.length; i++) {
-      console.log("[CommandHandler] |--- Command: " + list[i].cmd);
+  }
+
+  LoadList(newList){
+
+    console.log("[CommandHandler] Loading Commands. ");
+    var self = this;
+
+    for (var i = 0; i < newList.length; i++) {
+      console.log(newList.length);
+      console.log("[CommandHandler] |--- Command: " + newList[i].cmd);
+      var currentCmd = newList[i];
+      // RUN: context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
+      var Context = GetContextByName(self.contexts, currentCmd.context);
+      if(Context){
+
+        if(currentCmd.require){
+          if(CheckRequirements(Context.obj, currentCmd.require)){
+            self.list.push(currentCmd);
+            console.log("[CommandHandler] |----- SUCCESS: Met Requirements");
+          }else{
+            console.log("[CommandHandler] |----- FAIL: Missing Requirements");
+          }
+        }else{
+          self.list.push(currentCmd);
+          console.log(i);
+          console.log("[CommandHandler] |----- SUCCESS: No Requirements");
+
+        }
+      }else{
+        console.log("[CommandHandler] |----- FAILED: No Context with Name:" + currentCmd.context);
+      }
+
     }
   }
 
@@ -24,7 +54,7 @@ class CommandHandler{
     console.log("[CommandHandler] Adding new Context: " + name);
   }
 
-  UpdateList(list)
+  AddToList(cmd)
   {
     console.log("[CommandHandler] Updating List. ");
     for (var i = 0; i < list.length; i++) {
@@ -64,27 +94,24 @@ class CommandHandler{
         console.log("CONTEXT: " + context);
 
 
-        if(commandObject.require){
-          var foundAllRequies = true;
-
-          for(var i=0;i<commandObject.require.length;i++){
-            if(!context[commandObject.require[i]]){
-              foundAllRequies = false;
-            }
-          }
-
-          if(foundAllRequies){
-            context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
-          }else{
-            console.log("[CommandHandler] Missing Requirements!");
-          }
-        }else{
-          console.log("[CommandHandler] No Requirements. Running!");
+        if(context){
           context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
         }
       }
     }
   }
+}
+
+function CheckRequirements(context, requirements){
+  var foundAllRequires = true;
+
+  for(var i=0;i<requirements.length;i++){
+    if(!context[requirements[i]]){
+      foundAllRequires = false;
+    }
+  }
+
+  return foundAllRequires;
 }
 
 function GetContextByName(list, name){

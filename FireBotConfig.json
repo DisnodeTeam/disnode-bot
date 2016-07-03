@@ -1,17 +1,17 @@
 {
   "commands": [
-    {"cmd":"help", "run": "cmdHelp", "desc":"Displays Help.", "usage":"help"},
-    {"cmd":"jv", "run":"cmdJoinVoice", "desc":"Joins the voice channel you are connected to.","usage": "jv", "require":["voice"]},
-    {"cmd":"test", "run": "cmdTest", "desc":"Test Command that lists all params.", "usage":"test [parms]"},
-    {"cmd":"clever", "run": "cmdCLEVER", "desc":"Cleverbot.", "usage":"clever [Phrase, or new to refresh cleverbot]", "require":["clever"]},
-    {"cmd":"wa", "run": "cmdWA", "desc":"Wolfram Alpha Request.", "usage":"wa [Question] [Option1] [Option2]", "require":["wolfram"]},
-    {"cmd":"list", "run": "cmdListAudio", "desc":"Displays list of Audio Files.", "usage":"list [page]", "require":["voice","audioPlayer"]},
-    {"cmd":"play", "run": "cmdPlay", "desc":"Plays an audio file.", "usage":"play [filename] [volume]","require":["voice","audioPlayer"]},
-    {"cmd":"stop", "run": "cmdStop", "desc":"Stops all audio.", "usage":"stop","require":["voice","audioPlayer"]},
-    {"cmd":"lv", "run":"cmdLeaveVoice", "desc":"Leaves the voice channel you are connected to.", "usage":"lv","require":["voice"]},
-    {"cmd":"follow", "run": "cmdFollow", "desc":"Test Command that lists all params.", "usage":"follow [parms]","require":["voice"]},
-    {"cmd":"unfollow", "run": "cmdUnfollow","desc":"Test Command that lists all params.", "usage":"unfollow [parms]","require":["voice"]},
-    {"cmd":"yt", "run":"cmdDownloadYT","desc":"Downloads a video as a MP3 using the video ID", "usage":"yt [videoID] [CommandName]","require":["ytmngr"]}
+    {"cmd":"help", "context": "disnode","run": "cmdHelp", "desc":"Displays Help.", "usage":"help"},
+    {"cmd":"jv", "context": "disnode","run":"cmdJoinVoice", "desc":"Joins the voice channel you are connected to.","usage": "jv", "require":["voice"]},
+    {"cmd":"test", "context": "disnode","run": "cmdTest", "desc":"Test Command that lists all params.", "usage":"test [parms]"},
+    {"cmd":"clever", "context": "disnode","run": "cmdCLEVER", "desc":"Cleverbot.", "usage":"clever [Phrase, or new to refresh cleverbot]", "require":["clever"]},
+    {"cmd":"wa", "context": "disnode","run": "cmdWA", "desc":"Wolfram Alpha Request.", "usage":"wa [Question] [Option1] [Option2]", "require":["wolfram"]},
+    {"cmd":"list", "context": "disnode","run": "cmdListAudio", "desc":"Displays list of Audio Files.", "usage":"list [page]", "require":["voice","audioPlayer"]},
+    {"cmd":"play", "context": "disnode","run": "cmdPlay", "desc":"Plays an audio file.", "usage":"play [filename] [volume]","require":["voice","audioPlayer"]},
+    {"cmd":"stop", "context": "disnode","run": "cmdStop", "desc":"Stops all audio.", "usage":"stop","require":["voice","audioPlayer"]},
+    {"cmd":"lv", "context": "disnode","run":"cmdLeaveVoice", "desc":"Leaves the voice channel you are connected to.", "usage":"lv","require":["voice"]},
+    {"cmd":"follow", "context": "disnode","run": "cmdFollow", "desc":"Test Command that lists all params.", "usage":"follow [parms]","require":["voice"]},
+    {"cmd":"unfollow", "context": "disnode","run": "cmdUnfollow","desc":"Test Command that lists all params.", "usage":"unfollow [parms]","require":["voice"]},
+    {"cmd":"yt", "context": "disnode","run":"cmdDownloadYT","desc":"Downloads a video as a MP3 using the video ID", "usage":"yt [videoID] [CommandName]","require":["ytmngr"]}
 
   ]
 }

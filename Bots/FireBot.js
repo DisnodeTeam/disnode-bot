@@ -1,6 +1,6 @@
 var DiscordBot = require("../DisnodeLib/DiscordBot.js");
-var bot = new DiscordBot("a");
-
+var bot = new DiscordBot("");
+var botCommands = {};
 bot.on("Bot_Ready", function(){
     console.log('[FB - BotReady] Bot Ready.');
     bot.enableVoiceManager({voiceEvents:true});
@@ -12,8 +12,9 @@ var OnLoad = function(){
   bot.enableCleverManager({channelid:"185614233168248833"});
   bot.enableWolfram({key:"a"});
   bot.enableYoutubeManager();
-  bot.enableCommandHandler({prefix: "#",list:bot.config.manager.config.commands});
-  bot.addDefaultCommands();
+  bot.enableCommandHandler({prefix: "#");
+  bot.command.handler.AddContext(botCommands,"firebot");
+  bot.command.handler.LoadList(bot.config.manager.config.commands)
 }
 
 bot.on("Bot_Init", function () {
@@ -30,7 +31,7 @@ exports.Start = function () {
   bot.startBot();
 
 };
-var cmdDC = function(msg){
+botCommands.cmdDC = function(msg){
   if (msg.msg.author.name =="FireGamer3"){
 		bot.bot.sendMessage(msg.msg.channel, "``` Disconnecting ```");
 		bot.bot.logout();

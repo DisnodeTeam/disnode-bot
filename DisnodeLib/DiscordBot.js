@@ -122,7 +122,7 @@ class DiscordBot extends EventEmitter{
     }
 
     this.command.handler = new CommandHandler(self.command.prefix, self.command.list);
-    this.command.handler.AddContext(this, "disnode");
+    this.command.handler.AddContext(self, "disnode");
   }
 
   addDefaultCommands(){
@@ -302,9 +302,10 @@ class DiscordBot extends EventEmitter{
   }
   cmdHelp(parsedMsg){
     var self = this;
+
     var SendString = "``` === HELP === \n";
-    for (var i = 0; i < self.command.list.length; i++) {
-  		var cmd = self.command.list[i];
+    for (var i = 0; i < self.command.handler.list.length; i++) {
+  		var cmd = self.command.handler.list[i];
   		//cmd.cmd, cmd.desc,cmd.usage
       SendString = SendString + "-"+self.command.prefix+cmd.cmd+" : "+cmd.desc+" - " + self.command.prefix+ cmd.usage + "\n";
   		SendString = SendString + "\n";

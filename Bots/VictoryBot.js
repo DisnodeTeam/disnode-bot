@@ -5,28 +5,25 @@ bot.on("Bot_Ready", function(){
     console.log('[VB - BotReady] Bot Ready.');
 
 
-    var cmdList = [
-
-    ];
-
-
     bot.enableVoiceManager({voiceEvents:true});
     bot.enableAudioPlayer({path: './Audio/'});
-
+    bot.enableYoutubeManager();
     bot.enableBotCommunication({});
     bot.enableConfigManager({path:"./VictoryBotConfig.json"});
+    //console.log("CONFIG LOADED!");
+    bot.enableCleverManager({channelid:"185614233168248833"});
+    bot.enableWolfram({key:"API_KEY_HERE"});
+
+
     bot.config.manager.loadConfig(OnLoad);
 
 
 });
 var OnLoad = function(){
-  console.log("CONFIG LOADED!");
-  bot.enableCleverManager({channelid:"185614233168248833"});
-  bot.enableWolfram({key:"API_KEY_HERE"});
 
-  bot.enableCommandHandler({prefix: "!",list:bot.config.manager.config.commands});
+  bot.enableCommandHandler({prefix: "!"});
   bot.command.handler.AddContext(botCommands,"victorybot");
-  bot.addDefaultCommands();
+  bot.command.handler.LoadList(bot.config.manager.config.commands)
 }
 bot.on("Bot_Init", function () {
   console.log("[VB - BotReady] Bot Init.");

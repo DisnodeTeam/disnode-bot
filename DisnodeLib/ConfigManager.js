@@ -23,7 +23,7 @@ class ConfigManager {
       console.error(err);
       console.log("[ConfigManager] Config Loaded!");
       self.config = obj;
-      console.dir(obj);
+      //console.dir(obj);
 
       cb();
     });
