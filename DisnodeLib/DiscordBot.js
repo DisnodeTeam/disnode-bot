@@ -298,7 +298,8 @@ class DiscordBot extends EventEmitter{
   }
   cmdTest(parsedMsg){
     var self = this;
-    self.bot.sendMessage(parsedMsg.msg.channel, "TEST!!!!!!");
+
+    self.bot.sendMessage(parsedMsg.msg.channel, "Test Command: " + parsedMsg.params);
   }
   cmdHelp(parsedMsg){
     var self = this;
