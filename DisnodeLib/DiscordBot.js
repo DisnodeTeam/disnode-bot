@@ -121,7 +121,8 @@ class DiscordBot extends EventEmitter{
       self.command.list = [];
     }
 
-    this.command.handler = new CommandHandler(self.command.prefix, self.command.list, self);
+    this.command.handler = new CommandHandler(self.command.prefix, self.command.list);
+    this.command.handler.AddContext(this, "disnode");
   }
 
   addDefaultCommands(){

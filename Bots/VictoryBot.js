@@ -1,6 +1,6 @@
 var DiscordBot = require("../DisnodeLib/DiscordBot.js");
 var bot = new DiscordBot("");
-
+var botCommands = {};
 bot.on("Bot_Ready", function(){
     console.log('[VB - BotReady] Bot Ready.');
 
@@ -25,6 +25,7 @@ var OnLoad = function(){
   bot.enableWolfram({key:"API_KEY_HERE"});
 
   bot.enableCommandHandler({prefix: "!",list:bot.config.manager.config.commands});
+  bot.command.handler.AddContext(botCommands,"victorybot");
   bot.addDefaultCommands();
 }
 bot.on("Bot_Init", function () {
@@ -50,4 +51,8 @@ var EditConfig = function(msg){
 var PrintCommand = function(msg){
     bot.config.manager.loadConfig();
     bot.bot.sendMessage(msg.msg.channel, JSON.stringify(bot.config.manager.config));
+}
+
+botCommands.cmdTestContext = function(msg){
+  bot.bot.sendMessage(msg.msg.channel, "Context Works!");
 }
