@@ -18,11 +18,12 @@ class ConfigManager {
 
   loadConfig(cb){
     var self = this;
-
+    console.log("[ConfigManager]" + self.path);
     jsonfile.readFile(self.path, function(err, obj) {
+      console.error(err);
       console.log("[ConfigManager] Config Loaded!");
       self.config = obj;
-      console.dir(obj );
+      console.dir(obj);
 
       cb();
     });

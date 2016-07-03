@@ -1,21 +1,20 @@
 var DiscordBot = require("../DisnodeLib/DiscordBot.js");
-var bot = new DiscordBot("");
+var bot = new DiscordBot("a");
 
 bot.on("Bot_Ready", function(){
     console.log('[FB - BotReady] Bot Ready.');
     bot.enableVoiceManager({voiceEvents:true});
     bot.enableAudioPlayer({path: './Audio/', maxVolume:2.0});
-    bot.enableCleverManager({channelid:"ChannelID for cleverbot to talk in"});
-    bot.enableWolfram({key:"API_KEY_HERE"});
-
-
-    var cmdList = [
-      {cmd: "dc",run: cmdDC,desc: "Diconnects bot",usage:"#"+"dc"},
-    ];
-
-    bot.enableCommandHandler({prefix: "#",list:cmdList});
-    bot.addDefaultCommands();
+    bot.enableConfigManager({path:"./FireBotConfig.json"});
+    bot.config.manager.loadConfig(OnLoad);
 });
+var OnLoad = function(){
+  bot.enableCleverManager({channelid:"185614233168248833"});
+  bot.enableWolfram({key:"a"});
+  bot.enableYoutubeManager();
+  bot.enableCommandHandler({prefix: "#",list:bot.config.manager.config.commands});
+  bot.addDefaultCommands();
+}
 
 bot.on("Bot_Init", function () {
   console.log("[FB - BotReady] Bot Init.");
