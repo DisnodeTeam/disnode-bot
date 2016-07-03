@@ -1,6 +1,6 @@
 {
   "name": "disnode",
-  "version": "0.0.03",
+  "version": "0.0.05",
   "description": "A Discord.io Wrapper for providing basic functions to Discord Bots.",
   "main": "DiscordLib/Disnode.js",
   "scripts": {
