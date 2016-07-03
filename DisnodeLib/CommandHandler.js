@@ -21,7 +21,6 @@ class CommandHandler{
     var self = this;
 
     for (var i = 0; i < newList.length; i++) {
-      console.log(newList.length);
       console.log("[CommandHandler] |--- Command: " + newList[i].cmd);
       var currentCmd = newList[i];
       // RUN: context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
@@ -91,9 +90,6 @@ class CommandHandler{
         console.log(commandObject.run);
 
         var context = GetContextByName(self.contexts,commandObject.context).obj;
-        console.log("CONTEXT: " + context);
-
-
         if(context){
           context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
         }
