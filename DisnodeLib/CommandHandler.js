@@ -7,15 +7,21 @@ class CommandHandler{
   // Prefix: The Command Prefix for this list.
   // List: List of Command Objects
 
-  constructor(prefix,list, context){
+  constructor(prefix,list){
     this.prefix = prefix;
     this.list = list;
-    this.context = context;
+    this.contexts = [];
     console.log("[CommandHandler] Init. ");
     console.log("[CommandHandler] |--- Prefix: " + prefix);
     for (var i = 0; i < list.length; i++) {
       console.log("[CommandHandler] |--- Command: " + list[i].cmd);
     }
+  }
+
+  AddContext(context, name){
+    var self = this;
+    self.contexts.push({name: name, obj: context});
+    console.log("[CommandHandler] Adding new Context: " + name);
   }
 
   UpdateList(list)
@@ -54,27 +60,42 @@ class CommandHandler{
         // Run the command
         console.log(commandObject.run);
 
+        var context = GetContextByName(self.contexts,commandObject.context).obj;
+        console.log("CONTEXT: " + context);
+
+
         if(commandObject.require){
           var foundAllRequies = true;
 
           for(var i=0;i<commandObject.require.length;i++){
-            if(!self.context[commandObject.require[i]]){
+            if(!context[commandObject.require[i]]){
               foundAllRequies = false;
             }
           }
 
           if(foundAllRequies){
-            self.context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
+            context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
           }else{
             console.log("[CommandHandler] Missing Requirements!");
           }
         }else{
           console.log("[CommandHandler] No Requirements. Running!");
-          self.context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
+          context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
         }
       }
     }
   }
+}
+
+function GetContextByName(list, name){
+  var found;
+  for (var i = 0; i < list.length; i++) {
+    if(list[i].name == name){
+      found =list[i];
+    }
+  }
+
+  return found;
 }
 
 function CheckSpace(toCheck){
