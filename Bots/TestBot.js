@@ -1,4 +1,4 @@
-var DiscordBot = require("../DisnodeLib/DiscordBot.js");
+var DiscordBot = require("../DisnodeLib/Disnode.js");
 var bot = new DiscordBot("");
 var botCommands = {};
 bot.on("Bot_Ready", function(){

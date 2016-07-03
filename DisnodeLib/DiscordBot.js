@@ -11,7 +11,7 @@ const ConfigManager = require("./ConfigManager.js");
 const Wolfram = require("./Wolfram.js");
 const YoutubeManager = require("./YoutubeManager.js")
 
-class DiscordBot extends EventEmitter{
+class Disnode extends EventEmitter{
   constructor(key){
     super();
 
@@ -443,4 +443,4 @@ class DiscordBot extends EventEmitter{
 
 
 }
-module.exports = DiscordBot;
+module.exports = Disnode;
