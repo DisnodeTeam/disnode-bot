@@ -1,35 +1,35 @@
-var DiscordBot = require("../DisnodeLib/Disnode.js");
-var bot = new DiscordBot("");
-var botCommands = {};
-bot.on("Bot_Ready", function(){
+var DisnodeBot = require("../DisnodeLib/Disnode.js"); //defines DisnodeBot
+var testBot = new DisnodeBot(""); //Defines the testBot in the "" is where your discord bot oauth token would go
+var botCommands = {}; //defines an object for local bot commands
+testBot.on("Bot_Ready", function(){ //event emitter called when the bot is ready for init
     console.log('[TEST_BOT - BotReady] Bot Ready.');
-    bot.enableVoiceManager({voiceEvents:true});
-    bot.enableAudioPlayer({path: './Audio/', maxVolume:2.0});
-    bot.enableConfigManager({path:"./TestBotConfig.json"});
-    bot.config.manager.loadConfig(OnLoad);
+    testBot.enableVoiceManager({voiceEvents:true});
+    testBot.enableAudioPlayer({path: './Audio/', maxVolume:2.0});
+    testBot.enableConfigManager({path:"./TestBotConfig.json"});
+    testBot.config.manager.loadConfig(OnLoad);
 });
 var OnLoad = function(){
-  bot.enableCleverManager({channelid:"185614233168248833"});
-  bot.enableWolfram({key:"a"});
-  bot.enableYoutubeManager();
-  bot.enableCommandHandler({prefix: "#"});
+  testBot.enableCleverManager({channelid:"185614233168248833"});
+  testBot.enableWolfram({key:"a"});
+  testBot.enableYoutubeManager();
+  testBot.enableCommandHandler({prefix: "#"});
   bot.command.handler.AddContext(botCommands,"testbot");
-  bot.command.handler.LoadList(bot.config.manager.config.commands)
+  testBot.command.handler.LoadList(testBot.config.manager.config.commands)
 }
 
-bot.on("Bot_Init", function () {
+testBot.on("Bot_Init", function () {
   console.log("[TEST_BOT - BotReady] Bot Init.");
 });
 
 
-bot.on("Bot_RawMessage", function(msg){
+testBot.on("Bot_RawMessage", function(msg){
   console.log("[TEST_BOT - RawMessage] Recieved Raw msg: " + msg.content);
 });
 
 exports.Start = function () {
-  bot.startBot();
+  testBot.startBot();
 };
 
-botCommands.cmdTestContext = function(msg){
-  bot.bot.sendMessage(msg.msg.channel, "THIS WAS CALLED IN THIS CONTEXT " );
+botCommands.cmdTestContext = function(ParsedMsg){
+  testBot.bot.sendMessage(ParsedMsg.msg.channel, "THIS WAS CALLED IN THIS CONTEXT " );
 }
