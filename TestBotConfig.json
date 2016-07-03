@@ -11,7 +11,7 @@
     {"cmd":"lv", "context": "disnode","run":"cmdLeaveVoice", "desc":"Leaves the voice channel you are connected to.", "usage":"lv","require":["voice"]},
     {"cmd":"follow", "context": "disnode","run": "cmdFollow", "desc":"Test Command that lists all params.", "usage":"follow [parms]","require":["voice"]},
     {"cmd":"unfollow", "context": "disnode","run": "cmdUnfollow","desc":"Test Command that lists all params.", "usage":"unfollow [parms]","require":["voice"]},
-    {"cmd":"yt", "context": "disnode","run":"cmdDownloadYT","desc":"Downloads a video as a MP3 using the video ID", "usage":"yt [videoID] [CommandName]","require":["ytmngr"]}
-
+    {"cmd":"yt", "context": "disnode","run":"cmdDownloadYT","desc":"Downloads a video as a MP3 using the video ID", "usage":"yt [videoID] [CommandName]","require":["ytmngr"]},
+    {"cmd":"testcontext", "context": "testbot", "run": "cmdTestContext","desc":"Tests Context Calling!", "usage": "testcontext"}
   ]
 }
