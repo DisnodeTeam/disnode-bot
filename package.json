@@ -1,8 +1,8 @@
 {
   "name": "disnode",
-  "version": "0.0.07",
+  "version": "0.0.08",
   "description": "A Discord.io Wrapper for providing basic functions to Discord Bots.",
-  "main": "./DiscordLib/Disnode.js",
+  "main": "DisnodeLib/Disnode.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
