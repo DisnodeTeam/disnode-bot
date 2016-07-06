@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 const EventEmitter = require("events");
 const Discord = require( "discord.js");
 
@@ -57,9 +57,8 @@ class Disnode extends EventEmitter{
   }
   enableDiscordManager(){
     var self = this;
-    if(!FS){
-      const FS = require('fs');
-    }
+    const FS = require('fs');
+
     if(!self.discordmngr){
       self.discordmngr = {};
     }
@@ -151,9 +150,7 @@ class Disnode extends EventEmitter{
   enableAudioPlayer(options){
     // HACK: Set _this
     var _this = this;
-    if(!FS){
-      const FS = require('fs');
-    }
+    const FS = require('fs');
     // Let Audioplayer, else you will get a null error later.
     _this.audioPlayer = {};
 

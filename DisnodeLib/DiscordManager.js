@@ -34,7 +34,7 @@ class DiscordManager {
   });
   }
   setName(Name, cb){
-    if(Name == undefined || Name == "" || Name = null){
+    if(Name == undefined || Name == "" || Name == null){
       cb("NAME_NULL");
       return;
     }else{
