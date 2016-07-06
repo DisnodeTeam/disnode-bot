@@ -5,13 +5,16 @@ var testBot = new DisnodeBot(""); //Defines the testBot in the "" is where your 
 var botCommands = {}; //defines an object for local bot commands
 testBot.on("Bot_Ready", function(){ //event emitter called when the bot is ready for init
     console.log('[TEST_BOT - BotReady] Bot Ready.');
-    testBot.enableVoiceManager({voiceEvents:true}); //enables voice manager required for audio player
+   //enables voice manager required for audio player
 
     //enables audio player with an object that passes a 'path(String)' and 'maxVolume(float)'
-    testBot.enableAudioPlayer({path: './Audio/', maxVolume:2.0});
+
 
     //enables config manager which is a required library for loading commands
+    testBot.addManager({name: "VoiceManager", options:{voiceEvents:true}});
     testBot.enableConfigManager({path:"./TestBotConfig.json"});
+    testBot.addManager({name:"CommandHandler", options:{prefix: "!"}});
+    testBot.addManager({name:"AudioPlayer", options:{path: './Audio/', maxVolume:2.0}});
 
     //loads config from previous given path and executes 'OnLoad' after loading the config
     testBot.config.manager.loadConfig(OnLoad);
@@ -27,13 +30,14 @@ var OnLoad = function(){
   testBot.enableYoutubeManager();
 
   //enables the command handler which allows for recognizing commands from regular messages takes and object with the command prefix
-  testBot.enableCommandHandler({prefix: "#"});
+testBot.postLoad();
 
   //setting a command context for command written in the bot. passes in an object that contains local command functions
-  testBot.command.handler.AddContext(botCommands,"testbot");
+  testBot.CommandHandler.AddContext(botCommands,"testbot");
 
   //loads the command list pulled from the config manager
-  testBot.command.handler.LoadList(testBot.config.manager.config.commands)
+  testBot.CommandHandler.LoadList(testBot.config.manager.config.commands)
+
 }
 
 testBot.on("Bot_Init", function () { //event emitter that is called before bot ready

@@ -55,6 +55,25 @@ class Disnode extends EventEmitter{
     }
     this.emit("Bot_RawMessage", msg);
   }
+
+  addManager(data){
+    var self = this;
+    var path;
+    var option = data.options;
+    option.bot = self;
+
+    if(data.path){
+      path = data.path;
+    }else{
+      path = "./"+data.name+".js";
+    }
+
+    self[data.name] = {};
+    self[data.name].package = require(path);
+    self[data.name] = new self[data.name].package(option);
+
+  }
+
   enableDiscordManager(){
     var self = this;
     const FS = require('fs');
@@ -114,25 +133,12 @@ class Disnode extends EventEmitter{
     self.clever.manager = new CleverManager(self.clever.bot);
     Cleverbot.prepare(function(){});
   }
-  enableCommandHandler(options){
+  postLoad(){
     var self = this;
-
-    if(!self.command){
-      self.command = {};
-    }
-    if(options.prefix){
-      self.command.prefix = options.prefix;
-    }else{
-      self.command.prefix = "!"
-    }
-    if(options.list){
-      self.command.list = options.list;
-    }else{
-      self.command.list = [];
+    if(self.CommandHandler){
+      this.CommandHandler.AddContext(self, "disnode");
     }
 
-    this.command.handler = new CommandHandler(self.command.prefix, self.command.list);
-    this.command.handler.AddContext(self, "disnode");
   }
 
   addDefaultCommands(){
@@ -142,60 +148,7 @@ class Disnode extends EventEmitter{
     }
     self.command.handler.UpdateList(self.command.list);
   }
-  // Enables Audio Player (Takes options obs)
-  // Options For AudioPlayer
-  // - path: Path of audio files
-  // - maxVolume: -1 (no Max), Value to restrict volume too
-  // - defaultVolume: Default Play Volume
-  enableAudioPlayer(options){
-    // HACK: Set _this
-    var _this = this;
-    const FS = require('fs');
-    // Let Audioplayer, else you will get a null error later.
-    _this.audioPlayer = {};
 
-    if(!_this.voice){
-      console.log("[WARN] Couldn't find a VoiceManager, (was this initialized before VoiceManager?) VoiceManager is required to join and leave voice channels to play audio on");
-    }
-    // Check if there is the path varible
-    if(options.path){
-      // If there is a path, set it
-      _this.audioPlayer.path = options.path;
-    }else{
-      // Else set it to the default
-      _this.audioPlayer.path = "./Audio/";
-    }
-    if(options.maxVolume){
-      if(options.maxVolume == -1){
-        _this.audioPlayer.maxVolume = 9999999;
-      }else{
-        _this.audioPlayer.maxVolume = options.maxVolume;
-      }
-    }else{
-      _this.audioPlayer.maxVolume = 2.0;
-    }
-    if(options.defaultVolume){
-      _this.audioPlayer.defaultVolume = options.defaultVolume;
-    }else{
-      _this.audioPlayer.defaultVolume = 0.8;
-    }
-    //Create Audio Player
-    _this.audioPlayer.player = new DisnodeAudioPlayer(_this.bot, FS, _this, this.audioPlayer.path);
-  }
-
-  enableVoiceManager(options){
-    var self = this;
-    if(!self.voice){
-      self.voice = {};
-    }
-    self.voice.manager = new DisnodeVoiceManager(self.bot);
-
-    if(options.voiceEvents){
-      self.voice.voiceEvents = true;
-      self.bot.on("voiceJoin", (c,u)=>self.voice.manager.OnVoiceJoin(c,u));
-      self.bot.on("voiceLeave", (c,u)=>self.voice.manager.OnVoiceLeave(c,u));
-    }
-  }
 
   enableBotCommunication(options){
     var self = this;

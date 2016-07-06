@@ -1,13 +1,39 @@
 "use strict"
 
 const walk = require('walk');
-
+const fs = require("fs");
 class AudioPlayer { //Each of the Library files except Disnode.js are a class based file to keep it independent
-	constructor(bot, fs, DiscordBOT, path){
-		this.bot = bot;
-		this.fs = fs;
-		this.DiscordBOT = DiscordBOT;
-		this.path = path;
+	constructor(options){
+		var self = this;
+    const FS = require('fs');
+    // Let Audioplayer, else you will get a null error later.
+    self.audioPlayer = {};
+
+    // Check if there is the path varible
+    if(options.path){
+      // If there is a path, set it
+      self.path = options.path;
+    }else{
+      // Else set it to the default
+      self.path = "./Audio/";
+    }
+    if(options.maxVolume){
+      if(options.maxVolume == -1){
+        self.audioPlayer.maxVolume = 9999999;
+      }else{
+        self.audioPlayer.maxVolume = options.maxVolume;
+      }
+    }else{
+      self.audioPlayer.maxVolume = 2.0;
+    }
+    if(options.defaultVolume){
+      self.audioPlayer.defaultVolume = options.defaultVolume;
+    }else{
+      self.audioPlayer.defaultVolume = 0.8;
+    }
+
+		this.bot = options.bot;
+		this.DiscordBOT = options.bot.bot;
 		console.log("[AudioPlayer] Init Audio Player");
 	}
 	playFile(name, parsedMsg, parms, defaultVolume, maxVolume, cb){ //Plays an audio file
