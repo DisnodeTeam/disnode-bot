@@ -279,18 +279,18 @@ class Disnode extends EventEmitter{
   }
   cmdPlay(parsedMsg){
     var self = this;
-    if(!self.audioPlayer && !self.audioPlayer.player){
+    if(!self.audioPlayer){
       self.bot.sendMessage(parsedMsg.msg.channel, "``` Audio Player not Enabled! ```");
       return;
     }
-    if(!self.voice && !self.voice.manager){
+    if(!self.VoiceManager){
       self.bot.sendMessage(parsedMsg.msg.channel, "``` VoiceManager not Enabled! (VoiceManager is required for AudioPlayer) ```");
       return;
     }
 
     var fileName = parsedMsg.params[0];
     self.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3 ```");
-    self.audioPlayer.player.playFile(fileName, parsedMsg, parsedMsg.params, self.audioPlayer.defaultVolume, self.audioPlayer.maxVolume,function(text){
+    self.audioPlayer.playFile(fileName, parsedMsg, parsedMsg.params, self.audioPlayer.defaultVolume, self.audioPlayer.maxVolume,function(text){
       if(text === "loud"){
         self.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.audioPlayer.maxVolume + "! Remains default (" + self.audioPlayer.defaultVolume +") ```");
       }
@@ -301,17 +301,17 @@ class Disnode extends EventEmitter{
   }
   cmdStop(parsedMsg){
     var self = this;
-    if(!self.audioPlayer && !self.audioPlayer.player){
+    if(!self.audioPlayer){
       self.bot.sendMessage(parsedMsg.msg.channel, "``` Audio Player not Enabled! ```");
       return;
     }
-    if(!self.voice && !self.voice.manager){
+    if(!self.VoiceManager){
       self.bot.sendMessage(parsedMsg.msg.channel, "``` VoiceManager not Enabled! (VoiceManager is required for AudioPlayer) ```");
       return;
     }
 
     self.bot.sendMessage(parsedMsg.msg.channel, "``` Playback stopped! ```");
-    self.audioPlayer.player.stopPlaying(parsedMsg, function cb(text){
+    self.audioPlayer.stopPlaying(parsedMsg, function cb(text){
       if(text === "notfound"){
         self.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
       }
@@ -321,7 +321,7 @@ class Disnode extends EventEmitter{
     var self = this;
   	if(parsedMsg.msg.author.voiceChannel){
   		var id = parsedMsg.msg.author.voiceChannel;
-  		self.voice.manager.JoinChannelWithId(id);
+  		self.VoiceManager.JoinChannelWithId(id);
   		self.bot.sendMessage(parsedMsg.msg.channel, "``` Joined the channel you are in! ```");
   	}else {
   		self.bot.sendMessage(parsedMsg.msg.channel, "``` You are not in a voice Channel ```");
@@ -332,7 +332,7 @@ class Disnode extends EventEmitter{
     var self = this;
     if (parsedMsg.msg.author.voiceChannel){
   		var id = parsedMsg.msg.author.voiceChannel;
-      self.voice.manager.LeaveChannel(id);
+      self.VoiceManager.LeaveChannel(id);
       self.bot.sendMessage(parsedMsg.msg.channel, "``` Left the channel you are in! ```");
     }else {
   		self.bot.sendMessage(parsedMsg.msg.channel, "``` You are not in a voice Channel ```");
@@ -341,9 +341,9 @@ class Disnode extends EventEmitter{
 
   cmdFollow(parsedMsg){
     var self = this;
-    if(self.voice && self.voice.manager){
-      if(self.voice.voiceEvents){
-        self.voice.manager.Follow(parsedMsg.msg.author);
+    if(self.VoiceManager){
+      if(self.VoiceManager.voiceEvents){
+        self.VoiceManager.Follow(parsedMsg.msg.author);
         console.log("[VoiceManager - CmdFollow ] Following: " + parsedMsg.msg.author.username);
         self.bot.sendMessage(parsedMsg.msg.channel, "```Following: " + parsedMsg.msg.author.username+"```")
       }else{
@@ -356,9 +356,9 @@ class Disnode extends EventEmitter{
 
   cmdUnfollow(parsedMsg){
     var self = this;
-    if(self.voice && self.voice.manager){
-      if(self.voice.voiceEvents){
-        self.voice.manager.Follow(parsedMsg.msg.author);
+    if(self.VoiceManager){
+      if(self.VoiceManager.voiceEvents){
+        self.VoiceManager.Follow(parsedMsg.msg.author);
         console.log("[VoiceManager - cmdUnfollow ] Unfollow: " + parsedMsg.msg.author.username);
         self.bot.sendMessage(parsedMsg.msg.channel, "```Unfollow: " + parsedMsg.msg.author.username+"```")
       }else{
@@ -381,7 +381,7 @@ class Disnode extends EventEmitter{
     var CurrentIndex = 0;
 
     var SendString = "``` === AUDIO CLIPS (Page: "+Page+")=== \n";
-    self.audioPlayer.player.listAll("./Audio/", function(name){
+    self.audioPlayer.listAll("./Audio/", function(name){
       CurrentIndex++;
       if(CurrentIndex >= Start)
       {

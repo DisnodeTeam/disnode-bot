@@ -32,8 +32,8 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
       self.audioPlayer.defaultVolume = 0.8;
     }
 
-		this.bot = options.bot;
-		this.DiscordBOT = options.bot.bot;
+		this.bot = options.bot.bot;
+		this.DiscordBOT = options.bot;
 		console.log("[AudioPlayer] Init Audio Player");
 	}
 	playFile(name, parsedMsg, parms, defaultVolume, maxVolume, cb){ //Plays an audio file
