@@ -371,7 +371,7 @@ class Disnode extends EventEmitter{
   		self.voice.manager.JoinChannelWithId(id);
   		self.bot.sendMessage(parsedMsg.msg.channel, "``` Joined the channel you are in! ```");
   	}else {
-  		bot.sendMessage(parsedMsg.msg.channel, "``` You are not in a voice Channel ```");
+  		self.bot.sendMessage(parsedMsg.msg.channel, "``` You are not in a voice Channel ```");
   	}
 
   }
