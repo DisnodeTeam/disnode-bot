@@ -1,4 +1,4 @@
-"use strict";
+"use strict"
 const EventEmitter = require("events");
 const Discord = require( "discord.js");
 
@@ -9,7 +9,8 @@ const DisnodeBotCommunication = require("./BotCommunication.js");
 const CleverManager = require("./CleverManager.js");
 const ConfigManager = require("./ConfigManager.js");
 const Wolfram = require("./Wolfram.js");
-const YoutubeManager = require("./YoutubeManager.js")
+const YoutubeManager = require("./YoutubeManager.js");
+const DiscordManager = require("./DiscordManager.js");
 
 class Disnode extends EventEmitter{
   constructor(key){
@@ -53,6 +54,16 @@ class Disnode extends EventEmitter{
       self.command.handler.RunMessage(msg);
     }
     this.emit("Bot_RawMessage", msg);
+  }
+  enableDiscordManager(){
+    var self = this;
+    if(!FS){
+      const FS = require('fs');
+    }
+    if(!self.discordmngr){
+      self.discordmngr = {};
+    }
+    self.discordmngr = new DiscordManager(self.bot,FS);
   }
   enableYoutubeManager(){
     var self = this;
@@ -140,7 +151,9 @@ class Disnode extends EventEmitter{
   enableAudioPlayer(options){
     // HACK: Set _this
     var _this = this;
-    const FS = require('fs');
+    if(!FS){
+      const FS = require('fs');
+    }
     // Let Audioplayer, else you will get a null error later.
     _this.audioPlayer = {};
 
