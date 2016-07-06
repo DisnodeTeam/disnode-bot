@@ -6,15 +6,15 @@ var botCommands = {}; //defines an object for local bot commands
 testBot.on("Bot_Ready", function(){ //event emitter called when the bot is ready for init
     console.log('[TEST_BOT - BotReady] Bot Ready.');
    //enables voice manager required for audio player
-
-    //enables audio player with an object that passes a 'path(String)' and 'maxVolume(float)'
-
+   testBot.addManager({name: "VoiceManager", options:{voiceEvents:true}});
+   //enables audio player with an object that passes a 'path(String)' and 'maxVolume(float)'
+   testBot.addManager({name:"AudioPlayer", options:{path: './Audio/', maxVolume:2.0}});
 
     //enables config manager which is a required library for loading commands
-    testBot.addManager({name: "VoiceManager", options:{voiceEvents:true}});
+
     testBot.enableConfigManager({path:"./TestBotConfig.json"});
     testBot.addManager({name:"CommandHandler", options:{prefix: "!"}});
-    testBot.addManager({name:"AudioPlayer", options:{path: './Audio/', maxVolume:2.0}});
+
 
     //loads config from previous given path and executes 'OnLoad' after loading the config
     testBot.config.manager.loadConfig(OnLoad);

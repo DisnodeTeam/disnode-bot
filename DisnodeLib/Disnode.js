@@ -50,8 +50,8 @@ class Disnode extends EventEmitter{
   botRawMessage(msg){
     var self = this;
     self.cleverMessage(msg);
-    if(self.command && self.command.handler){
-      self.command.handler.RunMessage(msg);
+    if(self.CommandHandler){
+      self.CommandHandler.RunMessage(msg);
     }
     this.emit("Bot_RawMessage", msg);
   }
@@ -143,10 +143,10 @@ class Disnode extends EventEmitter{
 
   addDefaultCommands(){
     var self = this;
-    if(!self.command.list){
-      self.command.list = [];
+    if(!self.CommandHandler.list){
+      self.CommandHandler.list = [];
     }
-    self.command.handler.UpdateList(self.command.list);
+    self.CommandHandler.UpdateList(self.CommandHandler.list);
   }
 
 
@@ -186,7 +186,7 @@ class Disnode extends EventEmitter{
     });
 
     self.ytmngr.manager.SetOnFinished(function(data){
-      self.bot.updateMessage(progressMessage, "``` Finished. Use '" + self.command.prefix + "play "+file+"'```");
+      self.bot.updateMessage(progressMessage, "``` Finished. Use '" + self.CommandHandler.prefix + "play "+file+"'```");
     });
     self.ytmngr.manager.SetOnError(function(error){
       self.bot.updateMessage(progressMessage, error);
@@ -268,10 +268,10 @@ class Disnode extends EventEmitter{
     var self = this;
 
     var SendString = "``` === HELP === \n";
-    for (var i = 0; i < self.command.handler.list.length; i++) {
-  		var cmd = self.command.handler.list[i];
+    for (var i = 0; i < self.CommandHandler.list.length; i++) {
+  		var cmd = self.CommandHandler.list[i];
   		//cmd.cmd, cmd.desc,cmd.usage
-      SendString = SendString + "-"+self.command.prefix+cmd.cmd+" : "+cmd.desc+" - " + self.command.prefix+ cmd.usage + "\n";
+      SendString = SendString + "-"+self.CommandHandler.prefix+cmd.cmd+" : "+cmd.desc+" - " + self.CommandHandler.prefix+ cmd.usage + "\n";
   		SendString = SendString + "\n";
   	}
   	SendString = SendString + "```";
