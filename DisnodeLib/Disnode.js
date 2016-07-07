@@ -60,7 +60,7 @@ class Disnode extends EventEmitter{
     var self = this;
     var path;
     var option = data.options;
-    option.bot = self;
+    option.disnode = self;
 
     if(data.path){
       path = data.path;

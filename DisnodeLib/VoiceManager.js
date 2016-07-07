@@ -2,7 +2,7 @@
 // Each VoiceManager manages one Voice Connection
 class VoiceManager {
   constructor(options){
-    this.bot = options.bot.bot;
+    this.bot = options.disnode.bot;
 
     if(options.voiceEvents){
        options.voiceEvents = true;

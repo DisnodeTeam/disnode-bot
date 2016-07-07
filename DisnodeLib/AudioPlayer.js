@@ -32,8 +32,8 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
       self.audioPlayer.defaultVolume = 0.8;
     }
 
-		this.bot = options.bot.bot;
-		this.DiscordBOT = options.bot;
+		this.bot = options.disnode.bot;
+		this.DisnodeBOT = options.disnode;
 		console.log("[AudioPlayer] Init Audio Player");
 	}
 	playFile(name, parsedMsg, parms, defaultVolume, maxVolume, cb){ //Plays an audio file
@@ -41,7 +41,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 
 		var found = false;
 		var id;
-		self.DiscordBOT.voice.manager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+		self.DisnodeBOT.voice.manager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
 			id = returnID;
 			if(id == 0){
 				found = false;
@@ -96,7 +96,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		var self = this;
 		var found = false;
 		var id;
-		self.DiscordBOT.voice.manager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+		self.DisnodeBOT.voice.manager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
 			id = returnID;
 			if(id == 0){
 				found = false;
