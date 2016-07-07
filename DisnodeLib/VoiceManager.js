@@ -1,8 +1,17 @@
 "use strict"
 // Each VoiceManager manages one Voice Connection
 class VoiceManager {
-  constructor(bot){
-    this.bot = bot;
+  constructor(options){
+    this.bot = options.disnode.bot;
+
+    if(options.voiceEvents){
+       options.voiceEvents = true;
+       options.disnode.on("voiceJoin", (c,u)=>self.OnVoiceJoin(c,u));
+       options.disnode.on("voiceLeave", (c,u)=>self.OnVoiceLeave(c,u));
+    }else{
+      this.voiceEvents = options.voiceEvents;
+    }
+
     this.retry = true;
     console.log("[VoiceManager] Init.");
   }

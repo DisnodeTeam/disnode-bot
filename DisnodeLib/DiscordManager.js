@@ -1,8 +1,9 @@
 "use strict"
 class DiscordManager {
-  constructor(bot, fs){
-    this.bot = bot;
-    this.fs = fs;
+  constructor(options){
+    const FS = require('fs');
+    this.bot = options.disnode.bot;
+    this.fs = FS;
   }
   setGame(Game, cb){
     var self = this;

@@ -2,9 +2,9 @@
 const jsonfile = require('jsonfile');
 class ConfigManager {
 
-  constructor(path){
+  constructor(options){
     this.config = {};
-    this.path = path;
+    this.path = options.path;
 
   }
 

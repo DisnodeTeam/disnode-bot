@@ -50,152 +50,45 @@ class Disnode extends EventEmitter{
   botRawMessage(msg){
     var self = this;
     self.cleverMessage(msg);
-    if(self.command && self.command.handler){
-      self.command.handler.RunMessage(msg);
+    if(self.CommandHandler){
+      self.CommandHandler.RunMessage(msg);
     }
     this.emit("Bot_RawMessage", msg);
   }
-  enableDiscordManager(){
-    var self = this;
-    const FS = require('fs');
 
-    if(!self.discordmngr){
-      self.discordmngr = {};
-    }
-    self.discordmngr = new DiscordManager(self.bot,FS);
-  }
-  enableYoutubeManager(){
+  addManager(data){
     var self = this;
-    const YoutubeMp3Downloader = require('youtube-mp3-downloader');
-    console.log("[YTMngr] Init");
-    if (!self.ytmngr) {
-      self.ytmngr = {}
-    }
-    var YD = new YoutubeMp3Downloader({
-      "ffmpegPath": "./libmeg/bin/ffmpeg.exe", // Where is the FFmpeg binary located?
-      "outputPath": "./audio/", // Where should the downloaded and encoded files be stored?
-      "youtubeVideoQuality": "highest", // What video quality should be used?
-      "queueParallelism": 2, // How many parallel downloads/encodes should be started?
-      "progressTimeout": 1000 // How long should be the interval of the progress reports
-    });
-    self.ytmngr.manager = new YoutubeManager(YD);
-  }
-  enableWolfram(options){
-    var self = this;
-    const WolframAPI = require('wolfram-alpha');
-    console.log("[Wolfram] Init");
-    if(!self.wolfram){
-      self.wolfram = {};
-    }
-    if(options.key){
-      self.wolfram.key = options.key;
-    }else{
-      console.log("[Wolfram INIT ERROR] No \'key\' found in options object, cannot use wolfram requests without an API KEY");
-      return;
-    }
-    self.wolfram.api = WolframAPI.createClient(self.wolfram.key);
-    self.wolfram.manager = new Wolfram(self.wolfram.api);
-  }
-  enableCleverManager(options){
-    var self = this;
-    const Cleverbot = require('cleverbot-node');
-    console.log("[Cleverbot] Init");
-    if(!self.clever){
-      self.clever = {};
-    }
-    if(options.channelid){
-      self.clever.channelid = options.channelid;
-    }else{
-      console.log("[Cleverbot INIT ERROR] No \'channelid\' found in options object, cannot use Cleverbot without a channelid");
-      return;
-    }
-    self.clever.bot = new Cleverbot;
-    self.clever.enabled = false;
-    self.clever.manager = new CleverManager(self.clever.bot);
-    Cleverbot.prepare(function(){});
-  }
-  enableCommandHandler(options){
-    var self = this;
+    var path;
+    var option = data.options;
+    option.disnode = self;
 
-    if(!self.command){
-      self.command = {};
-    }
-    if(options.prefix){
-      self.command.prefix = options.prefix;
+    if(data.path){
+      path = data.path;
     }else{
-      self.command.prefix = "!"
-    }
-    if(options.list){
-      self.command.list = options.list;
-    }else{
-      self.command.list = [];
+      path = "./"+data.name+".js";
     }
 
-    this.command.handler = new CommandHandler(self.command.prefix, self.command.list);
-    this.command.handler.AddContext(self, "disnode");
+    self[data.name] = {};
+    self[data.name].package = require(path);
+    self[data.name] = new self[data.name].package(option);
+
+  }
+  postLoad(){
+    var self = this;
+    if(self.CommandHandler){
+      this.CommandHandler.AddContext(self, "disnode");
+    }
+    //console.dir(self.YoutubeManager);
   }
 
   addDefaultCommands(){
     var self = this;
-    if(!self.command.list){
-      self.command.list = [];
+    if(!self.CommandHandler.list){
+      self.CommandHandler.list = [];
     }
-    self.command.handler.UpdateList(self.command.list);
-  }
-  // Enables Audio Player (Takes options obs)
-  // Options For AudioPlayer
-  // - path: Path of audio files
-  // - maxVolume: -1 (no Max), Value to restrict volume too
-  // - defaultVolume: Default Play Volume
-  enableAudioPlayer(options){
-    // HACK: Set _this
-    var _this = this;
-    const FS = require('fs');
-    // Let Audioplayer, else you will get a null error later.
-    _this.audioPlayer = {};
-
-    if(!_this.voice){
-      console.log("[WARN] Couldn't find a VoiceManager, (was this initialized before VoiceManager?) VoiceManager is required to join and leave voice channels to play audio on");
-    }
-    // Check if there is the path varible
-    if(options.path){
-      // If there is a path, set it
-      _this.audioPlayer.path = options.path;
-    }else{
-      // Else set it to the default
-      _this.audioPlayer.path = "./Audio/";
-    }
-    if(options.maxVolume){
-      if(options.maxVolume == -1){
-        _this.audioPlayer.maxVolume = 9999999;
-      }else{
-        _this.audioPlayer.maxVolume = options.maxVolume;
-      }
-    }else{
-      _this.audioPlayer.maxVolume = 2.0;
-    }
-    if(options.defaultVolume){
-      _this.audioPlayer.defaultVolume = options.defaultVolume;
-    }else{
-      _this.audioPlayer.defaultVolume = 0.8;
-    }
-    //Create Audio Player
-    _this.audioPlayer.player = new DisnodeAudioPlayer(_this.bot, FS, _this, this.audioPlayer.path);
+    self.CommandHandler.UpdateList(self.CommandHandler.list);
   }
 
-  enableVoiceManager(options){
-    var self = this;
-    if(!self.voice){
-      self.voice = {};
-    }
-    self.voice.manager = new DisnodeVoiceManager(self.bot);
-
-    if(options.voiceEvents){
-      self.voice.voiceEvents = true;
-      self.bot.on("voiceJoin", (c,u)=>self.voice.manager.OnVoiceJoin(c,u));
-      self.bot.on("voiceLeave", (c,u)=>self.voice.manager.OnVoiceLeave(c,u));
-    }
-  }
 
   enableBotCommunication(options){
     var self = this;
@@ -205,14 +98,6 @@ class Disnode extends EventEmitter{
 
     self.communication.manager = new DisnodeBotCommunication(self.bot.user.id);
     self.communication.manager.Start();
-  }
-
-  enableConfigManager(options){
-    var self =this;
-    if(!self.config){
-      self.config = {};
-    }
-    self.config.manager = new ConfigManager(options.path);
   }
   cmdDownloadYT(parsedMsg) {
     var msg = parsedMsg.msg.content;
@@ -232,24 +117,24 @@ class Disnode extends EventEmitter{
       console.log(err);
     });
 
-    self.ytmngr.manager.SetOnFinished(function(data){
-      self.bot.updateMessage(progressMessage, "``` Finished. Use '" + self.command.prefix + "play "+file+"'```");
+    self.YoutubeManager.SetOnFinished(function(data){
+      self.bot.updateMessage(progressMessage, "``` Finished. Use '" + self.CommandHandler.prefix + "play "+file+"'```");
     });
-    self.ytmngr.manager.SetOnError(function(error){
+    self.YoutubeManager.SetOnError(function(error){
       self.bot.updateMessage(progressMessage, error);
     });
-    self.ytmngr.manager.SetOnProgess(function(progress){
+    self.YoutubeManager.SetOnProgess(function(progress){
       console.log(progress.progress.percentage);
       if(progress.progress.percentage != 100){
         var percent = Math.round(progress.progress.percentage);
         //bot.updateMessage(progressMessage, "```Downloading..."+percent + "%```");
       }
     });
-    self.ytmngr.manager.Download(link, file);
+    self.YoutubeManager.Download(link, file);
   }
   cmdWA(parsedMsg){
     var self = this;
-    if(!self.wolfram){
+    if(!self.Wolfram){
       self.bot.sendMessage(parsedMsg.msg.channel, "Wolfram is not enabled on this bot");
       return;
     }
@@ -259,8 +144,9 @@ class Disnode extends EventEmitter{
   		wolfmsg = sent;
   		console.log(err);
   	});
-  	self.wolfram.manager.makeRequest(parsedMsg.params, "img", function(text){
+  	self.Wolfram.makeRequest(parsedMsg.params, "img", function(text){
       if(text === "NO_QUESTION"){
+        console.log("[Wolfram] No Question!");
         self.bot.updateMessage(wolfmsg, "```You didn't put a question in for wolfram to answer!```");
       }else if(text === "LOOKUP_ERROR"){
         self.bot.updateMessage(wolfmsg, "```There was an error when looking up your question sorry!```");
@@ -271,35 +157,35 @@ class Disnode extends EventEmitter{
   }
   cmdCLEVER(parsedMsg){
     var self = this;
-    if(!self.clever){
+    if(!self.CleverManager){
       self.bot.sendMessage(parsedMsg.msg.channel, "Cleverbot is not enabled on this bot");
       return;
     }
 
     if(parsedMsg.params[0] == "new"){
-      self.clever.bot = new Cleverbot;
+      self.CleverManager.cb = new Cleverbot;
       self.bot.sendMessage(parsedMsg.msg.channel, "```Cleverbot has been Refreshed```");
     }else{
-      if(self.clever.enabled){
-        self.clever.enabled = false;
+      if(self.CleverManager.enabled){
+        self.CleverManager.enabled = false;
         self.bot.sendMessage(parsedMsg.msg.channel, "```Cleverbot is no longer active```");
       }else {
-        self.clever.enabled = true;
-        self.bot.sendMessage(self.clever.channelid, parsedMsg.params[0]);
+        self.CleverManager.enabled = true;
+        self.bot.sendMessage(self.CleverManager.channelid, parsedMsg.params[0]);
 
       }
     }
   }
   cleverMessage(msg){
     var self = this;
-    if(!self.clever){
+    if(!self.CleverManager){
       return;
     }
 
     if(msg.author.name == self.bot.user.username){
-      if(self.clever.enabled && msg.channel.id == self.clever.channelid){
+      if(self.CleverManager.enabled && msg.channel.id == self.CleverManager.channelid){
         setTimeout(function f(){
-          self.clever.manager.sendMsg(msg.content,function cb(reply){
+          self.CleverManager.sendMsg(msg.content,function cb(reply){
             self.bot.sendMessage(msg.channel, reply);
           });
         }, 1500);
@@ -315,10 +201,10 @@ class Disnode extends EventEmitter{
     var self = this;
 
     var SendString = "``` === HELP === \n";
-    for (var i = 0; i < self.command.handler.list.length; i++) {
-  		var cmd = self.command.handler.list[i];
+    for (var i = 0; i < self.CommandHandler.list.length; i++) {
+  		var cmd = self.CommandHandler.list[i];
   		//cmd.cmd, cmd.desc,cmd.usage
-      SendString = SendString + "-"+self.command.prefix+cmd.cmd+" : "+cmd.desc+" - " + self.command.prefix+ cmd.usage + "\n";
+      SendString = SendString + "-"+self.CommandHandler.prefix+cmd.cmd+" : "+cmd.desc+" - " + self.CommandHandler.prefix+ cmd.usage + "\n";
   		SendString = SendString + "\n";
   	}
   	SendString = SendString + "```";
@@ -326,18 +212,18 @@ class Disnode extends EventEmitter{
   }
   cmdPlay(parsedMsg){
     var self = this;
-    if(!self.audioPlayer && !self.audioPlayer.player){
+    if(!self.audioPlayer){
       self.bot.sendMessage(parsedMsg.msg.channel, "``` Audio Player not Enabled! ```");
       return;
     }
-    if(!self.voice && !self.voice.manager){
+    if(!self.VoiceManager){
       self.bot.sendMessage(parsedMsg.msg.channel, "``` VoiceManager not Enabled! (VoiceManager is required for AudioPlayer) ```");
       return;
     }
 
     var fileName = parsedMsg.params[0];
     self.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3 ```");
-    self.audioPlayer.player.playFile(fileName, parsedMsg, parsedMsg.params, self.audioPlayer.defaultVolume, self.audioPlayer.maxVolume,function(text){
+    self.audioPlayer.playFile(fileName, parsedMsg, parsedMsg.params, self.audioPlayer.defaultVolume, self.audioPlayer.maxVolume,function(text){
       if(text === "loud"){
         self.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.audioPlayer.maxVolume + "! Remains default (" + self.audioPlayer.defaultVolume +") ```");
       }
@@ -348,17 +234,17 @@ class Disnode extends EventEmitter{
   }
   cmdStop(parsedMsg){
     var self = this;
-    if(!self.audioPlayer && !self.audioPlayer.player){
+    if(!self.audioPlayer){
       self.bot.sendMessage(parsedMsg.msg.channel, "``` Audio Player not Enabled! ```");
       return;
     }
-    if(!self.voice && !self.voice.manager){
+    if(!self.VoiceManager){
       self.bot.sendMessage(parsedMsg.msg.channel, "``` VoiceManager not Enabled! (VoiceManager is required for AudioPlayer) ```");
       return;
     }
 
     self.bot.sendMessage(parsedMsg.msg.channel, "``` Playback stopped! ```");
-    self.audioPlayer.player.stopPlaying(parsedMsg, function cb(text){
+    self.audioPlayer.stopPlaying(parsedMsg, function cb(text){
       if(text === "notfound"){
         self.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
       }
@@ -368,7 +254,7 @@ class Disnode extends EventEmitter{
     var self = this;
   	if(parsedMsg.msg.author.voiceChannel){
   		var id = parsedMsg.msg.author.voiceChannel;
-  		self.voice.manager.JoinChannelWithId(id);
+  		self.VoiceManager.JoinChannelWithId(id);
   		self.bot.sendMessage(parsedMsg.msg.channel, "``` Joined the channel you are in! ```");
   	}else {
   		self.bot.sendMessage(parsedMsg.msg.channel, "``` You are not in a voice Channel ```");
@@ -379,7 +265,7 @@ class Disnode extends EventEmitter{
     var self = this;
     if (parsedMsg.msg.author.voiceChannel){
   		var id = parsedMsg.msg.author.voiceChannel;
-      self.voice.manager.LeaveChannel(id);
+      self.VoiceManager.LeaveChannel(id);
       self.bot.sendMessage(parsedMsg.msg.channel, "``` Left the channel you are in! ```");
     }else {
   		self.bot.sendMessage(parsedMsg.msg.channel, "``` You are not in a voice Channel ```");
@@ -388,9 +274,9 @@ class Disnode extends EventEmitter{
 
   cmdFollow(parsedMsg){
     var self = this;
-    if(self.voice && self.voice.manager){
-      if(self.voice.voiceEvents){
-        self.voice.manager.Follow(parsedMsg.msg.author);
+    if(self.VoiceManager){
+      if(self.VoiceManager.voiceEvents){
+        self.VoiceManager.Follow(parsedMsg.msg.author);
         console.log("[VoiceManager - CmdFollow ] Following: " + parsedMsg.msg.author.username);
         self.bot.sendMessage(parsedMsg.msg.channel, "```Following: " + parsedMsg.msg.author.username+"```")
       }else{
@@ -403,9 +289,9 @@ class Disnode extends EventEmitter{
 
   cmdUnfollow(parsedMsg){
     var self = this;
-    if(self.voice && self.voice.manager){
-      if(self.voice.voiceEvents){
-        self.voice.manager.Follow(parsedMsg.msg.author);
+    if(self.VoiceManager){
+      if(self.VoiceManager.voiceEvents){
+        self.VoiceManager.Follow(parsedMsg.msg.author);
         console.log("[VoiceManager - cmdUnfollow ] Unfollow: " + parsedMsg.msg.author.username);
         self.bot.sendMessage(parsedMsg.msg.channel, "```Unfollow: " + parsedMsg.msg.author.username+"```")
       }else{
@@ -428,7 +314,7 @@ class Disnode extends EventEmitter{
     var CurrentIndex = 0;
 
     var SendString = "``` === AUDIO CLIPS (Page: "+Page+")=== \n";
-    self.audioPlayer.player.listAll("./Audio/", function(name){
+    self.audioPlayer.listAll("./Audio/", function(name){
       CurrentIndex++;
       if(CurrentIndex >= Start)
       {

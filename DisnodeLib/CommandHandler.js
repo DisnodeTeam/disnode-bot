@@ -7,12 +7,13 @@ class CommandHandler{
   // Prefix: The Command Prefix for this list.
   // List: List of Command Objects
 
-  constructor(prefix){
-    this.prefix = prefix;
+  constructor(options){
+
+    this.prefix = options.prefix;
     this.contexts = [];
     this.list = [];
     console.log("[CommandHandler] Init. ");
-    console.log("[CommandHandler] |--- Prefix: " + prefix);
+    console.log("[CommandHandler] |--- Prefix: " + this.prefix);
   }
 
   LoadList(newList){
