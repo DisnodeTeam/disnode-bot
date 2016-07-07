@@ -73,32 +73,6 @@ class Disnode extends EventEmitter{
     self[data.name] = new self[data.name].package(option);
 
   }
-
-  enableDiscordManager(){
-    var self = this;
-    const FS = require('fs');
-
-    if(!self.discordmngr){
-      self.discordmngr = {};
-    }
-    self.discordmngr = new DiscordManager(self.bot,FS);
-  }
-  enableYoutubeManager(){
-    var self = this;
-    const YoutubeMp3Downloader = require('youtube-mp3-downloader');
-    console.log("[YTMngr] Init");
-    if (!self.ytmngr) {
-      self.ytmngr = {}
-    }
-    var YD = new YoutubeMp3Downloader({
-      "ffmpegPath": "./libmeg/bin/ffmpeg.exe", // Where is the FFmpeg binary located?
-      "outputPath": "./audio/", // Where should the downloaded and encoded files be stored?
-      "youtubeVideoQuality": "highest", // What video quality should be used?
-      "queueParallelism": 2, // How many parallel downloads/encodes should be started?
-      "progressTimeout": 1000 // How long should be the interval of the progress reports
-    });
-    self.ytmngr.manager = new YoutubeManager(YD);
-  }
   enableWolfram(options){
     var self = this;
     const WolframAPI = require('wolfram-alpha');
@@ -138,7 +112,7 @@ class Disnode extends EventEmitter{
     if(self.CommandHandler){
       this.CommandHandler.AddContext(self, "disnode");
     }
-
+    //console.dir(self.YoutubeManager);
   }
 
   addDefaultCommands(){
@@ -185,20 +159,20 @@ class Disnode extends EventEmitter{
       console.log(err);
     });
 
-    self.ytmngr.manager.SetOnFinished(function(data){
+    self.YoutubeManager.SetOnFinished(function(data){
       self.bot.updateMessage(progressMessage, "``` Finished. Use '" + self.CommandHandler.prefix + "play "+file+"'```");
     });
-    self.ytmngr.manager.SetOnError(function(error){
+    self.YoutubeManager.SetOnError(function(error){
       self.bot.updateMessage(progressMessage, error);
     });
-    self.ytmngr.manager.SetOnProgess(function(progress){
+    self.YoutubeManager.SetOnProgess(function(progress){
       console.log(progress.progress.percentage);
       if(progress.progress.percentage != 100){
         var percent = Math.round(progress.progress.percentage);
         //bot.updateMessage(progressMessage, "```Downloading..."+percent + "%```");
       }
     });
-    self.ytmngr.manager.Download(link, file);
+    self.YoutubeManager.Download(link, file);
   }
   cmdWA(parsedMsg){
     var self = this;

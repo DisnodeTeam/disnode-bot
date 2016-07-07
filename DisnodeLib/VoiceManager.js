@@ -6,8 +6,8 @@ class VoiceManager {
 
     if(options.voiceEvents){
        options.voiceEvents = true;
-       options.bot.on("voiceJoin", (c,u)=>self.OnVoiceJoin(c,u));
-       options.bot.on("voiceLeave", (c,u)=>self.OnVoiceLeave(c,u));
+       options.disnode.on("voiceJoin", (c,u)=>self.OnVoiceJoin(c,u));
+       options.disnode.on("voiceLeave", (c,u)=>self.OnVoiceLeave(c,u));
     }else{
       this.voiceEvents = options.voiceEvents;
     }

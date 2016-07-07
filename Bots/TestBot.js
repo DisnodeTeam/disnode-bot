@@ -27,8 +27,8 @@ var OnLoad = function(){
   testBot.enableWolfram({key:""});
 
   //enables youtube manager which allows for taking youtube videos and converts them to mp3
-  testBot.enableYoutubeManager();
-
+  testBot.addManager({name:"YoutubeManager", options:{}});
+  testBot.addManager({name:"DiscordManager", options:{}});
   //enables the command handler which allows for recognizing commands from regular messages takes and object with the command prefix
 testBot.postLoad();
 
