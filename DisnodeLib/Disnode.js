@@ -73,40 +73,6 @@ class Disnode extends EventEmitter{
     self[data.name] = new self[data.name].package(option);
 
   }
-  enableWolfram(options){
-    var self = this;
-    const WolframAPI = require('wolfram-alpha');
-    console.log("[Wolfram] Init");
-    if(!self.wolfram){
-      self.wolfram = {};
-    }
-    if(options.key){
-      self.wolfram.key = options.key;
-    }else{
-      console.log("[Wolfram INIT ERROR] No \'key\' found in options object, cannot use wolfram requests without an API KEY");
-      return;
-    }
-    self.wolfram.api = WolframAPI.createClient(self.wolfram.key);
-    self.wolfram.manager = new Wolfram(self.wolfram.api);
-  }
-  enableCleverManager(options){
-    var self = this;
-    const Cleverbot = require('cleverbot-node');
-    console.log("[Cleverbot] Init");
-    if(!self.clever){
-      self.clever = {};
-    }
-    if(options.channelid){
-      self.clever.channelid = options.channelid;
-    }else{
-      console.log("[Cleverbot INIT ERROR] No \'channelid\' found in options object, cannot use Cleverbot without a channelid");
-      return;
-    }
-    self.clever.bot = new Cleverbot;
-    self.clever.enabled = false;
-    self.clever.manager = new CleverManager(self.clever.bot);
-    Cleverbot.prepare(function(){});
-  }
   postLoad(){
     var self = this;
     if(self.CommandHandler){
@@ -132,14 +98,6 @@ class Disnode extends EventEmitter{
 
     self.communication.manager = new DisnodeBotCommunication(self.bot.user.id);
     self.communication.manager.Start();
-  }
-
-  enableConfigManager(options){
-    var self =this;
-    if(!self.config){
-      self.config = {};
-    }
-    self.config.manager = new ConfigManager(options.path);
   }
   cmdDownloadYT(parsedMsg) {
     var msg = parsedMsg.msg.content;
@@ -176,7 +134,7 @@ class Disnode extends EventEmitter{
   }
   cmdWA(parsedMsg){
     var self = this;
-    if(!self.wolfram){
+    if(!self.Wolfram){
       self.bot.sendMessage(parsedMsg.msg.channel, "Wolfram is not enabled on this bot");
       return;
     }
@@ -186,8 +144,9 @@ class Disnode extends EventEmitter{
   		wolfmsg = sent;
   		console.log(err);
   	});
-  	self.wolfram.manager.makeRequest(parsedMsg.params, "img", function(text){
+  	self.Wolfram.makeRequest(parsedMsg.params, "img", function(text){
       if(text === "NO_QUESTION"){
+        console.log("[Wolfram] No Question!");
         self.bot.updateMessage(wolfmsg, "```You didn't put a question in for wolfram to answer!```");
       }else if(text === "LOOKUP_ERROR"){
         self.bot.updateMessage(wolfmsg, "```There was an error when looking up your question sorry!```");
@@ -198,35 +157,35 @@ class Disnode extends EventEmitter{
   }
   cmdCLEVER(parsedMsg){
     var self = this;
-    if(!self.clever){
+    if(!self.CleverManager){
       self.bot.sendMessage(parsedMsg.msg.channel, "Cleverbot is not enabled on this bot");
       return;
     }
 
     if(parsedMsg.params[0] == "new"){
-      self.clever.bot = new Cleverbot;
+      self.CleverManager.cb = new Cleverbot;
       self.bot.sendMessage(parsedMsg.msg.channel, "```Cleverbot has been Refreshed```");
     }else{
-      if(self.clever.enabled){
-        self.clever.enabled = false;
+      if(self.CleverManager.enabled){
+        self.CleverManager.enabled = false;
         self.bot.sendMessage(parsedMsg.msg.channel, "```Cleverbot is no longer active```");
       }else {
-        self.clever.enabled = true;
-        self.bot.sendMessage(self.clever.channelid, parsedMsg.params[0]);
+        self.CleverManager.enabled = true;
+        self.bot.sendMessage(self.CleverManager.channelid, parsedMsg.params[0]);
 
       }
     }
   }
   cleverMessage(msg){
     var self = this;
-    if(!self.clever){
+    if(!self.CleverManager){
       return;
     }
 
     if(msg.author.name == self.bot.user.username){
-      if(self.clever.enabled && msg.channel.id == self.clever.channelid){
+      if(self.CleverManager.enabled && msg.channel.id == self.CleverManager.channelid){
         setTimeout(function f(){
-          self.clever.manager.sendMsg(msg.content,function cb(reply){
+          self.CleverManager.sendMsg(msg.content,function cb(reply){
             self.bot.sendMessage(msg.channel, reply);
           });
         }, 1500);

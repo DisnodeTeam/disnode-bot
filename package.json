@@ -1,7 +1,7 @@
 {
   "name": "disnode",
   "version": "0.0.09",
-  "description": "A Discord.io Wrapper for providing basic functions to Discord Bots.",
+  "description": "A Discord.js Wrapper for providing basic functions to Discord Bots.",
   "main": "DisnodeLib/Disnode.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,14 +10,14 @@
     "type": "git",
     "url": "git+https://github.com/AtecStudios/Disnode.git"
   },
-  "author": "",
+  "author": "Alex Carter(VictoryForPhil) and Garrett Nicholas(FireGamer3)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/AtecStudios/Disnode/issues"
   },
   "homepage": "https://github.com/AtecStudios/Disnode#readme",
   "dependencies": {
-    "discord.js": "^7.0.0",
+    "discord.js": "^8.0.0",
     "jsonfile": "^2.3.1",
     "walk": "^2.3.9",
     "cleverbot-node" : "^0.2.2",
