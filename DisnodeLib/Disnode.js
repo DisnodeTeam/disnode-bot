@@ -212,7 +212,7 @@ class Disnode extends EventEmitter{
   }
   cmdPlay(parsedMsg){
     var self = this;
-    if(!self.audioPlayer){
+    if(!self.AudioPlayer){
       self.bot.sendMessage(parsedMsg.msg.channel, "``` Audio Player not Enabled! ```");
       return;
     }
@@ -223,9 +223,9 @@ class Disnode extends EventEmitter{
 
     var fileName = parsedMsg.params[0];
     self.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3 ```");
-    self.audioPlayer.playFile(fileName, parsedMsg, parsedMsg.params, self.audioPlayer.defaultVolume, self.audioPlayer.maxVolume,function(text){
+    self.AudioPlayer.playFile(fileName, parsedMsg, parsedMsg.params, self.AudioPlayer.defaultVolume, self.AudioPlayer.maxVolume,function(text){
       if(text === "loud"){
-        self.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.audioPlayer.maxVolume + "! Remains default (" + self.audioPlayer.defaultVolume +") ```");
+        self.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.AudioPlayer.maxVolume + "! Remains default (" + self.AudioPlayer.defaultVolume +") ```");
       }
       if(text === "notfound"){
         self.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
@@ -234,7 +234,7 @@ class Disnode extends EventEmitter{
   }
   cmdStop(parsedMsg){
     var self = this;
-    if(!self.audioPlayer){
+    if(!self.AudioPlayer){
       self.bot.sendMessage(parsedMsg.msg.channel, "``` Audio Player not Enabled! ```");
       return;
     }
@@ -244,7 +244,7 @@ class Disnode extends EventEmitter{
     }
 
     self.bot.sendMessage(parsedMsg.msg.channel, "``` Playback stopped! ```");
-    self.audioPlayer.stopPlaying(parsedMsg, function cb(text){
+    self.AudioPlayer.stopPlaying(parsedMsg, function cb(text){
       if(text === "notfound"){
         self.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
       }
@@ -314,7 +314,7 @@ class Disnode extends EventEmitter{
     var CurrentIndex = 0;
 
     var SendString = "``` === AUDIO CLIPS (Page: "+Page+")=== \n";
-    self.audioPlayer.listAll("./Audio/", function(name){
+    self.AudioPlayer.listAll("./Audio/", function(name){
       CurrentIndex++;
       if(CurrentIndex >= Start)
       {
