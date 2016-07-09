@@ -19,29 +19,29 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
     }
     if(options.maxVolume){
       if(options.maxVolume == -1){
-        self.audioPlayer.maxVolume = 9999999;
+        self.maxVolume = 9999999;
       }else{
-        self.audioPlayer.maxVolume = options.maxVolume;
+        self.maxVolume = options.maxVolume;
       }
     }else{
-      self.audioPlayer.maxVolume = 2.0;
+      self.maxVolume = 2.0;
     }
     if(options.defaultVolume){
-      self.audioPlayer.defaultVolume = options.defaultVolume;
+      self.defaultVolume = options.defaultVolume;
     }else{
-      self.audioPlayer.defaultVolume = 0.8;
+      self.defaultVolume = 0.8;
     }
 
-		this.bot = options.disnode.bot;
-		this.DisnodeBOT = options.disnode;
+		self.bot = options.disnode.bot;
+		self.DisnodeBOT = options.disnode;
 		console.log("[AudioPlayer] Init Audio Player");
 	}
-	playFile(name, parsedMsg, parms, defaultVolume, maxVolume, cb){ //Plays an audio file
+	playFile(name, parsedMsg, parms, cb){ //Plays an audio file
 		var self = this;
 
 		var found = false;
 		var id;
-		self.DisnodeBOT.voice.manager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+		self.DisnodeBOT.VoiceManager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
 			id = returnID;
 			if(id == 0){
 				found = false;
@@ -62,11 +62,11 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 			var path = self.path + name;
 			console.log(path + ".mp3"); // Console logs the full path to the audio file
 			// START OF VOLUME CHECKING
-			var volume = defaultVolume; //Default Volume
+			var volume = self.defaultVolume; //Default Volume
 			connection.setVolume(volume); // sets the volume
 			if(parms[1]){ // If there is a second parm
 				if(parseFloat(parms[1])){ //can it be parsed to a float?
-					if(parseFloat(parms[1]) <= maxVolume){ // checks to see if the float is less than then threshold
+					if(parseFloat(parms[1]) <= self.maxVolume){ // checks to see if the float is less than then threshold
 						volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
 						console.log("[AudioPlayer] Set volume:" + volume); // logs the volume change
 						connection.setVolume(volume); // actually sets the volume
@@ -96,7 +96,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		var self = this;
 		var found = false;
 		var id;
-		self.DisnodeBOT.voice.manager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+		self.DisnodeBOT.VoiceManager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
 			id = returnID;
 			if(id == 0){
 				found = false;

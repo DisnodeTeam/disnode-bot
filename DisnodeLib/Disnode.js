@@ -223,7 +223,7 @@ class Disnode extends EventEmitter{
 
     var fileName = parsedMsg.params[0];
     self.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3 ```");
-    self.AudioPlayer.playFile(fileName, parsedMsg, parsedMsg.params, self.AudioPlayer.defaultVolume, self.AudioPlayer.maxVolume,function(text){
+    self.AudioPlayer.playFile(fileName, parsedMsg, parsedMsg.params,function(text){
       if(text === "loud"){
         self.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.AudioPlayer.maxVolume + "! Remains default (" + self.AudioPlayer.defaultVolume +") ```");
       }
