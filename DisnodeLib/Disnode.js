@@ -81,6 +81,7 @@ class Disnode extends EventEmitter{
     //console.dir(self.YoutubeManager);
   }
 
+  //TO-DO: Remove / Outdated
   addDefaultCommands(){
     var self = this;
     if(!self.CommandHandler.list){
@@ -89,7 +90,7 @@ class Disnode extends EventEmitter{
     self.CommandHandler.UpdateList(self.CommandHandler.list);
   }
 
-
+  //TO-DO: Remove / Outdated
   enableBotCommunication(options){
     var self = this;
     if(!self.communication){
@@ -223,7 +224,7 @@ class Disnode extends EventEmitter{
 
     var fileName = parsedMsg.params[0];
     self.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3 ```");
-    self.AudioPlayer.playFile(fileName, parsedMsg, parsedMsg.params,function(text){
+    self.AudioPlayer.playFile(fileName, parsedMsg,function(text){
       if(text === "loud"){
         self.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.AudioPlayer.maxVolume + "! Remains default (" + self.AudioPlayer.defaultVolume +") ```");
       }
