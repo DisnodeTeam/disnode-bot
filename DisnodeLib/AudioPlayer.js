@@ -36,9 +36,9 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		self.DisnodeBOT = options.disnode;
 		console.log("[AudioPlayer] Init Audio Player");
 	}
-	playFile(name, parsedMsg, parms, cb){ //Plays an audio file
+	playFile(name, parsedMsg, cb){ //Plays an audio file
 		var self = this;
-
+		var parms = parsedMsg.params;
 		var found = false;
 		var id;
 		self.DisnodeBOT.VoiceManager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
@@ -55,7 +55,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 
 			var connection;
 			// sets up the variable and verify the voiceConnection it needs to use
-			this.findConection(id, function cb(c){
+			this.findConnection(id, function cb(c){
 				connection = c; //verified connection is sent back in the callback
 				console.log("FOUND!?!?");
 			});
@@ -107,7 +107,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		if(found){
 			var connection;
 			// sets up the variable and verify the voiceConnection it needs to use
-			this.findConection(id, function cb(c){
+			this.findConnection(id, function cb(c){
 				connection = c; //verified connection is sent back in the callback
 			});
 			// uses that verified connection to stop it's playback
@@ -138,7 +138,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 			console.log("DONE");
 		});
 	}
-	findConection(id, cb){
+	findConnection(id, cb){
 		var self = this;
 		// This function's job is to verify that the given id matches a voice connection and send what voiceConenction it uses through the callback
 		/*
