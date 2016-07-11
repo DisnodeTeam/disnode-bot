@@ -51,16 +51,14 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		});
 
 		if(found){
-			console.log("[AudioPlayer] Playing Audio File");
+
 
 			var connection;
 			// sets up the variable and verify the voiceConnection it needs to use
 			this.findConnection(id, function cb(c){
 				connection = c; //verified connection is sent back in the callback
-				console.log("FOUND!?!?");
 			});
 			var path = self.path + name;
-			console.log(path + ".mp3"); // Console logs the full path to the audio file
 			// START OF VOLUME CHECKING
 			var volume = self.defaultVolume; //Default Volume
 			connection.setVolume(volume); // sets the volume
@@ -68,7 +66,6 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 				if(parseFloat(parms[1])){ //can it be parsed to a float?
 					if(parseFloat(parms[1]) <= self.maxVolume){ // checks to see if the float is less than then threshold
 						volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
-						console.log("[AudioPlayer] Set volume:" + volume); // logs the volume change
 						connection.setVolume(volume); // actually sets the volume
 					}else{ // if the parsed float is over the threshold
 						console.log("[AudioPlayer] Volume over threshold! Remains default");
@@ -83,10 +80,13 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 				console.log("[AudioPlayer] No Volume Parm");
 			}
 			// END OF VOLUME CHECK
+			console.log("[AudioPlayer] Playing Audio File");
+			console.log("[AudioPlayer] --- Name: " + name);
+			console.log("[AudioPlayer] --- Path: " + path + ".mp3");
+			console.log("[AudioPlayer] --- Volume: " + volume);
 			connection.playFile(path + ".mp3", volume,function cb(er){
 				console.dir(er);
 			}); // plays the file with the verified connection
-			console.log("Playing At: " + volume); //debug logs the volume
 		}else{
 			cb("notfound");
 		}
@@ -159,7 +159,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		if(!f)cb(0); // this is a fallback just in case
 	}
 
-	
+
 }
 
 module.exports = AudioPlayer;
