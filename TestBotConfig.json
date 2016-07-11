@@ -147,6 +147,26 @@
       "params": {
         "sayText": "HELLLOOOWWWWW WORLDDD!!!"
       }
+    },
+    {
+      "cmd": "Hug",
+      "run": "cmdSay",
+      "context": "SayManager",
+      "desc": "null",
+      "usage": "Hug",
+      "params": {
+        "sayText": "[Sender] Hugs Me!"
+      }
+    },
+    {
+      "cmd": "Slap",
+      "run": "cmdSay",
+      "context": "SayManager",
+      "desc": "null",
+      "usage": "Slap",
+      "params": {
+        "sayText": "[Sender] *slaps* [Param0] with a power of [Param1]"
+      }
     }
   ]
 }

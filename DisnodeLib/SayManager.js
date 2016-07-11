@@ -45,7 +45,23 @@ class SayManager{
 
   cmdSay(parsedMsg, params){
     var self = this;
-    self.options.disnode.bot.sendMessage(parsedMsg.msg.channel, params.sayText );
+
+    var final = params.sayText;
+    if(final.includes("[Sender]")){
+      final = final.replace("[Sender]", parsedMsg.msg.author.mention());
+    }
+
+    if(final.includes("[Param0]")){
+      final = final.replace("[Param0]", parsedMsg.params[0]);
+    }
+    if(final.includes("[Param1]")){
+      final = final.replace("[Param1]", parsedMsg.params[1]);
+    }
+    if(final.includes("[Param2]")){
+      final = final.replace("[Param2]", parsedMsg.params[2]);
+    }
+
+    self.options.disnode.bot.sendMessage(parsedMsg.msg.channel,  final);
   }
 }
 
