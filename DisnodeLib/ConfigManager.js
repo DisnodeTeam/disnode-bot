@@ -1,5 +1,6 @@
 "use strict"
 const jsonfile = require('jsonfile');
+const colors = require('colors');
 class ConfigManager {
 
   constructor(options){
@@ -12,16 +13,18 @@ class ConfigManager {
     var self = this;
     jsonfile.writeFile(self.path, self.config, {spaces: 2}, function(err) {
         console.error(err);
-        console.log("[ConfigManager] Config Saved!");
+        console.log("[ConfigManager] Config Saved!".green);
     });
   }
 
   loadConfig(cb){
     var self = this;
-    console.log("[ConfigManager]" + self.path);
+    console.log("[ConfigManager] Loading Config: " + self.path);
     jsonfile.readFile(self.path, function(err, obj) {
-      console.error(err);
-      console.log("[ConfigManager] Config Loaded!");
+      if(err){
+        console.log(colors.red(err));
+      }
+      console.log("[ConfigManager] Config Loaded!".green);
       self.config = obj;
       //console.dir(obj);
 
