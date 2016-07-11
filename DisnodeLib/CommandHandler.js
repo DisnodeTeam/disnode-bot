@@ -12,6 +12,7 @@ class CommandHandler{
     this.prefix = options.prefix;
     this.contexts = [];
     this.list = [];
+    this.disnode = options.disnode;
     console.log("[CommandHandler] Loaded!".green);
   }
 
@@ -117,15 +118,42 @@ class CommandHandler{
         var context = GetContextByName(self.contexts,commandObject.context).obj;
         if(context){
           if(commandObject.params){
-            context[commandObject.run]({msg: msg, params:GetParmas(msgContent)}, commandObject.params);
+            if(commandObject.role){
+              if(CheckRole(commandObject.role, msg.channel.server.rolesOfUser(msg.author))){
+                context[commandObject.run]({msg: msg, params:GetParmas(msgContent)}, commandObject.params);
+              }else{
+                self.disnode.bot.sendMessage(msg.channel, "Do Not Have Role: " + commandObject.role);
+              }
+            }else{
+              context[commandObject.run]({msg: msg, params:GetParmas(msgContent)}, commandObject.params);
+            }
+
           }else{
-            context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
+            if(commandObject.role){
+              if(CheckRole(commandObject.role, msg.channel.server.rolesOfUser(msg.author))){
+                context[commandObject.run]({msg: msg, params:GetParmas(msgContent)}, commandObject);
+              }else{
+                self.disnode.bot.sendMessage(msg.channel, "Do Not Have Role: " + commandObject.role);
+              }
+            }else{
+              context[commandObject.run]({msg: msg, params:GetParmas(msgContent)}, commandObject);
+            }
           }
 
         }
       }
     }
   }
+}
+
+function CheckRole(role, roles){
+  var found;
+  for (var i = 0; i < roles.length; i++) {
+    if(roles[i].name == role){
+      return true;
+    }
+  }
+  return found;
 }
 
 function CheckRequirements(context, requirements){

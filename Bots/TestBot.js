@@ -50,6 +50,7 @@ exports.Start = function () {
   testBot.startBot();
 };
 //this adds a function to the botCommands to be referenced in local context when creating commands
-botCommands.cmdSkip = function(ParsedMsg){
-  testBot.bot.sendMessage(ParsedMsg.msg.channel, "!skip" );
+botCommands.cmdDebug = function(ParsedMsg){
+  //console.log(ParsedMsg.msg.channel.server.rolesOfUser(ParsedMsg.msg.author));
+  //testBot.bot.sendMessage(ParsedMsg.msg.channel, ParsedMsg.msg.server);
 }

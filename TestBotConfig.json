@@ -122,6 +122,14 @@
       "usage": "testcontext"
     },
     {
+      "cmd": "debug",
+      "role": "Rouges",
+      "context": "testbot",
+      "run": "cmdDebug",
+      "desc": "Tests Context Calling!",
+      "usage": "testbot"
+    },
+    {
       "cmd": "addSay",
       "context": "SayManager",
       "run": "cmdAddSay",
