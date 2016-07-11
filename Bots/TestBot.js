@@ -5,30 +5,28 @@ var testBot = new DisnodeBot(""); //Defines the testBot in the "" is where your 
 var botCommands = {}; //defines an object for local bot commands
 testBot.on("Bot_Ready", function(){ //event emitter called when the bot is ready for init
     console.log('[TEST_BOT - BotReady] Bot Ready.');
-   //enables voice manager required for audio player
-   testBot.addManager({name: "VoiceManager", options:{voiceEvents:true}});
-   //enables audio player with an object that passes a 'path(String)' and 'maxVolume(float)'
-   testBot.addManager({name:"AudioPlayer", options:{path: './Audio/', maxVolume:2.0}});
 
-    //enables config manager which is a required library for loading commands
-    testBot.addManager({name:"ConfigManager", options:{path:"./TestBotConfig.json"}});
     //enables the command handler which allows for recognizing commands from regular messages takes and object with the command prefix
     testBot.addManager({name:"CommandHandler", options:{prefix: "!"}});
-
-
+    //enables voice manager required for audio player
+    testBot.addManager({name: "VoiceManager", options:{voiceEvents:true}});
+    //enables audio player with an object that passes a 'path(String)' and 'maxVolume(float)'
+    testBot.addManager({name:"AudioPlayer", options:{path: './Audio/', maxVolume:2.0}});
+    //enables config manager which is a required library for loading commands
+    testBot.addManager({name:"ConfigManager", options:{path:"./TestBotConfig.json"}});
+    //cleverbot functionality passed is a object containing the channel that cleverbot will speak in
+    testBot.addManager({name:"CleverManager", options:{channelid:"113788405451587584"}});
+    //enables wolfram-alpha functionality inside "" is your APP ID from WolframAPI
+    testBot.addManager({name:"Wolfram", options:{key:""}});
+    //enables youtube manager which allows for taking youtube videos and converts them to mp3
+    testBot.addManager({name:"YoutubeManager", options:{}});
+    //DiscordManager allows for simple commands that change your bot's details
+    testBot.addManager({name:"DiscordManager", options:{}});
+    testBot.addManager({name:"SayManager", options:{}});
     //loads config from previous given path and executes 'OnLoad' after loading the config
     testBot.ConfigManager.loadConfig(OnLoad);
 });
 var OnLoad = function(){
-  //cleverbot functionality passed is a object containing the channel that cleverbot will speak in
-  testBot.addManager({name:"CleverManager", options:{channelid:"185614233168248833"}});
-  //enables wolfram-alpha functionality inside "" is your APP ID from WolframAPI
-  testBot.addManager({name:"Wolfram", options:{key:""}});
-  //enables youtube manager which allows for taking youtube videos and converts them to mp3
-  testBot.addManager({name:"YoutubeManager", options:{}});
-  //DiscordManager allows for simple commands that change your bot's details
-  testBot.addManager({name:"DiscordManager", options:{}});
-
   testBot.postLoad(); // finish commandhandler loading
 
   //setting a command context for command written in the bot. passes in an object that contains local command functions
@@ -52,6 +50,6 @@ exports.Start = function () {
   testBot.startBot();
 };
 //this adds a function to the botCommands to be referenced in local context when creating commands
-botCommands.cmdTestContext = function(ParsedMsg){
-  testBot.bot.sendMessage(ParsedMsg.msg.channel, "THIS WAS CALLED IN THIS CONTEXT " );
+botCommands.cmdSkip = function(ParsedMsg){
+  testBot.bot.sendMessage(ParsedMsg.msg.channel, "!skip" );
 }
