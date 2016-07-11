@@ -71,6 +71,9 @@ class Disnode extends EventEmitter{
     self[data.name] = {};
     self[data.name].package = require(path);
     self[data.name] = new self[data.name].package(option);
+    if(self.CommandHandler){
+      this.CommandHandler.AddContext(self[data.name], data.name);
+    }
 
   }
   postLoad(){

@@ -54,13 +54,27 @@ class CommandHandler{
     console.log("[CommandHandler] Adding new Context: " + name);
   }
 
-  AddToList(cmd)
+  AddCommand(currentCmd)
   {
-    console.log("[CommandHandler] Updating List. ");
-    for (var i = 0; i < list.length; i++) {
-      console.log("[CommandHandler] |--- Command: " + list[i].cmd);
+    var Context = GetContextByName(self.contexts, currentCmd.context);
+    if(Context){
+
+      if(currentCmd.require){
+        if(CheckRequirements(Context.obj, currentCmd.require)){
+          self.list.push(currentCmd);
+          console.log("[CommandHandler] |----- SUCCESS: Met Requirements");
+        }else{
+          console.log("[CommandHandler] |----- FAIL: Missing Requirements");
+        }
+      }else{
+        self.list.push(currentCmd);
+        console.log(i);
+        console.log("[CommandHandler] |----- SUCCESS: No Requirements");
+
+      }
+    }else{
+      console.log("[CommandHandler] |----- FAILED: No Context with Name:" + currentCmd.context);
     }
-    this.list = list
   }
   // Parse the message and run any commands it contains
   RunMessage(msg){
