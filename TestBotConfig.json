@@ -109,13 +109,10 @@
     },
     {
       "cmd": "yt",
-      "context": "disnode",
+      "context": "YoutubeManager",
       "run": "cmdDownloadYT",
       "desc": "Downloads a video as a MP3 using the video ID",
-      "usage": "yt [videoID] [CommandName]",
-      "require": [
-        "YoutubeManager"
-      ]
+      "usage": "yt [videoID] [CommandName]"
     },
     {
       "cmd": "testcontext",
