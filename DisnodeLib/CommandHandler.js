@@ -106,7 +106,12 @@ class CommandHandler{
 
         var context = GetContextByName(self.contexts,commandObject.context).obj;
         if(context){
-          context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
+          if(commandObject.params){
+            context[commandObject.run]({msg: msg, params:GetParmas(msgContent)}, commandObject.params);
+          }else{
+            context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
+          }
+
         }
       }
     }
