@@ -4,6 +4,7 @@
 class YoutubeManager {
   constructor(options) {
     console.log("[YTMngr] Init");
+    this.disnode = options.disnode;
     const YoutubeMp3Downloader = require('youtube-mp3-downloader');
     this.YD = new YoutubeMp3Downloader({
       "ffmpegPath": "./libmeg/bin/ffmpeg.exe", // Where is the FFmpeg binary located?
@@ -41,6 +42,40 @@ class YoutubeManager {
 
     self.YD.on("progress",this.OnProgress);
   }
+
+  cmdDownloadYT(parsedMsg) {
+		var msg = parsedMsg.msg.content;
+		var self = this;
+
+		var firstSpace =msg.indexOf(" ");
+		var link = msg.substring(firstSpace + 1, msg.indexOf(" ", firstSpace + 1));
+		var file = msg.substring(msg.indexOf(" ",msg.indexOf(link)) + 1,msg.length);
+
+		var progressMessage;
+
+
+
+		self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Video Code: "+link+" Command Name: "+file+"```" );
+		self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Downloading... ```", function(err, sent) {
+			progressMessage = sent;
+			console.log(err);
+		});
+
+		self.SetOnFinished(function(data){
+			self.disnode.bot.updateMessage(progressMessage, "``` Finished. Use '" + self.CommandHandler.prefix + "play "+file+"'```");
+		});
+		self.SetOnError(function(error){
+			self.disnode.bot.updateMessage(progressMessage, error);
+		});
+		self.disnode.YoutubeManager.SetOnProgess(function(progress){
+			console.log(progress.progress.percentage);
+			if(progress.progress.percentage != 100){
+				var percent = Math.round(progress.progress.percentage);
+				//bot.updateMessage(progressMessage, "```Downloading..."+percent + "%```");
+			}
+		});
+		self.Download(link, file);
+	}
 }
 
 module.exports = YoutubeManager;

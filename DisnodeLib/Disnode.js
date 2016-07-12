@@ -71,6 +71,9 @@ class Disnode extends EventEmitter{
     self[data.name] = {};
     self[data.name].package = require(path);
     self[data.name] = new self[data.name].package(option);
+    if(self.CommandHandler){
+      this.CommandHandler.AddContext(self[data.name], data.name);
+    }
 
   }
   postLoad(){
@@ -100,39 +103,7 @@ class Disnode extends EventEmitter{
     self.communication.manager = new DisnodeBotCommunication(self.bot.user.id);
     self.communication.manager.Start();
   }
-  cmdDownloadYT(parsedMsg) {
-    var msg = parsedMsg.msg.content;
-    var self = this;
 
-    var firstSpace =msg.indexOf(" ");
-    var link = msg.substring(firstSpace + 1, msg.indexOf(" ", firstSpace + 1));
-    var file = msg.substring(msg.indexOf(" ",msg.indexOf(link)) + 1,msg.length);
-
-    var progressMessage;
-
-
-
-    self.bot.sendMessage(parsedMsg.msg.channel, "``` Video Code: "+link+" Command Name: "+file+"```" );
-    self.bot.sendMessage(parsedMsg.msg.channel, "``` Downloading... ```", function(err, sent) {
-      progressMessage = sent;
-      console.log(err);
-    });
-
-    self.YoutubeManager.SetOnFinished(function(data){
-      self.bot.updateMessage(progressMessage, "``` Finished. Use '" + self.CommandHandler.prefix + "play "+file+"'```");
-    });
-    self.YoutubeManager.SetOnError(function(error){
-      self.bot.updateMessage(progressMessage, error);
-    });
-    self.YoutubeManager.SetOnProgess(function(progress){
-      console.log(progress.progress.percentage);
-      if(progress.progress.percentage != 100){
-        var percent = Math.round(progress.progress.percentage);
-        //bot.updateMessage(progressMessage, "```Downloading..."+percent + "%```");
-      }
-    });
-    self.YoutubeManager.Download(link, file);
-  }
   cmdWA(parsedMsg){
     var self = this;
     if(!self.Wolfram){

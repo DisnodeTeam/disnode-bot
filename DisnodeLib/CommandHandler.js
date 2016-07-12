@@ -1,7 +1,7 @@
 "use strict"
 // Command Handler Controls and Parses Every Message against a list of Commands/
 // Consider the dispatcher of your app
-
+const colors = require('colors');
 class CommandHandler{
   // Set Inital Varibles
   // Prefix: The Command Prefix for this list.
@@ -12,18 +12,21 @@ class CommandHandler{
     this.prefix = options.prefix;
     this.contexts = [];
     this.list = [];
-    console.log("[CommandHandler] Init. ");
-    console.log("[CommandHandler] |--- Prefix: " + this.prefix);
+    this.disnode = options.disnode;
+    console.log("[CommandHandler] Loaded!".green);
   }
 
   LoadList(newList){
 
-    console.log("[CommandHandler] Loading Commands. ");
+    console.log("[CommandHandler] Loading Commands...");
     var self = this;
 
     for (var i = 0; i < newList.length; i++) {
-      console.log("[CommandHandler] |--- Command: " + newList[i].cmd);
+
       var currentCmd = newList[i];
+
+      var SUCCESS = true;
+      var FailReason;
       // RUN: context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
       var Context = GetContextByName(self.contexts, currentCmd.context);
       if(Context){
@@ -31,18 +34,26 @@ class CommandHandler{
         if(currentCmd.require){
           if(CheckRequirements(Context.obj, currentCmd.require)){
             self.list.push(currentCmd);
-            console.log("[CommandHandler] |----- SUCCESS: Met Requirements");
+            SUCCESS = true;
           }else{
-            console.log("[CommandHandler] |----- FAIL: Missing Requirements");
+            SUCCESS = false;
+            FailReason = "Missing Requirements: " + currentCmd.require;
           }
         }else{
           self.list.push(currentCmd);
-          console.log(i);
-          console.log("[CommandHandler] |----- SUCCESS: No Requirements");
+          SUCCESS = true;
 
         }
       }else{
-        console.log("[CommandHandler] |----- FAILED: No Context with Name:" + currentCmd.context);
+        SUCCESS = false;
+          FailReason = "No Context: " + currentCmd.context;
+      }
+
+      if(SUCCESS)
+      {
+        console.log(colors.green("[CommandHandler] Adding Command ("+currentCmd.cmd+") SUCCESSFUL!"));
+      }else{
+        console.log(colors.red("[CommandHandler] Adding Command ("+currentCmd.cmd+") FAILED: " + FailReason));
       }
 
     }
@@ -51,16 +62,30 @@ class CommandHandler{
   AddContext(context, name){
     var self = this;
     self.contexts.push({name: name, obj: context});
-    console.log("[CommandHandler] Adding new Context: " + name);
+    console.log("[CommandHandler] Adding new Context: ".cyan + name);
   }
 
-  AddToList(cmd)
+  AddCommand(currentCmd)
   {
-    console.log("[CommandHandler] Updating List. ");
-    for (var i = 0; i < list.length; i++) {
-      console.log("[CommandHandler] |--- Command: " + list[i].cmd);
+    var Context = GetContextByName(self.contexts, currentCmd.context);
+    if(Context){
+
+      if(currentCmd.require){
+        if(CheckRequirements(Context.obj, currentCmd.require)){
+          self.list.push(currentCmd);
+          console.log("[CommandHandler] |----- SUCCESS: Met Requirements");
+        }else{
+          console.log("[CommandHandler] |----- FAIL: Missing Requirements");
+        }
+      }else{
+        self.list.push(currentCmd);
+        console.log(i);
+        console.log("[CommandHandler] |----- SUCCESS: No Requirements");
+
+      }
+    }else{
+      console.log("[CommandHandler] |----- FAILED: No Context with Name:" + currentCmd.context);
     }
-    this.list = list
   }
   // Parse the message and run any commands it contains
   RunMessage(msg){
@@ -92,11 +117,43 @@ class CommandHandler{
 
         var context = GetContextByName(self.contexts,commandObject.context).obj;
         if(context){
-          context[commandObject.run]({msg: msg, params:GetParmas(msgContent)});
+          if(commandObject.params){
+            if(commandObject.role){
+              if(CheckRole(commandObject.role, msg.channel.server.rolesOfUser(msg.author))){
+                context[commandObject.run]({msg: msg, params:GetParmas(msgContent)}, commandObject.params);
+              }else{
+                self.disnode.bot.sendMessage(msg.channel, "Do Not Have Role: " + commandObject.role);
+              }
+            }else{
+              context[commandObject.run]({msg: msg, params:GetParmas(msgContent)}, commandObject.params);
+            }
+
+          }else{
+            if(commandObject.role){
+              if(CheckRole(commandObject.role, msg.channel.server.rolesOfUser(msg.author))){
+                context[commandObject.run]({msg: msg, params:GetParmas(msgContent)}, commandObject);
+              }else{
+                self.disnode.bot.sendMessage(msg.channel, "Do Not Have Role: " + commandObject.role);
+              }
+            }else{
+              context[commandObject.run]({msg: msg, params:GetParmas(msgContent)}, commandObject);
+            }
+          }
+
         }
       }
     }
   }
+}
+
+function CheckRole(role, roles){
+  var found;
+  for (var i = 0; i < roles.length; i++) {
+    if(roles[i].name == role){
+      return true;
+    }
+  }
+  return found;
 }
 
 function CheckRequirements(context, requirements){
