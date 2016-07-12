@@ -7,7 +7,16 @@ class SayManager{
       responses:{
         errEnterCommand: "Please Enter a Command (First Parameter)",
         errEnterSay: "Please Enter a Say (Secound Parameter)"
-      }
+      },
+      commands:[
+        {
+          "cmd": "addSay",
+          "context": "SayManager",
+          "run": "cmdAddSay",
+          "desc": "Tests Context Calling!",
+          "usage": "testcontext"
+        },
+      ]
     };
 
     this.config = this.options.disnode.config.SayManager;

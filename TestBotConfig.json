@@ -35,16 +35,6 @@
       ]
     },
     {
-      "cmd": "wa",
-      "context": "disnode",
-      "run": "cmdWA",
-      "desc": "Wolfram Alpha Request.",
-      "usage": "wa [Question] [Option1] [Option2]",
-      "require": [
-        "Wolfram"
-      ]
-    },
-    {
       "cmd": "list",
       "context": "disnode",
       "run": "cmdListAudio",
@@ -170,12 +160,6 @@
       }
     }
   ],
-  "SayManager": {
-    "responses": {
-      "errEnterCommand": "Please Enter a Command (First Parameter)",
-      "errEnterSay": "Please Enter a Say (Secound Parameter)"
-    }
-  },
   "YoutubeManager": {
     "responses": {
       "msgDownloadProgess": "Downloading...",
@@ -189,6 +173,32 @@
         "run": "cmdDownloadYT",
         "desc": "Downloads a video as a MP3 using the video ID",
         "usage": "yt [videoID] [CommandName]"
+      }
+    ]
+  },
+  "SayManager": {
+    "responses": {
+      "errEnterCommand": "Please Enter a Command (First Parameter)",
+      "errEnterSay": "Please Enter a Say (Secound Parameter)"
+    },
+    "commands": [
+      {
+        "cmd": "addSay",
+        "context": "SayManager",
+        "run": "cmdAddSay",
+        "desc": "Tests Context Calling!",
+        "usage": "testcontext"
+      }
+    ]
+  },
+  "Wolfram": {
+    "commands": [
+      {
+        "cmd": "wa",
+        "context": "Wolfram",
+        "run": "cmdWA",
+        "desc": "Wolfram Alpha Request.",
+        "usage": "wa [Question] [Option1] [Option2]"
       }
     ]
   }

@@ -97,11 +97,7 @@ class Disnode extends EventEmitter{
       if(self.config[data.name].commands){
         self.addDefaultManagerCommands(data.name, self.config[data.name].commands);
       }
-
     }
-
-
-
   }
 
   addDefaultManagerConfig(name,config){
@@ -114,7 +110,7 @@ class Disnode extends EventEmitter{
 
   addDefaultManagerCommands(name, commands){
     var self = this;
-    console.log("[Disnode] Loading Commands for: " + commands);
+    console.log("[Disnode] Loading Commands for: " + name);
     for (var i = 0; i < commands.length; i++) {
       if(self.CommandHandler){
         self.CommandHandler.AddCommand(commands[i]);
@@ -171,29 +167,7 @@ class Disnode extends EventEmitter{
   }
 
 
-  cmdWA(parsedMsg){
-    var self = this;
-    if(!self.Wolfram){
-      self.bot.sendMessage(parsedMsg.msg.channel, "Wolfram is not enabled on this bot");
-      return;
-    }
-
-    var wolfmsg;
-  	self.bot.sendMessage(parsedMsg.msg.channel, "``` Waiting on Wolfram API Q: " + parsedMsg.params[0] +" Options: " + parsedMsg.params[1] + " " + parsedMsg.params[2] + " ```", function(err, sent) {
-  		wolfmsg = sent;
-  		console.log(err);
-  	});
-  	self.Wolfram.makeRequest(parsedMsg.params, "img", function(text){
-      if(text === "NO_QUESTION"){
-        console.log("[Wolfram] No Question!");
-        self.bot.updateMessage(wolfmsg, "```You didn't put a question in for wolfram to answer!```");
-      }else if(text === "LOOKUP_ERROR"){
-        self.bot.updateMessage(wolfmsg, "```There was an error when looking up your question sorry!```");
-      }else{
-        self.bot.updateMessage(wolfmsg, text);
-      }
-  	});
-  }
+  
   cmdCLEVER(parsedMsg){
     var self = this;
     if(!self.CleverManager){
