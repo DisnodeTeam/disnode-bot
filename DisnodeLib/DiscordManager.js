@@ -19,7 +19,7 @@ class DiscordManager {
   }
   setAvatar(path, cb){
     var self = this;
-    self.fs.readFile("icon.jpg", {encoding: 'base64'},function(err, data) {
+    self.fs.readFile(path, {encoding: 'base64'},function(err, data) {
     if(err){
       cb(err);
     }

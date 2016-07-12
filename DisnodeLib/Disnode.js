@@ -1,22 +1,16 @@
 "use strict";
 const EventEmitter = require("events");
 const Discord = require( "discord.js");
-
-const DisnodeAudioPlayer = require("./AudioPlayer.js");
-const CommandHandler = require("./CommandHandler.js");
-const DisnodeVoiceManager = require("./VoiceManager.js");
-const DisnodeBotCommunication = require("./BotCommunication.js");
-const CleverManager = require("./CleverManager.js");
-const ConfigManager = require("./ConfigManager.js");
-const Wolfram = require("./Wolfram.js");
-const YoutubeManager = require("./YoutubeManager.js");
-const DiscordManager = require("./DiscordManager.js");
+const jsonfile = require('jsonfile');
+const colors = require('colors');
 
 class Disnode extends EventEmitter{
-  constructor(key){
+  constructor(key, configPath){
     super();
 
     this.key = key;
+    this.configPath = configPath;
+    this.config = {};
   }
 
   startBot(){
@@ -35,6 +29,26 @@ class Disnode extends EventEmitter{
 
   }
 
+  saveConfig(){
+    var self = this;
+    jsonfile.writeFile(self.configPath, self.config, {spaces: 2}, function(err) {
+        console.error(err);
+        console.log("[Disnode] Config Saved!".green);
+    });
+  }
+
+  loadConfig(cb){
+    var self = this;
+    console.log("[Disnode] Loading Config: " + self.configPath);
+    jsonfile.readFile(self.configPath, function(err, obj) {
+      if(err){
+        console.log(colors.red(err));
+      }
+      console.log("[Disnode] Config Loaded!".green);
+      self.config = obj;
+      cb();
+    });
+  }
   botInit()
   {
     var self = this;
@@ -74,6 +88,35 @@ class Disnode extends EventEmitter{
     if(self.CommandHandler){
       this.CommandHandler.AddContext(self[data.name], data.name);
     }
+    if(!self.config[data.name] && self[data.name].defaultConfig){
+      self.addDefaultManagerConfig([data.name],self[data.name].defaultConfig);
+    }else{
+
+    }
+    if(self.config[data.name]){
+      if(self.config[data.name].commands){
+        self.addDefaultManagerCommands(data.name, self.config[data.name].commands);
+      }
+    }
+  }
+
+  addDefaultManagerConfig(name,config){
+    var self = this;
+    console.log("[Disnode] Loading Defaults for: " + name);
+    self.config[name] = {};
+    self.config[name] = config;
+    self.saveConfig();
+  }
+
+  addDefaultManagerCommands(name, commands){
+    var self = this;
+    console.log("[Disnode] Loading Commands for: " + name);
+    for (var i = 0; i < commands.length; i++) {
+      if(self.CommandHandler){
+        self.CommandHandler.AddCommand(commands[i]);
+      }
+
+    }
 
   }
   postLoad(){
@@ -84,49 +127,47 @@ class Disnode extends EventEmitter{
     //console.dir(self.YoutubeManager);
   }
 
-  //TO-DO: Remove / Outdated
-  addDefaultCommands(){
-    var self = this;
-    if(!self.CommandHandler.list){
-      self.CommandHandler.list = [];
-    }
-    self.CommandHandler.UpdateList(self.CommandHandler.list);
-  }
+  parseString(raw,parsedMsg, customShortCuts){
+    var final = raw;
 
-  //TO-DO: Remove / Outdated
-  enableBotCommunication(options){
-    var self = this;
-    if(!self.communication){
-      self.communication = {};
-    }
-
-    self.communication.manager = new DisnodeBotCommunication(self.bot.user.id);
-    self.communication.manager.Start();
-  }
-
-  cmdWA(parsedMsg){
-    var self = this;
-    if(!self.Wolfram){
-      self.bot.sendMessage(parsedMsg.msg.channel, "Wolfram is not enabled on this bot");
-      return;
-    }
-
-    var wolfmsg;
-  	self.bot.sendMessage(parsedMsg.msg.channel, "``` Waiting on Wolfram API Q: " + parsedMsg.params[0] +" Options: " + parsedMsg.params[1] + " " + parsedMsg.params[2] + " ```", function(err, sent) {
-  		wolfmsg = sent;
-  		console.log(err);
-  	});
-  	self.Wolfram.makeRequest(parsedMsg.params, "img", function(text){
-      if(text === "NO_QUESTION"){
-        console.log("[Wolfram] No Question!");
-        self.bot.updateMessage(wolfmsg, "```You didn't put a question in for wolfram to answer!```");
-      }else if(text === "LOOKUP_ERROR"){
-        self.bot.updateMessage(wolfmsg, "```There was an error when looking up your question sorry!```");
-      }else{
-        self.bot.updateMessage(wolfmsg, text);
+    if(customShortCuts){
+      for (var i = 0; i < customShortCuts.length; i++) {
+        var cur = customShortCuts[i];
+        if(final.includes(cur.shortcut)){
+          final = final.replace(cur.shortcut, cur.data);
+        }
       }
-  	});
+    }
+
+    if(final.includes("[Sender]")){
+      final = final.replace("[Sender]", parsedMsg.msg.author.mention());
+    }
+
+    //TODO: Change to Dynamic Params
+    if(final.includes("[Param0]")){
+      final = final.replace("[Param0]", parsedMsg.params[0]);
+    }
+    if(final.includes("[Param1]")){
+      final = final.replace("[Param1]", parsedMsg.params[1]);
+    }
+    if(final.includes("[Param2]")){
+      final = final.replace("[Param2]", parsedMsg.params[2]);
+    }
+    if(final.includes("[Param3]")){
+      final = final.replace("[Param3]", parsedMsg.params[3]);
+    }
+    if(final.includes("[Param4]")){
+      final = final.replace("[Param4]", parsedMsg.params[4]);
+    }
+    if(final.includes("[Param5]")){
+      final = final.replace("[Param5]", parsedMsg.params[5]);
+    }
+
+    return final;
   }
+
+
+  
   cmdCLEVER(parsedMsg){
     var self = this;
     if(!self.CleverManager){
