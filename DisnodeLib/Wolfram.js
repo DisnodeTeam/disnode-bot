@@ -8,9 +8,20 @@ class Wolfram {
       this.key = options.key;
     }else{
       console.log("[Wolfram INIT ERROR] No \'key\' found in options object, cannot use wolfram requests without an API KEY");
-      return;
     }
 		this.wolframapi = WolframAPI.createClient(this.key);
+		this.disnode = options.disnode;
+		this.defaultConfig = {
+			commands: [
+				{
+		      "cmd": "wa",
+		      "context": "Wolfram",
+		      "run": "cmdWA",
+		      "desc": "Wolfram Alpha Request.",
+		      "usage": "wa [Question] [Option1] [Option2]",
+		    },
+			]
+		};
 	}
 
 	//Makes a request based on params (empty = normal lookup, int = limited lookup, img = images only, and you can combine)
@@ -73,6 +84,26 @@ class Wolfram {
 			cb("LOOKUP_ERROR");
 		}
 	}
+
+	cmdWA(parsedMsg){
+    var self = this;
+
+    var wolfmsg;
+  	self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Waiting on Wolfram API Q: " + parsedMsg.params[0] +" Options: " + parsedMsg.params[1] + " " + parsedMsg.params[2] + " ```", function(err, sent) {
+  		wolfmsg = sent;
+  		console.log(err);
+  	});
+  	self.makeRequest(parsedMsg.params, "img", function(text){
+      if(text === "NO_QUESTION"){
+        console.log("[Wolfram] No Question!");
+        self.disnode.bot.updateMessage(wolfmsg, "```You didn't put a question in for wolfram to answer!```");
+      }else if(text === "LOOKUP_ERROR"){
+        self.disnode.bot.updateMessage(wolfmsg, "```There was an error when looking up your question sorry!```");
+      }else{
+        self.disnode.bot.updateMessage(wolfmsg, text);
+      }
+  	});
+  }
 }
 
 module.exports = Wolfram;
