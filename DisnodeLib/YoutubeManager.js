@@ -20,7 +20,16 @@ class YoutubeManager {
         msgDownloadProgess: "Downloading...",
         msgDownloadInfo : "Adding Sound [File]",
         msgDownloadFinished: "[Sender] Finished Download! Used [Prefix]play [File]"
-      }
+      },
+      commands: [
+        {
+          "cmd": "yt",
+          "context": "YoutubeManager",
+          "run": "cmdDownloadYT",
+          "desc": "Downloads a video as a MP3 using the video ID",
+          "usage": "yt [videoID] [CommandName]"
+        }
+      ]
     };
     this.config = this.disnode.config.YoutubeManager;
   }

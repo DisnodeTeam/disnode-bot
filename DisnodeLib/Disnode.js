@@ -49,16 +49,6 @@ class Disnode extends EventEmitter{
       cb();
     });
   }
-
-  addDefaultManagerConfig(name,config){
-    var self = this;
-    console.log("[Disnode] Loading Defaults for: " + name);
-    self.config[name] = {};
-    self.config[name] = config;
-    self.saveConfig();
-  }
-
-
   botInit()
   {
     var self = this;
@@ -92,18 +82,44 @@ class Disnode extends EventEmitter{
       path = "./"+data.name+".js";
     }
 
-
-
     self[data.name] = {};
     self[data.name].package = require(path);
     self[data.name] = new self[data.name].package(option);
-
-    if(!self.config[data.name] && self[data.name].defaultConfig){
-      self.addDefaultManagerConfig([data.name],self[data.name].defaultConfig);
-    }
-
     if(self.CommandHandler){
       this.CommandHandler.AddContext(self[data.name], data.name);
+    }
+    if(!self.config[data.name] && self[data.name].defaultConfig){
+      self.addDefaultManagerConfig([data.name],self[data.name].defaultConfig);
+    }else{
+
+    }
+    if(self.config[data.name]){
+      if(self.config[data.name].commands){
+        self.addDefaultManagerCommands(data.name, self.config[data.name].commands);
+      }
+
+    }
+
+
+
+  }
+
+  addDefaultManagerConfig(name,config){
+    var self = this;
+    console.log("[Disnode] Loading Defaults for: " + name);
+    self.config[name] = {};
+    self.config[name] = config;
+    self.saveConfig();
+  }
+
+  addDefaultManagerCommands(name, commands){
+    var self = this;
+    console.log("[Disnode] Loading Commands for: " + commands);
+    for (var i = 0; i < commands.length; i++) {
+      if(self.CommandHandler){
+        self.CommandHandler.AddCommand(commands[i]);
+      }
+
     }
 
   }
