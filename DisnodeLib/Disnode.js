@@ -1,22 +1,16 @@
 "use strict";
 const EventEmitter = require("events");
 const Discord = require( "discord.js");
-
-const DisnodeAudioPlayer = require("./AudioPlayer.js");
-const CommandHandler = require("./CommandHandler.js");
-const DisnodeVoiceManager = require("./VoiceManager.js");
-const DisnodeBotCommunication = require("./BotCommunication.js");
-const CleverManager = require("./CleverManager.js");
-const ConfigManager = require("./ConfigManager.js");
-const Wolfram = require("./Wolfram.js");
-const YoutubeManager = require("./YoutubeManager.js");
-const DiscordManager = require("./DiscordManager.js");
+const jsonfile = require('jsonfile');
+const colors = require('colors');
 
 class Disnode extends EventEmitter{
-  constructor(key){
+  constructor(key, configPath){
     super();
 
     this.key = key;
+    this.configPath = configPath;
+    this.config = {};
   }
 
   startBot(){
@@ -34,6 +28,36 @@ class Disnode extends EventEmitter{
     this.botInit();
 
   }
+
+  saveConfig(){
+    var self = this;
+    jsonfile.writeFile(self.configPath, self.config, {spaces: 2}, function(err) {
+        console.error(err);
+        console.log("[Disnode] Config Saved!".green);
+    });
+  }
+
+  loadConfig(cb){
+    var self = this;
+    console.log("[Disnode] Loading Config: " + self.configPath);
+    jsonfile.readFile(self.configPath, function(err, obj) {
+      if(err){
+        console.log(colors.red(err));
+      }
+      console.log("[Disnode] Config Loaded!".green);
+      self.config = obj;
+      cb();
+    });
+  }
+
+  addDefaultManagerConfig(name,config){
+    var self = this;
+    console.log("[Disnode] Loading Defaults for: " + name);
+    self.config[name] = {};
+    self.config[name] = config;
+    self.saveConfig();
+  }
+
 
   botInit()
   {
@@ -68,9 +92,16 @@ class Disnode extends EventEmitter{
       path = "./"+data.name+".js";
     }
 
+
+
     self[data.name] = {};
     self[data.name].package = require(path);
     self[data.name] = new self[data.name].package(option);
+
+    if(!self.config[data.name] && self[data.name].defaultConfig){
+      self.addDefaultManagerConfig([data.name],self[data.name].defaultConfig);
+    }
+
     if(self.CommandHandler){
       this.CommandHandler.AddContext(self[data.name], data.name);
     }

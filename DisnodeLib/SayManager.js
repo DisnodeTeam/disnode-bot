@@ -2,16 +2,25 @@
 class SayManager{
   constructor(options){
     this.options = options;
+
+    this.defaultConfig = {
+      responses:{
+        errEnterCommand: "Please Enter a Command (First Parameter)",
+        errEnterSay: "Please Enter a Say (Secound Parameter)"
+      }
+    };
+    
+    this.config = this.options.disnode.config.SayManager;
   }
   cmdAddSay(parsedMsg){
     var self = this;
     var command = parsedMsg.params[0];
     var say = parsedMsg.params[1];
     if(!command){
-      self.options.disnode.bot.sendMessage(parsedMsg.msg.channel, "Please Enter a Command (First Parameter)" );
+      self.options.disnode.bot.sendMessage(parsedMsg.msg.channel, self.config.responses.errEnterCommand );
     }
     if(!say){
-      self.options.disnode.bot.sendMessage(parsedMsg.msg.channel, "Please Enter a Say (Secound Parameter)" );
+      self.options.disnode.bot.sendMessage(parsedMsg.msg.channel, self.config.responses.errEnterSay );
     }
     if(command && say){
       self.addSayCommand(command, say);
@@ -20,7 +29,7 @@ class SayManager{
   addSayCommand(command, say){
     var self = this;
     if(self.options.disnode.ConfigManager){
-      var config = self.options.disnode.ConfigManager.config;
+      var config = self.options.disnode.config;
       console.log(config);
 
       var newSayComand = {
@@ -35,7 +44,7 @@ class SayManager{
       }
 
       config.commands.push(newSayComand);
-      self.options.disnode.ConfigManager.saveConfig();
+      self.options.disnode.saveConfig();
       console.log("[SayManager] New Say Command Added!");
 
     }else{

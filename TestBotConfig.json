@@ -176,5 +176,11 @@
         "sayText": "[Sender] *slaps* [Param0] with a power of [Param1]"
       }
     }
-  ]
+  ],
+  "SayManager": {
+    "responses": {
+      "errEnterCommand": "Please Enter a Command (First Parameter)",
+      "errEnterSay": "Please Enter a Say (Secound Parameter)"
+    }
+  }
 }
