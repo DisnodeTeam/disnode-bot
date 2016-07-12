@@ -10,7 +10,7 @@ class CleverManager {
           "context": "CleverManager",
           "run": "cmdCLEVER",
           "desc": "Cleverbot.",
-          "usage": "clever [Phrase, or new to refresh cleverbot]",
+          "usage": "clever [Phrase, or 'new' to refresh cleverbot]",
         },
       ]
     };

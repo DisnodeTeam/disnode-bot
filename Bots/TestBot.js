@@ -10,8 +10,7 @@ testBot.on("Bot_Ready", function(){ //event emitter called when the bot is ready
 });
 var OnLoad = function(){
   //enables the command handler which allows for recognizing commands from regular messages takes and object with the command prefix
-  testBot.addManager({name:"CommandHandler", options:{prefix: "!"}});
-  testBot.addManager({name:"TestManager", options:{}});
+  testBot.addManager({name:"CommandHandler", options:{prefix: "^"}});
   //enables voice manager required for audio player
   testBot.addManager({name: "VoiceManager", options:{voiceEvents:true}});
   //enables audio player with an object that passes a 'path(String)' and 'maxVolume(float)'
