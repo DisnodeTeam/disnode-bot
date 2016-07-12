@@ -9,7 +9,7 @@ class SayManager{
         errEnterSay: "Please Enter a Say (Secound Parameter)"
       }
     };
-    
+
     this.config = this.options.disnode.config.SayManager;
   }
   cmdAddSay(parsedMsg){
@@ -55,22 +55,9 @@ class SayManager{
   cmdSay(parsedMsg, params){
     var self = this;
 
-    var final = params.sayText;
-    if(final.includes("[Sender]")){
-      final = final.replace("[Sender]", parsedMsg.msg.author.mention());
-    }
 
-    if(final.includes("[Param0]")){
-      final = final.replace("[Param0]", parsedMsg.params[0]);
-    }
-    if(final.includes("[Param1]")){
-      final = final.replace("[Param1]", parsedMsg.params[1]);
-    }
-    if(final.includes("[Param2]")){
-      final = final.replace("[Param2]", parsedMsg.params[2]);
-    }
-
-    self.options.disnode.bot.sendMessage(parsedMsg.msg.channel,  final);
+    var printText = self.options.disnode.parseString(params.sayText,parsedMsg);
+    self.options.disnode.bot.sendMessage(parsedMsg.msg.channel, printText);
   }
 }
 

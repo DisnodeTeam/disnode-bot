@@ -115,25 +115,45 @@ class Disnode extends EventEmitter{
     //console.dir(self.YoutubeManager);
   }
 
-  //TO-DO: Remove / Outdated
-  addDefaultCommands(){
-    var self = this;
-    if(!self.CommandHandler.list){
-      self.CommandHandler.list = [];
-    }
-    self.CommandHandler.UpdateList(self.CommandHandler.list);
-  }
+  parseString(raw,parsedMsg, customShortCuts){
+    var final = raw;
 
-  //TO-DO: Remove / Outdated
-  enableBotCommunication(options){
-    var self = this;
-    if(!self.communication){
-      self.communication = {};
+    if(customShortCuts){
+      for (var i = 0; i < customShortCuts.length; i++) {
+        var cur = customShortCuts[i];
+        if(final.includes(cur.shortcut)){
+          final = final.replace(cur.shortcut, cur.data);
+        }
+      }
     }
 
-    self.communication.manager = new DisnodeBotCommunication(self.bot.user.id);
-    self.communication.manager.Start();
+    if(final.includes("[Sender]")){
+      final = final.replace("[Sender]", parsedMsg.msg.author.mention());
+    }
+
+    //TODO: Change to Dynamic Params
+    if(final.includes("[Param0]")){
+      final = final.replace("[Param0]", parsedMsg.params[0]);
+    }
+    if(final.includes("[Param1]")){
+      final = final.replace("[Param1]", parsedMsg.params[1]);
+    }
+    if(final.includes("[Param2]")){
+      final = final.replace("[Param2]", parsedMsg.params[2]);
+    }
+    if(final.includes("[Param3]")){
+      final = final.replace("[Param3]", parsedMsg.params[3]);
+    }
+    if(final.includes("[Param4]")){
+      final = final.replace("[Param4]", parsedMsg.params[4]);
+    }
+    if(final.includes("[Param5]")){
+      final = final.replace("[Param5]", parsedMsg.params[5]);
+    }
+
+    return final;
   }
+
 
   cmdWA(parsedMsg){
     var self = this;

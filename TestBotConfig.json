@@ -182,5 +182,12 @@
       "errEnterCommand": "Please Enter a Command (First Parameter)",
       "errEnterSay": "Please Enter a Say (Secound Parameter)"
     }
+  },
+  "YoutubeManager": {
+    "responses": {
+      "msgDownloadProgess": "Downloading...",
+      "msgDownloadInfo": "Adding Sound [File]",
+      "msgDownloadFinished": "[Sender] Finished Download! Used [Prefix]play [File]"
+    }
   }
 }

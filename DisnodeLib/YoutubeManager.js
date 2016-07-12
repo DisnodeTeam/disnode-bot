@@ -5,6 +5,7 @@ class YoutubeManager {
   constructor(options) {
     console.log("[YTMngr] Init");
     this.disnode = options.disnode;
+    this.options = options;
     const YoutubeMp3Downloader = require('youtube-mp3-downloader');
     this.YD = new YoutubeMp3Downloader({
       "ffmpegPath": "./libmeg/bin/ffmpeg.exe", // Where is the FFmpeg binary located?
@@ -13,6 +14,15 @@ class YoutubeManager {
       "queueParallelism": 2, // How many parallel downloads/encodes should be started?
       "progressTimeout": 1000 // How long should be the interval of the progress reports
     });
+
+    this.defaultConfig  = {
+      responses:{
+        msgDownloadProgess: "Downloading...",
+        msgDownloadInfo : "Adding Sound [File]",
+        msgDownloadFinished: "[Sender] Finished Download! Used [Prefix]play [File]"
+      }
+    };
+    this.config = this.disnode.config.YoutubeManager;
   }
 
   SetOnProgess(func) {
@@ -47,22 +57,28 @@ class YoutubeManager {
 		var msg = parsedMsg.msg.content;
 		var self = this;
 
+
 		var firstSpace =msg.indexOf(" ");
 		var link = msg.substring(firstSpace + 1, msg.indexOf(" ", firstSpace + 1));
 		var file = msg.substring(msg.indexOf(" ",msg.indexOf(link)) + 1,msg.length);
 
 		var progressMessage;
 
+    var responses = self.config.responses;
+    var parseString = self.options.disnode.parseString;
+
+    var customShortCuts = [];
+    customShortCuts.push({shortcut: "[File]", data: file});
+    customShortCuts.push({shortcut: "[Prefix]", data: self.disnode.CommandHandler.prefix});
 
 
-		self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Video Code: "+link+" Command Name: "+file+"```" );
-		self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Downloading... ```", function(err, sent) {
+		self.disnode.bot.sendMessage(parsedMsg.msg.channel, parseString(responses.msgDownloadInfo,parsedMsg,customShortCuts));
+		self.disnode.bot.sendMessage(parsedMsg.msg.channel, parseString(responses.msgDownloadProgess,parsedMsg,customShortCuts), function(err, sent) {
 			progressMessage = sent;
 			console.log(err);
 		});
-
 		self.SetOnFinished(function(data){
-			self.disnode.bot.updateMessage(progressMessage, "``` Finished. Use '" + self.CommandHandler.prefix + "play "+file+"'```");
+			self.disnode.bot.updateMessage(progressMessage,  parseString(responses.msgDownloadFinished,parsedMsg,customShortCuts));
 		});
 		self.SetOnError(function(error){
 			self.disnode.bot.updateMessage(progressMessage, error);
