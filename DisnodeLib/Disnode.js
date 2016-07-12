@@ -167,7 +167,7 @@ class Disnode extends EventEmitter{
   }
 
 
-  
+
   cmdCLEVER(parsedMsg){
     var self = this;
     if(!self.CleverManager){
@@ -223,46 +223,7 @@ class Disnode extends EventEmitter{
   	SendString = SendString + "```";
   	self.bot.sendMessage(parsedMsg.msg.channel, SendString);
   }
-  cmdPlay(parsedMsg){
-    var self = this;
-    if(!self.AudioPlayer){
-      self.bot.sendMessage(parsedMsg.msg.channel, "``` Audio Player not Enabled! ```");
-      return;
-    }
-    if(!self.VoiceManager){
-      self.bot.sendMessage(parsedMsg.msg.channel, "``` VoiceManager not Enabled! (VoiceManager is required for AudioPlayer) ```");
-      return;
-    }
-
-    var fileName = parsedMsg.params[0];
-    self.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3 ```");
-    self.AudioPlayer.playFile(fileName, parsedMsg,function(text){
-      if(text === "loud"){
-        self.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.AudioPlayer.maxVolume + "! Remains default (" + self.AudioPlayer.defaultVolume +") ```");
-      }
-      if(text === "notfound"){
-        self.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
-      }
-    });
-  }
-  cmdStop(parsedMsg){
-    var self = this;
-    if(!self.AudioPlayer){
-      self.bot.sendMessage(parsedMsg.msg.channel, "``` Audio Player not Enabled! ```");
-      return;
-    }
-    if(!self.VoiceManager){
-      self.bot.sendMessage(parsedMsg.msg.channel, "``` VoiceManager not Enabled! (VoiceManager is required for AudioPlayer) ```");
-      return;
-    }
-
-    self.bot.sendMessage(parsedMsg.msg.channel, "``` Playback stopped! ```");
-    self.AudioPlayer.stopPlaying(parsedMsg, function cb(text){
-      if(text === "notfound"){
-        self.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
-      }
-    });
-  }
+  
   cmdJoinVoice(parsedMsg){
     var self = this;
   	if(parsedMsg.msg.author.voiceChannel){
@@ -314,41 +275,6 @@ class Disnode extends EventEmitter{
       console.log("[VoiceManager - cmdUnfollow ] No Manager set!");
     }
   }
-  cmdListAudio(parsedMsg){
-    var self = this;
-    var Page = 1;
-    if(parsedMsg.params[0]){
-      Page = parseInt(parsedMsg.params[0]);
-    }
-
-
-    var ResultsPerPage = 15;
-    var Start = (Page * ResultsPerPage) - ResultsPerPage;
-    var CurrentIndex = 0;
-
-    var SendString = "``` === AUDIO CLIPS (Page: "+Page+")=== \n";
-    self.AudioPlayer.listAll("./Audio/", function(name){
-      CurrentIndex++;
-      if(CurrentIndex >= Start)
-      {
-        if(CurrentIndex < Start + ResultsPerPage)
-        {
-          SendString = SendString + "-"+name+ "\n";
-        }
-      }
-
-    }, function(){
-      SendString = SendString + "```";
-      self.bot.sendMessage(parsedMsg.msg.channel, SendString);
-    });
-
-  }
-
-  cmdTestConfig(parsedMsg){
-    var self = this;
-    self.bot.sendMessage(parsedMsg.msg.channel, "Test Worked!");
-  }
-
 
 
 }

@@ -35,39 +35,6 @@
       ]
     },
     {
-      "cmd": "list",
-      "context": "disnode",
-      "run": "cmdListAudio",
-      "desc": "Displays list of Audio Files.",
-      "usage": "list [page]",
-      "require": [
-        "VoiceManager",
-        "AudioPlayer"
-      ]
-    },
-    {
-      "cmd": "play",
-      "context": "disnode",
-      "run": "cmdPlay",
-      "desc": "Plays an audio file.",
-      "usage": "play [filename] [volume]",
-      "require": [
-        "VoiceManager",
-        "AudioPlayer"
-      ]
-    },
-    {
-      "cmd": "stop",
-      "context": "disnode",
-      "run": "cmdStop",
-      "desc": "Stops all audio.",
-      "usage": "stop",
-      "require": [
-        "VoiceManager",
-        "AudioPlayer"
-      ]
-    },
-    {
       "cmd": "lv",
       "context": "disnode",
       "run": "cmdLeaveVoice",
@@ -111,13 +78,6 @@
       "run": "cmdDebug",
       "desc": "Tests Context Calling!",
       "usage": "testbot"
-    },
-    {
-      "cmd": "addSay",
-      "context": "SayManager",
-      "run": "cmdAddSay",
-      "desc": "Tests Context Calling!",
-      "usage": "testcontext"
     },
     {
       "cmd": "twitter",
@@ -199,6 +159,31 @@
         "run": "cmdWA",
         "desc": "Wolfram Alpha Request.",
         "usage": "wa [Question] [Option1] [Option2]"
+      }
+    ]
+  },
+  "AudioPlayer": {
+    "commands": [
+      {
+        "cmd": "list",
+        "context": "AudioPlayer",
+        "run": "cmdListAudio",
+        "desc": "Displays list of Audio Files.",
+        "usage": "list [page]"
+      },
+      {
+        "cmd": "play",
+        "context": "AudioPlayer",
+        "run": "cmdPlay",
+        "desc": "Plays an audio file.",
+        "usage": "play [filename] [volume]"
+      },
+      {
+        "cmd": "stop",
+        "context": "AudioPlayer",
+        "run": "cmdStop",
+        "desc": "Stops all audio.",
+        "usage": "stop"
       }
     ]
   }
