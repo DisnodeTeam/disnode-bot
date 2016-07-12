@@ -38,9 +38,7 @@ class SayManager{
   }
   addSayCommand(command, say){
     var self = this;
-    if(self.options.disnode.ConfigManager){
       var config = self.options.disnode.config;
-      console.log(config);
 
       var newSayComand = {
         cmd: command,
@@ -57,9 +55,7 @@ class SayManager{
       self.options.disnode.saveConfig();
       console.log("[SayManager] New Say Command Added!");
 
-    }else{
-      console.log("[SayManager] No Config Manager Loaded!");
-    }
+
   }
 
   cmdSay(parsedMsg, params){

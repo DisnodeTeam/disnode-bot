@@ -167,31 +167,5 @@ class Disnode extends EventEmitter{
 
     return final;
   }
-
-
-
-
-  cmdTest(parsedMsg){
-    var self = this;
-
-    self.bot.sendMessage(parsedMsg.msg.channel, "Test Command: " + parsedMsg.params);
-  }
-  cmdHelp(parsedMsg){
-    var self = this;
-
-    var SendString = "``` === HELP === \n";
-    for (var i = 0; i < self.CommandHandler.list.length; i++) {
-  		var cmd = self.CommandHandler.list[i];
-  		//cmd.cmd, cmd.desc,cmd.usage
-      SendString = SendString + "-"+self.CommandHandler.prefix+cmd.cmd+" : "+cmd.desc+" - " + self.CommandHandler.prefix+ cmd.usage + "\n";
-  		SendString = SendString + "\n";
-  	}
-  	SendString = SendString + "```";
-  	self.bot.sendMessage(parsedMsg.msg.channel, SendString);
-  }
-
-  
-
-
 }
 module.exports = Disnode;

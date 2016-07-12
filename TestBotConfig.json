@@ -1,75 +1,5 @@
 {
-  "commands": [
-    {
-      "cmd": "help",
-      "context": "disnode",
-      "run": "cmdHelp",
-      "desc": "Displays Help.",
-      "usage": "help"
-    },
-    {
-      "cmd": "test",
-      "context": "disnode",
-      "run": "cmdTest",
-      "desc": "Test Command that lists all params.",
-      "usage": "test [parms]"
-    },
-    {
-      "cmd": "testcontext",
-      "context": "testbot",
-      "run": "cmdTestContext",
-      "desc": "Tests Context Calling!",
-      "usage": "testcontext"
-    },
-    {
-      "cmd": "debug",
-      "role": "Rouges",
-      "context": "testbot",
-      "run": "cmdDebug",
-      "desc": "Tests Context Calling!",
-      "usage": "testbot"
-    },
-    {
-      "cmd": "twitter",
-      "run": "cmdSay",
-      "context": "SayManager",
-      "desc": "null",
-      "usage": "twitter",
-      "params": {
-        "sayText": "VictoryForPhil"
-      }
-    },
-    {
-      "cmd": "hellow",
-      "run": "cmdSay",
-      "context": "SayManager",
-      "desc": "null",
-      "usage": "hellow",
-      "params": {
-        "sayText": "HELLLOOOWWWWW WORLDDD!!!"
-      }
-    },
-    {
-      "cmd": "Hug",
-      "run": "cmdSay",
-      "context": "SayManager",
-      "desc": "null",
-      "usage": "Hug",
-      "params": {
-        "sayText": "[Sender] Hugs Me!"
-      }
-    },
-    {
-      "cmd": "Slap",
-      "run": "cmdSay",
-      "context": "SayManager",
-      "desc": "null",
-      "usage": "Slap",
-      "params": {
-        "sayText": "[Sender] *slaps* [Param0] with a power of [Param1]"
-      }
-    }
-  ],
+  "commands": [],
   "YoutubeManager": {
     "responses": {
       "msgDownloadProgess": "Downloading...",
@@ -177,6 +107,32 @@
         "run": "cmdUnfollow",
         "desc": "Test Command that lists all params.",
         "usage": "unfollow [parms]"
+      }
+    ]
+  },
+  "TestManager": {
+    "defaultSaying": "Default Saying",
+    "responses": {
+      "printSay": "[Sender] Says: [Saying]"
+    },
+    "commands": [
+      {
+        "cmd": "testManager",
+        "run": "cmdTest",
+        "context": "TestManager",
+        "usage": "testManager",
+        "desc": "Default Manager Test Command"
+      }
+    ]
+  },
+  "HelpManager": {
+    "commands": [
+      {
+        "cmd": "help",
+        "context": "HelpManager",
+        "run": "cmdHelp",
+        "desc": "Displays Help.",
+        "usage": "help"
       }
     ]
   }
