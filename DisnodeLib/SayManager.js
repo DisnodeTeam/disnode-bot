@@ -3,6 +3,7 @@ class SayManager{
   constructor(options){
     this.options = options;
 
+
     this.defaultConfig = {
       responses:{
         errEnterCommand: "Please Enter a Command (First Parameter)",

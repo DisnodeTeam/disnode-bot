@@ -14,6 +14,7 @@ function cmdJoinVoice(voiceManager, msg, parms, cb){
 	}
 }
 
+
 exports.JoinVoice = cmdJoinVoice;
 function cmdDownloadYT(ytManager, msg, parms, cb){
 

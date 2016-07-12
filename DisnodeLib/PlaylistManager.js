@@ -7,6 +7,7 @@ class PlaylistManager{
     this.playLists = [];
   }
 
+
   loadPlaylists(){
     var _this = this;
     this.jsonFile.readFile(this.path, function(err, obj) {

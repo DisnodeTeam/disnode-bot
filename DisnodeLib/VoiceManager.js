@@ -4,6 +4,9 @@ class VoiceManager {
   constructor(options){
     this.bot = options.disnode.bot;
 
+
+
+
     if(options.voiceEvents){
        options.voiceEvents = true;
        options.disnode.on("voiceJoin", (c,u)=>self.OnVoiceJoin(c,u));

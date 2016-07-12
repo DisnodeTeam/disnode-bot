@@ -2,6 +2,9 @@
 
 class Wolfram {
 	constructor(options){
+
+
+		
 		const WolframAPI = require('wolfram-alpha');
     console.log("[Wolfram] Init");
     if(options.key){
