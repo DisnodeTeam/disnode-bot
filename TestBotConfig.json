@@ -8,61 +8,11 @@
       "usage": "help"
     },
     {
-      "cmd": "jv",
-      "context": "disnode",
-      "run": "cmdJoinVoice",
-      "desc": "Joins the voice channel you are connected to.",
-      "usage": "jv",
-      "require": [
-        "VoiceManager"
-      ]
-    },
-    {
       "cmd": "test",
       "context": "disnode",
       "run": "cmdTest",
       "desc": "Test Command that lists all params.",
       "usage": "test [parms]"
-    },
-    {
-      "cmd": "clever",
-      "context": "disnode",
-      "run": "cmdCLEVER",
-      "desc": "Cleverbot.",
-      "usage": "clever [Phrase, or new to refresh cleverbot]",
-      "require": [
-        "CleverManager"
-      ]
-    },
-    {
-      "cmd": "lv",
-      "context": "disnode",
-      "run": "cmdLeaveVoice",
-      "desc": "Leaves the voice channel you are connected to.",
-      "usage": "lv",
-      "require": [
-        "VoiceManager"
-      ]
-    },
-    {
-      "cmd": "follow",
-      "context": "disnode",
-      "run": "cmdFollow",
-      "desc": "Test Command that lists all params.",
-      "usage": "follow [parms]",
-      "require": [
-        "VoiceManager"
-      ]
-    },
-    {
-      "cmd": "unfollow",
-      "context": "disnode",
-      "run": "cmdUnfollow",
-      "desc": "Test Command that lists all params.",
-      "usage": "unfollow [parms]",
-      "require": [
-        "VoiceManager"
-      ]
     },
     {
       "cmd": "testcontext",
@@ -184,6 +134,49 @@
         "run": "cmdStop",
         "desc": "Stops all audio.",
         "usage": "stop"
+      }
+    ]
+  },
+  "CleverManager": {
+    "commands": [
+      {
+        "cmd": "clever",
+        "context": "CleverManager",
+        "run": "cmdCLEVER",
+        "desc": "Cleverbot.",
+        "usage": "clever [Phrase, or new to refresh cleverbot]"
+      }
+    ]
+  },
+  "VoiceManager": {
+    "commands": [
+      {
+        "cmd": "jv",
+        "context": "VoiceManager",
+        "run": "cmdJoinVoice",
+        "desc": "Joins the voice channel you are connected to.",
+        "usage": "jv"
+      },
+      {
+        "cmd": "lv",
+        "context": "VoiceManager",
+        "run": "cmdLeaveVoice",
+        "desc": "Leaves the voice channel you are connected to.",
+        "usage": "lv"
+      },
+      {
+        "cmd": "follow",
+        "context": "VoiceManager",
+        "run": "cmdFollow",
+        "desc": "Test Command that lists all params.",
+        "usage": "follow [parms]"
+      },
+      {
+        "cmd": "unfollow",
+        "context": "VoiceManager",
+        "run": "cmdUnfollow",
+        "desc": "Test Command that lists all params.",
+        "usage": "unfollow [parms]"
       }
     ]
   }

@@ -4,18 +4,51 @@ class VoiceManager {
   constructor(options){
     this.bot = options.disnode.bot;
 
+    this.defaultConfig = {
+      commands:[
+        {
+          "cmd": "jv",
+          "context": "VoiceManager",
+          "run": "cmdJoinVoice",
+          "desc": "Joins the voice channel you are connected to.",
+          "usage": "jv"
+        },
+        {
+          "cmd": "lv",
+          "context": "VoiceManager",
+          "run": "cmdLeaveVoice",
+          "desc": "Leaves the voice channel you are connected to.",
+          "usage": "lv",
+        },
+        {
+          "cmd": "follow",
+          "context": "VoiceManager",
+          "run": "cmdFollow",
+          "desc": "Test Command that lists all params.",
+          "usage": "follow [parms]",
+        },
+        {
+          "cmd": "unfollow",
+          "context": "VoiceManager",
+          "run": "cmdUnfollow",
+          "desc": "Test Command that lists all params.",
+          "usage": "unfollow [parms]",
+        },
+      ]
+    };
 
 
 
-    if(options.voiceEvents){
-       options.voiceEvents = true;
-       options.disnode.on("voiceJoin", (c,u)=>self.OnVoiceJoin(c,u));
-       options.disnode.on("voiceLeave", (c,u)=>self.OnVoiceLeave(c,u));
+    if(options.voiceEvents == true){
+        this.voiceEvents = true;
+       options.disnode.bot.on("voiceJoin", (c,u)=>this.OnVoiceJoin(c,u));
+       options.disnode.bot.on("voiceLeave", (c,u)=>this.OnVoiceLeave(c,u));
     }else{
-      this.voiceEvents = options.voiceEvents;
+      this.voiceEvents = false;
     }
-
     this.retry = true;
+
+    this.disnode = options.disnode;
     console.log("[VoiceManager] Init.");
   }
 
@@ -69,13 +102,12 @@ class VoiceManager {
       console.log("[VoiceManager] Found Server: " + id);
       this.currentChannel = id;
       console.log(this.bot);
-      this.bot.joinVoiceChannel(id);
+      this.disnode.bot.joinVoiceChannel(id);
       console.log(this.bot);
     }else{
       console.log("[VoiceManager] Failed to Find Server: " + id);
       if(this.retry == true){
         var nameConvert = name.replace(/-/g, " ");
-        console.log(nameConvert);
         this.retry = false;
         this.JoinChannel(nameConvert, server)
 
@@ -84,13 +116,57 @@ class VoiceManager {
   }
 
   JoinChannelWithId(id,cb){
-    this.bot.joinVoiceChannel(id,cb);
+    this.disnode.bot.joinVoiceChannel(id,cb);
   }
 
   LeaveChannel(id){
-    this.bot.leaveVoiceChannel(id);
+    this.disnode.bot.leaveVoiceChannel(id);
     this.currentChannel = "";
 
+  }
+
+  cmdJoinVoice(parsedMsg){
+    var self = this;
+  	if(parsedMsg.msg.author.voiceChannel){
+  		var id = parsedMsg.msg.author.voiceChannel;
+  		self.JoinChannelWithId(id);
+  		self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Joined the channel you are in! ```");
+  	}else {
+  		self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` You are not in a voice Channel ```");
+  	}
+
+  }
+  cmdLeaveVoice(parsedMsg){
+    var self = this;
+    if (parsedMsg.msg.author.voiceChannel){
+  		var id = parsedMsg.msg.author.voiceChannel;
+      self.LeaveChannel(id);
+      self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Left the channel you are in! ```");
+    }else {
+  		self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` You are not in a voice Channel ```");
+  	}
+  }
+
+  cmdFollow(parsedMsg){
+    var self = this;
+      if(self.voiceEvents){
+        self.Follow(parsedMsg.msg.author);
+        console.log("[VoiceManager - CmdFollow ] Following: " + parsedMsg.msg.author.username);
+        self.disnode.bot.sendMessage(parsedMsg.msg.channel, "```Following: " + parsedMsg.msg.author.username+"```")
+      }else{
+        console.log("[VoiceManager - CmdFollow ] Voice events no enabled!");
+      }
+  }
+
+  cmdUnfollow(parsedMsg){
+    var self = this;
+      if(self.voiceEvents){
+        self.Follow(parsedMsg.msg.author);
+        console.log("[VoiceManager - cmdUnfollow ] Unfollow: " + parsedMsg.msg.author.username);
+        self.bot.sendMessage(parsedMsg.msg.channel, "```Unfollow: " + parsedMsg.msg.author.username+"```")
+      }else{
+        console.log("[VoiceManager - cmdUnfollow ] Voice events no enabled!");
+      }
   }
 
 

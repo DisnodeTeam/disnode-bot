@@ -18,7 +18,7 @@ var OnLoad = function(){
   //enables config manager which is a required library for loading commands
 
   //cleverbot functionality passed is a object containing the channel that cleverbot will speak in
-  testBot.addManager({name:"CleverManager", options:{channelid:"113788405451587584"}});
+  testBot.addManager({name:"CleverManager", options:{channelid:"185614233168248833"}});
   //enables wolfram-alpha functionality inside "" is your APP ID from WolframAPI
   testBot.addManager({name:"Wolfram", options:{key:""}});
   //enables youtube manager which allows for taking youtube videos and converts them to mp3
