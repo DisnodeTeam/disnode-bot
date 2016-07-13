@@ -1,7 +1,10 @@
-var gulp = require('gulp');
+const gulp = require('gulp');
+const babel = require('gulp-babel');
 
-gulp.task('default', function() {
-  gulp.src('./src/*.coffee')
-    .pipe(coffee({bare: true}).on('error', gutil.log))
-    .pipe(gulp.dest('./dist/'));
+gulp.task('default', () => {
+	return gulp.src('src/*.js')
+		.pipe(babel({
+			presets: ['es2015']
+		}))
+		.pipe(gulp.dest('dist'));
 });

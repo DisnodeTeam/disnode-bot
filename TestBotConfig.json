@@ -9,6 +9,127 @@
       "params": {
         "sayText": "List of Games \n Falken's Maze \n Black Jack \n Gin Rummy \n Hearts \n Bridge \n Checkers \n Chess \n Poker \n Fighter Combat \n Guerrilla Engagement \n Desert Warefare \n Air-To-Ground Actions \n Global Thermonuclear War"
       }
+    }
+  ],
+  "VoiceManager": {
+    "commands": [
+      {
+        "cmd": "jv",
+        "context": "VoiceManager",
+        "run": "cmdJoinVoice",
+        "desc": "Joins the voice channel you are connected to.",
+        "usage": "jv"
+      },
+      {
+        "cmd": "lv",
+        "context": "VoiceManager",
+        "run": "cmdLeaveVoice",
+        "desc": "Leaves the voice channel you are connected to.",
+        "usage": "lv"
+      },
+      {
+        "cmd": "follow",
+        "context": "VoiceManager",
+        "run": "cmdFollow",
+        "desc": "Test Command that lists all params.",
+        "usage": "follow [User]"
+      },
+      {
+        "cmd": "unfollow",
+        "context": "VoiceManager",
+        "run": "cmdUnfollow",
+        "desc": "Test Command that lists all params.",
+        "usage": "unfollow [parms]"
+      }
+    ]
+  },
+  "AudioPlayer": {
+    "commands": [
+      {
+        "cmd": "list",
+        "context": "AudioPlayer",
+        "run": "cmdListAudio",
+        "desc": "Displays list of Audio Files.",
+        "usage": "list [page]"
+      },
+      {
+        "cmd": "play",
+        "context": "AudioPlayer",
+        "run": "cmdPlay",
+        "desc": "Plays an audio file.",
+        "usage": "play [filename] [volume]"
+      },
+      {
+        "cmd": "stop",
+        "context": "AudioPlayer",
+        "run": "cmdStop",
+        "desc": "Stops all audio.",
+        "usage": "stop"
+      }
+    ]
+  },
+  "HelpManager": {
+    "commands": [
+      {
+        "cmd": "help",
+        "context": "HelpManager",
+        "run": "cmdHelp",
+        "desc": "Displays Help.",
+        "usage": "help"
+      }
+    ]
+  },
+  "CleverManager": {
+    "commands": [
+      {
+        "cmd": "clever",
+        "context": "CleverManager",
+        "run": "cmdCLEVER",
+        "desc": "Cleverbot.",
+        "usage": "clever [Phrase, or 'new' to refresh cleverbot]"
+      }
+    ]
+  },
+  "Wolfram": {
+    "commands": [
+      {
+        "cmd": "wa",
+        "context": "Wolfram",
+        "run": "cmdWA",
+        "desc": "Wolfram Alpha Request.",
+        "usage": "wa [Question] [Option1] [Option2]"
+      }
+    ]
+  },
+  "YoutubeManager": {
+    "responses": {
+      "msgDownloadProgess": "Downloading...",
+      "msgDownloadInfo": "Adding Sound [File]",
+      "msgDownloadFinished": "[Sender] Finished Download! Used [Prefix]play [File]"
     },
-]
+    "commands": [
+      {
+        "cmd": "yt",
+        "context": "YoutubeManager",
+        "run": "cmdDownloadYT",
+        "desc": "Downloads a video as a MP3 using the video ID",
+        "usage": "yt [videoID] [CommandName]"
+      }
+    ]
+  },
+  "SayManager": {
+    "responses": {
+      "errEnterCommand": "Please Enter a Command (First Parameter)",
+      "errEnterSay": "Please Enter a Say (Secound Parameter)"
+    },
+    "commands": [
+      {
+        "cmd": "addSay",
+        "context": "SayManager",
+        "run": "cmdAddSay",
+        "desc": "Create a new say command!",
+        "usage": "addSay [command] [response]"
+      }
+    ]
+  }
 }
