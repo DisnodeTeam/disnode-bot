@@ -25,7 +25,7 @@ class VoiceManager {
           "context": "VoiceManager",
           "run": "cmdFollow",
           "desc": "Test Command that lists all params.",
-          "usage": "follow [parms]",
+          "usage": "follow [User]",
         },
         {
           "cmd": "unfollow",

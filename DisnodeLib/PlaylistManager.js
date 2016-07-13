@@ -1,74 +1,46 @@
 "use strict"
-class PlaylistManager{
-  constructor(bot, jsonFile, path){
-    this.bot = bot;
-    this.jsonFile = jsonFile;
-    this.path = path;
-    this.playLists = [];
-  }
 
+class PlayListManager{
+  constructor(options){
 
-  loadPlaylists(){
-    var _this = this;
-    this.jsonFile.readFile(this.path, function(err, obj) {
-        if(obj)
+    this.defaultConfig = {
+      defaultSaying: "Default Saying",
+      responses:{
+        printSay: "[Sender] Says: [Saying]"
+      },
+      commands:[
         {
-          console.dir(obj);
-          if(obj.playLists)
-          {
-            _this.playLists = obj.playLists;
-          }
+          cmd: "testManager",
+          run: "cmdTest",
+          context: "TestManager",
+          usage: "testManager",
+          desc: "Default Manager Test Command"
         }
-    });
 
-  }
+      ]
+    }
 
-  newPlayList(name, anyoneEdit, creator){
-    var _this = this;
-    var newObj = {
-      name: name,
-      anyoneEdit: anyoneEdit,
-      creator: creator,
-      clips: []
-    };
-    _this.playLists.push(newObj);
-    console.log("[PlayListManager] Creating new Playlist: " + name + ":"+anyoneEdit);
-    console.log(_this.playLists);
-    this.savePlayLists();
-  }
-  addCommand(name,command,user,cb){
-    if(anyoneEdit){
-      findPlaylist(name).clips.push(command);
-      cb();
+    var self = this;
+    //Created Class Varables for Disnode and Options
+    self.disnode = options.disnode;
+    self.options = options;
+    // Loads Config.
+    self.config = self.disnode.config.TestManager;
+    //Defaults if saying isn't provided
+    if(options.saying){
+      self.saying = options.saying;
     }else{
-      if(findPlaylist(name).owner == user)
-      {
-        findPlaylist(name).clips.push(command);
-        cb();
-      }else{
-        cb("USER_NOT_ALLOWED");
-      }
-    }
-    this.savePlayLists();
-  }
-  findPlaylist(name){
-    for (var i = 0; i < this.playLists.length; i++) {
-      if(this.playLists[i].name == name)
-      {
-        return this.playLists[i];
-      }
+      self.saying = self.config.defaultSaying;
     }
   }
-  savePlayLists(){
-    var _this = this;
-    var toWrite = {
-      name: "PLAY_NAME",
-      playLists: _this.playLists
-    };
-    console.log("[PlayListManager] Saving: " + JSON.stringify(toWrite));
-    this.jsonFile.writeFile(this.path, toWrite, function (err) {
-      console.error(err)
-    });
+  cmdTest(parsedMsg){
+    var self = this;
+    var parse = self.disnode.parseString;
+    //Adds Shortcut for Saying
+    var customShortCuts = [{shortcut:"[Saying]", data: self.saying}];
+
+    self.disnode.bot.sendMessage(parsedMsg.msg.channel,
+      parse(self.saying,parsedMsg,customShortCuts));
   }
 }
-module.exports.PlaylistManager = PlaylistManager;
+module.exports = PlayListManager;
