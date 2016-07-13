@@ -9,56 +9,6 @@
       "params": {
         "sayText": "List of Games \n Falken's Maze \n Black Jack \n Gin Rummy \n Hearts \n Bridge \n Checkers \n Chess \n Poker \n Fighter Combat \n Guerrilla Engagement \n Desert Warefare \n Air-To-Ground Actions \n Global Thermonuclear War"
       }
-    },
-    {
-      "cmd": "test",
-      "run": "cmdSay",
-      "context": "SayManager",
-      "desc": "Prints Entered Command",
-      "usage": "test",
-      "params": {
-        "sayText": "test"
-      }
-    },
-    {
-      "cmd": "test",
-      "run": "cmdSay",
-      "context": "SayManager",
-      "desc": "Prints Entered Command",
-      "usage": "test",
-      "params": {
-        "sayText": "test"
-      }
-    },
-    {
-      "cmd": "test2",
-      "run": "cmdSay",
-      "context": "SayManager",
-      "desc": "Prints Entered Command",
-      "usage": "test2",
-      "params": {
-        "sayText": "test2"
-      }
-    },
-    {
-      "cmd": "test3",
-      "run": "cmdSay",
-      "context": "SayManager",
-      "desc": "Prints Entered Command",
-      "usage": "test3",
-      "params": {
-        "sayText": "test3"
-      }
-    },
-    {
-      "cmd": "test4",
-      "run": "cmdSay",
-      "context": "SayManager",
-      "desc": "Prints Entered Command",
-      "usage": "test4",
-      "params": {
-        "sayText": "test4"
-      }
     }
   ],
   "VoiceManager": {
@@ -82,7 +32,7 @@
         "context": "VoiceManager",
         "run": "cmdFollow",
         "desc": "Test Command that lists all params.",
-        "usage": "follow [parms]"
+        "usage": "follow [User]"
       },
       {
         "cmd": "unfollow",

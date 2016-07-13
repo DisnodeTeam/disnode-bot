@@ -1,8 +1,8 @@
 {
   "name": "disnode",
-  "version": "0.1.03",
+  "version": "0.2.02",
   "description": "A Discord.js Wrapper for providing basic functions to Discord Bots.",
-  "main": "DisnodeLib/Disnode.js",
+  "main": "dist/Disnode.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,11 +17,15 @@
   },
   "homepage": "https://github.com/AtecStudios/Disnode#readme",
   "dependencies": {
+    "cleverbot-node": "^0.2.2",
+    "colors": "^1.1.2",
     "discord.js": "^8.0.0",
     "jsonfile": "^2.3.1",
     "walk": "^2.3.9",
-    "cleverbot-node" : "^0.2.2",
     "wolfram-alpha": "^0.5.0",
-    "youtube-mp3-downloader" :"^0.4.2"
+    "youtube-mp3-downloader": "^0.4.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1"
   }
 }
