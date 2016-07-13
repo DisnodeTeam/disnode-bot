@@ -3,6 +3,7 @@ class SayManager{
   constructor(options){
     this.options = options;
 
+
     this.defaultConfig = {
       responses:{
         errEnterCommand: "Please Enter a Command (First Parameter)",
@@ -13,8 +14,8 @@ class SayManager{
           "cmd": "addSay",
           "context": "SayManager",
           "run": "cmdAddSay",
-          "desc": "Tests Context Calling!",
-          "usage": "testcontext"
+          "desc": "Create a new say command!",
+          "usage": "addSay [command] [response]"
         },
       ]
     };
@@ -37,15 +38,13 @@ class SayManager{
   }
   addSayCommand(command, say){
     var self = this;
-    if(self.options.disnode.ConfigManager){
       var config = self.options.disnode.config;
-      console.log(config);
 
       var newSayComand = {
         cmd: command,
         run: "cmdSay",
         context: "SayManager",
-        desc: "null",
+        desc: "Prints Entered Command",
         usage: command,
         params: {
           sayText: say
@@ -54,11 +53,13 @@ class SayManager{
 
       config.commands.push(newSayComand);
       self.options.disnode.saveConfig();
+      self.options.disnode.loadConfig(function(){
+        self.config = self.options.disnode.config.SayManager;
+        self.options.disnode.addDefaultManagerCommands("SayManager", config.commands);
+      });
       console.log("[SayManager] New Say Command Added!");
 
-    }else{
-      console.log("[SayManager] No Config Manager Loaded!");
-    }
+
   }
 
   cmdSay(parsedMsg, params){

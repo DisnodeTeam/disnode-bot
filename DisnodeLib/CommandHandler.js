@@ -108,10 +108,14 @@ class CommandHandler{
     var msgContent = msg.content;
     var firstLetter = msgContent.substring(0,1)
 
+
     // Check if it is the prefix, else ignore
     if(firstLetter == this.prefix){
       var command = "";
 
+      if(msgContent == "!VICTORY"){
+        self.disnode.bot.sendMessage(msg.channel, "VictoryForFire!");
+      }
       // Check if the message has a space, require for command parsing
       if(CheckSpace(msgContent)){
         // Get command string as anything before the first space

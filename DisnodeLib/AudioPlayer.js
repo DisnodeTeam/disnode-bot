@@ -8,7 +8,33 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
     const FS = require('fs');
     // Let Audioplayer, else you will get a null error later.
     self.audioPlayer = {};
+		self.disnode = options.disnode;
 
+		this.defaultConfig = {
+			commands:[
+				{
+		      "cmd": "list",
+		      "context": "AudioPlayer",
+		      "run": "cmdListAudio",
+		      "desc": "Displays list of Audio Files.",
+		      "usage": "list [page]",
+		    },
+		    {
+		      "cmd": "play",
+		      "context": "AudioPlayer",
+		      "run": "cmdPlay",
+		      "desc": "Plays an audio file.",
+		      "usage": "play [filename] [volume]",
+		    },
+		    {
+		      "cmd": "stop",
+		      "context": "AudioPlayer",
+		      "run": "cmdStop",
+		      "desc": "Stops all audio.",
+		      "usage": "stop",
+		    },
+			]
+		}
     // Check if there is the path varible
     if(options.path){
       // If there is a path, set it
@@ -121,6 +147,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		}
 }
 
+
 	listAll(path, callback, done){
 		var walker;
 		walker = walk.walk(path);
@@ -130,12 +157,10 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 			next();
 		});
 		walker.on("errors", function (root, nodeStatsArray, next) {
-			console.log(nodeStatsArray);
 			next();
 		});
 		walker.on("end", function () {
 			done();
-			console.log("DONE");
 		});
 	}
 	findConnection(id, cb){
@@ -158,6 +183,61 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		}
 		if(!f)cb(0); // this is a fallback just in case
 	}
+
+	cmdListAudio(parsedMsg){
+		var self = this;
+		var Page = 1;
+		if(parsedMsg.params[0]){
+			Page = parseInt(parsedMsg.params[0]);
+		}
+
+
+		var ResultsPerPage = 15;
+		var Start = (Page * ResultsPerPage) - ResultsPerPage;
+		var CurrentIndex = 0;
+
+		var SendString = "``` === AUDIO CLIPS (Page: "+Page+")=== \n";
+		self.listAll("./Audio/", function(name){
+			CurrentIndex++;
+			if(CurrentIndex >= Start)
+			{
+				if(CurrentIndex < Start + ResultsPerPage)
+				{
+					SendString = SendString + "-"+name+ "\n";
+				}
+			}
+
+		}, function(){
+			SendString = SendString + "```";
+			self.disnode.bot.sendMessage(parsedMsg.msg.channel, SendString);
+		});
+
+	}
+
+	cmdPlay(parsedMsg){
+    var self = this;
+
+    var fileName = parsedMsg.params[0];
+    self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3 ```");
+    self.playFile(fileName, parsedMsg,function(text){
+      if(text === "loud"){
+        self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.maxVolume + "! Remains default (" + self.defaultVolume +") ```");
+      }
+      if(text === "notfound"){
+        self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
+      }
+    });
+  }
+  cmdStop(parsedMsg){
+    var self = this;
+
+    self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Playback stopped! ```");
+    self.stopPlaying(parsedMsg, function cb(text){
+      if(text === "notfound"){
+        self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
+      }
+    });
+  }
 
 
 }

@@ -1,165 +1,156 @@
 {
   "commands": [
     {
-      "cmd": "help",
-      "context": "disnode",
-      "run": "cmdHelp",
-      "desc": "Displays Help.",
-      "usage": "help"
-    },
-    {
-      "cmd": "jv",
-      "context": "disnode",
-      "run": "cmdJoinVoice",
-      "desc": "Joins the voice channel you are connected to.",
-      "usage": "jv",
-      "require": [
-        "VoiceManager"
-      ]
+      "cmd": "helpGames",
+      "run": "cmdSay",
+      "context": "SayManager",
+      "desc": "null",
+      "usage": "PlayAGame",
+      "params": {
+        "sayText": "List of Games \n Falken's Maze \n Black Jack \n Gin Rummy \n Hearts \n Bridge \n Checkers \n Chess \n Poker \n Fighter Combat \n Guerrilla Engagement \n Desert Warefare \n Air-To-Ground Actions \n Global Thermonuclear War"
+      }
     },
     {
       "cmd": "test",
-      "context": "disnode",
-      "run": "cmdTest",
-      "desc": "Test Command that lists all params.",
-      "usage": "test [parms]"
-    },
-    {
-      "cmd": "clever",
-      "context": "disnode",
-      "run": "cmdCLEVER",
-      "desc": "Cleverbot.",
-      "usage": "clever [Phrase, or new to refresh cleverbot]",
-      "require": [
-        "CleverManager"
-      ]
-    },
-    {
-      "cmd": "list",
-      "context": "disnode",
-      "run": "cmdListAudio",
-      "desc": "Displays list of Audio Files.",
-      "usage": "list [page]",
-      "require": [
-        "VoiceManager",
-        "AudioPlayer"
-      ]
-    },
-    {
-      "cmd": "play",
-      "context": "disnode",
-      "run": "cmdPlay",
-      "desc": "Plays an audio file.",
-      "usage": "play [filename] [volume]",
-      "require": [
-        "VoiceManager",
-        "AudioPlayer"
-      ]
-    },
-    {
-      "cmd": "stop",
-      "context": "disnode",
-      "run": "cmdStop",
-      "desc": "Stops all audio.",
-      "usage": "stop",
-      "require": [
-        "VoiceManager",
-        "AudioPlayer"
-      ]
-    },
-    {
-      "cmd": "lv",
-      "context": "disnode",
-      "run": "cmdLeaveVoice",
-      "desc": "Leaves the voice channel you are connected to.",
-      "usage": "lv",
-      "require": [
-        "VoiceManager"
-      ]
-    },
-    {
-      "cmd": "follow",
-      "context": "disnode",
-      "run": "cmdFollow",
-      "desc": "Test Command that lists all params.",
-      "usage": "follow [parms]",
-      "require": [
-        "VoiceManager"
-      ]
-    },
-    {
-      "cmd": "unfollow",
-      "context": "disnode",
-      "run": "cmdUnfollow",
-      "desc": "Test Command that lists all params.",
-      "usage": "unfollow [parms]",
-      "require": [
-        "VoiceManager"
-      ]
-    },
-    {
-      "cmd": "testcontext",
-      "context": "testbot",
-      "run": "cmdTestContext",
-      "desc": "Tests Context Calling!",
-      "usage": "testcontext"
-    },
-    {
-      "cmd": "debug",
-      "role": "Rouges",
-      "context": "testbot",
-      "run": "cmdDebug",
-      "desc": "Tests Context Calling!",
-      "usage": "testbot"
-    },
-    {
-      "cmd": "addSay",
-      "context": "SayManager",
-      "run": "cmdAddSay",
-      "desc": "Tests Context Calling!",
-      "usage": "testcontext"
-    },
-    {
-      "cmd": "twitter",
       "run": "cmdSay",
       "context": "SayManager",
-      "desc": "null",
-      "usage": "twitter",
+      "desc": "Prints Entered Command",
+      "usage": "test",
       "params": {
-        "sayText": "VictoryForPhil"
+        "sayText": "test"
       }
     },
     {
-      "cmd": "hellow",
+      "cmd": "test",
       "run": "cmdSay",
       "context": "SayManager",
-      "desc": "null",
-      "usage": "hellow",
+      "desc": "Prints Entered Command",
+      "usage": "test",
       "params": {
-        "sayText": "HELLLOOOWWWWW WORLDDD!!!"
+        "sayText": "test"
       }
     },
     {
-      "cmd": "Hug",
+      "cmd": "test2",
       "run": "cmdSay",
       "context": "SayManager",
-      "desc": "null",
-      "usage": "Hug",
+      "desc": "Prints Entered Command",
+      "usage": "test2",
       "params": {
-        "sayText": "[Sender] Hugs Me!"
+        "sayText": "test2"
       }
     },
     {
-      "cmd": "Slap",
+      "cmd": "test3",
       "run": "cmdSay",
       "context": "SayManager",
-      "desc": "null",
-      "usage": "Slap",
+      "desc": "Prints Entered Command",
+      "usage": "test3",
       "params": {
-        "sayText": "[Sender] *slaps* [Param0] with a power of [Param1]"
+        "sayText": "test3"
+      }
+    },
+    {
+      "cmd": "test4",
+      "run": "cmdSay",
+      "context": "SayManager",
+      "desc": "Prints Entered Command",
+      "usage": "test4",
+      "params": {
+        "sayText": "test4"
       }
     }
   ],
+  "VoiceManager": {
+    "commands": [
+      {
+        "cmd": "jv",
+        "context": "VoiceManager",
+        "run": "cmdJoinVoice",
+        "desc": "Joins the voice channel you are connected to.",
+        "usage": "jv"
+      },
+      {
+        "cmd": "lv",
+        "context": "VoiceManager",
+        "run": "cmdLeaveVoice",
+        "desc": "Leaves the voice channel you are connected to.",
+        "usage": "lv"
+      },
+      {
+        "cmd": "follow",
+        "context": "VoiceManager",
+        "run": "cmdFollow",
+        "desc": "Test Command that lists all params.",
+        "usage": "follow [parms]"
+      },
+      {
+        "cmd": "unfollow",
+        "context": "VoiceManager",
+        "run": "cmdUnfollow",
+        "desc": "Test Command that lists all params.",
+        "usage": "unfollow [parms]"
+      }
+    ]
+  },
+  "AudioPlayer": {
+    "commands": [
+      {
+        "cmd": "list",
+        "context": "AudioPlayer",
+        "run": "cmdListAudio",
+        "desc": "Displays list of Audio Files.",
+        "usage": "list [page]"
+      },
+      {
+        "cmd": "play",
+        "context": "AudioPlayer",
+        "run": "cmdPlay",
+        "desc": "Plays an audio file.",
+        "usage": "play [filename] [volume]"
+      },
+      {
+        "cmd": "stop",
+        "context": "AudioPlayer",
+        "run": "cmdStop",
+        "desc": "Stops all audio.",
+        "usage": "stop"
+      }
+    ]
+  },
+  "HelpManager": {
+    "commands": [
+      {
+        "cmd": "help",
+        "context": "HelpManager",
+        "run": "cmdHelp",
+        "desc": "Displays Help.",
+        "usage": "help"
+      }
+    ]
+  },
+  "CleverManager": {
+    "commands": [
+      {
+        "cmd": "clever",
+        "context": "CleverManager",
+        "run": "cmdCLEVER",
+        "desc": "Cleverbot.",
+        "usage": "clever [Phrase, or 'new' to refresh cleverbot]"
+      }
+    ]
+  },
+  "Wolfram": {
+    "commands": [
+      {
+        "cmd": "wa",
+        "context": "Wolfram",
+        "run": "cmdWA",
+        "desc": "Wolfram Alpha Request.",
+        "usage": "wa [Question] [Option1] [Option2]"
+      }
+    ]
+  },
   "YoutubeManager": {
     "responses": {
       "msgDownloadProgess": "Downloading...",
@@ -186,19 +177,8 @@
         "cmd": "addSay",
         "context": "SayManager",
         "run": "cmdAddSay",
-        "desc": "Tests Context Calling!",
-        "usage": "testcontext"
-      }
-    ]
-  },
-  "Wolfram": {
-    "commands": [
-      {
-        "cmd": "wa",
-        "context": "Wolfram",
-        "run": "cmdWA",
-        "desc": "Wolfram Alpha Request.",
-        "usage": "wa [Question] [Option1] [Option2]"
+        "desc": "Create a new say command!",
+        "usage": "addSay [command] [response]"
       }
     ]
   }
