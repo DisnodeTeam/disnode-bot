@@ -1,13 +1,23 @@
 {
   "commands": [
     {
-      "cmd": "helpGames",
+      "cmd": "Test",
       "run": "cmdSay",
       "context": "SayManager",
-      "desc": "null",
-      "usage": "PlayAGame",
+      "desc": "Prints Entered Command",
+      "usage": "Test",
       "params": {
-        "sayText": "List of Games \n Falken's Maze \n Black Jack \n Gin Rummy \n Hearts \n Bridge \n Checkers \n Chess \n Poker \n Fighter Combat \n Guerrilla Engagement \n Desert Warefare \n Air-To-Ground Actions \n Global Thermonuclear War"
+        "sayText": "Test"
+      }
+    },
+    {
+      "cmd": "Test",
+      "run": "cmdSay",
+      "context": "SayManager",
+      "desc": "Prints Entered Command",
+      "usage": "Test",
+      "params": {
+        "sayText": "Test"
       }
     }
   ],
@@ -118,10 +128,9 @@
     ]
   },
   "SayManager": {
-    "responses": {
-      "errEnterCommand": "Please Enter a Command (First Parameter)",
-      "errEnterSay": "Please Enter a Say (Secound Parameter)"
-    },
+    "errEnterCommand": "Please Enter a Command (First Parameter)",
+    "errEnterSay": "Please Enter a Say (Secound Parameter)",
+    "resAddedCommand": "Added Command [Command]",
     "commands": [
       {
         "cmd": "addSay",

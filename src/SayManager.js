@@ -5,10 +5,9 @@ class SayManager{
 
 
     this.defaultConfig = {
-      responses:{
-        errEnterCommand: "Please Enter a Command (First Parameter)",
-        errEnterSay: "Please Enter a Say (Secound Parameter)"
-      },
+      errEnterCommand: "Please Enter a Command (First Parameter)",
+      errEnterSay: "Please Enter a Say (Secound Parameter)",
+      resAddedCommand: "Added Command [Command]",
       commands:[
         {
           "cmd": "addSay",
@@ -27,13 +26,24 @@ class SayManager{
     var command = parsedMsg.params[0];
     var say = parsedMsg.params[1];
     if(!command){
-      self.options.disnode.bot.sendMessage(parsedMsg.msg.channel, self.config.responses.errEnterCommand );
+      self.options.disnode.bot.sendMessage(parsedMsg.msg.channel, self.config.errEnterCommand );
     }
     if(!say){
-      self.options.disnode.bot.sendMessage(parsedMsg.msg.channel, self.config.responses.errEnterSay );
+      self.options.disnode.bot.sendMessage(parsedMsg.msg.channel, self.config.errEnterSay );
     }
     if(command && say){
       self.addSayCommand(command, say);
+      var shortcuts = [{
+        shortcut: "[Command]",
+        data: say
+      }];
+      self.options.disnode.sendResponse(parsedMsg,"Added Command [Command]",
+      {
+        timeout: 2000,
+        shortcuts: shortcuts,
+        parse: true,
+        mention: true
+      });
     }
   }
   addSayCommand(command, say){

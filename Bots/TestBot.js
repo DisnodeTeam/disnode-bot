@@ -33,8 +33,6 @@ var OnLoad = function(){
   //setting a command context for command written in the bot. passes in an object that contains local command functions
   testBot.CommandHandler.AddContext(botCommands,"testbot");
 
-  //loads the command list pulled from the config manager
-  testBot.CommandHandler.LoadList(testBot.config.commands)
 
 }
 

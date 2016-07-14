@@ -45,6 +45,9 @@ class Disnode extends EventEmitter{
         console.log(colors.red(err));
       }
       console.log("[Disnode] Config Loaded!".green);
+      if(!obj.commands){
+        obj.commands = [];
+      }
       self.config = obj;
       cb();
     });
@@ -127,6 +130,37 @@ class Disnode extends EventEmitter{
       this.CommandHandler.AddContext(self, "disnode");
     }
     //console.dir(self.YoutubeManager);
+  }
+
+  sendResponse(parsedMsg,text,options){
+    var self = this;
+    var sendText = text;
+    var channel = parsedMsg.msg.channel;
+    var sentMsg;
+    if(options.parse){
+      sendText = self.parseString(sendText,parsedMsg,options.shortcuts);
+    }
+    if(options.mention){
+      sendText = sendText + parsedMsg.msg.author.mention();
+    }
+
+    self.bot.sendMessage(channel, sendText, function(err,msg){
+      if(err){
+        console.error(err);
+        return;
+      }
+      sentMsg = msg;
+      if(options.timeout){
+        self.bot.deleteMessage(sentMsg, {wait: options.timeout},function(err){
+          if(err){
+            console.error(err);
+            return;
+          }
+        });
+      }
+    });
+
+
   }
 
   parseString(raw,parsedMsg, customShortCuts){
