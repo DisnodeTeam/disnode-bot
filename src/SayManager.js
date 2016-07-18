@@ -1,4 +1,5 @@
 "use strict"
+const colors = require('colors');
 class SayManager{
   constructor(options){
     this.options = options;
@@ -67,7 +68,7 @@ class SayManager{
         self.config = self.options.disnode.config.SayManager;
         self.options.disnode.addDefaultManagerCommands("SayManager", config.commands);
       });
-      console.log("[SayManager] New Say Command Added!");
+      console.log("[SayManager]".grey + " New Say Command Added!".cyan);
 
 
   }

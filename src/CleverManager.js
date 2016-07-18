@@ -1,5 +1,5 @@
 "use strict"
-
+const colors = require('colors');
 class CleverManager {
   constructor(options){
     ;
@@ -17,11 +17,11 @@ class CleverManager {
 
     this.disnode = options.disnode;
     const Cleverbot = require('cleverbot-node');
-    console.log("[Cleverbot] Init");
+    console.log("[Cleverbot]".grey + " Init".green);
     if(options.channelid){
       this.channelid = options.channelid;
     }else{
-      console.log("[Cleverbot INIT ERROR] No \'channelid\' found in options object, cannot use Cleverbot without a channelid");
+      console.log("[Cleverbot INIT ERROR]".grey + " No \'channelid\' found in options object, cannot use Cleverbot without a channelid".red);
       return;
     }
     this.cb = new Cleverbot;

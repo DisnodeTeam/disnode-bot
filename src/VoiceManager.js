@@ -1,4 +1,5 @@
 "use strict"
+const colors = require('colors');
 // Each VoiceManager manages one Voice Connection
 class VoiceManager {
   constructor(options){
@@ -49,29 +50,29 @@ class VoiceManager {
     this.retry = true;
 
     this.disnode = options.disnode;
-    console.log("[VoiceManager] Init.");
+    console.log("[VoiceManager]".grey + " Init.".green);
   }
 
   OnVoiceJoin(VoiceChannel, user){
-    console.log("[VoiceManager] Voice join");
-    console.log("[VoiceManager] |--- User ["+user+"] " + user.username);
-    console.log("[VoiceManager] |--- Channel ["+VoiceChannel+"] " + VoiceChannel.name);
+    console.log("[VoiceManager]".grey + " Voice Join".cyan);
+    console.log("[VoiceManager]".grey + " |--- User ["+ colors.cyan(user) +"] " + colors.cyan(user.username));
+    console.log("[VoiceManager]".grey + " |--- Channel ["+ colors.cyan(VoiceChannel) +"] " + colors.cyan(VoiceChannel.name));
     if(user == this.follow){
       this.JoinChannelWithId(VoiceChannel);
     }
   }
 
   OnVoiceLeave(VoiceChannel, user){
-    console.log("[VoiceManager] Voice Leave");
-    console.log("[VoiceManager] |--- User ["+user+"] " + user.username);
-    console.log("[VoiceManager] |--- Channel ["+VoiceChannel+"] " + VoiceChannel.name);
+    console.log("[VoiceManager]".grey + " Voice Leave".cyan);
+    console.log("[VoiceManager]".grey + " |--- User ["+ colors.cyan(user) +"] " + colors.cyan(user.username));
+    console.log("[VoiceManager]".grey + " |--- Channel ["+ colors.cyan(VoiceChannel) +"] " + colors.cyan(VoiceChannel.name));
     if(user == this.follow){
         this.LeaveChannel(VoiceChannel);
     }
   }
 
   Follow(user){
-    console.log("[VoiceManager] Follow enabaled for: " + user);
+    console.log("[VoiceManager]".grey + colors.cyan(" Follow enabaled for: " + user));
     this.follow = user;
   }
 
@@ -82,12 +83,9 @@ class VoiceManager {
     var f = false;
     var returnid;
     this.bot.voiceConnections.forEach(function(value){
-      console.log("[VoiceManager] VoiceConnection: "+ value.voiceChannel);
       if(value.voiceChannel == msg.author.voiceChannel){
-        console.log("[VoiceManager] VoiceMatch: "+ value.voiceChannel + " " + msg.author.voiceChannel);
         f = true;
         returnid = value.voiceChannel
-        console.log("[VoiceManager] Return ID: "+ returnid);
         cb(returnid);
       }
     });
@@ -99,13 +97,13 @@ class VoiceManager {
   JoinChannel(name, server){
     var id = GetServerIDByName(this.bot, name, server);
     if(id){
-      console.log("[VoiceManager] Found Server: " + id);
+      console.log("[VoiceManager]".grey + colors.green(" Found Server: " + id));
       this.currentChannel = id;
       console.log(this.bot);
       this.disnode.bot.joinVoiceChannel(id);
       console.log(this.bot);
     }else{
-      console.log("[VoiceManager] Failed to Find Server: " + id);
+      console.log("[VoiceManager]".grey + colors.red(" Failed to Find Server: " + id));
       if(this.retry == true){
         var nameConvert = name.replace(/-/g, " ");
         this.retry = false;
@@ -151,10 +149,10 @@ class VoiceManager {
     var self = this;
       if(self.voiceEvents){
         self.Follow(parsedMsg.msg.author);
-        console.log("[VoiceManager - CmdFollow ] Following: " + parsedMsg.msg.author.username);
+        console.log("[VoiceManager - CmdFollow ]".grey + colors.cyan(" Following: " + parsedMsg.msg.author.username));
         self.disnode.bot.sendMessage(parsedMsg.msg.channel, "```Following: " + parsedMsg.msg.author.username+"```")
       }else{
-        console.log("[VoiceManager - CmdFollow ] Voice events no enabled!");
+        console.log("[VoiceManager - CmdFollow ]".grey + " Voice events no enabled!".red);
       }
   }
 
@@ -162,10 +160,10 @@ class VoiceManager {
     var self = this;
       if(self.voiceEvents){
         self.Follow(parsedMsg.msg.author);
-        console.log("[VoiceManager - cmdUnfollow ] Unfollow: " + parsedMsg.msg.author.username);
+        console.log("[VoiceManager - cmdUnfollow ]".grey + colors.cyan(" Unfollow: " + parsedMsg.msg.author.username));
         self.bot.sendMessage(parsedMsg.msg.channel, "```Unfollow: " + parsedMsg.msg.author.username+"```")
       }else{
-        console.log("[VoiceManager - cmdUnfollow ] Voice events no enabled!");
+        console.log("[VoiceManager - cmdUnfollow ]".grey + " Voice events no enabled!".red);
       }
   }
 

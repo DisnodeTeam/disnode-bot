@@ -1,9 +1,9 @@
 "use strict"
 
-
+const colors = require('colors');
 class YoutubeManager {
   constructor(options) {
-    console.log("[YTMngr] Init");
+    console.log("[YTMngr]".grey + " Init".green);
     this.disnode = options.disnode;
     this.options = options;
     const YoutubeMp3Downloader = require('youtube-mp3-downloader');
@@ -37,7 +37,7 @@ class YoutubeManager {
   SetOnProgess(func) {
     var self = this;
     self.OnProgress = func;
-    console.log("[YoutubeManager] Set On Progress");
+    console.log("[YoutubeManager]".grey + " Set On Progress".cyan);
   }
 
   SetOnError(func) {

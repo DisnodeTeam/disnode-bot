@@ -32,19 +32,21 @@ class Disnode extends EventEmitter{
   saveConfig(){
     var self = this;
     jsonfile.writeFile(self.configPath, self.config, {spaces: 2}, function(err) {
-        console.error(err);
-        console.log("[Disnode] Config Saved!".green);
+        if(err != null){
+          console.error(err);
+        }
+        console.log("[Disnode]".grey + " Config Saved!".green);
     });
   }
 
   loadConfig(cb){
     var self = this;
-    console.log("[Disnode] Loading Config: " + self.configPath);
+    console.log("[Disnode]".grey + " Loading Config: " + self.configPath);
     jsonfile.readFile(self.configPath, function(err, obj) {
-      if(err){
+      if(err != null){
         console.log(colors.red(err));
       }
-      console.log("[Disnode] Config Loaded!".green);
+      console.log("[Disnode]".grey + " Config Loaded!".green);
       if(!obj.commands){
         obj.commands = [];
       }
@@ -107,7 +109,7 @@ class Disnode extends EventEmitter{
 
   addDefaultManagerConfig(name,config){
     var self = this;
-    console.log("[Disnode] Loading Defaults for: " + name);
+    console.log("[Disnode]".grey + " Loading Defaults for: ".cyan + colors.cyan(name));
     self.config[name] = {};
     self.config[name] = config;
     self.saveConfig();
@@ -115,7 +117,7 @@ class Disnode extends EventEmitter{
 
   addDefaultManagerCommands(name, commands){
     var self = this;
-    console.log("[Disnode] Loading Commands for: " + name);
+    console.log("[Disnode]".grey + " Loading Commands for: ".cyan + colors.cyan(name));
     for (var i = 0; i < commands.length; i++) {
       if(self.CommandHandler){
         self.CommandHandler.AddCommand(commands[i]);

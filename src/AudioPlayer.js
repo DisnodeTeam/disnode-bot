@@ -1,5 +1,5 @@
 "use strict"
-
+const colors = require('colors');
 const walk = require('walk');
 const fs = require("fs");
 class AudioPlayer { //Each of the Library files except Disnode.js are a class based file to keep it independent
@@ -60,7 +60,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 
 		self.bot = options.disnode.bot;
 		self.DisnodeBOT = options.disnode;
-		console.log("[AudioPlayer] Init Audio Player");
+		console.log("[AudioPlayer]".grey + " Init Audio Player");
 	}
 	playFile(name, parsedMsg, cb){ //Plays an audio file
 		var self = this;
@@ -94,24 +94,26 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 						volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
 						connection.setVolume(volume); // actually sets the volume
 					}else{ // if the parsed float is over the threshold
-						console.log("[AudioPlayer] Volume over threshold! Remains default");
+						console.log("[AudioPlayer]".grey + " Volume over threshold! Remains default".red);
 						// Callback used for in execution for more info, loud is used as a keyword so the bot can use it's own message
 						cb("loud");
 					}
 				}else{ // if second parm not a float
-					console.log("[AudioPlayer] Second Parms not Float");
+					console.log("[AudioPlayer]".grey + " Second Parms not Float".red);
 				}
 			}
 			else{ // if there is no second parm at all
-				console.log("[AudioPlayer] No Volume Parm");
+				console.log("[AudioPlayer]".grey + " No Volume Parm".red);
 			}
 			// END OF VOLUME CHECK
-			console.log("[AudioPlayer] Playing Audio File");
-			console.log("[AudioPlayer] --- Name: " + name);
-			console.log("[AudioPlayer] --- Path: " + path + ".mp3");
-			console.log("[AudioPlayer] --- Volume: " + volume);
-			connection.playFile(path + ".mp3", volume,function cb(er){
-				console.dir(er);
+			console.log("[AudioPlayer]".grey + " Playing Audio File".cyan);
+			console.log("[AudioPlayer]".grey + " --- Name: " + colors.cyan(name));
+			console.log("[AudioPlayer]".grey + " --- Path: " + colors.cyan(path + ".mp3"));
+			console.log("[AudioPlayer]".grey + " --- Volume: " + colors.cyan(volume));
+			connection.playFile(path + ".mp3", volume,function cb(err){
+				if(err != null){
+					console.log("[AudioPlayer]".grey + colors.red(" Error: " + err));
+				}
 			}); // plays the file with the verified connection
 		}else{
 			cb("notfound");
@@ -140,7 +142,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 			try{
 				connection.stopPlaying();
 			}catch (er){
-				console.log("[AudioPlayer] Error: " + err);
+				console.log("[AudioPlayer]".grey + colors.red(" Error: " + err));
 			}
 		}else{
 			cb("notfound");
