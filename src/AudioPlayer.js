@@ -60,7 +60,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 
 		self.bot = options.disnode.bot;
 		self.DisnodeBOT = options.disnode;
-		console.log("[AudioPlayer]".grey + " Init Audio Player");
+		console.log("[AudioPlayer]".grey + " Init Audio Player".green);
 	}
 	playFile(name, parsedMsg, cb){ //Plays an audio file
 		var self = this;
