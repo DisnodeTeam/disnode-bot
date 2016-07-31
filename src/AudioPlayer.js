@@ -109,6 +109,8 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		}
 
 		var connection;
+
+
 		// sets up the variable and verify the voiceConnection it needs to use
 		this.findConnection(id, function cb(c){
 			connection = c; //verified connection is sent back in the callback

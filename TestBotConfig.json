@@ -1,24 +1,11 @@
 {
   "commands": [
     {
-      "cmd": "Test",
-      "run": "cmdSay",
-      "context": "SayManager",
-      "desc": "Prints Entered Command",
-      "usage": "Test",
-      "params": {
-        "sayText": "Test"
-      }
-    },
-    {
-      "cmd": "Test",
-      "run": "cmdSay",
-      "context": "SayManager",
-      "desc": "Prints Entered Command",
-      "usage": "Test",
-      "params": {
-        "sayText": "Test"
-      }
+      "cmd": "debug",
+      "context": "TestBot",
+      "run": "cmdDebug",
+      "desc": "Joins the voice channel you are connected to.",
+      "usage": "debug"
     }
   ],
   "VoiceManager": {
@@ -50,31 +37,6 @@
         "run": "cmdUnfollow",
         "desc": "Test Command that lists all params.",
         "usage": "unfollow [parms]"
-      }
-    ]
-  },
-  "AudioPlayer": {
-    "commands": [
-      {
-        "cmd": "list",
-        "context": "AudioPlayer",
-        "run": "cmdListAudio",
-        "desc": "Displays list of Audio Files.",
-        "usage": "list [page]"
-      },
-      {
-        "cmd": "play",
-        "context": "AudioPlayer",
-        "run": "cmdPlay",
-        "desc": "Plays an audio file.",
-        "usage": "play [filename] [volume]"
-      },
-      {
-        "cmd": "stop",
-        "context": "AudioPlayer",
-        "run": "cmdStop",
-        "desc": "Stops all audio.",
-        "usage": "stop"
       }
     ]
   },
@@ -140,5 +102,57 @@
         "usage": "addSay [command] [response]"
       }
     ]
+  },
+  "AudioPlayer": {
+    "commands": [
+      {
+        "cmd": "list",
+        "context": "AudioPlayer",
+        "run": "cmdListAudio",
+        "desc": "Displays list of Audio Files.",
+        "usage": "list [page]"
+      },
+      {
+        "cmd": "play",
+        "context": "AudioPlayer",
+        "run": "cmdPlay",
+        "desc": "Plays an audio file.",
+        "usage": "play [filename] [volume]"
+      },
+      {
+        "cmd": "stream",
+        "context": "AudioPlayer",
+        "run": "cmdStream",
+        "desc": "Plays an audio file.",
+        "usage": "play [url] [volume]"
+      },
+      {
+        "cmd": "addsong",
+        "context": "AudioPlayer",
+        "run": "cmdAddSong",
+        "desc": "Adds a song",
+        "usage": "addsong [name] [url]"
+      },
+      {
+        "cmd": "stop",
+        "context": "AudioPlayer",
+        "run": "cmdStop",
+        "desc": "Stops all audio.",
+        "usage": "stop"
+      }
+    ],
+    "songs": [
+      {
+        "name": "Borderline",
+        "url": "https://www.youtube.com/watch?v=x1BNwRazxzg"
+      },
+      {
+        "name": "Virus",
+        "url": "https://www.youtube.com/watch?v=iXIDtf1wP0g"
+      }
+    ],
+    "resNoName": "```Please Enter a name for this song!```",
+    "resNoUrl": "```Please Enter a Youtube URL for this song!```",
+    "resSongAdded": "```[Song] Added!```"
   }
 }

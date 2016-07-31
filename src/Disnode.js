@@ -131,13 +131,6 @@ class Disnode extends EventEmitter{
     }
 
   }
-  postLoad(){
-    var self = this;
-    if(self.CommandHandler){
-      this.CommandHandler.AddContext(self, "disnode");
-    }
-    //console.dir(self.YoutubeManager);
-  }
 
   sendResponse(parsedMsg,text,options){
     var self = this;
