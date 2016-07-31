@@ -23,7 +23,8 @@
     "jsonfile": "^2.3.1",
     "walk": "^2.3.9",
     "wolfram-alpha": "^0.5.0",
-    "youtube-mp3-downloader": "^0.4.2"
+    "youtube-mp3-downloader": "^0.4.2",
+    "ytdl-core": "^0.7.17"
   },
   "devDependencies": {
     "gulp": "^3.9.1"

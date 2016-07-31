@@ -2,6 +2,7 @@
 const colors = require('colors');
 const walk = require('walk');
 const fs = require("fs");
+var ytdl = require('ytdl-core')
 class AudioPlayer { //Each of the Library files except Disnode.js are a class based file to keep it independent
 	constructor(options){
 		var self = this;
@@ -26,6 +27,13 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		      "desc": "Plays an audio file.",
 		      "usage": "play [filename] [volume]",
 		    },
+				{
+		      "cmd": "stream",
+		      "context": "AudioPlayer",
+		      "run": "cmdStream",
+		      "desc": "Plays an audio file.",
+		      "usage": "play [url] [volume]",
+		    },
 		    {
 		      "cmd": "stop",
 		      "context": "AudioPlayer",
@@ -33,7 +41,8 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		      "desc": "Stops all audio.",
 		      "usage": "stop",
 		    },
-			]
+			],
+			clips: []
 		}
     // Check if there is the path varible
     if(options.path){
@@ -115,6 +124,58 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 					console.log("[AudioPlayer]".grey + colors.red(" Error: " + err));
 				}
 			}); // plays the file with the verified connection
+		}else{
+			cb("notfound");
+		}
+	}
+
+	playStream(streamUrl,parsedMsg, cb){ //Plays an audio file
+		var self = this;
+		var parms = parsedMsg.params;
+		var found = false;
+		var id;
+		self.DisnodeBOT.VoiceManager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+			id = returnID;
+			if(id == 0){
+				found = false;
+			}else{
+				found = true;
+			}
+		});
+
+		if(found){
+
+
+			var connection;
+			// sets up the variable and verify the voiceConnection it needs to use
+			this.findConnection(id, function cb(c){
+				connection = c; //verified connection is sent back in the callback
+			});
+			// START OF VOLUME CHECKING
+			var volume = self.defaultVolume; //Default Volume
+			connection.setVolume(volume); // sets the volume
+			if(parms[1]){ // If there is a second parm
+				if(parseFloat(parms[1])){ //can it be parsed to a float?
+					if(parseFloat(parms[1]) <= self.maxVolume){ // checks to see if the float is less than then threshold
+						volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
+						connection.setVolume(volume); // actually sets the volume
+					}else{ // if the parsed float is over the threshold
+						console.log("[AudioPlayer]".grey + " Volume over threshold! Remains default".red);
+						// Callback used for in execution for more info, loud is used as a keyword so the bot can use it's own message
+						cb("loud");
+					}
+				}else{ // if second parm not a float
+					console.log("[AudioPlayer]".grey + " Second Parms not Float".red);
+				}
+			}
+			else{ // if there is no second parm at all
+				console.log("[AudioPlayer]".grey + " No Volume Parm".red);
+			}
+			// END OF VOLUME CHECK
+			console.log("[AudioPlayer]".grey + " Streaming Audio File".cyan);
+			console.log("[AudioPlayer]".grey + " --- Volume: " + colors.cyan(volume));
+			var stream = ytdl(streamUrl);
+			connection.playRawStream(stream);
 		}else{
 			cb("notfound");
 		}
@@ -222,6 +283,21 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
     var fileName = parsedMsg.params[0];
     self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3 ```");
     self.playFile(fileName, parsedMsg,function(text){
+      if(text === "loud"){
+        self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.maxVolume + "! Remains default (" + self.defaultVolume +") ```");
+      }
+      if(text === "notfound"){
+        self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
+      }
+    });
+  }
+
+	cmdStream(parsedMsg){
+    var self = this;
+
+    var url = parsedMsg.params[0];
+    self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Streaming... ```");
+    self.playStream(url, parsedMsg,function(text){
       if(text === "loud"){
         self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.maxVolume + "! Remains default (" + self.defaultVolume +") ```");
       }

@@ -48,6 +48,7 @@ class Disnode extends EventEmitter{
       if(err != null){
         console.log(colors.red(err));
         console.log("[Disnode]".grey + " Config Failed To Load. No Commmands will be loaded!".red);
+        console.log("[Disnode]".grey + " -- Make Sure to create a botconfig with proper JSON!".red);
         return;
       }
       console.log("[Disnode]".grey + " Config Loaded!".green);
