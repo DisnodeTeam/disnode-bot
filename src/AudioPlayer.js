@@ -34,6 +34,13 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		      "desc": "Plays an audio file.",
 		      "usage": "play [url] [volume]",
 		    },
+				{
+		      "cmd": "addsong",
+		      "context": "AudioPlayer",
+		      "run": "cmdAddSong",
+		      "desc": "Adds a song",
+		      "usage": "addsong [name] [url]",
+		    },
 		    {
 		      "cmd": "stop",
 		      "context": "AudioPlayer",
@@ -42,8 +49,13 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		      "usage": "stop",
 		    },
 			],
-			clips: []
+			songs: [],
+			resNoName : "```Please Enter a name for this song!```",
+			resNoUrl : "```Please Enter a Youtube URL for this song!```",
+			resSongAdded : "```[Song] Added!```",
+
 		}
+
     // Check if there is the path varible
     if(options.path){
       // If there is a path, set it
@@ -68,7 +80,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
     }
 
 		self.bot = options.disnode.bot;
-		self.DisnodeBOT = options.disnode;
+		self.config = options.disnode.config.AudioPlayer;
 		console.log("[AudioPlayer]".grey + " Init Audio Player".green);
 	}
 	playFile(name, parsedMsg, cb){ //Plays an audio file
@@ -76,7 +88,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		var parms = parsedMsg.params;
 		var found = false;
 		var id;
-		self.DisnodeBOT.VoiceManager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+		self.disnode.VoiceManager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
 			id = returnID;
 			if(id == 0){
 				found = false;
@@ -85,48 +97,48 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 			}
 		});
 
-		if(found){
-
-
-			var connection;
-			// sets up the variable and verify the voiceConnection it needs to use
-			this.findConnection(id, function cb(c){
-				connection = c; //verified connection is sent back in the callback
-			});
-			var path = self.path + name;
-			// START OF VOLUME CHECKING
-			var volume = self.defaultVolume; //Default Volume
-			connection.setVolume(volume); // sets the volume
-			if(parms[1]){ // If there is a second parm
-				if(parseFloat(parms[1])){ //can it be parsed to a float?
-					if(parseFloat(parms[1]) <= self.maxVolume){ // checks to see if the float is less than then threshold
-						volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
-						connection.setVolume(volume); // actually sets the volume
-					}else{ // if the parsed float is over the threshold
-						console.log("[AudioPlayer]".grey + " Volume over threshold! Remains default".red);
-						// Callback used for in execution for more info, loud is used as a keyword so the bot can use it's own message
-						cb("loud");
-					}
-				}else{ // if second parm not a float
-					console.log("[AudioPlayer]".grey + " Second Parms not Float".red);
-				}
-			}
-			else{ // if there is no second parm at all
-				console.log("[AudioPlayer]".grey + " No Volume Parm".red);
-			}
-			// END OF VOLUME CHECK
-			console.log("[AudioPlayer]".grey + " Playing Audio File".cyan);
-			console.log("[AudioPlayer]".grey + " --- Name: " + colors.cyan(name));
-			console.log("[AudioPlayer]".grey + " --- Path: " + colors.cyan(path + ".mp3"));
-			console.log("[AudioPlayer]".grey + " --- Volume: " + colors.cyan(volume));
-			connection.playFile(path + ".mp3", volume,function cb(err){
-				if(err != null){
-					console.log("[AudioPlayer]".grey + colors.red(" Error: " + err));
-				}
-			}); // plays the file with the verified connection
-		}else{
+		if(!found){
 			cb("notfound");
+			return;
 		}
+
+		var song = self.getSong(name);
+		if(!song){
+			self.disnode.sendResponse(parsedMsg,"No Song Found!");
+			return;
+		}
+
+		var connection;
+		// sets up the variable and verify the voiceConnection it needs to use
+		this.findConnection(id, function cb(c){
+			connection = c; //verified connection is sent back in the callback
+		});
+		// START OF VOLUME CHECKING
+		var volume = self.defaultVolume; //Default Volume
+		connection.setVolume(volume); // sets the volume
+		if(parms[1]){ // If there is a second parm
+			if(parseFloat(parms[1])){ //can it be parsed to a float?
+				if(parseFloat(parms[1]) <= self.maxVolume){ // checks to see if the float is less than then threshold
+					volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
+					connection.setVolume(volume); // actually sets the volume
+				}else{ // if the parsed float is over the threshold
+					console.log("[AudioPlayer]".grey + " Volume over threshold! Remains default".red);
+					// Callback used for in execution for more info, loud is used as a keyword so the bot can use it's own message
+					cb("loud");
+				}
+			}else{ // if second parm not a float
+				console.log("[AudioPlayer]".grey + " Second Parms not Float".red);
+			}
+		}
+		else{ // if there is no second parm at all
+			console.log("[AudioPlayer]".grey + " No Volume Parm".red);
+		}
+		// END OF VOLUME CHECK
+		console.log("[AudioPlayer]".grey + " Streaming Audio File".cyan);
+		console.log("[AudioPlayer]".grey + " --- Volume: " + colors.cyan(volume));
+		var stream = ytdl(song.url);
+		connection.playRawStream(stream);
+
 	}
 
 	playStream(streamUrl,parsedMsg, cb){ //Plays an audio file
@@ -134,7 +146,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		var parms = parsedMsg.params;
 		var found = false;
 		var id;
-		self.DisnodeBOT.VoiceManager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+		self.disnode.VoiceManager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
 			id = returnID;
 			if(id == 0){
 				found = false;
@@ -143,49 +155,48 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 			}
 		});
 
-		if(found){
-
-
-			var connection;
-			// sets up the variable and verify the voiceConnection it needs to use
-			this.findConnection(id, function cb(c){
-				connection = c; //verified connection is sent back in the callback
-			});
-			// START OF VOLUME CHECKING
-			var volume = self.defaultVolume; //Default Volume
-			connection.setVolume(volume); // sets the volume
-			if(parms[1]){ // If there is a second parm
-				if(parseFloat(parms[1])){ //can it be parsed to a float?
-					if(parseFloat(parms[1]) <= self.maxVolume){ // checks to see if the float is less than then threshold
-						volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
-						connection.setVolume(volume); // actually sets the volume
-					}else{ // if the parsed float is over the threshold
-						console.log("[AudioPlayer]".grey + " Volume over threshold! Remains default".red);
-						// Callback used for in execution for more info, loud is used as a keyword so the bot can use it's own message
-						cb("loud");
-					}
-				}else{ // if second parm not a float
-					console.log("[AudioPlayer]".grey + " Second Parms not Float".red);
-				}
-			}
-			else{ // if there is no second parm at all
-				console.log("[AudioPlayer]".grey + " No Volume Parm".red);
-			}
-			// END OF VOLUME CHECK
-			console.log("[AudioPlayer]".grey + " Streaming Audio File".cyan);
-			console.log("[AudioPlayer]".grey + " --- Volume: " + colors.cyan(volume));
-			var stream = ytdl(streamUrl);
-			connection.playRawStream(stream);
-		}else{
+		if(!found){
 			cb("notfound");
+			return;
 		}
+
+		var connection;
+		// sets up the variable and verify the voiceConnection it needs to use
+		this.findConnection(id, function cb(c){
+			connection = c; //verified connection is sent back in the callback
+		});
+		// START OF VOLUME CHECKING
+		var volume = self.defaultVolume; //Default Volume
+		connection.setVolume(volume); // sets the volume
+		if(parms[1]){ // If there is a second parm
+			if(parseFloat(parms[1])){ //can it be parsed to a float?
+				if(parseFloat(parms[1]) <= self.maxVolume){ // checks to see if the float is less than then threshold
+					volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
+					connection.setVolume(volume); // actually sets the volume
+				}else{ // if the parsed float is over the threshold
+					console.log("[AudioPlayer]".grey + " Volume over threshold! Remains default".red);
+					// Callback used for in execution for more info, loud is used as a keyword so the bot can use it's own message
+					cb("loud");
+				}
+			}else{ // if second parm not a float
+				console.log("[AudioPlayer]".grey + " Second Parms not Float".red);
+			}
+		}
+		else{ // if there is no second parm at all
+			console.log("[AudioPlayer]".grey + " No Volume Parm".red);
+		}
+		// END OF VOLUME CHECK
+		console.log("[AudioPlayer]".grey + " Streaming Audio File".cyan);
+		console.log("[AudioPlayer]".grey + " --- Volume: " + colors.cyan(volume));
+		var stream = ytdl(streamUrl);
+		connection.playRawStream(stream);
 	}
 
 	stopPlaying(parsedMsg, cb){ // stops all audio playback in a voiceChannel
 		var self = this;
 		var found = false;
 		var id;
-		self.DisnodeBOT.VoiceManager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+		self.disnode.VoiceManager.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
 			id = returnID;
 			if(id == 0){
 				found = false;
@@ -211,20 +222,13 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 }
 
 
-	listAll(path, callback, done){
-		var walker;
-		walker = walk.walk(path);
-		walker.on("file", function(root, fileStats, next){
-			var command = "play "+fileStats.name.substring(0,fileStats.name.indexOf("."));
-			callback(command);
-			next();
-		});
-		walker.on("errors", function (root, nodeStatsArray, next) {
-			next();
-		});
-		walker.on("end", function () {
-			done();
-		});
+	listAll(callback, done){
+		var self = this;
+		for (var i = 0; i < self.config.songs.length; i++) {
+			var song = self.config.songs[i];
+			callback(song);
+		}
+		done();
 	}
 	findConnection(id, cb){
 		var self = this;
@@ -260,13 +264,13 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
 		var CurrentIndex = 0;
 
 		var SendString = "``` === AUDIO CLIPS (Page: "+Page+")=== \n";
-		self.listAll("./Audio/", function(name){
+		self.listAll(function(song){
 			CurrentIndex++;
 			if(CurrentIndex >= Start)
 			{
 				if(CurrentIndex < Start + ResultsPerPage)
 				{
-					SendString = SendString + "-"+name+ "\n";
+					SendString = SendString + "-"+song.name+ "\n";
 				}
 			}
 
@@ -281,7 +285,7 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
     var self = this;
 
     var fileName = parsedMsg.params[0];
-    self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play File: " + fileName + ".mp3 ```");
+    self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play Song: " + fileName +"```");
     self.playFile(fileName, parsedMsg,function(text){
       if(text === "loud"){
         self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.maxVolume + "! Remains default (" + self.defaultVolume +") ```");
@@ -306,6 +310,33 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
       }
     });
   }
+
+	cmdAddSong(parsedMsg){
+		var self = this;
+		var list = self.config.songs;
+		var name = parsedMsg.params[0];
+		var url = parsedMsg.params[1];
+		if(!name){
+			var res = self.config.resNoName;
+			self.disnode.sendResponse(parsedMsg,res);
+			return;
+		}
+
+		if(!url){
+			var res = self.config.resNoUrl;
+			self.disnode.sendResponse(parsedMsg,res);
+				return;
+		}
+		var shortcuts = [{
+			shortcut: "[Song]",
+			data: name
+		}];
+		var res = self.config.resSongAdded;
+		self.disnode.sendResponse(parsedMsg,res,{parse: true, shortcuts: shortcuts});
+		self.config.songs.push({name:name,url:url});
+		self.disnode.saveConfig();
+	}
+
   cmdStop(parsedMsg){
     var self = this;
 
@@ -317,6 +348,15 @@ class AudioPlayer { //Each of the Library files except Disnode.js are a class ba
     });
   }
 
+	getSong(songName){
+		var self = this;
+
+		for (var i = 0; i < self.config.songs.length; i++) {
+			if(self.config.songs[i].name === songName){
+				return self.config.songs[i];
+			}
+		}
+	}
 
 }
 

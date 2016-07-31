@@ -144,6 +144,9 @@ class Disnode extends EventEmitter{
     var sendText = text;
     var channel = parsedMsg.msg.channel;
     var sentMsg;
+
+    var options = options || {};
+
     if(options.parse){
       sendText = self.parseString(sendText,parsedMsg,options.shortcuts);
     }
