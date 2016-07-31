@@ -2,7 +2,7 @@
 const colors = require('colors');
 class CleverManager {
   constructor(options){
-    ;
+  
     this.defaultConfig = {
       commands: [
         {

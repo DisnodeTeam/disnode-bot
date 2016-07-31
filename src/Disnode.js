@@ -12,7 +12,9 @@ class Disnode extends EventEmitter{
     this.configPath = configPath;
     this.config = {};
   }
-
+  /**
+   * [startBot Starts the botr]
+   */
   startBot(){
     var self = this;
 
@@ -45,6 +47,8 @@ class Disnode extends EventEmitter{
     jsonfile.readFile(self.configPath, function(err, obj) {
       if(err != null){
         console.log(colors.red(err));
+        console.log("[Disnode]".grey + " Config Failed To Load. No Commmands will be loaded!".red);
+        return;
       }
       console.log("[Disnode]".grey + " Config Loaded!".green);
       if(!obj.commands){
