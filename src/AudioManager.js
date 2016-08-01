@@ -11,6 +11,7 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 		self.disnode = options.disnode;
 		this.connections = [];
 		this.queue = [];
+		self.ytdlStreams = [];
 		this.defaultConfig = {
 			commands:[
 				{
@@ -113,6 +114,15 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 		self.config = options.disnode.config.AudioManager;
 		console.log("[AudioManager]".grey + " Init AudioManager".green);
 	}
+	checkStream(id){
+		var self = this;
+		for(var i = 0, len = self.ytdlStreams.length; i < len; i++){
+			if(self.ytdlStreams[i].ID = id){
+				self.ytdlStreams[i].Stream.destroy();
+				self.ytdlStreams.splice(i,1);
+			}
+		}
+	}
 	playFile(name, parsedMsg, cb){ //Plays an audio file
 		var self = this;
 		var parms = parsedMsg.params;
@@ -131,7 +141,7 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 			cb("notfound");
 			return;
 		}
-
+		self.checkStream(id);
 		var song = self.getSong(name);
 		if(!song){
 			self.disnode.sendResponse(parsedMsg,"No Song Found!");
@@ -168,8 +178,11 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 		// END OF VOLUME CHECK
 		console.log("[AudioManager]".grey + " Streaming Audio File".cyan);
 		console.log("[AudioManager]".grey + " --- Volume: " + colors.cyan(volume));
-		var stream = ytdl(song.url);
-		connection.playRawStream(stream);
+		var streamUrl = song.url;
+		var str = ytdl(streamUrl);
+		console.dir(str);
+		self.ytdlStreams.push({ID:id,Stream:str});
+		connection.playRawStream(str);
 
 	}
 
@@ -191,7 +204,7 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 			cb("notfound");
 			return;
 		}
-
+		self.checkStream(id);
 		var connection;
 		// sets up the variable and verify the voiceConnection it needs to use
 		this.findConnection(id, function cb(c){
@@ -220,8 +233,10 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 		// END OF VOLUME CHECK
 		console.log("[AudioManager]".grey + " Streaming Audio File".cyan);
 		console.log("[AudioManager]".grey + " --- Volume: " + colors.cyan(volume));
-		var stream = ytdl(streamUrl);
-		connection.playRawStream(stream);
+		var str = ytdl(streamUrl);
+		self.ytdlStreams.push({ID:id,STREAM:str});
+		connection.playRawStream(str);
+
 	}
 
 	stopPlaying(parsedMsg, cb){ // stops all audio playback in a voiceChannel
@@ -244,6 +259,7 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 			});
 			// uses that verified connection to stop it's playback
 			try{
+				self.checkStream(id);
 				connection.stopPlaying();
 			}catch (er){
 				console.log("[AudioManager]".grey + colors.red(" Error: " + err));
