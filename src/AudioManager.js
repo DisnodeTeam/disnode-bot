@@ -9,10 +9,11 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
     // Let AudioManager, else you will get a null error later.
     self.AudioManager = {};
 		self.disnode = options.disnode;
-		this.connections = [];
-		this.queue = [];
+		self.connections = [];
+		self.queue = [];
+		self.skipVotes = [];
 		self.ytdlStreams = [];
-		this.defaultConfig = {
+		self.defaultConfig = {
 			commands:[
 				{
 		      "cmd": "list",
@@ -76,6 +77,13 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
           "run": "cmdUnfollow",
           "desc": "Test Command that lists all params.",
           "usage": "unfollow [parms]",
+        },
+        {
+          "cmd": "queue",
+          "context": "AudioManager",
+          "run": "cmdListQueue",
+          "desc": "Lists the queue for the channel that you are in.",
+          "usage": "queue",
         }
 			],
 			songs: [],
@@ -85,13 +93,13 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 
 		}
 		if(options.voiceEvents == true){
-        this.voiceEvents = true;
-       options.disnode.bot.on("voiceJoin", (c,u)=>this.OnVoiceJoin(c,u));
-       options.disnode.bot.on("voiceLeave", (c,u)=>this.OnVoiceLeave(c,u));
+      self.voiceEvents = true;
+     	options.disnode.bot.on("voiceJoin", (c,u)=>this.OnVoiceJoin(c,u));
+      options.disnode.bot.on("voiceLeave", (c,u)=>this.OnVoiceLeave(c,u));
     }else{
-      this.voiceEvents = false;
+      self.voiceEvents = false;
     }
-    this.retry = true;
+    self.retry = true;
     // Check if there is the path varible
 		self.path = options.path || "./Audio/";
 
@@ -114,6 +122,34 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 		self.config = options.disnode.config.AudioManager;
 		console.log("[AudioManager]".grey + " Init AudioManager".green);
 	}
+	getVolume(parms){
+		var self = this;
+		if(parms[1]){ // If there is a second parm
+			if(parseFloat(parms[1])){ //can it be parsed to a float?
+				if(parseFloat(parms[1]) <= self.maxVolume){ // checks to see if the float is less than then threshold
+					volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
+					return volume;// actually sets the volume
+				}else{ // if the parsed float is over the threshold
+					console.log("[AudioManager]".grey + " Volume over threshold! Remains default".red);
+				}
+			}else{ // if second parm not a float
+				console.log("[AudioManager]".grey + " Second Parms not Float".red);
+			}
+		}
+		else{ // if there is no second parm at all
+			console.log("[AudioManager]".grey + " No Volume Parm".red);
+		}
+		return self.defaultVolume;
+	}
+	checkForQueue(id){
+		var self = this;
+		for(var i = 0,len = self.queue.length; i < len; i++){
+			if(self.queue[i].id == id){
+				return;
+			}
+		}
+		self.queue.push({id:id,list:[]});
+	}
 	checkStream(id){
 		var self = this;
 		for(var i = 0, len = self.ytdlStreams.length; i < len; i++){
@@ -123,28 +159,27 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 			}
 		}
 	}
-	playFile(name, parsedMsg, cb){ //Plays an audio file
+	playNextQueueItem(id){
 		var self = this;
-		var parms = parsedMsg.params;
-		var found = false;
-		var id;
-		self.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
-			id = returnID;
-			if(id == 0){
-				found = false;
-			}else{
-				found = true;
+		for(var i = 0, len = self.queue.length; i < len; i++){
+			if(self.queue[i].id == id){
+				if(self.queue[i].list.length > 0){
+					var url = self.queue[i].list[0].url;
+					var vid = self.queue[i].list[0].id;
+					var volume = self.queue[i].list[0].volume;
+					self.queue[i].list.splice(0,1);
+					self.checkStream(id);
+					self.playStream(url,vid,volume,function(text){});
+				}
 			}
-		});
-
-		if(!found){
-			cb("notfound");
-			return;
 		}
-		self.checkStream(id);
+	}
+	playFile(name, voiceID, volume, cb){ //Plays an audio file
+		var self = this;
+		self.checkForQueue(voiceID);
 		var song = self.getSong(name);
 		if(!song){
-			self.disnode.sendResponse(parsedMsg,"No Song Found!");
+			cb("nosong");
 			return;
 		}
 
@@ -152,91 +187,73 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 
 
 		// sets up the variable and verify the voiceConnection it needs to use
-		this.findConnection(id, function cb(c){
+		this.findConnection(voiceID, function cb(c){
 			connection = c; //verified connection is sent back in the callback
 		});
-		// START OF VOLUME CHECKING
-		var volume = self.defaultVolume; //Default Volume
-		connection.setVolume(volume); // sets the volume
-		if(parms[1]){ // If there is a second parm
-			if(parseFloat(parms[1])){ //can it be parsed to a float?
-				if(parseFloat(parms[1]) <= self.maxVolume){ // checks to see if the float is less than then threshold
-					volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
-					connection.setVolume(volume); // actually sets the volume
-				}else{ // if the parsed float is over the threshold
-					console.log("[AudioManager]".grey + " Volume over threshold! Remains default".red);
-					// Callback used for in execution for more info, loud is used as a keyword so the bot can use it's own message
-					cb("loud");
+		if(connection.playing){
+			for(var i = 0, len = self.queue.length; i < len; i++){
+				if(self.queue[i].id == voiceID){
+					for(var d = 0, len = self.queue[i].list.length; d < len; i++){
+						if(self.queue[i].list[d].url == song.url){
+							cb("foundurl");
+							return;
+						}
+					}
+					self.queue[i].list.push({url:song.url,id:voiceID,colume:volume});
+					cb("queue");
+					return;
 				}
-			}else{ // if second parm not a float
-				console.log("[AudioManager]".grey + " Second Parms not Float".red);
 			}
 		}
-		else{ // if there is no second parm at all
-			console.log("[AudioManager]".grey + " No Volume Parm".red);
-		}
-		// END OF VOLUME CHECK
+		self.checkStream(voiceID);
+		connection.setVolume(volume); // sets the volume
 		console.log("[AudioManager]".grey + " Streaming Audio File".cyan);
 		console.log("[AudioManager]".grey + " --- Volume: " + colors.cyan(volume));
 		var streamUrl = song.url;
 		var str = ytdl(streamUrl);
-		console.dir(str);
-		self.ytdlStreams.push({ID:id,Stream:str});
-		connection.playRawStream(str);
+		self.ytdlStreams.push({ID:voiceID,Stream:str});
+		connection.playRawStream(str,{},function(err,intent){
+			intent.on("end",function () {
+				self.playNextQueueItem(voiceID);
+			});
+		});
 
 	}
 
-	playStream(streamUrl,parsedMsg, cb){ //Plays an audio file
+	playStream(streamUrl, voiceID, volume, cb){ //Plays an audio file
 		var self = this;
-		var parms = parsedMsg.params;
-		var found = false;
-		var id;
-		self.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
-			id = returnID;
-			if(id == 0){
-				found = false;
-			}else{
-				found = true;
-			}
-		});
-
-		if(!found){
-			cb("notfound");
-			return;
-		}
-		self.checkStream(id);
 		var connection;
+		self.checkForQueue(voiceID);
 		// sets up the variable and verify the voiceConnection it needs to use
-		this.findConnection(id, function cb(c){
+		this.findConnection(voiceID, function cb(c){
 			connection = c; //verified connection is sent back in the callback
-		});
-		// START OF VOLUME CHECKING
-		var volume = self.defaultVolume; //Default Volume
-		connection.setVolume(volume); // sets the volume
-		if(parms[1]){ // If there is a second parm
-			if(parseFloat(parms[1])){ //can it be parsed to a float?
-				if(parseFloat(parms[1]) <= self.maxVolume){ // checks to see if the float is less than then threshold
-					volume = parseFloat(parms[1]); // if it is then set the volume to the parsed float
-					connection.setVolume(volume); // actually sets the volume
-				}else{ // if the parsed float is over the threshold
-					console.log("[AudioManager]".grey + " Volume over threshold! Remains default".red);
-					// Callback used for in execution for more info, loud is used as a keyword so the bot can use it's own message
-					cb("loud");
+		}); // sets the volume
+		if(connection.playing){
+			for(var i = 0, len = self.queue.length; i < len; i++){
+				if(self.queue[i].id == voiceID){
+					for(var d = 0, len = self.queue[i].list.length; d < len; i++){
+						if(self.queue[i].list[d].url == song.url){
+							cb("foundurl");
+							return;
+						}
+					}
+					self.queue[i].list.push({url:song.url,id:voiceID,colume:volume});
+					cb("queue");
+					return;
 				}
-			}else{ // if second parm not a float
-				console.log("[AudioManager]".grey + " Second Parms not Float".red);
 			}
 		}
-		else{ // if there is no second parm at all
-			console.log("[AudioManager]".grey + " No Volume Parm".red);
-		}
-		// END OF VOLUME CHECK
+		connection.setVolume(volume);
+		self.checkStream(voiceID);
 		console.log("[AudioManager]".grey + " Streaming Audio File".cyan);
 		console.log("[AudioManager]".grey + " --- Volume: " + colors.cyan(volume));
 		var str = ytdl(streamUrl);
-		self.ytdlStreams.push({ID:id,STREAM:str});
-		connection.playRawStream(str);
-
+		self.ytdlStreams.push({ID:voiceID,STREAM:str});
+		connection.playRawStream(str,{},function(err,intent){
+			intent.on("end",function () {
+				self.playNextQueueItem(voiceID);
+			});
+		});
 	}
 
 	stopPlaying(parsedMsg, cb){ // stops all audio playback in a voiceChannel
@@ -422,34 +439,94 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 
 		cmdPlay(parsedMsg){
 	    var self = this;
-
 	    var fileName = parsedMsg.params[0];
+			var parms = parsedMsg.params;
+			var found = false;
+			var volume = self.getVolume(parms);
+			var id;
+			self.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+				id = returnID;
+				if(id == 0){
+					found = false;
+				}else{
+					found = true;
+				}
+			});
+			if(!found){
+				self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
+				return;
+			}
 	    self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Attempting to Play Song: " + fileName +"```");
-	    self.playFile(fileName, parsedMsg,function(text){
-	      if(text === "loud"){
-	        self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.maxVolume + "! Remains default (" + self.defaultVolume +") ```");
-	      }
-	      if(text === "notfound"){
-	        self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
-	      }
+	    self.playFile(fileName,id,volume,function(text){
+				if(text === "nosong"){
+					self.disnode.sendResponse(parsedMsg,"No Song Found!");
+				}
+				if(text === "queue"){
+					self.disnode.sendResponse(parsedMsg,"``` Bot is playing a song, but your song was added to the queue.```");
+				}
+				if(text === "foundurl"){
+					self.disnode.sendResponse(parsedMsg,"``` Bot is playing a song, but your song is already in the queue.```");
+				}
 	    });
 	  }
 
 		cmdStream(parsedMsg){
 	    var self = this;
-
 	    var url = parsedMsg.params[0];
+			var parms = parsedMsg.params;
+			var volume = self.getVolume(parms);
+			var found = false;
+			var id;
+			self.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+				id = returnID;
+				if(id == 0){
+					found = false;
+				}else{
+					found = true;
+				}
+			});
+			if(!found){
+				self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
+				return;
+			}
 	    self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Streaming... ```");
 	    self.playStream(url, parsedMsg,function(text){
-	      if(text === "loud"){
-	        self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` Volume over threshold of " + self.maxVolume + "! Remains default (" + self.defaultVolume +") ```");
-	      }
-	      if(text === "notfound"){
-	        self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to request a File ```");
-	      }
-	    });
+				if(text === "queue"){
+					self.disnode.sendResponse(parsedMsg,"``` Bot is playing a song, but your song was added to the queue.```");
+				}
+				if(text === "foundurl"){
+					self.disnode.sendResponse(parsedMsg,"``` Bot is playing a song, but your song is already in the queue.```");
+				}
+			});
 	  }
-
+		cmdListQueue(parsedMsg){
+			var self = this;
+			var found = false;
+			var id;
+			self.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+				id = returnID;
+				if(id == 0){
+					found = false;
+				}else{
+					found = true;
+				}
+			});
+			if(!found){
+				self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` You must be inside a channel that the bot is in to list the Queue ```");
+				return;
+			}
+			console.dir(self.queue.list);
+			var sendString = "Queue:\n";
+			for(var i = 0, len = self.queue.length; i < len; i++){
+				var index = i;
+				if(self.queue[i].id == id){
+					for(var f = 0, len = self.queue[index].list.length; f < len; i++){
+						sendString += f + ". URL:" + self.queue[index].list[f].url + "\n";
+					}
+				}
+			}
+			self.disnode.bot.sendMessage(parsedMsg.msg.channel, "``` " + sendString + " ```");
+		}
 		cmdAddSong(parsedMsg){
 			var self = this;
 			var list = self.config.songs;
