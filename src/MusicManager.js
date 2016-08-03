@@ -166,7 +166,10 @@ class MusicManager{
     var channel = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
 
     if(channel){
-      this.playUrl(url,channel,{})
+      this.playUrl(url,channel,{});
+    }
+    else{
+      this.disnode.sendResponse(parsedMsg, "Not In Server!");
     }
   }
 
@@ -213,7 +216,7 @@ class MusicManager{
 }
 
 function GetVoiceConnectionViaMsg(msg, voiceConnections){
-  var connection = {};
+  var connection;
 
   var serverChannels = msg.server.channels;
 
