@@ -83,7 +83,9 @@ class MusicManager{
 			resNoUrl : "```Please Enter a Youtube URL for this song!```",
 			resSongAdded : "```[Song] Added!```",
       resFollow : "**Following: ** [Sender]",
-      resUnFollow : "**Stop Following: ** [Sender]"
+      resUnFollow : "**Stop Following: ** [Sender]",
+      resJoiningServer: "**Joining Server: ** [Server]",
+      resNotInServer: "**Can't Join You! Try Joining a Channel First!**"
     };
 
     this.config = this.disnode.config.MusicManager || this.defaultConfig;
@@ -126,6 +128,22 @@ class MusicManager{
     });
   }
 
+  cmdJoinVoice(parsedMsg){
+    var self = this;
+    var channel = parsedMsg.msg.author.voiceChannel;
+    if(channel){
+      this.JoinServer(channel);
+      this.disnode.sendResponse(parsedMsg, this.config.resJoiningServer,{parse: true});
+    }else{
+      this.disnode.sendResponse(parsedMsg, this.config.resNotInServer,{parse: true});
+    }
+  }
+
+  cmdLeaveVoice(parsedMsg){
+    var channel = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
+    this.LeaveServer(channel);
+  }
+
   cmdFollowUser(parsedMsg){
     var self = this;
     this.following.push(parsedMsg.msg.author.username);
@@ -143,6 +161,20 @@ class MusicManager{
 
 }
 
+function GetVoiceConnectionViaMsg(msg, voiceConnections){
+  var connection = {};
 
+  var serverChannels = msg.server.channels;
+
+  for (var i = 0; i < voiceConnections.length; i++) {
+    var channel = voiceConnections[i].voiceChannel;
+
+    if(serverChannels.includes(channel)){
+      connection = channel;
+    }
+  }
+
+  return connection;
+}
 
 module.exports = MusicManager;
