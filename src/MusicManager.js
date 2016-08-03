@@ -28,6 +28,13 @@ class MusicManager{
 		      "desc": "Plays an audio file.",
 		      "usage": "play [filename] [volume]",
 		    },
+        {
+		      "cmd": "skip",
+		      "context": "MusicManager",
+		      "run": "cmdSkip",
+		      "desc": "Displays list of Audio Files.",
+		      "usage": "list [page]",
+		    },
 				{
 		      "cmd": "stream",
 		      "context": "MusicManager",
@@ -108,6 +115,32 @@ class MusicManager{
     }
   }
 
+  playLoop(connection){
+    var self = this;
+    connection.playRunning = true;
+    var stream = ytdl(connection.queue[0], {audioonly: true});
+    stream.on('end', function(){
+      if(stream.length == 0){
+        connection.playRunning = false;
+
+      }else{
+        connection.queue.splice(0,1);
+        self.playLoop(connection);
+        console.log("NEXT IN queue");
+      }
+    });
+		connection.playRawStream(stream);
+  }
+
+  playUrl(url,connection, volumeOptions){
+    var bot = this.disnode.bot;
+    if(!connection.queue){connection.queue = [];}
+    connection.queue.push(url);
+    if(!connection.playRunning){
+      this.playLoop(connection);
+    }
+  }
+
   JoinServer(channel){
     var self = this;
     this.disnode.bot.joinVoiceChannel(channel, function(err, connnection){
@@ -128,6 +161,15 @@ class MusicManager{
     });
   }
 
+  cmdPlay(parsedMsg){
+    var url = parsedMsg.params[0];
+    var channel = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
+
+    if(channel){
+      this.playUrl(url,channel,{})
+    }
+  }
+
   cmdJoinVoice(parsedMsg){
     var self = this;
     var channel = parsedMsg.msg.author.voiceChannel;
@@ -140,8 +182,17 @@ class MusicManager{
   }
 
   cmdLeaveVoice(parsedMsg){
-    var channel = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
+    var channel = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections).voiceChannel;
     this.LeaveServer(channel);
+  }
+
+  cmdSkip(parsedMsg){
+    var connection = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
+
+    if(connection){
+      connection.queue.splice(0,1);
+      this.playLoop(connection);
+    }
   }
 
   cmdFollowUser(parsedMsg){
@@ -170,7 +221,7 @@ function GetVoiceConnectionViaMsg(msg, voiceConnections){
     var channel = voiceConnections[i].voiceChannel;
 
     if(serverChannels.includes(channel)){
-      connection = channel;
+      connection = voiceConnections[i];
     }
   }
 
