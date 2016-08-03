@@ -141,6 +141,7 @@ class Disnode extends EventEmitter{
     var options = options || {};
 
     if(options.parse){
+      console.log('parsing');
       sendText = self.parseString(sendText,parsedMsg,options.shortcuts);
     }
     if(options.mention){
