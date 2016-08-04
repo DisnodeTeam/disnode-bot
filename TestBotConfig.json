@@ -74,13 +74,16 @@
       }
     ],
     "songs": [],
+    "maxVolume": 3,
+    "defaultVolume": 0.8,
     "resNoName": "```Please Enter a name for this song!```",
     "resNoUrl": "```Please Enter a Youtube URL for this song!```",
     "resSongAdded": "```[Song] Added!```",
     "resFollow": "**Following: ** [Sender]",
     "resUnFollow": "**Stop Following: ** [Sender]",
     "resJoiningServer": "**Joining Server: ** [Server]",
-    "resNotInServer": "**Can't Join You! Try Joining a Channel First!**"
+    "resNotInServer": "**Can't Join You! Try Joining a Channel First!**",
+    "resMaxVolume": "**Max Volume([MaxVolume]) Reached! Playing at: [DefaultVolume].**"
   },
   "HelpManager": {
     "commands": [

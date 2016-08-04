@@ -94,7 +94,8 @@ class MusicManager{
       resFollow : "**Following: ** [Sender]",
       resUnFollow : "**Stop Following: ** [Sender]",
       resJoiningServer: "**Joining Server: ** [Server]",
-      resNotInServer: "**Can't Join You! Try Joining a Channel First!**"
+      resNotInServer: "**Can't Join You! Try Joining a Channel First!**",
+      resMaxVolume: "**Max Volume([MaxVolume]) Reached! Playing at: [DefaultVolume].**"
     };
 
     this.config = this.disnode.config.MusicManager || this.defaultConfig;
@@ -120,7 +121,7 @@ class MusicManager{
   playStream(connection, vol){
     var self = this;
     connection.playRunning = true;
-    connection.setVolume(GetVolume(vol, self.config));
+    connection.setVolume(vol);
     var stream = ytdl(connection.queue[0], {audioonly: true});
     stream.on('end', function(){
       if(stream.length == 0){
@@ -166,6 +167,7 @@ class MusicManager{
   }
 
   cmdPlay(parsedMsg){
+    var self = this;
     var url = parsedMsg.params[0];
     var vol = this.config.defaultConfig || .8;
     if(parsedMsg.params[1]){
@@ -173,6 +175,19 @@ class MusicManager{
         vol = parseFloat(parsedMsg.params[1]);
       }
     }
+    GetVolume(vol, this.config, function(err, res){
+      if(!err){
+        vol = res;
+
+      }
+      if(err == "MAX"){
+        var shortcuts = [
+          {shortcut: "[DefaultVolume]", data: self.config.defaultVolume},
+          {shortcut: "[MaxVolume]", data: self.config.maxVolume},
+          {shortcut: "[RequestedVolume]", data: vol}];
+        self.disnode.sendResponse(parsedMsg, self.config.resMaxVolume, {parse: true, shortcuts: shortcuts})
+      }
+    });
     var channel = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
 
     if(channel){
@@ -245,15 +260,15 @@ function GetVoiceConnectionViaMsg(msg, voiceConnections){
   return connection;
 }
 
-function GetVolume(requestedVol, config){
+function GetVolume(requestedVol, config, cb){
   var defaultVol = config.defaultVolume || 0.8;
   var maxVol = config.maxVolume || 1;
 
   if(requestedVol <= maxVol){
 
-    return requestedVol;
+    cb(null,requestedVol) ;
   }else{
-    return defaultVol;
+    cb("MAX", defaultVol);
   }
 }
 
