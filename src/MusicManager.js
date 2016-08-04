@@ -166,7 +166,7 @@ class MusicManager{
     });
   }
 
-  cmdPlay(parsedMsg){
+  cmdStream(parsedMsg){
     var self = this;
     var url = parsedMsg.params[0];
     var vol = this.config.defaultConfig || .8;
