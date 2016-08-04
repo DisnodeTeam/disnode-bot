@@ -186,9 +186,13 @@ class MusicManager{
   cmdJoinVoice(parsedMsg){
     var self = this;
     var channel = parsedMsg.msg.author.voiceChannel;
+    var shortcuts = [{
+      shortcut: "[Server]",
+      data: channel.name
+    }];
     if(channel){
       this.JoinServer(channel);
-      this.disnode.sendResponse(parsedMsg, this.config.resJoiningServer,{parse: true});
+      this.disnode.sendResponse(parsedMsg, this.config.resJoiningServer,{parse: true, shortcuts: shortcuts});
     }else{
       this.disnode.sendResponse(parsedMsg, this.config.resNotInServer,{parse: true});
     }
