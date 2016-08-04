@@ -86,6 +86,8 @@ class MusicManager{
         }
 			],
 			songs: [],
+      maxVolume: 3,
+      defaultVolume: 0.8,
 			resNoName : "```Please Enter a name for this song!```",
 			resNoUrl : "```Please Enter a Youtube URL for this song!```",
 			resSongAdded : "```[Song] Added!```",
@@ -115,9 +117,10 @@ class MusicManager{
     }
   }
 
-  playLoop(connection){
+  playStream(connection, vol){
     var self = this;
     connection.playRunning = true;
+    connection.setVolume(GetVolume(vol, self.config));
     var stream = ytdl(connection.queue[0], {audioonly: true});
     stream.on('end', function(){
       if(stream.length == 0){
@@ -132,12 +135,13 @@ class MusicManager{
 		connection.playRawStream(stream);
   }
 
-  playUrl(url,connection, volumeOptions){
+  addUrl(url,connection, vol){
     var bot = this.disnode.bot;
+
     if(!connection.queue){connection.queue = [];}
     connection.queue.push(url);
     if(!connection.playRunning){
-      this.playLoop(connection);
+      this.playStream(connection,vol);
     }
   }
 
@@ -163,10 +167,16 @@ class MusicManager{
 
   cmdPlay(parsedMsg){
     var url = parsedMsg.params[0];
+    var vol = this.config.defaultConfig || .8;
+    if(parsedMsg.params[1]){
+      if(parseFloat(parsedMsg.params[1]) != 'NaN'){
+        vol = parseFloat(parsedMsg.params[1]);
+      }
+    }
     var channel = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
 
     if(channel){
-      this.playUrl(url,channel,{});
+      this.addUrl(url,channel,vol);
     }
     else{
       this.disnode.sendResponse(parsedMsg, "Not In Server!");
@@ -194,7 +204,7 @@ class MusicManager{
 
     if(connection){
       connection.queue.splice(0,1);
-      this.playLoop(connection);
+
     }
   }
 
@@ -229,6 +239,18 @@ function GetVoiceConnectionViaMsg(msg, voiceConnections){
   }
 
   return connection;
+}
+
+function GetVolume(requestedVol, config){
+  var defaultVol = config.defaultVolume || 0.8;
+  var maxVol = config.maxVolume || 1;
+
+  if(requestedVol <= maxVol){
+
+    return requestedVol;
+  }else{
+    return defaultVol;
+  }
 }
 
 module.exports = MusicManager;

@@ -17,6 +17,13 @@
         "usage": "play [filename] [volume]"
       },
       {
+        "cmd": "skip",
+        "context": "MusicManager",
+        "run": "cmdSkip",
+        "desc": "Displays list of Audio Files.",
+        "usage": "list [page]"
+      },
+      {
         "cmd": "stream",
         "context": "MusicManager",
         "run": "cmdStream",
