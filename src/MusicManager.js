@@ -202,15 +202,21 @@ class MusicManager{
         var shortcuts = [
           {shortcut: "[DefaultVolume]", data: self.config.defaultVolume},
           {shortcut: "[MaxVolume]", data: self.config.maxVolume},
-          {shortcut: "[RequestedVolume]", data: vol}];
+          {shortcut: "[RequestedVolume]", data: vol}
+        ];
         self.disnode.sendResponse(parsedMsg, self.config.resMaxVolume, {parse: true, shortcuts: shortcuts})
       }
     });
     var channel = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
 
     if(channel){
+      var shortcutsAdd = [
+        {shortcut: "[url]", data: url},
+        {shortcut: "[channel]", data: channel},
+        {shortcut: "[vol]", data: vol},
+      ];
       this.addUrl(url,channel,vol);
-      this.disnode.sendResponse(parsedMsg, self.config.resAddedToQueue);
+      this.disnode.sendResponse(parsedMsg, self.config.resAddedToQueue, {parse: true, shortcuts: shortcutsAdd});
     }
     else{
       this.disnode.sendResponse(parsedMsg, "Not In Server!");
