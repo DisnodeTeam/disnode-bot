@@ -120,13 +120,13 @@ class MusicManager{
     connection.setVolume(vol);
     connection.ytStream = ytdl(connection.queue[0], {audioonly: true});
     connection.ytStream.on('end', function(){
-      if(stream.length == 0){
+      if(connection.queue.length == 0){
         connection.playRunning = false;
 
       }else{
         connection.queue.splice(0,1);
-        self.playLoop(connection);
-        connection.ytStream.destory();
+        self.playStream(connection);
+        //connection.ytStream.destory();
       }
     });
 		connection.playRawStream(connection.ytStream);
