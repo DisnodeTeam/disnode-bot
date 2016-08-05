@@ -248,7 +248,7 @@ class MusicManager{
 
     if(connection){
       connection.queue.splice(0,1);
-      this.playStream();
+      this.playStream(connection,0.8);
     }
   }
 

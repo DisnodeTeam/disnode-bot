@@ -236,7 +236,7 @@ class Disnode extends EventEmitter{
       // Normal error handling
       console.log(colors.red(err));
       console.log(colors.red(err.stack));
-      process.exit(0);
+      this.bot.logout();
     }
   }
 }
