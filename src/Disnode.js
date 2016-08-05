@@ -3,6 +3,7 @@ const EventEmitter = require("events");
 const Discord = require( "discord.js");
 const jsonfile = require('jsonfile');
 const colors = require('colors');
+const FS = require('fs');
 
 class Disnode extends EventEmitter{
   constructor(key, configPath){
@@ -19,8 +20,16 @@ class Disnode extends EventEmitter{
     var self = this;
 
     this.bot = new Discord.Client();
-
-
+    FS.stat(self.configPath, function(err, stat) {
+      if(err == null) {
+      } else if(err.code == 'ENOENT') {
+          // file does not exist
+          FS.writeFile(self.configPath, '{}');
+          console.log('[Disnode]'.grey + " Config not found in: ".green + colors.cyan(self.configPath) + " Generating a new config!".green);
+      } else {
+          console.log('[Disnode]'.grey + colors.red(" Error:" + err.code));
+      }
+    });
     this.bot.loginWithToken(this.key);
 
     this.bot.on("ready", () => this.botReady())
