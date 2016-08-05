@@ -125,11 +125,11 @@ class MusicManager{
         connection.playRunning = false;
 
       }else{
-        connection.queue.splice(0,1);
         self.playStream(connection);
         //connection.ytStream.destory();
       }
     });
+    connection.queue.splice(0,1);
 		connection.playRawStream(connection.ytStream);
   }
   addUrl(url,connection, vol){
