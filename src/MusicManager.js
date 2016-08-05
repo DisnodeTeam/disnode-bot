@@ -212,7 +212,7 @@ class MusicManager{
     if(channel){
       var shortcutsAdd = [
         {shortcut: "[url]", data: url},
-        {shortcut: "[channel]", data: channel},
+        {shortcut: "[channel]", data: channel.voiceChannel.name},
         {shortcut: "[vol]", data: vol},
       ];
       this.addUrl(url,channel,vol);
