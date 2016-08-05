@@ -14,20 +14,6 @@ class MusicManager{
 
     this.defaultConfig = {
       commands:[
-				{
-		      "cmd": "list",
-		      "context": "MusicManager",
-		      "run": "cmdListAudio",
-		      "desc": "Displays list of Audio Files.",
-		      "usage": "list [page]",
-		    },
-		    {
-		      "cmd": "play",
-		      "context": "MusicManager",
-		      "run": "cmdPlay",
-		      "desc": "Plays an audio file.",
-		      "usage": "play [filename] [volume]",
-		    },
         {
 		      "cmd": "skip",
 		      "context": "MusicManager",
@@ -42,19 +28,26 @@ class MusicManager{
 		      "desc": "Plays an audio file.",
 		      "usage": "play [url] [volume]",
 		    },
-				{
-		      "cmd": "addsong",
+        {
+		      "cmd": "clearqueue",
 		      "context": "MusicManager",
-		      "run": "cmdAddSong",
-		      "desc": "Adds a song",
-		      "usage": "addsong [name] [url]",
+		      "run": "cmdClearQueue",
+		      "desc": "Stopps and Clears all URLS's in Queue",
+		      "usage": "clearqueue",
 		    },
 		    {
-		      "cmd": "stop",
+		      "cmd": "resume",
 		      "context": "MusicManager",
-		      "run": "cmdStop",
-		      "desc": "Stops all audio.",
-		      "usage": "stop",
+		      "run": "cmdResume",
+		      "desc": "Resumes Connection",
+		      "usage": "resume",
+		    },
+        {
+		      "cmd": "pause",
+		      "context": "MusicManager",
+		      "run": "cmdPause",
+		      "desc": "Pauses Connection",
+		      "usage": "resume",
 		    },
 				{
           "cmd": "jv",
@@ -95,7 +88,10 @@ class MusicManager{
       resUnFollow : "**Stop Following: ** [Sender]",
       resJoiningServer: "**Joining Server: ** [Server]",
       resNotInServer: "**Can't Join You! Try Joining a Channel First!**",
-      resMaxVolume: "**Max Volume([MaxVolume]) Reached! Playing at: [DefaultVolume].**"
+      resMaxVolume: "**Max Volume([MaxVolume]) Reached! Playing at: [DefaultVolume].**",
+      resResume: "**Resuming the queue!**",
+      resPause: "**Pausing the queue!**",
+      resClearQueue: "**Clearing the queue!**"
     };
 
     this.config = this.disnode.config.MusicManager || this.defaultConfig;
@@ -122,20 +118,19 @@ class MusicManager{
     var self = this;
     connection.playRunning = true;
     connection.setVolume(vol);
-    var stream = ytdl(connection.queue[0], {audioonly: true});
-    stream.on('end', function(){
+    connection.ytStream = ytdl(connection.queue[0], {audioonly: true});
+    connection.ytStream.on('end', function(){
       if(stream.length == 0){
         connection.playRunning = false;
 
       }else{
         connection.queue.splice(0,1);
         self.playLoop(connection);
-        console.log("NEXT IN queue");
+        connection.ytStream.destory();
       }
     });
-		connection.playRawStream(stream);
+		connection.playRawStream(connection.ytStream);
   }
-
   addUrl(url,connection, vol){
     var bot = this.disnode.bot;
 
@@ -164,6 +159,28 @@ class MusicManager{
         return;
       }
     });
+  }
+
+  cmdPause(parsedMsg){
+    var connection = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
+
+    if(connection){
+      connection.pause();
+      this.disnode.sendResponse(parsedMsg, this.config.resPause);
+    }else{
+      this.disnode.sendResponse(parsedMsg, this.config.resNotInServer);
+    }
+  }
+
+  cmdResume(parsedMsg){
+    var connection = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
+
+    if(connection){
+      connection.resume();
+      this.disnode.sendResponse(parsedMsg, this.config.resResume,{parse: true});
+    }else{
+      this.disnode.sendResponse(parsedMsg, this.config.resNotInServer,{parse: true});
+    }
   }
 
   cmdStream(parsedMsg){
@@ -223,7 +240,7 @@ class MusicManager{
 
     if(connection){
       connection.queue.splice(0,1);
-
+      this.playLoop();
     }
   }
 
@@ -240,6 +257,18 @@ class MusicManager{
     this.following.splice(index,1);
 
     this.disnode.sendResponse(parsedMsg, this.config.resUnFollow,{parse: true});
+  }
+
+  cmdClearQueue(parsedMsg){
+    var connection = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
+
+    if(connection){
+      connection.queue = [];
+      connection.stopPlaying();
+      this.disnode.sendResponse(parsedMsg, this.config.resClearQueue);
+    }else{
+      this.disnode.sendResponse(parsedMsg, this.config.resNotInServer);
+    }
   }
 
 }

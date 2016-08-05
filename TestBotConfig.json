@@ -3,20 +3,6 @@
   "MusicManager": {
     "commands": [
       {
-        "cmd": "list",
-        "context": "MusicManager",
-        "run": "cmdListAudio",
-        "desc": "Displays list of Audio Files.",
-        "usage": "list [page]"
-      },
-      {
-        "cmd": "play",
-        "context": "MusicManager",
-        "run": "cmdPlay",
-        "desc": "Plays an audio file.",
-        "usage": "play [filename] [volume]"
-      },
-      {
         "cmd": "skip",
         "context": "MusicManager",
         "run": "cmdSkip",
@@ -31,18 +17,25 @@
         "usage": "play [url] [volume]"
       },
       {
-        "cmd": "addsong",
+        "cmd": "clearqueue",
         "context": "MusicManager",
-        "run": "cmdAddSong",
-        "desc": "Adds a song",
-        "usage": "addsong [name] [url]"
+        "run": "cmdClearQueue",
+        "desc": "Stopps and Clears all URLS's in Queue",
+        "usage": "clearqueue"
       },
       {
-        "cmd": "stop",
+        "cmd": "resume",
         "context": "MusicManager",
-        "run": "cmdStop",
-        "desc": "Stops all audio.",
-        "usage": "stop"
+        "run": "cmdResume",
+        "desc": "Resumes Connection",
+        "usage": "resume"
+      },
+      {
+        "cmd": "pause",
+        "context": "MusicManager",
+        "run": "cmdPause",
+        "desc": "Pauses Connection",
+        "usage": "resume"
       },
       {
         "cmd": "jv",
@@ -83,7 +76,10 @@
     "resUnFollow": "**Stop Following: ** [Sender]",
     "resJoiningServer": "**Joining Server: ** [Server]",
     "resNotInServer": "**Can't Join You! Try Joining a Channel First!**",
-    "resMaxVolume": "**Max Volume([MaxVolume]) Reached! Playing at: [DefaultVolume].**"
+    "resMaxVolume": "**Max Volume([MaxVolume]) Reached! Playing at: [DefaultVolume].**",
+    "resResume": "**Resuming the queue!**",
+    "resPause": "**Pausing the queue!**",
+    "resClearQueue": "**Clearing the queue!**"
   },
   "HelpManager": {
     "commands": [
