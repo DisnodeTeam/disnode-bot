@@ -240,7 +240,7 @@ class MusicManager{
 
     if(connection){
       connection.queue.splice(0,1);
-      this.playLoop();
+      this.playStream();
     }
   }
 
