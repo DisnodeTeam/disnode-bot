@@ -90,6 +90,7 @@ class MusicManager{
       resNotInServer: "**Can't Join You! Try Joining a Channel First!**",
       resMaxVolume: "**Max Volume([MaxVolume]) Reached! Playing at: [DefaultVolume].**",
       resResume: "**Resuming the queue!**",
+      resAddedToQueue: "**Added to the queue!**",
       resPause: "**Pausing the queue!**",
       resClearQueue: "**Clearing the queue!**"
     };
@@ -209,6 +210,7 @@ class MusicManager{
 
     if(channel){
       this.addUrl(url,channel,vol);
+      this.disnode.sendResponse(parsedMsg, self.config.resAddedToQueue);
     }
     else{
       this.disnode.sendResponse(parsedMsg, "Not In Server!");
