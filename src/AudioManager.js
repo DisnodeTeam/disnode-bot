@@ -9,11 +9,17 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
     // Let AudioManager, else you will get a null error later.
     self.AudioManager = {};
 		self.disnode = options.disnode;
+<<<<<<< HEAD
+		this.connections = [];
+		this.queue = [];
+		this.defaultConfig = {
+=======
 		self.connections = [];
 		self.queue = [];
 		self.skipVotes = [];
 		self.ytdlStreams = [];
 		self.defaultConfig = {
+>>>>>>> refs/remotes/origin/Experimental
 			commands:[
 				{
 		      "cmd": "list",
@@ -122,6 +128,9 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 		self.config = options.disnode.config.AudioManager;
 		console.log("[AudioManager]".grey + " Init AudioManager".green);
 	}
+<<<<<<< HEAD
+	playFile(name, parsedMsg, cb){ //Plays an audio file
+=======
 	getVolume(parms){
 		var self = this;
 		if(parms[1]){ // If there is a second parm
@@ -160,6 +169,7 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 		}
 	}
 	playNextQueueItem(id){
+>>>>>>> refs/remotes/origin/Experimental
 		var self = this;
 		for(var i = 0, len = self.queue.length; i < len; i++){
 			if(self.queue[i].id == id){
@@ -173,10 +183,14 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 				}
 			}
 		}
+<<<<<<< HEAD
+
+=======
 	}
 	playFile(name, voiceID, volume, cb){ //Plays an audio file
 		var self = this;
 		self.checkForQueue(voiceID);
+>>>>>>> refs/remotes/origin/Experimental
 		var song = self.getSong(name);
 		if(!song){
 			cb("nosong");
@@ -209,6 +223,10 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 		connection.setVolume(volume); // sets the volume
 		console.log("[AudioManager]".grey + " Streaming Audio File".cyan);
 		console.log("[AudioManager]".grey + " --- Volume: " + colors.cyan(volume));
+<<<<<<< HEAD
+		var stream = ytdl(song.url);
+		connection.playRawStream(stream);
+=======
 		var streamUrl = song.url;
 		var str = ytdl(streamUrl);
 		self.ytdlStreams.push({ID:voiceID,Stream:str});
@@ -217,11 +235,32 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 				self.playNextQueueItem(voiceID);
 			});
 		});
+>>>>>>> refs/remotes/origin/Experimental
 
 	}
 
 	playStream(streamUrl, voiceID, volume, cb){ //Plays an audio file
 		var self = this;
+<<<<<<< HEAD
+		var parms = parsedMsg.params;
+		var found = false;
+		var id;
+		self.checkForUserInSameServer(parsedMsg.msg, function cb(returnID){
+			id = returnID;
+			if(id == 0){
+				found = false;
+			}else{
+				found = true;
+			}
+		});
+
+		if(!found){
+			cb("notfound");
+			return;
+		}
+
+=======
+>>>>>>> refs/remotes/origin/Experimental
 		var connection;
 		self.checkForQueue(voiceID);
 		// sets up the variable and verify the voiceConnection it needs to use
@@ -247,6 +286,10 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 		self.checkStream(voiceID);
 		console.log("[AudioManager]".grey + " Streaming Audio File".cyan);
 		console.log("[AudioManager]".grey + " --- Volume: " + colors.cyan(volume));
+<<<<<<< HEAD
+		var stream = ytdl(streamUrl);
+		connection.playRawStream(stream);
+=======
 		var str = ytdl(streamUrl);
 		self.ytdlStreams.push({ID:voiceID,STREAM:str});
 		connection.playRawStream(str,{},function(err,intent){
@@ -254,6 +297,7 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 				self.playNextQueueItem(voiceID);
 			});
 		});
+>>>>>>> refs/remotes/origin/Experimental
 	}
 
 	stopPlaying(parsedMsg, cb){ // stops all audio playback in a voiceChannel
@@ -276,7 +320,6 @@ class AudioManager { //Each of the Library files except Disnode.js are a class b
 			});
 			// uses that verified connection to stop it's playback
 			try{
-				self.checkStream(id);
 				connection.stopPlaying();
 			}catch (er){
 				console.log("[AudioManager]".grey + colors.red(" Error: " + err));

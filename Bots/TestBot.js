@@ -11,9 +11,8 @@ var OnLoad = function(){
   //enables the command handler which allows for recognizing commands from regular messages takes and object with the command prefix
   testBot.addManager({name:"CommandHandler", options:{prefix: "^"}});
   //enables voice manager required for audio player
-  testBot.addManager({name: "VoiceManager", options:{voiceEvents:true}});
   //enables audio player with an object that passes a 'path(String)' and 'maxVolume(float)'
-  testBot.addManager({name:"AudioPlayer", options:{path: './Audio/', maxVolume:2.0}});
+  testBot.addManager({name:"MusicManager", options:{voiceEvents: true, maxVolume:2.0}});
   testBot.addManager({name:"HelpManager", options:{}});
   //enables config manager which is a required library for loading commands
 
