@@ -25,6 +25,7 @@ class Disnode extends EventEmitter{
 
     this.bot.on("ready", () => this.botReady())
     this.bot.on("message", (msg) => this.botRawMessage(msg));
+    process.on('uncaughtException', (err) => this.ECONNRESETHandler(err));
 
 
     this.botInit();
@@ -205,7 +206,11 @@ class Disnode extends EventEmitter{
 
     return final;
   }
-  process.on('uncaughtException', function(err) {
+  /**
+   * ECONNRESET hack credits to meew0
+   */
+  //process.on('uncaughtException', function(err) {
+  ECONNRESETHandler(err){
     // Handle ECONNRESETs caused by `next` or `destroy`
     if (err.code == 'ECONNRESET') {
       // Yes, I'm aware this is really bad node code. However, the uncaught exception
@@ -216,14 +221,14 @@ class Disnode extends EventEmitter{
       // clearly an error in discord.js and was now fixed) tells me that this problem
       // can actually be safely prevented using uncaughtException. Should this bother
       // you, you can always try to debug the error yourself and make a PR.
-      console.log('Got an ECONNRESET! This is *probably* not an error. Stacktrace:');
-      console.log(err.stack);
+      console.log('Got an ECONNRESET! This is *probably* not an error. Stacktrace:'.red);
+      console.log(colors.red(err.stack));
     } else {
       // Normal error handling
-      console.log(err);
-      console.log(err.stack);
+      console.log(colors.red(err));
+      console.log(colors.red(err.stack));
       process.exit(0);
     }
-  });
+  }
 }
 module.exports = Disnode;
