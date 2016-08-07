@@ -26,7 +26,6 @@ testBot.addManager({name:"NAME",path:"disnode-manager", options:{}});
 ```js
 var DisnodeBot = require("../src/Disnode.js");
 var testBot = new DisnodeBot("", "./TestBotConfig.json"); /
-var botCommands = {}; 
 testBot.on("Bot_Ready", function(){ 
     console.log('[TEST_BOT - BotReady] Bot Ready.');
     testBot.loadConfig(OnLoad);
@@ -56,9 +55,5 @@ testBot.on("Bot_RawMessage", function(msg){ //event emitter called when the bot 
 exports.Start = function () {
   testBot.startBot();
 };
-//this adds a function to the botCommands to be referenced in local context when creating commands
-botCommands.cmdDebug = function(ParsedMsg){
-  testBot.AudioPlayer.playStream({},ParsedMsg, function(){})
 
-}
 ````
