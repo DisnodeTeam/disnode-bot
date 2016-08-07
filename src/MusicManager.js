@@ -116,21 +116,29 @@ class MusicManager{
   }
 
   playStream(connection, vol){
-    var self = this;
-    connection.playRunning = true;
-    connection.setVolume(vol);
-    connection.ytStream = ytdl(connection.queue[0], {audioonly: true});
-    connection.ytStream.on('end', function(){
-      if(connection.queue.length == 0){
-        connection.playRunning = false;
+    if(connection.queue[0]){
+      var self = this;
+      connection.playRunning = true;
+      connection.setVolume(vol);
+      connection.ytStream = ytdl(connection.queue[0], {audioonly: true});
+      connection.ytStream.on('end', function(){
+        if(connection.queue.length == 0){
+          connection.playRunning = false;
 
-      }else{
-        self.playStream(connection);
-        //connection.ytStream.destory();
+        }else{
+          self.playStream(connection);
+          //connection.ytStream.destory();
+        }
+      });
+      connection.queue.splice(0,1);
+  		connection.playRawStream(connection.ytStream);
+    }else{
+      console.log("No Next Song!");
+      if(connection.ytStream){
+        connection.ytStream.destroy();
       }
-    });
-    connection.queue.splice(0,1);
-		connection.playRawStream(connection.ytStream);
+      connection.playRunning = false;
+    }
   }
   addUrl(url,connection, vol){
     var bot = this.disnode.bot;
