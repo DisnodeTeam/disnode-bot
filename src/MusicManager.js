@@ -241,11 +241,12 @@ class MusicManager{
   cmdJoinVoice(parsedMsg){
     var self = this;
     var channel = parsedMsg.msg.author.voiceChannel;
-    var shortcuts = [{
-      shortcut: "[Server]",
-      data: channel.name
-    }];
+
     if(channel){
+      var shortcuts = [{
+        shortcut: "[Server]",
+        data: channel.name
+      }];
       this.JoinServer(channel);
       this.disnode.sendResponse(parsedMsg, this.config.resJoiningServer,{parse: true, shortcuts: shortcuts});
     }else{
