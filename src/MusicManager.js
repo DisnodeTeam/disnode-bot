@@ -67,15 +67,22 @@ class MusicManager{
           "cmd": "follow",
           "context": "MusicManager",
           "run": "cmdFollowUser",
-          "desc": "Test Command that lists all params.",
+          "desc": "follows the user to any voice chat",
           "usage": "follow [User]",
         },
         {
           "cmd": "unfollow",
           "context": "MusicManager",
           "run": "cmdUnFollowUser",
-          "desc": "Test Command that lists all params.",
+          "desc": "unfollows the user",
           "usage": "unfollow [parms]",
+        },
+        {
+          "cmd": "volume",
+          "context": "MusicManager",
+          "run": "cmdSetVolume",
+          "desc": "sets the volume",
+          "usage": "volume [volume]",
         }
 			],
 			songs: [],
@@ -195,7 +202,7 @@ class MusicManager{
   cmdStream(parsedMsg){
     var self = this;
     var url = parsedMsg.params[0];
-    var vol = this.config.defaultConfig || .8;
+    var vol = this.config.defaultVolume || .8;
     if(parsedMsg.params[1]){
       if(parseFloat(parsedMsg.params[1]) != 'NaN'){
         vol = parseFloat(parsedMsg.params[1]);
@@ -274,7 +281,32 @@ class MusicManager{
 
     this.disnode.sendResponse(parsedMsg, this.config.resUnFollow,{parse: true});
   }
+  cmdSetVolume(parsedMsg){
+    var vol = this.config.defaultVolume || .8;
+    if(parsedMsg.params[0]){
+      if(parseFloat(parsedMsg.params[0]) != 'NaN'){
+        vol = parseFloat(parsedMsg.params[0]);
+      }
+    }
+    GetVolume(vol, this.config, function(err, res){
+      if(!err){
+        vol = res;
+      }
+      if(err == "MAX"){
+        var shortcuts = [
+          {shortcut: "[DefaultVolume]", data: self.config.defaultVolume},
+          {shortcut: "[MaxVolume]", data: self.config.maxVolume},
+          {shortcut: "[RequestedVolume]", data: vol}
+        ];
+        self.disnode.sendResponse(parsedMsg, self.config.resMaxVolume, {parse: true, shortcuts: shortcuts});
+      }
+    });
+    var connection = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
 
+    if(connection){
+      connection.setVolume(vol);
+    }
+  }
   cmdClearQueue(parsedMsg){
     var connection = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
 
