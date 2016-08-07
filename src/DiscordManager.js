@@ -1,4 +1,5 @@
 "use strict"
+const colors = require('colors');
 class DiscordManager {
   constructor(options){
     const FS = require('fs');
@@ -24,7 +25,7 @@ class DiscordManager {
       cb(err);
     }
     var data = "data:image/jpeg;base64," + data;
-    console.log("Image Icon Read. Setting.");
+    console.log("[DiscordManager]".grey + " Image Icon Read. Setting.");
      self.bot.setAvatar(data, function(err){
        if(err){
          cb(err);

@@ -1,16 +1,16 @@
 "use strict"
-
+const colors = require('colors');
 class Wolfram {
 	constructor(options){
 
 
-		
+
 		const WolframAPI = require('wolfram-alpha');
-    console.log("[Wolfram] Init");
+    console.log("[Wolfram]".grey + " Init".green);
     if(options.key){
       this.key = options.key;
     }else{
-      console.log("[Wolfram INIT ERROR] No \'key\' found in options object, cannot use wolfram requests without an API KEY");
+      console.log("[Wolfram INIT ERROR]".grey + " No \'key\' found in options object, cannot use wolfram requests without an API KEY".red);
     }
 		this.wolframapi = WolframAPI.createClient(this.key);
 		this.disnode = options.disnode;
@@ -32,7 +32,7 @@ class Wolfram {
 	//imageIdentity is a string value use to define what its looking for in the parms to lookup and img ex 'img' or 'Image'
 	makeRequest(parms, imageIdentity, cb){
 		var self = this;
-		console.log("[Wolfram] Wolfram request with Q: " + parms[0] + " Options: " + parms[1] + " " + parms[2]);
+		console.log("[Wolfram]".grey + " Wolfram request with Q: " + colors.cyan(parms[0]) + " Options: " + colors.cyan(parms[1] + " " + parms[2]));
 		if(parms[0] == null || parms[0] == undefined || parms[0] == ""){
 			cb("NO_QUESTION");
 			return;
@@ -98,7 +98,7 @@ class Wolfram {
   	});
   	self.makeRequest(parsedMsg.params, "img", function(text){
       if(text === "NO_QUESTION"){
-        console.log("[Wolfram] No Question!");
+        console.log("[Wolfram]".grey + " No Question!".red);
         self.disnode.bot.updateMessage(wolfmsg, "```You didn't put a question in for wolfram to answer!```");
       }else if(text === "LOOKUP_ERROR"){
         self.disnode.bot.updateMessage(wolfmsg, "```There was an error when looking up your question sorry!```");
