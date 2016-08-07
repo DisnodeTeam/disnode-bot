@@ -234,7 +234,7 @@ class Disnode extends EventEmitter{
       console.log(colors.red(err.stack));
     } else {
       // Normal error handling
-      console.log(colors.red(err));
+      console.log(colors.red("Oh no! looks like there was an error, we are sorry if this happened to you, please post the details of the error (which is below this message) on our issues page\nHere: https://github.com/AtecStudios/Disnode/issues\n Thanks for understanding that disnode is constantly under development. and things may change\n\n"));
       console.log(colors.red(err.stack));
       this.bot.logout();
     }
