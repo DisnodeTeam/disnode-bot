@@ -26,6 +26,8 @@
     "ytdl-core": "^0.7.17"
   },
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "babel-preset-es2015": "^6.13.2",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2"
   }
 }

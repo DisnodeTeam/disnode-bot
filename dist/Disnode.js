@@ -12,6 +12,7 @@ var EventEmitter = require("events");
 var Discord = require("discord.js");
 var jsonfile = require('jsonfile');
 var colors = require('colors');
+var FS = require('fs');
 
 var Disnode = function (_EventEmitter) {
   _inherits(Disnode, _EventEmitter);
@@ -26,6 +27,10 @@ var Disnode = function (_EventEmitter) {
     _this.config = {};
     return _this;
   }
+  /**
+   * [startBot Starts the botr]
+   */
+
 
   _createClass(Disnode, [{
     key: "startBot",
@@ -35,7 +40,15 @@ var Disnode = function (_EventEmitter) {
       var self = this;
 
       this.bot = new Discord.Client();
-
+      FS.stat(self.configPath, function (err, stat) {
+        if (err == null) {} else if (err.code == 'ENOENT') {
+          // file does not exist
+          FS.writeFile(self.configPath, '{}');
+          console.log('[Disnode]'.grey + " Config not found in: ".green + colors.cyan(self.configPath) + " Generating a new config!".green);
+        } else {
+          console.log('[Disnode]'.grey + colors.red(" Error:" + err.code));
+        }
+      });
       this.bot.loginWithToken(this.key);
 
       this.bot.on("ready", function () {
@@ -43,6 +56,9 @@ var Disnode = function (_EventEmitter) {
       });
       this.bot.on("message", function (msg) {
         return _this2.botRawMessage(msg);
+      });
+      process.on('uncaughtException', function (err) {
+        return _this2.ECONNRESETHandler(err);
       });
 
       this.botInit();
@@ -52,20 +68,28 @@ var Disnode = function (_EventEmitter) {
     value: function saveConfig() {
       var self = this;
       jsonfile.writeFile(self.configPath, self.config, { spaces: 2 }, function (err) {
-        console.error(err);
-        console.log("[Disnode] Config Saved!".green);
+        if (err != null) {
+          console.error(err);
+        }
+        console.log("[Disnode]".grey + " Config Saved!".green);
       });
     }
   }, {
     key: "loadConfig",
     value: function loadConfig(cb) {
       var self = this;
-      console.log("[Disnode] Loading Config: " + self.configPath);
+      console.log("[Disnode]".grey + " Loading Config: " + self.configPath);
       jsonfile.readFile(self.configPath, function (err, obj) {
-        if (err) {
+        if (err != null) {
           console.log(colors.red(err));
+          console.log("[Disnode]".grey + " Config Failed To Load. No Commmands will be loaded!".red);
+          console.log("[Disnode]".grey + " -- Make Sure to create a botconfig with proper JSON!".red);
+          return;
         }
-        console.log("[Disnode] Config Loaded!".green);
+        console.log("[Disnode]".grey + " Config Loaded!".green);
+        if (!obj.commands) {
+          obj.commands = [];
+        }
         self.config = obj;
         cb();
       });
@@ -127,7 +151,7 @@ var Disnode = function (_EventEmitter) {
     key: "addDefaultManagerConfig",
     value: function addDefaultManagerConfig(name, config) {
       var self = this;
-      console.log("[Disnode] Loading Defaults for: " + name);
+      console.log("[Disnode]".grey + " Loading Defaults for: ".cyan + colors.cyan(name));
       self.config[name] = {};
       self.config[name] = config;
       self.saveConfig();
@@ -136,7 +160,7 @@ var Disnode = function (_EventEmitter) {
     key: "addDefaultManagerCommands",
     value: function addDefaultManagerCommands(name, commands) {
       var self = this;
-      console.log("[Disnode] Loading Commands for: " + name);
+      console.log("[Disnode]".grey + " Loading Commands for: ".cyan + colors.cyan(name));
       for (var i = 0; i < commands.length; i++) {
         if (self.CommandHandler) {
           self.CommandHandler.AddCommand(commands[i]);
@@ -144,13 +168,38 @@ var Disnode = function (_EventEmitter) {
       }
     }
   }, {
-    key: "postLoad",
-    value: function postLoad() {
+    key: "sendResponse",
+    value: function sendResponse(parsedMsg, text, options) {
       var self = this;
-      if (self.CommandHandler) {
-        this.CommandHandler.AddContext(self, "disnode");
+      var sendText = text;
+      var channel = parsedMsg.msg.channel;
+      var sentMsg;
+
+      var options = options || {};
+
+      if (options.parse) {
+        console.log('parsing');
+        sendText = self.parseString(sendText, parsedMsg, options.shortcuts);
       }
-      //console.dir(self.YoutubeManager);
+      if (options.mention) {
+        sendText = sendText + parsedMsg.msg.author.mention();
+      }
+
+      self.bot.sendMessage(channel, sendText, function (err, msg) {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        sentMsg = msg;
+        if (options.timeout) {
+          self.bot.deleteMessage(sentMsg, { wait: options.timeout }, function (err) {
+            if (err) {
+              console.error(err);
+              return;
+            }
+          });
+        }
+      });
     }
   }, {
     key: "parseString",
@@ -191,6 +240,33 @@ var Disnode = function (_EventEmitter) {
       }
 
       return final;
+    }
+    /**
+     * ECONNRESET hack credits to meew0
+     */
+    //process.on('uncaughtException', function(err) {
+
+  }, {
+    key: "ECONNRESETHandler",
+    value: function ECONNRESETHandler(err) {
+      // Handle ECONNRESETs caused by `next` or `destroy`
+      if (err.code == 'ECONNRESET') {
+        // Yes, I'm aware this is really bad node code. However, the uncaught exception
+        // that causes this error is buried deep inside either discord.js, ytdl or node
+        // itself and after countless hours of trying to debug this issue I have simply
+        // given up. The fact that this error only happens *sometimes* while attempting
+        // to skip to the next video (at other times, I used to get an EPIPE, which was
+        // clearly an error in discord.js and was now fixed) tells me that this problem
+        // can actually be safely prevented using uncaughtException. Should this bother
+        // you, you can always try to debug the error yourself and make a PR.
+        console.log('Got an ECONNRESET! This is *probably* not an error. Stacktrace:'.red);
+        console.log(colors.red(err.stack));
+      } else {
+        // Normal error handling
+        console.log(colors.red("Oh no! looks like there was an error, we are sorry if this happened to you, please post the details of the error (which is below this message) on our issues page\nHere: https://github.com/AtecStudios/Disnode/issues\n Thanks for understanding that disnode is constantly under development. and things may change\n\n"));
+        console.log(colors.red(err.stack));
+        this.bot.logout();
+      }
     }
   }]);
 

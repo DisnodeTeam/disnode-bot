@@ -4,6 +4,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var colors = require('colors');
+
 var DiscordManager = function () {
   function DiscordManager(options) {
     _classCallCheck(this, DiscordManager);
@@ -14,7 +16,7 @@ var DiscordManager = function () {
   }
 
   _createClass(DiscordManager, [{
-    key: "setGame",
+    key: 'setGame',
     value: function setGame(Game, cb) {
       var self = this;
       if (Game == undefined || Game == "") {
@@ -28,7 +30,7 @@ var DiscordManager = function () {
       }
     }
   }, {
-    key: "setAvatar",
+    key: 'setAvatar',
     value: function setAvatar(path, cb) {
       var self = this;
       self.fs.readFile(path, { encoding: 'base64' }, function (err, data) {
@@ -36,7 +38,7 @@ var DiscordManager = function () {
           cb(err);
         }
         var data = "data:image/jpeg;base64," + data;
-        console.log("Image Icon Read. Setting.");
+        console.log("[DiscordManager]".grey + " Image Icon Read. Setting.");
         self.bot.setAvatar(data, function (err) {
           if (err) {
             cb(err);
@@ -47,7 +49,7 @@ var DiscordManager = function () {
       });
     }
   }, {
-    key: "setName",
+    key: 'setName',
     value: function setName(Name, cb) {
       if (Name == undefined || Name == "" || Name == null) {
         cb("NAME_NULL");
