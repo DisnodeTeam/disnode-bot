@@ -263,8 +263,10 @@ class MusicManager{
     var connection = GetVoiceConnectionViaMsg(parsedMsg.msg, this.disnode.bot.voiceConnections);
 
     if(connection){
-      connection.queue.splice(0,1);
-      this.playStream(connection,0.8);
+      if(connection.queue){
+        connection.queue.splice(0,1);
+        this.playStream(connection,0.8);  
+      }
     }
   }
 
