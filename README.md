@@ -1,4 +1,4 @@
-# Disnode
+# Disnode [![Discord](https://discordapp.com/api/servers/149771756176015360/widget.png?style=button)](https://discord.gg/0prrdN1joHCrVhdw)
 Public effort in making Awesome Discord Bots
 #Offical Docs:
 [Disnode Docs](https://disnode.readme.io/docs)
