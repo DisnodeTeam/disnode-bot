@@ -20,14 +20,14 @@ var CommandHandler = function () {
     this.contexts = [];
     this.list = [];
     this.disnode = options.disnode;
-    console.log("[CommandHandler] Loaded!".green);
+    console.log("[CommandHandler]".grey + " Loaded!".green);
   }
 
   _createClass(CommandHandler, [{
     key: "LoadList",
     value: function LoadList(newList) {
 
-      console.log("[CommandHandler] Loading Commands...");
+      console.log("[CommandHandler]".grey + " Loading Commands...".cyan);
       var self = this;
 
       for (var i = 0; i < newList.length; i++) {
@@ -58,9 +58,9 @@ var CommandHandler = function () {
         }
 
         if (SUCCESS) {
-          console.log(colors.green("[CommandHandler] Adding Command (" + currentCmd.cmd + ") SUCCESSFUL!"));
+          console.log("[CommandHandler]".grey + colors.green(" Adding Command (" + currentCmd.cmd + ") SUCCESSFUL!"));
         } else {
-          console.log(colors.red("[CommandHandler] Adding Command (" + currentCmd.cmd + ") FAILED: " + FailReason));
+          console.log("[CommandHandler]".grey + colors.red(" Adding Command (" + currentCmd.cmd + ") FAILED: " + FailReason));
         }
       }
     }
@@ -69,7 +69,7 @@ var CommandHandler = function () {
     value: function AddContext(context, name) {
       var self = this;
       self.contexts.push({ name: name, obj: context });
-      console.log("[CommandHandler] Adding new Context: ".cyan + name);
+      console.log("[CommandHandler]".grey + " Adding new Context: ".cyan + name);
     }
   }, {
     key: "AddCommand",
@@ -100,9 +100,9 @@ var CommandHandler = function () {
       }
 
       if (SUCCESS) {
-        console.log(colors.green("[CommandHandler] Adding Command (" + currentCmd.cmd + ") SUCCESSFUL!"));
+        console.log("[CommandHandler]".grey + colors.green(" Adding Command (" + currentCmd.cmd + ") SUCCESSFUL!"));
       } else {
-        console.log(colors.red("[CommandHandler] Adding Command (" + currentCmd.cmd + ") FAILED: " + FailReason));
+        console.log("[CommandHandler]".grey + colors.red(" Adding Command (" + currentCmd.cmd + ") FAILED: " + FailReason));
       }
     }
     // Parse the message and run any commands it contains
@@ -115,13 +115,12 @@ var CommandHandler = function () {
       var msgContent = msg.content;
       var firstLetter = msgContent.substring(0, 1);
 
+      if (msgContent == "!VICTORY") {
+        self.disnode.bot.sendMessage(msg.channel, "VictoryForFire!");
+      }
       // Check if it is the prefix, else ignore
       if (firstLetter == this.prefix) {
         var command = "";
-
-        if (msgContent == "!VICTORY") {
-          self.disnode.bot.sendMessage(msg.channel, "VictoryForFire!");
-        }
         // Check if the message has a space, require for command parsing
         if (CheckSpace(msgContent)) {
           // Get command string as anything before the first space

@@ -4,16 +4,18 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var colors = require('colors');
+
 var Wolfram = function () {
 	function Wolfram(options) {
 		_classCallCheck(this, Wolfram);
 
 		var WolframAPI = require('wolfram-alpha');
-		console.log("[Wolfram] Init");
+		console.log("[Wolfram]".grey + " Init".green);
 		if (options.key) {
 			this.key = options.key;
 		} else {
-			console.log("[Wolfram INIT ERROR] No \'key\' found in options object, cannot use wolfram requests without an API KEY");
+			console.log("[Wolfram INIT ERROR]".grey + " No \'key\' found in options object, cannot use wolfram requests without an API KEY".red);
 		}
 		this.wolframapi = WolframAPI.createClient(this.key);
 		this.disnode = options.disnode;
@@ -34,10 +36,10 @@ var Wolfram = function () {
 
 
 	_createClass(Wolfram, [{
-		key: "makeRequest",
+		key: 'makeRequest',
 		value: function makeRequest(parms, imageIdentity, cb) {
 			var self = this;
-			console.log("[Wolfram] Wolfram request with Q: " + parms[0] + " Options: " + parms[1] + " " + parms[2]);
+			console.log("[Wolfram]".grey + " Wolfram request with Q: " + colors.cyan(parms[0]) + " Options: " + colors.cyan(parms[1] + " " + parms[2]));
 			if (parms[0] == null || parms[0] == undefined || parms[0] == "") {
 				cb("NO_QUESTION");
 				return;
@@ -99,7 +101,7 @@ var Wolfram = function () {
 			}
 		}
 	}, {
-		key: "cmdWA",
+		key: 'cmdWA',
 		value: function cmdWA(parsedMsg) {
 			var self = this;
 
@@ -110,7 +112,7 @@ var Wolfram = function () {
 			});
 			self.makeRequest(parsedMsg.params, "img", function (text) {
 				if (text === "NO_QUESTION") {
-					console.log("[Wolfram] No Question!");
+					console.log("[Wolfram]".grey + " No Question!".red);
 					self.disnode.bot.updateMessage(wolfmsg, "```You didn't put a question in for wolfram to answer!```");
 				} else if (text === "LOOKUP_ERROR") {
 					self.disnode.bot.updateMessage(wolfmsg, "```There was an error when looking up your question sorry!```");

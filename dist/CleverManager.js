@@ -4,11 +4,12 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var colors = require('colors');
+
 var CleverManager = function () {
   function CleverManager(options) {
     _classCallCheck(this, CleverManager);
 
-    ;
     this.defaultConfig = {
       commands: [{
         "cmd": "clever",
@@ -21,11 +22,11 @@ var CleverManager = function () {
 
     this.disnode = options.disnode;
     var Cleverbot = require('cleverbot-node');
-    console.log("[Cleverbot] Init");
+    console.log("[Cleverbot]".grey + " Init".green);
     if (options.channelid) {
       this.channelid = options.channelid;
     } else {
-      console.log("[Cleverbot INIT ERROR] No \'channelid\' found in options object, cannot use Cleverbot without a channelid");
+      console.log("[Cleverbot INIT ERROR]".grey + " No \'channelid\' found in options object, cannot use Cleverbot without a channelid".red);
       return;
     }
     this.cb = new Cleverbot();

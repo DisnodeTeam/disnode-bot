@@ -18,7 +18,7 @@ class MusicManager{
 		      "cmd": "skip",
 		      "context": "MusicManager",
 		      "run": "cmdSkip",
-		      "desc": "Displays list of Audio Files.",
+		      "desc": "Skips the current song in the queue (slight delay to the skip).",
 		      "usage": "list [page]",
 		    },
 				{
