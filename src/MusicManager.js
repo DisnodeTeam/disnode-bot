@@ -18,7 +18,7 @@ class MusicManager{
 		      "cmd": "skip",
 		      "context": "MusicManager",
 		      "run": "cmdSkip",
-		      "desc": "Skips the current song in the queue (slight delay to the skip).",
+		      "desc": "Displays list of Audio Files.",
 		      "usage": "list [page]",
 		    },
 				{
@@ -264,7 +264,6 @@ class MusicManager{
 
     if(connection){
       if(connection.queue){
-        connection.queue.splice(0,1);
         this.playStream(connection,0.8);
       }
     }
