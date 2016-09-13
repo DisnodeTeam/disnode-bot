@@ -7,9 +7,6 @@ class DiscordService extends Service {
         this.defaultConfig = {
             auth: "",
         };
-
-
-
         this.client = new Discord.Client();
 
 
@@ -25,7 +22,6 @@ class DiscordService extends Service {
         this.client.on('error', (error) => {
           console.log(error);
         });
-
 
     }
 

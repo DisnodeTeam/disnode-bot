@@ -7,6 +7,7 @@ var OnLoad = function(){
   testBot.addService({name: "TwitchService"}, {});
   testBot.addService({name: "DiscordService"}, {});
   testBot.ConnectToAllServices();
+
 }
 
 testBot.loadConfig(OnLoad);

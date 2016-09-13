@@ -18,10 +18,6 @@ class Disnode extends EventEmitter{
    */
   startBot(){
     var self = this;
-
-
-
-
     process.on('uncaughtException', (err) => this.ECONNRESETHandler(err));
 
 
@@ -154,6 +150,16 @@ class Disnode extends EventEmitter{
     for (var i = 0; i < this.services.length; i++) {
       this.services[i].Connect();
     }
+  }
+
+  GetService(name){
+    var found = {};
+    for (var i = 0; i < this.services.length; i++) {
+      if(this.services[i].name == name){
+        found = this.services[i];
+      }
+    }
+    return found;
   }
 
   sendResponse(parsedMsg,text,options){

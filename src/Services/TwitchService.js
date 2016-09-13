@@ -12,7 +12,7 @@ class TwitchService extends Service {
         this.client = {};
     }
     Connect() {
-      super.Connect();
+        super.Connect();
         var self = this;
 
         var ircoptions = {
@@ -30,29 +30,57 @@ class TwitchService extends Service {
         };
         self.client = new tmi.client(ircoptions);
         self.client.connect();
-        self.client.on("connected", function(){
-          self.OnConnected();
+
+        self.client.on("connected", function() {
+            self.OnConnected();
+        });
+
+        self.client.on("message", function(channel, userstate, message, isSelf) {
+            if (isSelf) return;
+
+            switch (userstate["message-type"]) {
+                case "action":
+                    break;
+                case "chat":
+                self.OnMessage(channel, message, userstate);
+                    break;
+                case "whisper":
+                    break;
+                default:
+                    break;
+            }
         });
 
     }
 
-    OnConnected(){
-      var self = this;
+    OnConnected() {
+        var self = this;
 
 
-      self.client.say("#victoryforphil", "Hello World!");
-      super.OnConnected();
+        self.client.say("#victoryforphil", "Hello World!");
+        super.OnConnected();
     }
 
-    SendMessage(data){
-      if(!data.channel){
-        return;
-      }
-      if(!data.msg){
-        return;
-      }
+    OnMessage(channel,message,user) {
+        var convertedPacket = {
+            msg: message,
+            sender: user.username,
+            channel: channel,
+            senderObj: user,
+            type: "TwitchService"
+        };
+        super.OnMessage(convertedPacket);
+    }
 
-      this.client.say(data.channel,data.msg);
+    SendMessage(data) {
+        if (!data.channel) {
+            return;
+        }
+        if (!data.msg) {
+            return;
+        }
+
+        this.client.say(data.channel, data.msg);
     }
 
 }
