@@ -6,38 +6,20 @@ const colors = require('colors');
 const FS = require('fs');
 
 class Disnode extends EventEmitter{
-  constructor(key, configPath){
+  constructor(configPath){
     super();
 
-    this.key = key;
     this.configPath = configPath;
     this.config = {};
+    this.services = [];
   }
   /**
    * [startBot Starts the botr]
    */
   startBot(){
     var self = this;
-
-    this.bot = new Discord.Client();
-    FS.stat(self.configPath, function(err, stat) {
-      if(err == null) {
-      } else if(err.code == 'ENOENT') {
-          // file does not exist
-          FS.writeFile(self.configPath, '{}');
-          console.log('[Disnode]'.grey + " Config not found in: ".green + colors.cyan(self.configPath) + " Generating a new config!".green);
-      } else {
-          console.log('[Disnode]'.grey + colors.red(" Error:" + err.code));
-      }
-    });
-    this.bot.loginWithToken(this.key);
-
-    this.bot.on("ready", () => this.botReady())
-    this.bot.on("message", (msg) => this.botRawMessage(msg));
     process.on('uncaughtException', (err) => this.ECONNRESETHandler(err));
 
-
-    this.botInit();
 
   }
 
@@ -53,6 +35,18 @@ class Disnode extends EventEmitter{
 
   loadConfig(cb){
     var self = this;
+
+    FS.stat(self.configPath, function(err, stat) {
+      if(err == null) {
+      } else if(err.code == 'ENOENT') {
+          // file does not exist
+          FS.writeFile(self.configPath, '{}');
+          console.log('[Disnode]'.grey + " Config not found in: ".green + colors.cyan(self.configPath) + " Generating a new config!".green);
+      } else {
+          console.log('[Disnode]'.grey + colors.red(" Error:" + err.code));
+      }
+    });
+
     console.log("[Disnode]".grey + " Loading Config: " + self.configPath);
     jsonfile.readFile(self.configPath, function(err, obj) {
       if(err != null){
@@ -69,28 +63,6 @@ class Disnode extends EventEmitter{
       cb();
     });
   }
-  botInit()
-  {
-    var self = this;
-    this.emit("Bot_Init");
-
-  }
-
-  botReady(){
-    var self = this;
-    self.emit("Bot_Ready");
-  }
-
-  botRawMessage(msg){
-    var self = this;
-    if(self.CleverManager){
-      self.CleverManager.cleverMessage(msg);
-    }
-    if(self.CommandHandler){
-      self.CommandHandler.RunMessage(msg);
-    }
-    this.emit("Bot_RawMessage", msg);
-  }
 
   addManager(data){
     var self = this;
@@ -101,7 +73,7 @@ class Disnode extends EventEmitter{
     if(data.path){
       path = data.path;
     }else{
-      path = "./"+data.name+".js";
+      path = "./Managers/"+data.name+".js";
     }
 
     self[data.name] = {};
@@ -130,6 +102,38 @@ class Disnode extends EventEmitter{
     self.saveConfig();
   }
 
+  addService(data){
+    var self = this;
+    var path;
+    var option = data.options || option;
+
+
+    if(data.path){
+      path = data.path;
+    }else{
+      path = "./Services/"+data.name+".js";
+    }
+
+    var req = require(path);
+    var inst = new req(data.name,this);
+    self.services.push(inst);
+
+    if(!self.config.services[data.name]){
+      self.addDefaultServiceConfig(data.name,inst.defaultConfig);
+    }
+  }
+
+  addDefaultServiceConfig(name,config){
+    var self = this;
+    console.log("[Disnode]".grey + " Loading Defaults for Service: ".cyan + colors.cyan(name));
+    if(!self.config.services){
+      self.config.services = {};
+    }
+
+    self.config.services[name] = config;
+    self.saveConfig();
+  }
+
   addDefaultManagerCommands(name, commands){
     var self = this;
     console.log("[Disnode]".grey + " Loading Commands for: ".cyan + colors.cyan(name));
@@ -140,6 +144,22 @@ class Disnode extends EventEmitter{
 
     }
 
+  }
+
+  ConnectToAllServices(){
+    for (var i = 0; i < this.services.length; i++) {
+      this.services[i].Connect();
+    }
+  }
+
+  GetService(name){
+    var found = {};
+    for (var i = 0; i < this.services.length; i++) {
+      if(this.services[i].name == name){
+        found = this.services[i];
+      }
+    }
+    return found;
   }
 
   sendResponse(parsedMsg,text,options){
