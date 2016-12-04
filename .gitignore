@@ -37,3 +37,4 @@ node_modules
 bots/TestBot-Config.js
 bots/TestBot-Config.json
 bots/TestBotConfig.json
+bots/CADConfig.json
