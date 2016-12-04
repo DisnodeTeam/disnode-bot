@@ -9,9 +9,15 @@ class Disnode {
       var self = this;
 
       this.LoadBotConfig().then(function(){
-        console.log(self.botConfig);
+        console.log("[Disnode 'Start'] Loaded Config");
+        self.bot = new DiscordBot(self.botConfig.key)
+      }).then(function(){
+        console.log("[Disnode 'Start'] Connecting to Discord");
+        return self.bot.Connect();
+      }).then(function(){
+        console.log("[Disnode 'Start'] Bot Connected!");
       }).catch(function(err){
-        console.log("ERROR:", err);
+        console.log("[Disnode 'Start'] ERROR:", err);
       });
 
     }

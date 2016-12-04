@@ -7,9 +7,18 @@ class Bot{
   }
 
   Connect(){
-    if(this.client != {}){
-      this.client = {};
-    }
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      if(self.client != {}){
+        self.client = {};
+      }
+      if(!self.key){
+        reject("No key!")
+      }
+      self.client = new DiscordAPI.Client();
+      self.client.login(self.key).then(resolve).catch(reject);
+
+    });
   }
 
   Disconnect(){
