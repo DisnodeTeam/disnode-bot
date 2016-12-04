@@ -22,7 +22,7 @@ class Bot{
   }
 
   Disconnect(){
-
+    this.client.destroy();
     this.client = {};
   }
 

@@ -23,10 +23,15 @@ class Disnode {
     }
 
     Stop() {
-
+      var self = this;
+      self.bot.Disconnect();
     }
 
     Restart() {
+      var self = this;
+      self.bot.Disconnect().then(function(){
+        self.bot.Connect();
+      });
 
     }
 
