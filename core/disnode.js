@@ -19,7 +19,7 @@ class Disnode {
       }).catch(function(err){
         console.log("[Disnode 'Start'] ERROR:", err);
       });
-      
+
     }
 
     Stop() {
@@ -31,6 +31,8 @@ class Disnode {
       var self = this;
       self.bot.Disconnect().then(function(){
         self.bot.Connect();
+      }).catch(function(err){
+        console.log("[Disnode 'Restart'] ERROR:", err);
       });
 
     }

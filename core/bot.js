@@ -22,10 +22,12 @@ class Bot{
   }
 
   Disconnect(){
-    this.client.destroy();
-    this.client = {};
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.client = {};
+      self.client.destroy().then(resolve).catch(reject);
+    });
   }
-
 }
 
 module.exports = Bot;
