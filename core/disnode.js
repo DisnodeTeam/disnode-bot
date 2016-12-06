@@ -1,4 +1,5 @@
 const DiscordBot = require('./bot');
+const PluginManager = require ('./pluginmanager');
 const jsonfile = require('jsonfile');
 class Disnode {
     constructor(config) {
@@ -10,18 +11,24 @@ class Disnode {
 
       this.LoadBotConfig().then(function(){
         console.log("[Disnode 'Start'] Loaded Config");
+
         self.bot = new DiscordBot(self.botConfig.key)
       }).then(function(){
         console.log("[Disnode 'Start'] Connecting to Discord");
+
         return self.bot.Connect();
       }).then(function(){
         console.log("[Disnode 'Start'] Bot Connected!");
+
+        self.plugin = new PluginManager();
+        return self.plugin.Load("./plugins");
+      }).then(function(){
+        console.log("All Done :3");
       }).catch(function(err){
         console.log("[Disnode 'Start'] ERROR:", err);
       });
 
     }
-
     Stop() {
       var self = this;
       self.bot.Disconnect();
