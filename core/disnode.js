@@ -1,5 +1,6 @@
 const DiscordBot = require('./bot');
 const PluginManager = require ('./pluginmanager');
+const CommandManager = require('./command');
 const jsonfile = require('jsonfile');
 class Disnode {
     constructor(config) {
@@ -23,7 +24,10 @@ class Disnode {
         self.plugin = new PluginManager();
         return self.plugin.Load("./plugins");
       }).then(function(){
-        console.log("All Done :3");
+        self.command = new CommandManager();
+        return self.command.Load('./plugins');
+      }).then(function(){
+        
       }).catch(function(err){
         console.log("[Disnode 'Start'] ERROR:", err);
       });
