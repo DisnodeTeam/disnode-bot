@@ -4,6 +4,7 @@ const jsonfile = require('jsonfile');
 class Command{
   constructor(){
     this.commands = [];
+    this.binds = [];
   }
 
   Load(path){
@@ -85,6 +86,38 @@ class Command{
       });
     });
   }
+
+
+  AddListener(cmdID, toRun){
+    if(!cmdID || !toRun){
+      return;
+    }
+
+    binds.push({
+      id: cmdID,
+      run: toRun
+    });
+
+  }
+
+  RunMessage(msg){
+    if(GetCommands(msg)){
+      console.log("Commands found: " + GetCommands(msg));
+    }
+  }
+
+  GetCommands(plugin){
+    var toFind = null;
+    var self = this;
+    for (var i = 0; i < self.commands.length; i++) {
+      if(self.commands[i].plugin == plugin){
+        toFind = self.commands[i].commands;
+      }
+    }
+
+    return toFind;
+  }
 }
+
 
 module.exports = Command;

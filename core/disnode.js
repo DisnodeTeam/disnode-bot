@@ -27,7 +27,7 @@ class Disnode {
         self.command = new CommandManager();
         return self.command.Load('./plugins');
       }).then(function(){
-        
+        return self.plugin.Launch("TestPlugin")
       }).catch(function(err){
         console.log("[Disnode 'Start'] ERROR:", err);
       });

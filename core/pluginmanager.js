@@ -3,6 +3,7 @@ const async = require('async');
 class PluginManager{
   constructor(){
     this.classes = [];
+    this.launched = [];
   }
 
   Load(path){
@@ -59,7 +60,7 @@ class PluginManager{
 
           function(imported, callback){
             console.log("[PluginManager 'Load'] Finished Loading: "+className);
-            self.classes.push(imported);
+            self.classes.push({name: folder, class: imported});
             callback();
           },
 
@@ -73,6 +74,35 @@ class PluginManager{
     });
 
   }
+
+  Launch(managerName, server){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      if(!managerName){
+        reject("[PluginManager 'Launch'] No Manager Name!")
+      }
+
+      var Manager = self.GetPlugin(managerName);
+
+      if(!Manager){
+        reject("[PluginManager 'Launch'] No Manager Found!")
+      }
+
+      var newInstance = new Manager.class(server);
+      newInstance.server = server;
+      self.launched.push(newInstance);
+      resolve();
+    });
+  }
+  GetPlugin(name){
+    var self = this;
+    for (var i = 0; i < self.classes.length; i++) {
+      if(self.classes[i].name == name){
+        return self.classes[i];
+      }
+    }
+  }
 }
+
 
 module.exports = PluginManager;
