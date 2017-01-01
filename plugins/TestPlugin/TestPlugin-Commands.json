@@ -1,1 +1,7 @@
-{"commands":[{"cmd": "test"}]}
+{
+  "commands":[
+    {
+      "cmd": "test"
+    }
+  ]
+}

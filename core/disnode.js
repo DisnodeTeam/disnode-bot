@@ -11,28 +11,41 @@ class Disnode {
       var self = this;
 
       this.LoadBotConfig().then(function(){
+
         console.log("[Disnode 'Start'] Loaded Config");
-
         self.bot = new DiscordBot(self.botConfig.key)
+
       }).then(function(){
+
         console.log("[Disnode 'Start'] Connecting to Discord");
-
         return self.bot.Connect();
-      }).then(function(){
-        console.log("[Disnode 'Start'] Bot Connected!");
 
+      }).then(function(){
+
+        console.log("[Disnode 'Start'] Bot Connected!");
         self.plugin = new PluginManager();
         return self.plugin.Load("./plugins");
+
       }).then(function(){
+
         self.command = new CommandManager();
         return self.command.Load('./plugins');
+
       }).then(function(){
+          self.SetBotEvents();
+
         return self.plugin.Launch("TestPlugin")
       }).catch(function(err){
         console.log("[Disnode 'Start'] ERROR:", err);
       });
 
     }
+
+    SetBotEvents(){
+      var self = this;
+      this.bot.client.on("message", (msg) =>self.OnMessage);
+    }
+
     Stop() {
       var self = this;
       self.bot.Disconnect();
@@ -69,6 +82,14 @@ class Disnode {
             resolve(); // If Loaded Call Resolve for promise
         });
       });
+    }
+
+    OnMessage (msg){
+      if(this.command){
+        this.command.RunMessage(msg);
+      }else{
+        console.log("No Command");
+      }
     }
 }
 
