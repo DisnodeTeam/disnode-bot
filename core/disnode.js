@@ -2,6 +2,7 @@ const DiscordBot = require('./bot');
 const PluginManager = require ('./pluginmanager');
 const CommandManager = require('./command');
 const jsonfile = require('jsonfile');
+const Logging = require('./logging')
 class Disnode {
     constructor(config) {
         this.botConfigPath = config;
@@ -11,40 +12,33 @@ class Disnode {
       var self = this;
 
       this.LoadBotConfig().then(function(){
+        Logging.DisnodeSuccess("Disnode", "Start", "Loaded Config");
 
-        console.log("[Disnode 'Start'] Loaded Config");
         self.bot = new DiscordBot(self.botConfig.key)
 
       }).then(function(){
+        Logging.DisnodeInfo("Disnode", "Start", "Connecting to Discord");
 
-        console.log("[Disnode 'Start'] Connecting to Discord");
         return self.bot.Connect();
 
       }).then(function(){
 
-        console.log("[Disnode 'Start'] Bot Connected!");
+      Logging.DisnodeSuccess("Disnode", "Start", "Connected to Discord");
+      Logging.DisnodeInfo("Disnode", "Start", "Loading Plugins");
         self.plugin = new PluginManager();
         return self.plugin.Load("./plugins");
 
       }).then(function(){
-
-        self.command = new CommandManager();
-        return self.command.Load('./plugins');
-
-      }).then(function(){
-          self.SetBotEvents();
+          Logging.DisnodeSuccess("Disnode", "Start", "Plugins Loaded!");
+          self.bot.client.on("message",(msg)=>self.OnMessage(msg));
 
         return self.plugin.Launch("TestPlugin")
       }).catch(function(err){
-        console.log("[Disnode 'Start'] ERROR:", err);
+        Logging.DisnodeError("Disnode", "Start", err);
       });
 
     }
 
-    SetBotEvents(){
-      var self = this;
-      this.bot.client.on("message", (msg) =>self.OnMessage);
-    }
 
     Stop() {
       var self = this;
@@ -56,7 +50,8 @@ class Disnode {
       self.bot.Disconnect().then(function(){
         self.bot.Connect();
       }).catch(function(err){
-        console.log("[Disnode 'Restart'] ERROR:", err);
+        Logging.DisnodeError("Disnode", "Restart", err);
+
       });
 
     }
@@ -66,11 +61,11 @@ class Disnode {
 
       return new Promise(function(resolve, reject) {
         if (!self.botConfigPath) {
-            console.log("[Disnode 'LoadBotConfig'] No Bot Config Path Set!");
+          Logging.DisnodeWarning("Disnode", "LoadBotConfig", " No Bot Config Path Set!")
+
             reject(" No Bot Config Path Set");
         }
-
-        console.log("[Disnode 'LoadBotConfig'] Loading Config!");
+        Logging.DisnodeInfo("Disnode", "LoadBotConfig", " Loading Config!")
 
         self.botConfig = {}; // Creates/Clears Object.
 
