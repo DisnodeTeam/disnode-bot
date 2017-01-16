@@ -62,6 +62,7 @@ class Command {
             callback(plugin, command, params);
           }else{
             console.log("Cant Find COmmand Object");
+            callback(plugin, {"cmd":command, "run":"default"}, params);
           }
 
         }
