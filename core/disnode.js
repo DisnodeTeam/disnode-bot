@@ -25,14 +25,17 @@ class Disnode {
 
       Logging.DisnodeSuccess("Disnode", "Start", "Connected to Discord");
       Logging.DisnodeInfo("Disnode", "Start", "Loading Plugins");
-        self.plugin = new PluginManager();
+        self.plugin = new PluginManager(self);
         return self.plugin.Load("./plugins");
 
       }).then(function(){
           Logging.DisnodeSuccess("Disnode", "Start", "Plugins Loaded!");
+
           self.bot.client.on("message",(msg)=>self.OnMessage(msg));
 
-        return self.plugin.Launch("TestPlugin")
+          Logging.DisnodeInfo("Disnode", "Start", "Loading Command Handler");
+          self.command = new CommandManager(self);
+        return self.plugin.LauchStatic();
       }).catch(function(err){
         Logging.DisnodeError("Disnode", "Start", err);
       });
@@ -81,6 +84,7 @@ class Disnode {
 
     OnMessage (msg){
       if(this.command){
+
         this.command.RunMessage(msg);
       }else{
         console.log("No Command");

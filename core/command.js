@@ -2,46 +2,101 @@ const fs = require('fs');
 const async = require('async');
 const jsonfile = require('jsonfile');
 class Command {
-    constructor() {
+    constructor(disnode) {
 
         //test
         this.prefix = "!";
+        this.disnode = disnode;
 
-        this.commands = [];
-        this.binds = [];
-    }
-
-    Load(path) {
-        var self = this;
 
     }
 
 
-    AddListener(cmdID, toRun) {
-        if (!cmdID || !toRun) {
-            return;
-        }
-
-        binds.push({
-            id: cmdID,
-            run: toRun
-        });
-
-    }
 
     RunMessage(msgObj) {
+      var self = this;
         console.log("running MSG!");
-        this.GetCommandData(msgObj,true, function(prefix, command, params){
-            console.log("Command: " + prefix + command + params);
+        this.GetCommandData(msgObj, false, function(plugin, command, params){
+            console.log("Command: " + plugin.name +" - " + command + " - " + params);
+            self.disnode.plugin.RunPluginMessage(plugin.name, {command: command, params: params, msg: msgObj});
+
         });
     }
 
-    GetCommandData(msgObj, fullCommand, callback) {
+
+
+    GetCommandData(msgObj, ignoreFirst, callback) {
+
+
         var self = this;
+
+
         var msg = msgObj.content;
         var firstLetter = msg.substring(0, 1);
 
+        var params = GetParams(msg);
+        var firstWord;
+        var pluginPrefix;
+        var plugin;
+        var command;
 
+        if(firstLetter != this.prefix && !ignoreFirst){
+          return;
+        }
+
+
+        if(ignoreFirst){
+          firstWord = msg.substring(0, msg.indexOf(" ") || msg.length);
+        }else{
+          firstWord = msg.substring(1, msg.indexOf(" ") || msg.length);
+        }
+        console.log(firstWord);
+
+        if(this.CheckForPrefix(firstWord) != null){
+          plugin = this.CheckForPrefix(firstWord);
+          pluginPrefix = firstWord;
+          command = params[0];
+          params.shift();
+          if(this.GetCommandObject(plugin, command)){
+            command = this.GetCommandObject(plugin, command);
+            callback(plugin, command, params);
+          }else{
+            console.log("Cant Find COmmand Object");
+          }
+
+        }
+
+
+
+
+    }
+
+    CheckForPrefix(prefix){
+      var pluginClasses = this.disnode.plugin.classes;
+      var found = null;
+      for (var i = 0; i < pluginClasses.length; i++) {
+
+        if(pluginClasses[i].config.prefix == prefix){
+          found = pluginClasses[i];
+        }
+      }
+
+      return found;
+    }
+
+    GetCommandObject(plugin, command){
+
+      var found = null;
+    if(plugin.commands){
+      for (var i = 0; i < plugin.commands.length; i++) {
+
+        if( plugin.commands[i].cmd == command){
+          found = plugin.commands[i];
+        }
+      }
+    }
+
+      return found;
     }
 }
 
