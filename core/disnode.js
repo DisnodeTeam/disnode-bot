@@ -87,7 +87,7 @@ class Disnode {
 
         this.command.RunMessage(msg);
       }else{
-        console.log("No Command");
+        Logging.DisnodeWarning("Disnode", "Message", "No Command Handler!");
       }
     }
 }
