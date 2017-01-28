@@ -1,6 +1,7 @@
 class TestPlugin {
   constructor() {
-    console.log("Lol Loaded!");
+
+
   }
   default(command){
     command.msg.reply("You have not entered a command! Heres default");

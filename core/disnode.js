@@ -34,6 +34,13 @@ class Disnode {
             callback();
           }).catch(callback);
         },
+        // Create Command Handler
+        function(callback) {
+          Logging.DisnodeInfo("Disnode", "Start", "Loading Config Manager");
+          self.config = new ConfigManager();
+
+          callback();
+        },
         // Load Functions
         function(callback) {
           Logging.DisnodeInfo("Disnode", "Start", "Loading Plugins");
@@ -55,12 +62,7 @@ class Disnode {
           self.command = new CommandManager(self);
           callback();
         },
-        // Create Command Handler
-        function(callback) {
-          Logging.DisnodeInfo("Disnode", "Start", "Loading Config Manager");
-          self.config = new ConfigManager();
-          callback();
-        },
+
         // Launch Static Plugins
         function(callback) {
           Logging.DisnodeInfo("Disnode", "Start", "Launching static plugins");

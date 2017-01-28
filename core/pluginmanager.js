@@ -31,14 +31,11 @@ class PluginManager {
 
             async.every(_ManagerFolders, function(folder, everyCB) {
 
-                var className = folder + ".js";
-                var commandName = folder + "-Commands.json";
-                var configName = folder + "-Config.json";
-                var fullPath = path + "/" + folder + "/" ;
-
+              var fullPath = path + "/" + folder + "/" ;
+                var newPlugin = {name: folder, path: fullPath};
                 var importClass = null;
-                var configFile = null;
-                var commandFile = null;
+                var className = folder + ".js";
+
 
                 async.waterfall([
 
@@ -65,7 +62,7 @@ class PluginManager {
                             var NpmRequire = require("../" + fullPath + className);
                             Logging.DisnodeSuccess("PluginManager", "Load-"+folder, "Imported");
 
-                            importClass = NpmRequire;
+                            newPlugin.class = NpmRequire;
                             callback(null);
                         } catch (e) {
                             Logging.DisnodeError("PluginManager", "Load-"+folder, "Failed to Import: " + className + " - '" + e  + "'");
@@ -73,94 +70,29 @@ class PluginManager {
                             callback(e, null);
                         }
                     },
-                     //Check if command file exists
-                    function(callback) {
-                        Logging.DisnodeInfo("PluginManager", "Load-"+folder, "Checking for Command File");
-                        fs.stat( fullPath + commandName, function(err, stats) {
-                            if (err) {
-                                Logging.DisnodeWarning("PluginManager", "Load-"+folder, "Failed to find Command File (" + fullPath + commandName+")");
 
-                                callback();
-                                return;
-                            } else {
-                                Logging.DisnodeSuccess("PluginManager", "Load-"+folder, "Found Command File");
-                                callback();
-                            }
-                        });
 
-                    },
-
-                    function(callback) { // Read File
-                      Logging.DisnodeInfo("PluginManager", "Load-"+folder, "Loading Command File");
-                        jsonfile.readFile(fullPath + commandName, function(err, obj) {
-                            if (err) {
-                                callback();
-                                Logging.DisnodeWarning("PluginManager", "Load-"+folder, "Failed to Load Command JSON File: " + err);
-                                return;
-                            }
-
-                            if(!obj.commands){
-                              callback();
-                              Logging.DisnodeWarning("PluginManager", "Load-"+folder, "No Command Array found!: " + className);
-
-                              return;
-                            }
-                            Logging.DisnodeSuccess("PluginManager", "Load-"+folder, "Loaded Command JSON File");
-                            commandFile = obj.commands;
-
-                            callback();
-                        });
-                    },
 
                     function(callback) {
-                      Logging.DisnodeInfo("PluginManager", "Load-"+folder, "Checking for config file");
+                      Logging.DisnodeInfo("PluginManager", "Load-"+folder, "Loading Config");
+                      self.disnode.config.Load(newPlugin).then(function(){
+                        Logging.DisnodeSuccess("PluginManager", "Load-"+folder, "Loaded Config!");
+                        self.disnode.config.EnableReload(newPlugin);
+                        callback();
+                      }).catch(callback);
 
-                        fs.stat( fullPath + configName, function(err, stats) {
-                            if (err) {
-                                Logging.DisnodeWarning("PluginManager","Load-"+folder, "Failed to find Config File (" + fullPath + configName+")");
-
-                                callback();
-                                return;
-                            } else {
-                              Logging.DisnodeSuccess("PluginManager", "Load-"+folder, "Found Config File");
-
-                                callback();
-                            }
-                        });
-
-                    },
-
-                    function(callback) { // Read File
-                      Logging.DisnodeInfo("PluginManager", "Load-"+folder, "Loading Config File");
-                        jsonfile.readFile(fullPath + configName, function(err, obj) {
-                            if (err) {
-                                Logging.DisnodeWarning("PluginManager", "Load-"+folder, "Failed to Load Config JSON File: " + err);
-                                callback();
-
-                                return;
-                            }
-
-                            Logging.DisnodeSuccess("PluginManager", "Load-"+folder, "Loaded Config JSON File");
-                            configFile = obj;
-
-                            callback();
-                        });
                     },
                     // Finished Loading, adds class to array
                     function(callback) {
 
                         Logging.DisnodeSuccess("PluginManager","Load-"+folder, "Finished Loading");
 
-                        self.classes.push({
-                            name: folder,
-                            class: importClass,
-                            commands: commandFile,
-                            config: configFile
-                        });
+                        self.classes.push(newPlugin);
 
                         //console.log(self.classes);
                         callback();
                     },
+
 
                 ], function(err, result) {
                     everyCB(err, result); // Finish Waterfall
@@ -216,6 +148,7 @@ class PluginManager {
             var newInstance = new Manager.class(server);
             newInstance.server = server;
             newInstance.name = Manager.name;
+            newInstance.parent = Manager;
             newInstance.config = Manager.config;
             newInstance.commands = Manager.commands;
             newInstance.disnode = self.disnode;

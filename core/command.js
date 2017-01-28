@@ -15,9 +15,7 @@ class Command {
 
     RunMessage(msgObj) {
       var self = this;
-        console.log("running MSG!");
         this.GetCommandData(msgObj, false, function(plugin, command, params){
-            console.log("Command: " + plugin.name +" - " + command + " - " + params);
             self.disnode.plugin.RunPluginMessage(plugin.name, {command: command, params: params, msg: msgObj});
 
         });
@@ -55,7 +53,6 @@ class Command {
         }else{
           firstWord = msg.substring(1, SpaceIndex);
         }
-        console.log("First Word: " + firstWord);
 
         if(this.CheckForPrefix(firstWord) != null){
           plugin = this.CheckForPrefix(firstWord);
@@ -66,7 +63,6 @@ class Command {
             command = this.GetCommandObject(plugin, command);
             callback(plugin, command, params);
           }else{
-            console.log("Cant Find COmmand Object");
             callback(plugin, {"cmd":command, "run":"default"}, params);
           }
 
