@@ -12,8 +12,6 @@ class Disnode {
 
     Start() {
       var self = this;
-
-
       async.waterfall([
         // Load Config and Init bot
         function(callback) {
