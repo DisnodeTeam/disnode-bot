@@ -1,7 +1,7 @@
 {
   "commands":[
     {
-      "cmd": "command",
+      "cmd": "lol",
       "run": "commandTest"
     }
   ]

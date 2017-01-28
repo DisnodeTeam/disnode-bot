@@ -126,6 +126,19 @@ class Disnode {
         Logging.DisnodeWarning("Disnode", "Message", "No Command Handler!");
       }
     }
+
+    SendCompactEmbed(channel, title, body, data){
+      channel.sendMessage("", {embed:{
+        color: 3447003,
+        author: {},
+        fields: [ {
+          name: title,
+          inline: false,
+          value: body,
+        }],
+        footer: {}
+      }}).then(message => console.log(`Sent message: ${message.content}`)).catch(console.error);;
+    }
 }
 
 module.exports = Disnode;
