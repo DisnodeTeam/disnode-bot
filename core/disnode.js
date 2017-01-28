@@ -1,10 +1,13 @@
 const DiscordBot = require('./bot');
 const PluginManager = require ('./pluginmanager');
 const CommandManager = require('./command');
+const ConfigManager = require('./config');
+
 
 const jsonfile = require('jsonfile');
 const Logging = require('./logging')
 const async = require('async');
+
 class Disnode {
     constructor(config) {
         this.botConfigPath = config;
@@ -50,6 +53,12 @@ class Disnode {
         function(callback) {
           Logging.DisnodeInfo("Disnode", "Start", "Loading Command Handler");
           self.command = new CommandManager(self);
+          callback();
+        },
+        // Create Command Handler
+        function(callback) {
+          Logging.DisnodeInfo("Disnode", "Start", "Loading Config Manager");
+          self.config = new ConfigManager();
           callback();
         },
         // Launch Static Plugins
