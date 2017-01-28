@@ -14,7 +14,7 @@ class Disnode {
       var self = this;
       async.waterfall([
         // Load Config and Init bot
-        function(callback) {//Test
+        function(callback) {
 
           Logging.DisnodeInfo("Disnode", "Start", "Loadeding Config");
           self.LoadBotConfig().then(function(){
