@@ -1,0 +1,16 @@
+{
+  "commands":[
+    {
+      "cmd": "set",
+      "run": "commandSet"
+    },
+    {
+      "cmd": "add",
+      "run": "commandAdd"
+    },
+    {
+      "cmd": "get",
+      "run": "commandGet"
+    }
+  ]
+}

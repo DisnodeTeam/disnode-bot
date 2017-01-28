@@ -2,7 +2,7 @@ const DiscordBot = require('./bot');
 const PluginManager = require ('./pluginmanager');
 const CommandManager = require('./command');
 const ConfigManager = require('./config');
-
+const DBManager = require("./db")
 
 const jsonfile = require('jsonfile');
 const Logging = require('./logging')
@@ -60,6 +60,12 @@ class Disnode {
         function(callback) {
           Logging.DisnodeInfo("Disnode", "Start", "Loading Command Handler");
           self.command = new CommandManager(self);
+          callback();
+        },
+
+        function(callback) {
+          Logging.DisnodeInfo("Disnode", "Start", "Loading DB Manager");
+          self.DB = new DBManager(self);
           callback();
         },
 
