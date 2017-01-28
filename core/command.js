@@ -44,13 +44,18 @@ class Command {
           return;
         }
 
+        var SpaceIndex = msg.length;
 
-        if(ignoreFirst){
-          firstWord = msg.substring(0, msg.indexOf(" ") || msg.length);
-        }else{
-          firstWord = msg.substring(1, msg.indexOf(" ") || msg.length);
+        if( msg.indexOf(" ") != -1){
+          SpaceIndex = msg.indexOf(" ");
         }
-        console.log(firstWord);
+        if(ignoreFirst){
+
+          firstWord = msg.substring(0, SpaceIndex);
+        }else{
+          firstWord = msg.substring(1, SpaceIndex);
+        }
+        console.log("First Word: " + firstWord);
 
         if(this.CheckForPrefix(firstWord) != null){
           plugin = this.CheckForPrefix(firstWord);
