@@ -1,8 +1,12 @@
 {
   "commands":[
     {
-      "cmd": "set",
+      "cmd": "test",
       "run": "commandTest"
+    },
+    {
+      "cmd": "gif",
+      "run": "commandGif"
     }
   ]
 }

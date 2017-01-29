@@ -150,10 +150,7 @@ class PluginManager {
 
             var newInstance = new Manager.class(server);
             newInstance.server = server;
-            newInstance.name = Manager.name;
-            newInstance.parent = Manager;
-            newInstance.config = Manager.config;
-            newInstance.commands = Manager.commands;
+            newInstance.class = Manager;
             newInstance.disnode = self.disnode;
             self.launched.push(newInstance);
             resolve(newInstance);
@@ -165,7 +162,7 @@ class PluginManager {
       var self = this;
       var serverID = commandObj.msg.channel.guild.id;
       var plugins = self.GetPluginsFromLaunched(pluginName, serverID);
-
+      ;
       if(plugins.length != 0){
         for (var i = 0; i < plugins.length; i++) {
           self.RunCommandBind(plugins[i], commandObj);
@@ -200,8 +197,8 @@ class PluginManager {
         var self = this;
         var found = [];
         for (var i = 0; i < self.launched.length; i++) {
-            if (self.launched[i].name == name ) {
-              if(self.launched[i].server == server || self.launched[i].config.static){
+            if (self.launched[i].class.name == name ) {
+              if(self.launched[i].server == server || self.launched[i].class.config.static){
                   found.push(self.launched[i]);
               }
 

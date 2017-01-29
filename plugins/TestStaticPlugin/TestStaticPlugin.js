@@ -8,7 +8,7 @@ class TestPlugin {
     var final = "Instances:";
     for (var i = 0; i < this.disnode.plugin.launched.length; i++) {
       var plugin = this.disnode.plugin.launched[i];
-      final += "\n - " + plugin.name + " - " + plugin.server;
+      final += "\n - " + plugin.class.name + " - " + plugin.server;
     }
     command.msg.reply(final);
   }
