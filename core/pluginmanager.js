@@ -29,7 +29,7 @@ class PluginManager {
 
 
 
-            async.every(_ManagerFolders, function(folder, everyCB) {
+            async.each(_ManagerFolders, function(folder, everyCB) {
 
               var fullPath = path + "/" + folder + "/" ;
                 var newPlugin = {name: folder, path: fullPath};
@@ -111,21 +111,24 @@ class PluginManager {
 
       return new Promise(function(resolve, reject) {
           Logging.DisnodeInfo("PluginManager", "LauchStatic", "Launching Static Managers.");
-          async.every(self.classes, function(plugin, callback) {
+
+          async.each(self.classes, function(plugin, callback) {
 
             if(plugin.config.static){
               Logging.DisnodeInfo("PluginManager", "LauchStatic-"+plugin.name, "Static Plugin Found. Launching");
               self.Launch(plugin.name, "STATIC").then(function() {
                   Logging.DisnodeSuccess("PluginManager", "LauchStatic-"+plugin.name, plugin.name + " launched!");
-                  callback();
+                  callback(null,plugin);
               }).catch(function(err){
                   Logging.DisnodeWarning("PluginManager", "LauchStatic-"+plugin.name, plugin.name + " Failed to Launch! - " + err);
                   callback(err);
-              })
+              });
+
             }else{
-              callback();
+              callback(null,plugin);
             }
           },function(err, result) {
+
             resolve();
           });
       });
@@ -177,7 +180,7 @@ class PluginManager {
     }
 
     RunCommandBind(plugin, command){
-    
+
 
       plugin[command.command.run](command);
     }
