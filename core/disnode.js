@@ -66,7 +66,11 @@ class Disnode {
         function(callback) {
           Logging.DisnodeInfo("Disnode", "Start", "Loading DB Manager");
           self.DB = new DBManager(self);
-          callback();
+
+          setTimeout(function () {
+            self.DB.Init();
+            callback();
+          }, 500);
         },
 
         // Launch Static Plugins
@@ -143,7 +147,7 @@ class Disnode {
           value: body,
         }],
         footer: {}
-      }}).then(message => console.log(`Sent message: ${message.content}`)).catch(console.error);;
+      }}).then().catch(console.error);;
     }
 }
 

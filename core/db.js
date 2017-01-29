@@ -5,19 +5,25 @@ const fs = require('fs');
 class DB{
   constructor(){
     Logging.DisnodeInfo("DB", "Constructor", "Started!")
-    this.DataBase = [];
-  }
 
+    this.DataBase = [];
+
+  }
+  Init(){
+    this.ReadFile();
+  }
   Set(plugin,key,value){
     var self = this;
-    console.log(self.GetData(plugin));
+
     return new Promise(function(resolve, reject) {
       if(self.GetData(plugin)){
         self.GetData(plugin).data[key] = value
+        self.UpdateFile(plugin);
       }else{
         var newEntry = {plugin: plugin, data:{}};
         newEntry.data[key] = value;
         self.DataBase.push(newEntry)
+        self.UpdateFile(plugin);
       }
       resolve(self.DataBase)
     });
@@ -25,14 +31,14 @@ class DB{
 
   Add(plugin,key,value){
     var self = this;
-    console.log(self.GetData(plugin));
+
     return new Promise(function(resolve, reject) {
       if(self.GetData(plugin)){
         if(!self.GetData(plugin).data[key]){
           self.GetData(plugin).data[key] = [];
         }
         self.GetData(plugin).data[key].push(value);
-
+        self.UpdateFile(plugin);
       }else{
         var newEntry = {plugin: plugin, data:{}};
         if(!newEntry.data[key]){
@@ -40,6 +46,7 @@ class DB{
         }
         newEntry.data[key].push(value);
         self.DataBase.push(newEntry)
+        self.UpdateFile(plugin);
       }
       resolve(self.DataBase)
     });
@@ -47,7 +54,7 @@ class DB{
 
   Get(plugin,key,value){
     var self = this;
-    console.log(self.GetData(plugin));
+  
     return new Promise(function(resolve, reject) {
       if(self.GetData(plugin)){
         if(self.GetData(plugin).data[key]){
@@ -67,6 +74,40 @@ class DB{
         return self.DataBase[i] ;
       }
     }
+  }
+
+  ReadFile(){
+    var self = this;
+    var DBEntries = fs.readdirSync("./db/");
+    for (var i = 0; i < DBEntries.length; i++) {
+      Logging.DisnodeInfo("DB", 'ReadFile', "Added to Watch List: " + DBEntries[i])
+      fs.watch("./db/" + DBEntries[i], function(p1,filename){
+        jsonfile.readFile("./db/" + filename,  function (err,obj) {
+          self.DataBase = obj;
+        });
+      });
+      Logging.DisnodeInfo("DB", 'ReadFile', "Loading: " + DBEntries[i])
+      jsonfile.readFile("./db/" + DBEntries[i],  function (err,obj) {
+        self.DataBase = obj;
+      });
+    };
+  }
+
+  UpdateFile(name){
+    var self = this;
+    fs.stat("./db/"+name+".json", function(err,stat){
+      if(err){
+        if(err.code == "ENOENT"){
+          fs.openSync("./db/"+name+".json", 'w')
+
+        }
+      }
+    });
+
+    jsonfile.writeFile("./db/"+name+".json", self.DataBase, {spaces: 2}, function (err) {
+      //console.error(err)
+    });
+
   }
 
 }

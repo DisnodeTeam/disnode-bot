@@ -158,7 +158,7 @@ class PluginManager {
     }
 
     RunPluginMessage(pluginName, commandObj){
-      console.log("RUN PLUGIN MESSAGE");
+
       var self = this;
       var serverID = commandObj.msg.channel.guild.id;
       var plugins = self.GetPluginsFromLaunched(pluginName, serverID);
@@ -177,7 +177,7 @@ class PluginManager {
     }
 
     RunCommandBind(plugin, command){
-      console.log("RUN BIND " + plugin.server + " - " + command.command);
+    
 
       plugin[command.command.run](command);
     }
