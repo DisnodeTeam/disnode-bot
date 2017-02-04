@@ -58,11 +58,14 @@ class Command {
           plugin = this.CheckForPrefix(firstWord);
           pluginPrefix = firstWord;
           command = params[0];
-          params.shift();
+
           if(this.GetCommandObject(plugin, command)){
+      
+              params.shift();
             command = this.GetCommandObject(plugin, command);
             callback(plugin, command, params);
           }else{
+            console.log("DEFAULT", command, params);
             callback(plugin, {"cmd":command, "run":"default"}, params);
           }
 
