@@ -5,7 +5,7 @@ const ConfigManager = require('./config');
 const DBManager = require("./db")
 
 const jsonfile = require('jsonfile');
-const Logging = require('./logging')
+const Logging = require('./logging');
 const async = require('async');
 
 class Disnode {
@@ -19,7 +19,7 @@ class Disnode {
         // Load Config and Init bot
         function(callback) {
 
-          Logging.DisnodeInfo("Disnode", "Start", "Loadeding Config");
+          Logging.DisnodeInfo("Disnode", "Start", "Loading Config");
           self.LoadBotConfig().then(function(){
             self.bot = new DiscordBot(self.botConfig.key);
             Logging.DisnodeSuccess("Disnode", "Start", "Loaded Config");
