@@ -1,5 +1,7 @@
 const colors = require('colors');
-
+const fs = require('fs');
+const path = require('path');
+var os = require('os');
 
 function TimeCode(){
   var time = new Date();
@@ -10,42 +12,66 @@ function TimeCode(){
 }
 
 exports.DisnodeInfo = function (caller, event, data) {
-  console.log(
-    "["+colors.cyan(" INFO  ")+"] "+colors.magenta(TimeCode()) +
+  var msg = "["+colors.cyan(" INFO  ")+"] "+colors.magenta(TimeCode()) +
     " [" +
     colors.grey(caller) + " " +
     colors.cyan("(" + event + ")")  +
-    "] " + data);
+    "] " + data;
+  var logmsg = "[ INFO  ] "+ TimeCode() + " [" + caller + " " + "(" + event + ")" + "] " + data;
+  console.log(msg);
+  saveLog(logmsg);
 };
-
 
 exports.DisnodeError= function (caller, event, data) {
-  console.log(
-    "["+colors.red(" ERROR ")+"] "+colors.magenta(TimeCode()) +
+  var msg = "["+colors.red(" ERROR ")+"] "+colors.magenta(TimeCode()) +
     " [" +
     colors.grey(caller) + " " +
     colors.cyan("(" + event + ")")  +
-    "] " + colors.red(data));
+    "] " + colors.red(data);
+  var logmsg = "["+" ERROR "+"] "+ TimeCode() + " [" + caller + " " + "(" + event + ")" + "] " + data;
+  console.log(msg);
+  saveLog(logmsg);
 };
-
 
 exports.DisnodeWarning= function (caller, event, data) {
-  console.log(
-    "["+colors.yellow("WARNING")+"] "+colors.magenta(TimeCode()) +
+  var msg = "["+colors.yellow("WARNING")+"] "+colors.magenta(TimeCode()) +
     " [" +
     colors.grey(caller) + " " +
     colors.cyan("(" + event + ")")  +
-    "] " + colors.yellow(data));
+    "] " + colors.yellow(data);
+  var logmsg = "["+"WARNING"+"] "+ TimeCode() + " [" + caller + " " + "(" + event + ")" + "] " + data;
+  console.log(msg);
+  saveLog(logmsg);
 };
-
-
-
 
 exports.DisnodeSuccess= function (caller, event, data) {
-  console.log(
-    "["+colors.green("SUCCESS")+"] "+colors.magenta(TimeCode()) +
-    " [" +
-    colors.grey(caller) + " " +
-    colors.cyan("(" + event + ")")  +
-    "] " + colors.green(data));
+  var msg = "["+colors.green("SUCCESS")+"] "+ colors.magenta(TimeCode()) + " [" + colors.grey(caller) + " " + colors.cyan("(" + event + ")") + "] " + colors.green(data);
+  var logmsg = "["+"SUCCESS"+"] "+ TimeCode() + " [" + caller + " " + "(" + event + ")" + "] " + data;
+  console.log(msg);
+  saveLog(logmsg);
 };
+function saveLog(logstring){
+  var time = new Date();
+  var file = "./logs/" + time.getMonth() + "-" + time.getDate() + "-" + time.getFullYear() + "-LOG.txt";
+  fs.stat(file,function(err,stats) {
+    if(err){
+      ensureDirectoryExistence(file);
+      fs.writeFile(file,logstring + os.EOL,function(err){
+        if(err)throw err;
+      });
+    }else {
+      ensureDirectoryExistence(file);
+      fs.appendFile(file,logstring + os.EOL,function(err){
+        if(err)throw err;
+      });
+    }
+  })
+}
+function ensureDirectoryExistence(filePath) {
+  var dirname = path.dirname(filePath);
+  if (fs.existsSync(dirname)) {
+    return true;
+  }
+  ensureDirectoryExistence(dirname);
+  fs.mkdirSync(dirname);
+}
