@@ -40,6 +40,7 @@ exports.DisnodeError= function (caller, event, data) {
     "] " + colors.red(data);
   var logmsg = "["+" ERROR "+"] "+ TimeCode() + " [" + caller + " " + "(" + event + ")" + "] " + data;
   console.log(msg);
+  pmx.notify(msg);
   saveLog(logmsg);
 };
 
