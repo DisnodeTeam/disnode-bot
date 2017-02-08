@@ -7,6 +7,9 @@ class PluginManager {
         this.classes = [];
         this.launched = [];
         this.disnode = disnode;
+        
+        var self = this;
+        Logging.AddRemoteVal("Instances", function(){return this.launched.length});
     }
     Load(path) {
         var self = this;

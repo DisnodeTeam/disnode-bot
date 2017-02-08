@@ -1,7 +1,17 @@
 const colors = require('colors');
 const fs = require('fs');
 const path = require('path');
+var probe = require('pmx').probe();
 var os = require('os');
+
+var pmx = require('pmx').init({
+  http          : false, // HTTP routes logging (default: true)
+  ignore_routes : [/socket\.io/, /notFound/], // Ignore http routes with this pattern (Default: [])
+  errors        : true, // Exceptions loggin (default: true)
+  custom_probes : false, // Auto expose JS Loop Latency and HTTP req/s as custom metrics
+  network       : false, // Network monitoring at the application level
+  ports         : false  // Shows which ports your app is listening on (default: false)
+});
 
 function TimeCode(){
   var time = new Date();
@@ -50,6 +60,15 @@ exports.DisnodeSuccess= function (caller, event, data) {
   console.log(msg);
   saveLog(logmsg);
 };
+
+exports.AddRemoteVal = function(name, val){
+  var metric = probe.metric({
+    name    : name,
+    value   : val
+  });
+}
+
+
 function saveLog(logstring){
   var time = new Date();
   var file = "./logs/" + time.getMonth() + "-" + time.getDate() + "-" + time.getFullYear() + "-LOG.txt";
