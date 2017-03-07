@@ -2,7 +2,10 @@ class TestPlugin {
   constructor() {
 
   }
-
+  default (command) {
+  
+      this.commandLaunched(command);
+  }
   commandLaunched(command){
     console.log("Running");
     var final = "Instances:";

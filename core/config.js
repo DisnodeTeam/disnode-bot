@@ -34,8 +34,9 @@ class Config{
   Load(plugin){
     var self = this;
     return new Promise(function(resolve, reject) {
-      
+
       Logging.DisnodeInfo("Config", "Load", "Loading Config for: " + plugin.name)
+      console.log(plugin.server);
       var name = plugin.name;
       var className = name + ".js";
       var commandName = name + "-Commands.json";

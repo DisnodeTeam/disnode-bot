@@ -54,7 +54,7 @@ class DB{
 
   Get(plugin,key,value){
     var self = this;
-  
+
     return new Promise(function(resolve, reject) {
       if(self.GetData(plugin)){
         if(self.GetData(plugin).data[key]){
@@ -69,6 +69,7 @@ class DB{
 
   GetData(name){
     var self = this;
+
     for (var i = 0; i < self.DataBase.length; i++) {
       if(self.DataBase[i].plugin == name){
         return self.DataBase[i] ;

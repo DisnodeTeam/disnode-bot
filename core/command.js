@@ -26,7 +26,7 @@ class Command {
 
     GetCommandData(msgObj, ignoreFirst, callback) {
         var self = this;
-        var msg = msgObj.content;
+        var msg = msgObj.message;
         var firstLetter = msg.substring(0, 1);
         var params = GetParams(msg);
         var firstWord;
@@ -40,11 +40,14 @@ class Command {
         if( msg.indexOf(" ") != -1){
           SpaceIndex = msg.indexOf(" ");
         }
+
         if(ignoreFirst){
           firstWord = msg.substring(0, SpaceIndex);
         }else{
           firstWord = msg.substring(1, SpaceIndex);
         }
+
+
         if(this.CheckForPrefix(firstWord) != null){
           plugin = this.CheckForPrefix(firstWord);
           pluginPrefix = firstWord;

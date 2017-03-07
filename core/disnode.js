@@ -21,7 +21,7 @@ class Disnode {
 
           Logging.DisnodeInfo("Disnode", "Start", "Loading Config");
           self.LoadBotConfig().then(function(){
-            self.bot = new DiscordBot(self.botConfig.key);
+            self.bot = new DiscordBot(self.botConfig.key, self);
             Logging.DisnodeSuccess("Disnode", "Start", "Loaded Config");
             callback();
           }).catch(callback);
@@ -32,7 +32,12 @@ class Disnode {
           self.bot.Connect().then(function(){
             Logging.DisnodeSuccess("Disnode", "Start", "Connected to Discord");
             callback();
-          }).catch(callback);
+          });
+        },
+        function(callback) {
+          Logging.DisnodeInfo("Disnode", "Start", "Binding Events");
+          self.bot.bindOnMessage((data) => self.OnMessage(data));
+          callback();
         },
         // Create Command Handler
         function(callback) {
@@ -51,11 +56,7 @@ class Disnode {
           }).catch(callback);
         },
         // Bind Events
-        function(callback) {
-          Logging.DisnodeInfo("Disnode", "Start", "Binding Events");
-          self.bot.client.on("message",(msg)=>self.OnMessage(msg));
-          callback();
-        },
+
         // Create Command Handler
         function(callback) {
           Logging.DisnodeInfo("Disnode", "Start", "Loading Command Handler");
@@ -137,18 +138,7 @@ class Disnode {
       }
     }
 
-    SendCompactEmbed(channel, title, body, data){
-      channel.sendMessage("", {embed:{
-        color: 3447003,
-        author: {},
-        fields: [ {
-          name: title,
-          inline: false,
-          value: body,
-        }],
-        footer: {}
-      }}).then().catch(console.error);;
-    }
+
 }
 
 module.exports = Disnode;

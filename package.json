@@ -21,8 +21,10 @@
     "colors": "^1.1.2",
     "discord.js": "^11.0.0",
     "jsonfile": "^2.3.1",
+    "node-uuid": "^1.4.7",
     "opusscript": "0.0.1",
     "pmx": "^1.0.1",
+    "shortid": "^2.2.8",
     "walk": "^2.3.9"
   }
 }

@@ -4,12 +4,13 @@ class TestPlugin {
 
     }
     default (command) {
-        command.msg.reply("You have not entered a command! Heres default");
+      console.log(command);
+        this.disnode.bot.SendMessage(command.msg.channel, "TEST", {});
     }
     commandTest(command) {
         console.log("Running");
 
-        command.msg.reply("Hello World! I am instance on server: " + this.server);
+        self.disnode.bot.SendMessage(command.msg.channel, "TEST", {});
     }
 
     commandGif(command) {
@@ -17,7 +18,7 @@ class TestPlugin {
         var exec = require('child_process').exec;
 
 
-        var proc = exec('blender -b plugins\\TestPlugin\\test.blend --python test.py -o //images/'+command.msg.id+'/frame_ -F PNG -x 1 -a -- "' +command.msg.author.username+'"' , function callback(error, stdout, stderr) {
+        var proc = exec('blender -b plugins\\TestPlugin\\test.blend --python test.py -o //images/'+command.msg.id+'/frame_ -F PNG -x 1 -a -- "' +command.params[0]+'"' , function callback(error, stdout, stderr) {
 
         });
         proc.on('exit', function() {
@@ -50,14 +51,16 @@ class TestPlugin {
                       .pipe(encoder.createWriteStream({
                           repeat: -1,
                           delay: 0.4,
-                          quality: 10
+                          quality: 3
                       }))
                       .pipe(fsStream)
 
                   fsStream.on('finish', function() {
                     console.log("Done Creating Gif! Sending..");
-                      command.msg.channel.sendMessage("", {
+                      command.msg.channel.sendMessage("test", {
                           file: path +'/result.gif'
+                      }).catch(function(err){
+                        console.log(err);
                       })
                   })
                 }, 10);

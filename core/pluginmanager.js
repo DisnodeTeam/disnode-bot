@@ -7,9 +7,9 @@ class PluginManager {
         this.classes = [];
         this.launched = [];
         this.disnode = disnode;
-        
+
         var self = this;
-        Logging.AddRemoteVal("Instances", function(){return this.launched.length});
+        Logging.AddRemoteVal("Instances", function(){return self.launched.length});
     }
     Load(path) {
         var self = this;
@@ -125,20 +125,28 @@ class PluginManager {
     }
     RunPluginMessage(pluginName, commandObj){
       var self = this;
-      var serverID = commandObj.msg.channel.guild.id;
+
+
+      var serverID = commandObj.msg.server;
+
       var plugins = self.GetPluginsFromLaunched(pluginName, serverID);
       if(plugins.length != 0){
         for (var i = 0; i < plugins.length; i++) {
           self.RunCommandBind(plugins[i], commandObj);
         }
       }else{
-        self.Launch(pluginName,commandObj.msg.channel.guild.id).then(function(newInstance){
+        self.Launch(pluginName,serverID).then(function(newInstance){
           self.RunCommandBind(newInstance, commandObj);
         });
       }
     }
     RunCommandBind(plugin, command){
+      if(!plugin[command.command.run]){
+        Logging.DisnodeWarning("PluginManager", "RunCommandBind", "No Function Found for: " + command.command.run);
+        return;
+      }
       plugin[command.command.run](command);
+
     }
     GetPluginFromLoaded(name) {
         var self = this;
