@@ -1,45 +1,57 @@
-const DiscordAPI = require("discord.js");
 var net = require('net');
 
 var shortid = require('shortid');
-
+var Discord = require('discord.io');
 
 class Bot {
-	constructor(key,disnode) {
+	constructor(key, disnode) {
 		this.key = key;
 		this.client = {};
-    this.disnode = disnode;
-    this.bind_onMessage = null;
-    this.isRemote = false;
-    this.remoteID = "";
+		this.disnode = disnode;
+		this.bind_onMessage = null;
+		this.isRemote = false;
+		this.remoteID = "";
 	}
 
 	Connect() {
 		var self = this;
 		return new Promise(function (resolve, reject) {
-      console.log(self.disnode.botConfig.balancerEnabled);
+			console.log(self.disnode.botConfig.balancerEnabled);
 
-			if(self.disnode.botConfig.balancerEnabled == true){
-        if(!self.disnode.botConfig.balancerIP){
-          reject("No Load Balancer IP!");
-        }
-        if(!self.disnode.botConfig.balancerPORT){
-          reject("No Load Balancer IP!");
-        }
+			if (self.disnode.botConfig.balancerEnabled == true) {
+				if (!self.disnode.botConfig.balancerIP) {
+					reject("No Load Balancer IP!");
+				}
+				if (!self.disnode.botConfig.balancerPORT) {
+					reject("No Load Balancer IP!");
+				}
 
-        self.client.type == "REMOTE";
-        self.client = new net.Socket();
-        self.client.connect(self.disnode.botConfig.balancerPORT, self.disnode.botConfig.balancerIP, function() {
-          self.remoteID = shortid.generate();
-          self.client.write(JSON.stringify({type:"REGISTER", id: self.remoteID}))
-          self.client.on('data', (data) => self.ParseRemoteCommand(data));
-          self.isRemote = true;
-          resolve("Connected to remote Load Balancer!");
-          return;
-        });
-      }else{
-        resolve();
-      }
+				self.client.type == "REMOTE";
+				self.client = new net.Socket();
+				self.client.connect(self.disnode.botConfig.balancerPORT, self.disnode.botConfig.balancerIP, function () {
+					self.remoteID = shortid.generate();
+					self.client.write(JSON.stringify({
+						type: "REGISTER",
+						id: self.remoteID
+					}))
+					self.client.on('data', (data) => self.ParseRemoteCommand(data));
+					self.isRemote = true;
+					resolve("Connected to remote Load Balancer!");
+					return;
+				});
+			} else {
+				self.bot = new Discord.Client({
+					autorun: true,
+					token: self.key
+				});
+
+				self.bot.on('ready', function (event) {
+					self.SetUpLocalBinds();
+					resolve();
+				});
+
+
+			}
 
 		});
 	}
@@ -52,44 +64,66 @@ class Bot {
 		});
 	}
 
-  ParseRemoteCommand(command){
-    var self = this;
-    var obj = JSON.parse(command);
-    console.log(obj);
-    console.log(obj.type);
-    switch(obj.type){
-      case "RECV_MESSAGE":
-      console.log(obj.data);
-      if(self.bind_onMessage){
-        self.bind_onMessage(obj.data);
-      }else{
-        console.log('NO BIND!');
-      }
-    }
-  }
+	ParseRemoteCommand(command) {
+		var self = this;
+		var obj = JSON.parse(command);
+		console.log(obj);
+		console.log(obj.type);
+		switch (obj.type) {
+		case "RECV_MESSAGE":
+			console.log(obj.data);
+			if (self.bind_onMessage) {
+				self.bind_onMessage(obj.data);
+			} else {
+				console.log('NO BIND!');
+			}
+		}
+	}
 
-  bindOnMessage(msgFunction){
-    console.log('Binding!');
-    this.bind_onMessage = msgFunction;
-  }
+	SetUpLocalBinds() {
+		var self = this;
+		self.bot.on('message', function (user, userID, channelID, message, event) {
+			if (self.bind_onMessage) {
+				var msgObject = {
+					user: user,
+					userID: userID,
+					channel: channelID,
+					server: self.bot.channels[channelID].guild_id,
+					message: message
+				}
+				self.bind_onMessage(msgObject);
+			}
+		});
+	}
 
-  SendMessage(channel, text, data){
-    var self = this;
-    if(self.isRemote){
-      var msgOBJ = {
-        channel: channel,
-        text: text,
-        data: data
-      };
-      var commandObj = {
-        type: "SEND_MESSAGE",
-        id: self.remoteID,
-        data: msgOBJ
-      };
+	bindOnMessage(msgFunction) {
+		console.log('Binding!');
+		this.bind_onMessage = msgFunction;
+	}
 
-      self.client.write(JSON.stringify(commandObj));
-    }
-  }
+
+
+	SendMessage(channel, msg) {
+		var self = this;
+		if (self.isRemote) {
+			var msgOBJ = {
+				channel: channel,
+				msg: msg
+			};
+			var commandObj = {
+				type: "SEND_MESSAGE",
+				id: self.remoteID,
+				data: msgOBJ
+			};
+
+			self.client.write(JSON.stringify(commandObj));
+		}else{
+			self.bot.sendMessage({
+					 to: channel,
+					 message: msg
+			 });
+		}
+	}
 
 	SendCompactEmbed(channel, title, body, data) {
 		channel.sendMessage("", {
