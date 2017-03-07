@@ -58,13 +58,17 @@ class Disnode {
         },
 
         function(callback) {
-          Logging.DisnodeInfo("Disnode", "Start", "Loading DB Manager");
-          self.DB = new DBManager(self);
-          Logging.DisnodeInfo("Disnode", "Start", "Connecting to DB...");
-          self.DB.Init().then(function(){
-            Logging.DisnodeSuccess("Disnode", "Start", "DB Connected!");
-            callback();
-          }).catch(callback);
+          if(self.botConfig.use_db){
+            Logging.DisnodeInfo("Disnode", "Start", "Loading DB Manager");
+            self.DB = new DBManager(self);
+            Logging.DisnodeInfo("Disnode", "Start", "Connecting to DB...");
+            self.DB.Init().then(function(){
+              Logging.DisnodeSuccess("Disnode", "Start", "DB Connected!");
+              callback();
+            }).catch(callback);
+          }else {
+            Logging.DisnodeInfo("Disnode", "Start", "Loading of DB skipped because user wished not to use DB");
+          }
         },
         function(callback) {
           Logging.DisnodeInfo("Disnode", "Start", "Loading Plugins");

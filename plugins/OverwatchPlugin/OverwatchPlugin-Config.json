@@ -1,3 +1,4 @@
 {
-  "prefix":"overwatch"
+  "prefix":"overwatch",
+  "run":false
 }

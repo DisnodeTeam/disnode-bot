@@ -68,8 +68,12 @@ class PluginManager {
                     },
                     // Finished Loading, adds class to array
                     function(callback) {
-                        Logging.DisnodeSuccess("PluginManager","Load-"+folder, "Finished Loading");
-                        self.classes.push(newPlugin);
+                        if(newPlugin.config.run){
+                          self.classes.push(newPlugin);
+                          Logging.DisnodeSuccess("PluginManager","Load-"+folder, "Finished Loading");
+                        }else {
+                          Logging.DisnodeInfo("PluginManager","Load-"+folder, "Plugin skipped run = false!");
+                        }
                         //console.log(self.classes);
                         callback();
                     },

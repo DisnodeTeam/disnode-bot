@@ -1,3 +1,4 @@
 {
-  "prefix":"db"
+  "prefix":"db",
+  "run":false
 }

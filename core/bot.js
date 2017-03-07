@@ -88,7 +88,6 @@ class Bot {
 					user: user,
 					userID: userID,
 					channel: channelID,
-					server: self.bot.channels[channelID].guild_id,
 					message: message
 				}
 				self.bind_onMessage(msgObject);
@@ -124,9 +123,17 @@ class Bot {
 			 });
 		}
 	}
-
-	SendCompactEmbed(channel, title, body, data) {
-		channel.sendMessage("", {
+	SendEmbed(channel, embed){
+		var self = this;
+		self.bot.sendMessage({
+			to: channel,
+			embed: embed
+		});
+	}
+	SendCompactEmbed(channel, title, body) {
+		var self = this;
+		self.bot.sendMessage({
+			to: channel,
 			embed: {
 				color: 3447003,
 				author: {},
@@ -137,7 +144,7 @@ class Bot {
 				}],
 				footer: {}
 			}
-		}).then().catch(console.error);;
+		});
 	}
 }
 
