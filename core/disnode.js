@@ -47,14 +47,7 @@ class Disnode {
           callback();
         },
         // Load Functions
-        function(callback) {
-          Logging.DisnodeInfo("Disnode", "Start", "Loading Plugins");
-          self.plugin = new PluginManager(self);
-          self.plugin.Load("./plugins").then(function(){
-            Logging.DisnodeSuccess("Disnode", "Start", "Plugins Loaded!");
-            callback();
-          }).catch(callback);
-        },
+
         // Bind Events
 
         // Create Command Handler
@@ -67,13 +60,20 @@ class Disnode {
         function(callback) {
           Logging.DisnodeInfo("Disnode", "Start", "Loading DB Manager");
           self.DB = new DBManager(self);
-
-          setTimeout(function () {
-            self.DB.Init();
+          Logging.DisnodeInfo("Disnode", "Start", "Connecting to DB...");
+          self.DB.Init().then(function(){
+            Logging.DisnodeSuccess("Disnode", "Start", "DB Connected!");
             callback();
-          }, 500);
+          }).catch(callback);
         },
-
+        function(callback) {
+          Logging.DisnodeInfo("Disnode", "Start", "Loading Plugins");
+          self.plugin = new PluginManager(self);
+          self.plugin.Load("./plugins").then(function(){
+            Logging.DisnodeSuccess("Disnode", "Start", "Plugins Loaded!");
+            callback();
+          }).catch(callback);
+        },
         // Launch Static Plugins
         function(callback) {
           Logging.DisnodeInfo("Disnode", "Start", "Launching static plugins");

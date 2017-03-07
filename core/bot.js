@@ -18,6 +18,7 @@ class Bot {
 		var self = this;
 		return new Promise(function (resolve, reject) {
       console.log(self.disnode.botConfig.balancerEnabled);
+
 			if(self.disnode.botConfig.balancerEnabled == true){
         if(!self.disnode.botConfig.balancerIP){
           reject("No Load Balancer IP!");
@@ -37,15 +38,7 @@ class Bot {
           return;
         });
       }else{
-        if (self.client != {}) {
-          self.client = {};
-        }
-        if (!self.key) {
-          reject("No key!")
-        }
-        self.client = new DiscordAPI.Client();
-
-        self.client.login(self.key).then(resolve).catch(reject);
+        resolve();
       }
 
 		});

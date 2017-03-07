@@ -2,114 +2,110 @@ const Logging = require("./logging")
 const jsonfile = require('jsonfile');
 const async = require('async');
 const fs = require('fs');
-class DB{
-  constructor(){
-    Logging.DisnodeInfo("DB", "Constructor", "Started!")
+const MongoClient = require('mongodb').MongoClient
+class DB {
+	constructor(disnode) {
+		Logging.DisnodeInfo("DB", "Constructor", "Started!")
+		this.disnode = disnode;
+		this.DB = {};
 
-    this.DataBase = [];
+	}
+	Init() {
+		var self = this;
+		return new Promise(function (resolve, reject) {
+			var url = self.disnode.botConfig.db_url;
+			if (!url || url == "") {
+				reject("No MongoDB URL!");
+				return;
+			}
 
-  }
-  Init(){
-    this.ReadFile();
-  }
-  Set(plugin,key,value){
-    var self = this;
+			MongoClient.connect(url, function (err, db) {
+				if (err) {
+					reject(err);
+					return;
+				}
+				resolve();
+				self.DB = db;
+				return;
 
-    return new Promise(function(resolve, reject) {
-      if(self.GetData(plugin)){
-        self.GetData(plugin).data[key] = value
-        self.UpdateFile(plugin);
-      }else{
-        var newEntry = {plugin: plugin, data:{}};
-        newEntry.data[key] = value;
-        self.DataBase.push(newEntry)
-        self.UpdateFile(plugin);
-      }
-      resolve(self.DataBase)
-    });
-  }
+				db.close();
+			});
+		});
+	}
 
-  Add(plugin,key,value){
-    var self = this;
+	Insert(plugin, data) {
+		var self = this;
 
-    return new Promise(function(resolve, reject) {
-      if(self.GetData(plugin)){
-        if(!self.GetData(plugin).data[key]){
-          self.GetData(plugin).data[key] = [];
+		return new Promise(function (resolve, reject) {
+      var collection = self.DB.collection(plugin);
+			collection.insert(data, function (err, result) {
+				if(err){
+          reject(err);
+          return;
         }
-        self.GetData(plugin).data[key].push(value);
-        self.UpdateFile(plugin);
-      }else{
-        var newEntry = {plugin: plugin, data:{}};
-        if(!newEntry.data[key]){
-          newEntry.data[key] = [];
+				resolve(result);
+			});
+		});
+	}
+
+	Update(plugin, oldData, newData) {
+		var self = this;
+
+    return new Promise(function (resolve, reject) {
+      var collection = self.DB.collection(plugin);
+			collection.updateOne(oldData, {$set : newData}, function (err, result) {
+				if(err){
+          reject(err);
+          return;
         }
-        newEntry.data[key].push(value);
-        self.DataBase.push(newEntry)
-        self.UpdateFile(plugin);
-      }
-      resolve(self.DataBase)
-    });
-  }
-
-  Get(plugin,key,value){
+				resolve(result);
+			});
+		});
+	}
+  Push(plugin, search, arrayName, data){
     var self = this;
-
-    return new Promise(function(resolve, reject) {
-      if(self.GetData(plugin)){
-        if(self.GetData(plugin).data[key]){
-            resolve(self.GetData(plugin).data[key]);
+    return new Promise(function (resolve, reject) {
+      var collection = self.DB.collection(plugin);
+      var pushObj = {};
+      pushObj[arrayName] = data;
+			collection.updateOne(search, {$push : pushObj}, function (err, result) {
+				if(err){
+          reject(err);
+          return;
         }
-        reject("No DB Entry for this key!")
-      }else{
-        reject("No DB For This Plugin!")
-      }
-    });
+				resolve(result);
+			});
+		});
   }
+	Find(plugin, search) {
+		var self = this;
 
-  GetData(name){
-    var self = this;
-
-    for (var i = 0; i < self.DataBase.length; i++) {
-      if(self.DataBase[i].plugin == name){
-        return self.DataBase[i] ;
-      }
-    }
-  }
-
-  ReadFile(){
-    var self = this;
-    var DBEntries = fs.readdirSync("./db/");
-    for (var i = 0; i < DBEntries.length; i++) {
-      Logging.DisnodeInfo("DB", 'ReadFile', "Added to Watch List: " + DBEntries[i])
-      fs.watch("./db/" + DBEntries[i], function(p1,filename){
-        jsonfile.readFile("./db/" + filename,  function (err,obj) {
-          self.DataBase = obj;
-        });
-      });
-      Logging.DisnodeInfo("DB", 'ReadFile', "Loading: " + DBEntries[i])
-      jsonfile.readFile("./db/" + DBEntries[i],  function (err,obj) {
-        self.DataBase = obj;
-      });
-    };
-  }
-
-  UpdateFile(name){
-    var self = this;
-    fs.stat("./db/"+name+".json", function(err,stat){
-      if(err){
-        if(err.code == "ENOENT"){
-          fs.openSync("./db/"+name+".json", 'w')
-
+		return new Promise(function (resolve, reject) {
+      var collection = self.DB.collection(plugin);
+			collection.find(search, function (err, docs) {
+				if(err){
+          reject(err);
+          return;
         }
-      }
-    });
+				resolve(docs.toArray());
+			});
+		});
+	}
 
-    jsonfile.writeFile("./db/"+name+".json", self.DataBase, {spaces: 2}, function (err) {
-      //console.error(err)
-    });
+	Delete(plugin, search) {
+		var self = this;
 
-  }
+    return new Promise(function (resolve, reject) {
+      var collection = self.DB.collection(plugin);
+			collection.deleteOne(search, function (err, docs) {
+				if(err){
+          reject(err);
+          return;
+        }
+				resolve();
+			});
+		});
+	}
 
 }
 
