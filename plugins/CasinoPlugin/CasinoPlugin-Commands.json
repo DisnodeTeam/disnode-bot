@@ -1,8 +1,9 @@
 {
   "commands":[
+
     {
-      "cmd": "launched",
-      "run": "commandLaunched"
+      "cmd": "slot",
+      "run": "commandSlot"
     }
   ]
 }
