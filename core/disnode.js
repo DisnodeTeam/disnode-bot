@@ -47,7 +47,22 @@ class Disnode {
           callback();
         },
         // Load Functions
-
+        function(callback) {
+          Logging.DisnodeInfo("Disnode", "Start", "Loading Plugins");
+          self.plugin = new PluginManager(self);
+          self.plugin.Load("./plugins").then(function(){
+            Logging.DisnodeSuccess("Disnode", "Start", "Plugins Loaded!");
+            callback();
+          }).catch(callback);
+        },
+        // Launch Static Plugins
+        function(callback) {
+          Logging.DisnodeInfo("Disnode", "Start", "Launching static plugins");
+          self.plugin.LauchStatic().then(function(){
+            Logging.DisnodeSuccess("Disnode", "Start", "Static Plugins Launched!");
+            callback();
+          }).catch(callback);
+        },
         // Bind Events
 
         // Create Command Handler
@@ -70,22 +85,7 @@ class Disnode {
             Logging.DisnodeInfo("Disnode", "Start", "Loading of DB skipped because user wished not to use DB");
           }
         },
-        function(callback) {
-          Logging.DisnodeInfo("Disnode", "Start", "Loading Plugins");
-          self.plugin = new PluginManager(self);
-          self.plugin.Load("./plugins").then(function(){
-            Logging.DisnodeSuccess("Disnode", "Start", "Plugins Loaded!");
-            callback();
-          }).catch(callback);
-        },
-        // Launch Static Plugins
-        function(callback) {
-          Logging.DisnodeInfo("Disnode", "Start", "Launching static plugins");
-          self.plugin.LauchStatic().then(function(){
-            Logging.DisnodeSuccess("Disnode", "Start", "Static Plugins Launched!");
-            callback();
-          }).catch(callback);
-        },
+
       ], function (err, result) {
           if(err){
             Logging.DisnodeError("Disnode", "Start", err)
