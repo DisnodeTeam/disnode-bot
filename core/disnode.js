@@ -73,7 +73,7 @@ class Disnode {
         },
 
         function(callback) {
-          if(self.botConfig.use_db){
+          if(self.botConfig.db.use_db){
             Logging.DisnodeInfo("Disnode", "Start", "Loading DB Manager");
             self.DB = new DBManager(self);
             Logging.DisnodeInfo("Disnode", "Start", "Connecting to DB...");

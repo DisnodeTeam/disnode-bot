@@ -4,6 +4,9 @@ class CasinoPlugin {
   }
   default (command) {
     var self = this;
+    self.disnode.DB.Find("casinoObj", {}).then(function(found) {
+      console.dir(found);
+    });
     self.disnode.bot.SendCompactEmbed(command.msg.channel, "Test", "Test");
   }
 
