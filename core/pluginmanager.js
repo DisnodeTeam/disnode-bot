@@ -130,7 +130,7 @@ class PluginManager {
     RunPluginMessage(pluginName, commandObj){
       var self = this;
 
-
+      console.log(commandObj);
       var serverID = commandObj.msg.server;
 
       var plugins = self.GetPluginsFromLaunched(pluginName, serverID);

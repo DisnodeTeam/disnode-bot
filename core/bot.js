@@ -84,11 +84,19 @@ class Bot {
 		var self = this;
 		self.bot.on('message', function (user, userID, channelID, message, event) {
 			if (self.bind_onMessage) {
+				var _server = "DM";
+				if(self.bot.channels[channelID]){
+						_server = self.bot.channels[channelID].guild_id;
+				}
+
+
+
 				var msgObject = {
 					user: user,
 					userID: userID,
 					channel: channelID,
-					message: message
+					message: message,
+					server: _server
 				}
 				self.bind_onMessage(msgObject);
 			}
