@@ -88,9 +88,6 @@ class Bot {
 				if(self.bot.channels[channelID]){
 						_server = self.bot.channels[channelID].guild_id;
 				}
-
-
-
 				var msgObject = {
 					user: user,
 					userID: userID,
