@@ -135,7 +135,6 @@ class Disnode {
 
     OnMessage (msg){
       if(this.command){
-
         this.command.RunMessage(msg);
       }else{
         Logging.DisnodeWarning("Disnode", "Message", "No Command Handler!");
