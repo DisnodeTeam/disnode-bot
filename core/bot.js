@@ -23,7 +23,7 @@ class Bot {
 					reject("No Load Balancer IP!");
 				}
 				if (!self.disnode.botConfig.balancerPORT) {
-					reject("No Load Balancer IP!");
+					reject("No Load Balancer Port!");
 				}
 
 				self.client.type == "REMOTE";
@@ -40,12 +40,12 @@ class Bot {
 					return;
 				});
 			} else {
-				self.bot = new Discord.Client({
+				self.client = new Discord.Client({
 					autorun: true,
 					token: self.key
 				});
 
-				self.bot.on('ready', function (event) {
+				self.client.on('ready', function (event) {
 					self.SetUpLocalBinds();
 					resolve();
 				});
@@ -82,11 +82,11 @@ class Bot {
 
 	SetUpLocalBinds() {
 		var self = this;
-		self.bot.on('message', function (user, userID, channelID, message, event) {
+		self.client.on('message', function (user, userID, channelID, message, event) {
 			if (self.bind_onMessage) {
 				var _server = "DM";
-				if(self.bot.channels[channelID]){
-						_server = self.bot.channels[channelID].guild_id;
+				if(self.client.channels[channelID]){
+						_server = self.client.channels[channelID].guild_id;
 				}
 				var msgObject = {
 					user: user,
@@ -122,7 +122,7 @@ class Bot {
 
 			self.client.write(JSON.stringify(commandObj));
 		}else{
-			self.bot.sendMessage({
+			self.client.sendMessage({
 					 to: channel,
 					 message: msg
 			 });
@@ -130,14 +130,14 @@ class Bot {
 	}
 	SendEmbed(channel, embed){
 		var self = this;
-		self.bot.sendMessage({
+		self.client.sendMessage({
 			to: channel,
 			embed: embed
 		});
 	}
 	SendCompactEmbed(channel, title, body) {
 		var self = this;
-		self.bot.sendMessage({
+		self.client.sendMessage({
 			to: channel,
 			embed: {
 				color: 3447003,
