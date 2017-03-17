@@ -59,8 +59,15 @@ class Bot {
 	Disconnect() {
 		var self = this;
 		return new Promise(function (resolve, reject) {
-			self.client = {};
-			self.client.destroy().then(resolve).catch(reject);
+			self.client.disconnect();
+			resolve();
+		});
+	}
+	
+	Restart() {
+		var self = this;
+		self.Disconnect().then(function (){
+			self.client.connect()
 		});
 	}
 
