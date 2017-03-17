@@ -36,21 +36,21 @@ class DB {
 					reject(err);
 					return;
 				}
-				resolve();
 				self.DB = db;
+				resolve();
+
 				return;
 
-				db.close();
 			});
 		});
 	}
 
-	Insert(plugin, data) {
+	Insert(collection, data) {
 		var self = this;
 
 		return new Promise(function (resolve, reject) {
-      var collection = self.DB.collection(plugin);
-			collection.insert(data, function (err, result) {
+      var _collection = self.DB.collection(collection);
+			_collection.insert(data, function (err, result) {
 				if(err){
           reject(err);
           return;
@@ -60,12 +60,12 @@ class DB {
 		});
 	}
 
-	Update(plugin, oldData, newData) {
+	Update(collection, oldData, newData) {
 		var self = this;
 
     return new Promise(function (resolve, reject) {
-      var collection = self.DB.collection(plugin);
-			collection.updateOne(oldData, {$set : newData}, function (err, result) {
+      var _collection = self.DB.collection(collection);
+			_collection.updateOne(oldData, {$set : newData}, function (err, result) {
 				if(err){
           reject(err);
           return;
@@ -74,13 +74,13 @@ class DB {
 			});
 		});
 	}
-  Push(plugin, search, arrayName, data){
+  Push(collection, search, arrayName, data){
     var self = this;
     return new Promise(function (resolve, reject) {
-      var collection = self.DB.collection(plugin);
+      var _collection = self.DB.collection(collection);
       var pushObj = {};
       pushObj[arrayName] = data;
-			collection.updateOne(search, {$push : pushObj}, function (err, result) {
+			_collection.updateOne(search, {$push : pushObj}, function (err, result) {
 				if(err){
           reject(err);
           return;
@@ -89,12 +89,12 @@ class DB {
 			});
 		});
   }
-	Find(plugin, search) {
+	Find(collection, search) {
 		var self = this;
 
 		return new Promise(function (resolve, reject) {
-      var collection = self.DB.collection(plugin);
-			collection.find(search, function (err, docs) {
+      var _collection = self.DB.collection(collection);
+			_collection.find(search, function (err, docs) {
 				if(err){
           reject(err);
           return;
@@ -104,12 +104,12 @@ class DB {
 		});
 	}
 
-	Delete(plugin, search) {
+	Delete(collection, search) {
 		var self = this;
 
     return new Promise(function (resolve, reject) {
-      var collection = self.DB.collection(plugin);
-			collection.deleteOne(search, function (err, docs) {
+      var _collection = self.DB.collection(collection);
+			_collection.deleteOne(search, function (err, docs) {
 				if(err){
           reject(err);
           return;
