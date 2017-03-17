@@ -20,8 +20,36 @@ class Command {
     RunMessage(msgObj) {
       var self = this;
         this.GetCommandData(msgObj, false, function(plugin, command, params){
+            self.RunChecks(msgObj,command);
             self.disnode.plugin.RunPluginMessage(plugin.name, {command: command, params: params, msg: msgObj});
         });
+    }
+
+    RunChecks(msg,command){
+      var self = this;
+      if(!command){
+        return;
+      }
+      if(command.whitelist){
+        command.userAllowed = false;
+        for (var i = 0; i < command.whitelist.length; i++) {
+          if(msg.userID == command.whitelist[i]){
+            command.userAllowed = true;
+          }
+        }
+      }
+
+      if(command.roles){
+        command.roleAllowed = false;
+        for (var i = 0; i < command.roles.length; i++) {
+          var userRoles = self.disnode.bot.GetUserRoles(msg.server, msg.userID);
+          for (var j = 0; j < userRoles.length; j++) {
+            if(userRoles[j] == command.roles[i]){
+              command.roleAllowed = true;
+            }
+          }
+        }
+      }
     }
 
     GetCommandData(msgObj, ignoreFirst, callback) {

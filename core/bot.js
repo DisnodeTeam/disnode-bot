@@ -63,7 +63,7 @@ class Bot {
 			resolve();
 		});
 	}
-	
+
 	Restart() {
 		var self = this;
 		self.Disconnect().then(function (){
@@ -158,6 +158,42 @@ class Bot {
 			}
 		});
 	}
+
+	GetServerByID(id){
+		console.log("Looking for server by ID: " + id);
+		var servers = this.client.servers;
+		return servers[id];
+	}
+
+	GetUserByID(serverId, userId){
+		var server = this.GetServerByID(serverId);
+
+		if(!server){
+			return;
+		}
+
+		return server.members[userId];
+	}
+
+	GetUserRoles(serverId, userId){
+		var user = this.GetUserByID(serverId, userId);
+
+		if(!user){
+			return;
+		}
+
+		return user.roles;
+	}
+
+	GetRoleById(serverId, roleId){
+		var server = this.GetServerByID(serverId);
+
+		if(!server){
+			return;
+		}
+		return server.roles[roleId];
+	}
+
 }
 
 module.exports = Bot;

@@ -8,10 +8,40 @@ class TestPlugin {
         this.disnode.bot.SendMessage(command.msg.channel, "TEST", {});
     }
     commandTest(command) {
+      var self = this;
         console.log("Running");
-
-        self.disnode.bot.SendMessage(command.msg.channel, "TEST", {});
+        console.log(  self.disnode.bot.GetUserRoles(command.msg.server, command.msg.userID));
+        this.disnode.bot.SendMessage(command.msg.channel, "TEST", {});
     }
+
+    commandWhitelist(command) {
+
+      var self = this;
+      console.log(command);
+        if(command.command.userAllowed == true){
+          self.disnode.bot.SendMessage(command.msg.channel, "You're Allowed!", {});
+        }else{
+          self.disnode.bot.SendMessage(command.msg.channel, "You're Not Allowed: " + command.command.whitelist, {});
+        }
+
+
+    }
+
+    commandRole(commandObj) {
+      var self = this;
+      var PrintRoles = [];
+      for (var i = 0; i <  commandObj.command.roles.length; i++) {
+        var role = commandObj.command.roles[i];
+        PrintRoles.push(self.disnode.bot.GetRoleById(commandObj.msg.server, role).name);
+      }
+        if(commandObj.command.roleAllowed == true){
+          self.disnode.bot.SendMessage(commandObj.msg.channel, "You're Allowed!" + PrintRoles, {});
+        }else{
+
+          self.disnode.bot.SendMessage(commandObj.msg.channel, "You're Not Allowed: " + PrintRoles, {});
+        }
+    }
+
 
     commandGif(command) {
 

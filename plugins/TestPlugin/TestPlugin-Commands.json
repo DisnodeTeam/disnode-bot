@@ -5,6 +5,17 @@
       "run": "commandTest"
     },
     {
+      "cmd": "whitelist",
+      "run": "commandWhitelist",
+      "whitelist":["131235236402036736", "112786170655600640"]
+    },
+
+    {
+      "cmd": "roles",
+      "run": "commandRole",
+      "roles":["236338599585513472"]
+    },
+    {
       "cmd": "gif",
       "run": "commandGif"
     }
