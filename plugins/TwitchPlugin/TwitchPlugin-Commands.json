@@ -1,0 +1,8 @@
+{
+  "commands":[
+    {
+      "cmd": "add",
+      "run": "commandAddChannel"
+    }
+  ]
+}

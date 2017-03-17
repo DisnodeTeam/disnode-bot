@@ -1,0 +1,5 @@
+{
+  "prefix":"twitch",
+  "static": "true",
+  "run": "true"
+}
