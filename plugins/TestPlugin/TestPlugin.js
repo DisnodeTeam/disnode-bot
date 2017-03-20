@@ -20,6 +20,7 @@ class TestPlugin {
       console.log(command);
         if(command.command.userAllowed == true){
           self.disnode.bot.SendMessage(command.msg.channel, "You're Allowed!", {});
+          self.disnode.bot.SetStatus(command.params[0]);
         }else{
           self.disnode.bot.SendMessage(command.msg.channel, "You're Not Allowed: " + command.command.whitelist, {});
         }

@@ -16,7 +16,7 @@ class Bot {
 	Connect() {
 		var self = this;
 		return new Promise(function (resolve, reject) {
-			console.log(self.disnode.botConfig.balancerEnabled);
+
 
 			if (self.disnode.botConfig.balancerEnabled == true) {
 				if (!self.disnode.botConfig.balancerIP) {
@@ -74,18 +74,19 @@ class Bot {
 	ParseRemoteCommand(command) {
 		var self = this;
 		var obj = JSON.parse(command);
-		console.log(obj);
-		console.log(obj.type);
+
 		switch (obj.type) {
 		case "RECV_MESSAGE":
-			console.log(obj.data);
+
 			if (self.bind_onMessage) {
 				self.bind_onMessage(obj.data);
 			} else {
-				console.log('NO BIND!');
+
 			}
 		}
 	}
+
+
 
 	SetUpLocalBinds() {
 		var self = this;
@@ -108,7 +109,7 @@ class Bot {
 	}
 
 	bindOnMessage(msgFunction) {
-		console.log('Binding!');
+
 		this.bind_onMessage = msgFunction;
 	}
 
@@ -158,9 +159,12 @@ class Bot {
 			}
 		});
 	}
-
+	SetStatus(status){
+		var self = this;
+		self.client.setPresence({game: {name: status}});
+	}
 	GetServerByID(id){
-		console.log("Looking for server by ID: " + id);
+
 		var servers = this.client.servers;
 		return servers[id];
 	}
