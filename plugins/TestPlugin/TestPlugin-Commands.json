@@ -9,7 +9,11 @@
       "run": "commandWhitelist",
       "whitelist":["131235236402036736", "112786170655600640"]
     },
+    {
+      "cmd": "loaded",
+      "run": "commandLoaded"
 
+    },
     {
       "cmd": "roles",
       "run": "commandRole",

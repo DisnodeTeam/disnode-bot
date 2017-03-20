@@ -4,7 +4,7 @@ const jsonfile = require('jsonfile');
 const Logging = require('./logging')
 class PluginManager {
     constructor(disnode) {
-        this.classes = [];
+        this.loaded = [];
         this.launched = [];
         this.disnode = disnode;
 
@@ -24,7 +24,7 @@ class PluginManager {
             if (!_ManagerFolders) {
                 reject("Managers Null!")
             }
-            Logging.DisnodeInfo("PluginManager", "Load", "Loading Classes");
+            Logging.DisnodeInfo("PluginManager", "Load", "Loading loaded");
             async.each(_ManagerFolders, function(folder, everyCB) {
               var fullPath = path + "/" + folder + "/" ;
                 var newPlugin = {name: folder, path: fullPath};
@@ -69,19 +69,19 @@ class PluginManager {
                     // Finished Loading, adds class to array
                     function(callback) {
                         if(newPlugin.config.run){
-                          self.classes.push(newPlugin);
+                          self.loaded.push(newPlugin);
                           Logging.DisnodeSuccess("PluginManager","Load-"+folder, "Finished Loading");
                         }else {
                           Logging.DisnodeInfo("PluginManager","Load-"+folder, "Plugin skipped run = false!");
                         }
-                        //console.log(self.classes);
+                        //console.log(self.loaded);
                         callback();
                     },
                 ], function(err, result) {
                     everyCB(err, result); // Finish Waterfall
                 });
             }, function(err, res) {
-                Logging.DisnodeInfo("PluginManager", "Load", "Loaded " + self.classes.length + " plugin(s)");
+                Logging.DisnodeInfo("PluginManager", "Load", "Loaded " + self.loaded.length + " plugin(s)");
                 resolve();
             });
         });
@@ -90,7 +90,7 @@ class PluginManager {
       var self = this;
       return new Promise(function(resolve, reject) {
           Logging.DisnodeInfo("PluginManager", "LauchStatic", "Launching Static Managers.");
-          async.each(self.classes, function(plugin, callback) {
+          async.each(self.loaded, function(plugin, callback) {
             if(plugin.config.static){
               Logging.DisnodeInfo("PluginManager", "LauchStatic-"+plugin.name, "Static Plugin Found. Launching");
               self.Launch(plugin.name, "STATIC").then(function() {
@@ -152,9 +152,9 @@ class PluginManager {
     }
     GetPluginFromLoaded(name) {
         var self = this;
-        for (var i = 0; i < self.classes.length; i++) {
-            if (self.classes[i].name == name) {
-                return self.classes[i];
+        for (var i = 0; i < self.loaded.length; i++) {
+            if (self.loaded[i].name == name) {
+                return self.loaded[i];
             }
         }
     }

@@ -27,6 +27,19 @@ class TestPlugin {
 
 
     }
+    commandLoaded(command) {
+      var self = this;
+      var loadedPlugins = self.disnode.plugin.loaded;
+      var Repsonse = "Current Plugins Loaded: \n";
+
+      for (var i = 0; i <loadedPlugins.length; i++) {
+        var cur = loadedPlugins[i];
+        Repsonse += " - " + cur.name + "\n"
+      }
+      self.disnode.bot.SendMessage(command.msg.channel,Repsonse, {});
+
+
+    }
 
     commandRole(commandObj) {
       var self = this;

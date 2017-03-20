@@ -91,7 +91,7 @@ class Command {
         }
     }
     CheckForPrefix(prefix){
-      var pluginClasses = this.disnode.plugin.classes;
+      var pluginClasses = this.disnode.plugin.loaded;
       var found = null;
       for (var i = 0; i < pluginClasses.length; i++) {
         if(pluginClasses[i].config.prefix == prefix){
