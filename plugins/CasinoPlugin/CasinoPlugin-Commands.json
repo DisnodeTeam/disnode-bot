@@ -1,9 +1,12 @@
 {
   "commands":[
-
     {
       "cmd": "slot",
       "run": "commandSlot"
+    },
+    {
+      "cmd": "bal",
+      "run": "commandBal"
     }
   ]
 }
