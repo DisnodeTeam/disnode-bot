@@ -163,6 +163,26 @@ class Bot {
 		var self = this;
 		self.client.setPresence({game: {name: status}});
 	}
+
+	JoinVoiceChannel(voiceID){
+		var self = this;
+		this.client.joinVoiceChannel(voiceID,function(err){
+			if(err){
+				console.log(err);
+			}else{
+			}
+		})
+	}
+
+	JoinUsersVoiceChannel(serverID, userID){
+		var user = this.GetUserByID(serverID, userID);
+		if(!user){
+			return;
+		}
+
+		this.JoinVoiceChannel(user.voice_channel_id);
+	}
+
 	GetServerByID(id){
 
 		var servers = this.client.servers;

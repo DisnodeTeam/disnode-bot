@@ -34,13 +34,17 @@ class TestPlugin {
 
       for (var i = 0; i <loadedPlugins.length; i++) {
         var cur = loadedPlugins[i];
-        Repsonse += " - " + cur.name + "\n"
+        Repsonse += "!" + cur.name + "\n"
       }
       self.disnode.bot.SendMessage(command.msg.channel,Repsonse, {});
 
 
     }
+    commandJoinVoice(commandObject){
+        this.disnode.bot.SendMessage(commandObject.msg.channel,"Joining Voice channel", {});
+      this.disnode.bot.JoinUsersVoiceChannel(commandObject.msg.server, commandObject.msg.userID);
 
+    }
     commandRole(commandObj) {
       var self = this;
       var PrintRoles = [];

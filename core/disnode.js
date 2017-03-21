@@ -49,8 +49,8 @@ class Disnode {
         // Load Functions
         function(callback) {
           Logging.DisnodeInfo("Disnode", "Start", "Loading Plugins");
-          self.plugin = new PluginManager(self);
-          self.plugin.Load("./plugins").then(function(){
+          self.plugin = new PluginManager(self, "./Plugins");
+          self.plugin.Load().then(function(){
             Logging.DisnodeSuccess("Disnode", "Start", "Plugins Loaded!");
             callback();
           }).catch(callback);
