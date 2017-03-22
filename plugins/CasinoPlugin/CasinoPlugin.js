@@ -3,19 +3,67 @@ const numeral = require('numeral');
 class CasinoPlugin {
   constructor() {
     var self = this;
-    console.log("CASINO PLUGIN CONSTRUCTOR IS RUNNING!");
+    self.casinoObj = {};
+    self.slotItems = [
+      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
+      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
+      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
+      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
+      {item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},
+      {item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},
+      {item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},
+      {item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},
+      {item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},
+      {item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},
+      {item:":100:"},{item:":100:"},{item:":100:"},{item:":100:"},{item:":key:"}
+    ]
+
     setTimeout(function() {
+      var n = self.getRandomIntInclusive(0,3);
+      if(n == 0){
+        self.disnode.bot.SetStatus("!casino slot");
+      }else if (n == 1) {
+        self.disnode.bot.SetStatus("!casino wheel");
+      }else if (n == 2) {
+        self.disnode.bot.SetStatus("!casino flip");
+      }else {
+        self.disnode.bot.SetStatus("!casino");
+      }
+      self.disnode.DB.Find("casinoObj", {}).then(function(res) {
+        self.casinoObj = res[0];
+      })
       self.updateCoroutine();
     }, 1000);
   }
   default (command) {
     var self = this;
     self.getPlayer(command).then(function(player){
-      var msg = "**Commands:**\n";
+      var msg = "";
       for (var i = 0; i < self.class.commands.length; i++) {
         msg += self.disnode.botConfig.prefix + self.class.config.prefix + " " + self.class.commands[i].cmd + " - " + self.class.commands[i].desc + "\n";
       }
-      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Casino", "Hello, " + player.name + "!\n" + msg);
+      self.disnode.bot.SendEmbed(command.msg.channel, {
+        color: 3447003,
+        author: {},
+        fields: [ {
+          name: 'Casino',
+          inline: true,
+          value: "Hello, " + player.name + "!\nCasino Bot is A Discord bot that allows users to play Casino Games on Discord **FOR AMUESMENT ONLY**",
+        },{
+          name: 'Commands:',
+          inline: true,
+          value: msg,
+        }, {
+          name: 'Discord Server',
+          inline: false,
+          value: "**Join the Disnode Server for Support and More!:** https://discord.gg/gxQ7nbQ",
+        }, {
+          name: 'Disnode Premium',
+          inline: false,
+          value: "**Help us keep the bots running 24/7 and get great perks by doing so by giving us a pledge of $1 a month :** https://www.patreon.com/Disnode",
+        }],
+          footer: {}
+      });
     });
   }
   commandBal(command){
@@ -98,7 +146,60 @@ class CasinoPlugin {
   }
   commandSlot(command) {
     var self = this;
-    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Slot", "You bet was: " + command.params[0]);
+    self.getPlayer(command).then(function(player) {
+      if(self.checkBan(player, command))return;
+      switch (command.params[0]) {
+        case "info":
+          if(player.money > 8500){
+            var minJackpotBet = (player.money * 0.015);
+          }else var minJackpotBet = 250;
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 3447003,
+            author: {},
+            title: 'Casino Slots',
+            description: 'Info',
+            fields: [ {
+              name: 'Slot Items',
+              inline: false,
+              value: ":cherries: - Cherries (Most Common)\n\n:third_place:\n\n:second_place:\n\n:first_place:\n\n:100: - 100 (Most Rare)",
+            }, {
+              name: 'Slot Wins and Payouts',
+              inline: false,
+              value: "\n:cherries::cherries::cherries: - 2x bet 10XP\n"+
+              ":third_place::third_place::third_place: - 4x bet 20XP\n"+
+              ":second_place::second_place::second_place: - 8x bet 40XP\n"+
+              ":first_place::first_place::first_place: - 16x bet 80XP\n"+
+              ":100::100::100: - JACKPOT value - 1000XP\n" +
+              ":key::key::key: -  3 Keys (**Minimum Jackpot Bet Required**)\n" +
+              "At least one :key: - 1 Key (**Minimum Jackpot Bet Required**)\n" +
+              "At least one :cherries: - 1/2 your Original Bet",
+            },{
+              name: 'Minimum bet to Win Jackpot',
+              inline: false,
+              value: "Minimum bet: $**" + numeral(minJackpotBet).format('0,0.00') + "** (if money < 8,500 min bet = 250) else (min bet = money * 0.03 or 3%))"
+            },{
+              name: 'XP',
+              inline: false,
+              value: "The XP system has changed a bit, if your bet is lower than $250, you will not get any XP",
+            },{
+              name: 'Jackpot',
+              inline: false,
+              value: "Jackpot Value is increased every time someone plays slots, the value is increased by the players bet amount and has a default value of $100,000\n**Current Jackpot Value: **$" + numeral(self.casinoObj.jackpotValue).format('0,0.00'),
+            }, {
+              name: 'Jackpot History',
+              inline: true,
+              value: "**Last won by:** " + self.casinoObj.jackpotstat.lastWon,
+            }],
+              footer: {}
+            });
+          break;
+        case undefined:
+
+          break;
+        default:
+
+      }
+    })
   }
   getPlayer(data){
     var self = this;
@@ -108,7 +209,6 @@ class CasinoPlugin {
         players = found;
         for (var i = 0; i < players.length; i++) {
           if(data.msg.userID == players[i].id){
-            console.log("Found a Player!");
             resolve(players[i]);
             return;
           }
@@ -152,14 +252,6 @@ class CasinoPlugin {
         resolve(newPlayer);
         return;
       });
-    });
-  }
-  updatePlayer(oldp, newp){
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      self.disnode.DB.Update("players", oldp, newp).then(function(res) {
-        resolve(res);
-      })
     });
   }
   parseMention(dataString){
@@ -271,11 +363,9 @@ class CasinoPlugin {
           players[i].money += players[i].perUpdate;
         }
         players[i].lastMessage = null;
-        self.disnode.DB.Update("players", {"id":players[i].id}, players[i]).then(function(res) {
-          console.log(res);
-        });
+        self.disnode.DB.Update("players", {"id":players[i].id}, players[i]);
       }
-    })
+    });
     setTimeout(function() {
       var n = self.getRandomIntInclusive(0,3);
       if(n == 0){
