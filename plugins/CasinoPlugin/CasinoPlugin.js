@@ -2,13 +2,18 @@ const numeral = require('numeral');
 
 class CasinoPlugin {
   constructor() {
-
+    console.log("CASINO PLUGIN CONSTRUCTOR IS RUNNING!");
+    this.updateCoroutine();
   }
   default (command) {
     var self = this;
     self.getPlayer(command).then(function(player){
-      console.dir(player);
-      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Casino", "Hello, " + player.name + "!");
+      console.dir(self.class);
+      var msg = "**Commands:**\n";
+      for (var i = 0; i < self.class.commands.length; i++) {
+        msg += self.disnode.botConfig.prefix + self.class.config.prefix + " " + self.class.commands[i].cmd + " - " + self.class.commands[i].desc + "\n";
+      }
+      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Casino", "Hello, " + player.name + "!\n" + msg);
     });
   }
   commandBal(command){
@@ -253,13 +258,24 @@ class CasinoPlugin {
       return false;
     }
   }
+  cloneObject(obj){
+    return JSON.parse(JSON.stringify(obj));
+  }
   updateCoroutine(){
+    var self = this;
     self.disnode.DB.Find("players", {}).then(function(players) {
       for (var i = 0; i < players.length; i++) {
-        var oldp = players[i];
+        var oldp = self.cloneObject(players[i]);
         if(players[i].lastSeen == undefined){
-          this.updateLastSeen(players[i])
+          self.updateLastSeen(players[i]);
         }
+        if(self.canGetIncome(players[i])){
+          players[i].money += players[i].perUpdate;
+        }
+        players[i].lastMessage = null;
+        self.disnode.DB.Update("players", oldp, players[i]).then(function(res) {
+          console.log(res);
+        });
       }
     })
     setTimeout(function() {

@@ -8,7 +8,6 @@ class DB {
 		Logging.DisnodeInfo("DB", "Constructor", "Started!")
 		this.disnode = disnode;
 		this.DB = {};
-
 	}
 	Init() {
 		var self = this;

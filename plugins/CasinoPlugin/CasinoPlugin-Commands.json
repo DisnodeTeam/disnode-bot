@@ -2,10 +2,12 @@
   "commands":[
     {
       "cmd": "slot",
+      "desc": "*Slots (general help)*",
       "run": "commandSlot"
     },
     {
       "cmd": "bal",
+      "desc": "*Check yours or others; Money and XP Quickly*",
       "run": "commandBal"
     }
   ]

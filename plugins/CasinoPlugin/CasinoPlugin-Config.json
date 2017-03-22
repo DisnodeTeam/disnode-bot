@@ -1,5 +1,5 @@
 {
   "prefix":"casino",
-  "static": "true",
+  "static": true,
   "run":true
 }

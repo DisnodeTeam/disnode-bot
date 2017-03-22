@@ -37,7 +37,7 @@ class PluginManager {
             self.launched.splice(i, 1);
           }
         }
-        
+
         self.LoadPlugin(name);
 
         });
@@ -79,8 +79,9 @@ class PluginManager {
                       newPlugin.class = NpmRequire;
                       callback(null);
                   } catch (e) {
-                      Logging.DisnodeError("PluginManager", "Load-"+name, "Failed to Import: " + className + " - '" + e  + "'");
-                      callback(e, null);
+                    console.dir(e);
+                    Logging.DisnodeError("PluginManager", "Load-"+name, "Failed to Import: " + className + " - '" + e  + "'");
+                    callback(e, null);
                   }
               },
               function(callback) {
@@ -94,7 +95,6 @@ class PluginManager {
               // Finished Loading, adds class to array
               function(callback) {
                   if(newPlugin.config.run){
-
                     self.loaded.push(newPlugin);
                     Logging.DisnodeSuccess("PluginManager","Load-"+name, "Finished Loading");
                   }else {
