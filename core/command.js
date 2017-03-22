@@ -85,7 +85,6 @@ class Command {
             command = this.GetCommandObject(plugin, command);
             callback(plugin, command, params);
           }else{
-            console.log("DEFAULT", command, params);
             callback(plugin, {"cmd":command, "run":"default"}, params);
           }
         }
@@ -144,7 +143,6 @@ function GetParams(raw){
            BeginSpace = BeginQuote;
            EndSpace = EndQuote;
            param = raw.substring(BeginSpace + 1, EndSpace);
-           console.log(" ");
          }
        }
        lastSpace = EndSpace;
