@@ -173,6 +173,16 @@ class Bot {
 			}
 		})
 	}
+    
+    LeaveVoiceChannel(voiceID){
+		var self = this;
+		this.client.leaveVoiceChannel(voiceID,function(err){
+			if(err){
+				console.log(err);
+			}else{
+			}
+		})
+	}
 
 	JoinUsersVoiceChannel(serverID, userID){
 		var user = this.GetUserByID(serverID, userID);
@@ -182,6 +192,15 @@ class Bot {
 
 		this.JoinVoiceChannel(user.voice_channel_id);
 	}
+    
+    LeaveUsersVoiceChannel(serverID, userID) {
+        var user = this.GetUserByID(serverID, userID);
+		if(!user){
+			return;
+		}
+
+		this.LeaveVoiceChannel(user.voice_channel_id);
+    }
 
 	GetServerByID(id){
 
