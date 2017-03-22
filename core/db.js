@@ -59,12 +59,12 @@ class DB {
 		});
 	}
 
-	Update(collection, oldData, newData) {
+	Update(collection, identifier, newData) {
 		var self = this;
 
     return new Promise(function (resolve, reject) {
       var _collection = self.DB.collection(collection);
-			_collection.updateOne(oldData, {$set : newData}, function (err, result) {
+			_collection.updateOne(identifier, {$set : newData}, function (err, result) {
 				if(err){
           reject(err);
           return;

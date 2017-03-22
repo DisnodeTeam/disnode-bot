@@ -2,13 +2,15 @@ const numeral = require('numeral');
 
 class CasinoPlugin {
   constructor() {
+    var self = this;
     console.log("CASINO PLUGIN CONSTRUCTOR IS RUNNING!");
-    this.updateCoroutine();
+    setTimeout(function() {
+      self.updateCoroutine();
+    }, 1000);
   }
   default (command) {
     var self = this;
     self.getPlayer(command).then(function(player){
-      console.dir(self.class);
       var msg = "**Commands:**\n";
       for (var i = 0; i < self.class.commands.length; i++) {
         msg += self.disnode.botConfig.prefix + self.class.config.prefix + " " + self.class.commands[i].cmd + " - " + self.class.commands[i].desc + "\n";
@@ -258,14 +260,10 @@ class CasinoPlugin {
       return false;
     }
   }
-  cloneObject(obj){
-    return JSON.parse(JSON.stringify(obj));
-  }
   updateCoroutine(){
     var self = this;
     self.disnode.DB.Find("players", {}).then(function(players) {
       for (var i = 0; i < players.length; i++) {
-        var oldp = self.cloneObject(players[i]);
         if(players[i].lastSeen == undefined){
           self.updateLastSeen(players[i]);
         }
@@ -273,7 +271,7 @@ class CasinoPlugin {
           players[i].money += players[i].perUpdate;
         }
         players[i].lastMessage = null;
-        self.disnode.DB.Update("players", oldp, players[i]).then(function(res) {
+        self.disnode.DB.Update("players", {"id":players[i].id}, players[i]).then(function(res) {
           console.log(res);
         });
       }
