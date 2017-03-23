@@ -163,6 +163,11 @@ class Bot {
 		var self = this;
 		self.client.setPresence({game: {name: status}});
 	}
+	
+	SetUsername(nom){
+		var self = this;
+		self.client.editUserInfo({username: nom});
+	}
 
 	JoinVoiceChannel(voiceID){
 		var self = this;
