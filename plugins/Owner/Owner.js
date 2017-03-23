@@ -74,6 +74,7 @@ class OwnerPlugin {
         var self = this;
         if (command.msg.userID == this.owner) {
             self.disnode.bot.SetUsername(command.params[0]);
+            self.disnode.bot.SendMessage(command.msg.channel, "Username set to - **" + command.params[0] + "**");
         } else self.disnode.bot.SendEmbed(command.msg.channel, {
             color: 15158332,
             author: {},
