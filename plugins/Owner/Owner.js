@@ -1,7 +1,7 @@
 class OwnerPlugin {
     constructor() {
-        this.ownerName = "Insert Name"
-        this.owner = "Insert ID";
+        this.ownerName = "Insert Name";  //Insert Name so that users that do [p]owner will know who the owner of the bot is
+        this.owner = "Insert ID";  //Insert ID so that only you can run these commands
     }
 
     default (command) {
