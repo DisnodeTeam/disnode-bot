@@ -39,8 +39,7 @@ class OwnerPlugin {
         console.log(command);
         var self = this;
         if (command.msg.userID == this.owner) {
-            self.disnode.bot.SendMessage(command.msg.channel, "Shutting down");
-            this.disnode.bot.client.disconnect();
+            process.exit();
         } else self.disnode.bot.SendEmbed(command.msg.channel, {
             color: 15158332,
             author: {},
