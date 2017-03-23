@@ -89,4 +89,4 @@ class OwnerPlugin {
 
 }
 module.exports = OwnerPlugin
-\\ Made by Hazed SPaCE✘#2574
+// Made by Hazed SPaCE✘#2574
