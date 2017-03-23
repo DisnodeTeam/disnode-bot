@@ -1,6 +1,4 @@
-const Twitch = require('twitch-api');
-
-class TwitchPlugin {
+class IDPlugin {
   constructor() {
 
 
@@ -23,4 +21,4 @@ class TwitchPlugin {
   }
 }
 
-module.exports = TwitchPlugin;
+module.exports = IDPlugin;
