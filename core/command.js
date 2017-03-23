@@ -74,10 +74,7 @@ class Command {
         }else{
           firstWord = msg.substring(1, SpaceIndex);
         }
-
-        console.log(firstWord);
         if(this.CheckForPrefix(firstWord) != null){
-          console.log("found a prefix");
           plugin = this.CheckForPrefix(firstWord);
           pluginPrefix = firstWord;
           command = params[0];
@@ -114,11 +111,12 @@ class Command {
       var pluginClasses = this.disnode.plugin.loaded;
       var found = null;
       for (var i = 0; i < pluginClasses.length; i++) {
-        for (var j = 0; j < pluginClasses[i].commands.length; j++) {
-          console.dir(pluginClasses[i])
-          if(pluginClasses[i].commands[j].cmd == command){
-            found = pluginClasses[i];
-            break;
+        if(pluginClasses[i].config.requirePrefix == undefined || pluginClasses[i].config.requirePrefix == false){
+          for (var j = 0; j < pluginClasses[i].commands.length; j++) {
+            if(pluginClasses[i].commands[j].cmd == command){
+              found = pluginClasses[i];
+              break;
+            }
           }
         }
         if(found != null)break;
