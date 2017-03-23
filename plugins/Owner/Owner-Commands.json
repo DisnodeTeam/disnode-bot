@@ -1,0 +1,20 @@
+{
+  "commands":[
+    {
+      "cmd": "restart",
+      "run": "commandRestart"
+    },
+    {
+      "cmd": "shutdown",
+      "run": "commandShutdown"
+    },
+    {
+      "cmd": "status",
+      "run": "commandStatus"
+    },
+    {
+      "cmd": "username",
+      "run": "commandUsername"
+    }
+  ]
+}
