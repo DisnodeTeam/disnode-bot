@@ -87,6 +87,16 @@ class Command {
           }else{
             callback(plugin, {"cmd":command, "run":"default"}, params);
           }
+        }else {
+          Logging.DisnodeWarning("Command", "CommandParse", "Attempting to find command without plugin prefix, this is heavily not supported and is in beta.");
+          command = firstWord;
+          if(this.GetPluginFromCommand(command)){
+            plugin = this.GetPluginFromCommand(command);
+            if(this.GetCommandObject(plugin, command)){
+              command = this.GetCommandObject(plugin, command);
+              callback(plugin, command, params);
+            }
+          }
         }
     }
     CheckForPrefix(prefix){
@@ -96,6 +106,20 @@ class Command {
         if(pluginClasses[i].config.prefix == prefix){
           found = pluginClasses[i];
         }
+      }
+      return found;
+    }
+    GetPluginFromCommand(command){
+      var pluginClasses = this.disnode.plugin.loaded;
+      var found = null;
+      for (var i = 0; i < pluginClasses.length; i++) {
+        for (var j = 0; j < pluginClasses[i].commands.length; j++) {
+          if( pluginClasses[i].commands[i].cmd == command){
+            found = pluginClasses[i];
+            break;
+          }
+        }
+        if(found != null)break;
       }
       return found;
     }
