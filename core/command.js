@@ -75,8 +75,9 @@ class Command {
           firstWord = msg.substring(1, SpaceIndex);
         }
 
-
+        console.log(firstWord);
         if(this.CheckForPrefix(firstWord) != null){
+          console.log("found a prefix");
           plugin = this.CheckForPrefix(firstWord);
           pluginPrefix = firstWord;
           command = params[0];
@@ -88,11 +89,11 @@ class Command {
             callback(plugin, {"cmd":command, "run":"default"}, params);
           }
         }else {
-          Logging.DisnodeWarning("Command", "CommandParse", "Attempting to find command without plugin prefix, this is heavily not supported and is in beta.");
           command = firstWord;
           if(this.GetPluginFromCommand(command)){
             plugin = this.GetPluginFromCommand(command);
             if(this.GetCommandObject(plugin, command)){
+              Logging.DisnodeWarning("Command", "CommandParse", "Running a command without plugin prefix, this is heavily not supported and is in beta.");
               command = this.GetCommandObject(plugin, command);
               callback(plugin, command, params);
             }
@@ -114,7 +115,8 @@ class Command {
       var found = null;
       for (var i = 0; i < pluginClasses.length; i++) {
         for (var j = 0; j < pluginClasses[i].commands.length; j++) {
-          if( pluginClasses[i].commands[i].cmd == command){
+          console.dir(pluginClasses[i])
+          if(pluginClasses[i].commands[j].cmd == command){
             found = pluginClasses[i];
             break;
           }
