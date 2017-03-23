@@ -1,3 +1,5 @@
+const sleep = require('system-sleep');
+
 class OwnerPlugin {
     constructor() {
         this.ownerName = "Insert Name";  //Insert Name so that users that do [p]owner will know who the owner of the bot is
@@ -39,6 +41,9 @@ class OwnerPlugin {
         console.log(command);
         var self = this;
         if (command.msg.userID == this.owner) {
+          self.disnode.bot.SendMessage(command.msg.channel, "I am shutting down");
+          self.disnode.bot.Disconnect();
+          sleep(1000);
             process.exit();
         } else self.disnode.bot.SendEmbed(command.msg.channel, {
             color: 15158332,
@@ -89,4 +94,4 @@ class OwnerPlugin {
 
 }
 module.exports = OwnerPlugin
-// Made by Hazed SPaCE✘#2574
+// Made by Hazed SPaCE✘#2574 & God of _.#6075
