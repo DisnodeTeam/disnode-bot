@@ -109,18 +109,19 @@ class Bot {
 	}
 
 	bindOnMessage(msgFunction) {
-
 		this.bind_onMessage = msgFunction;
 	}
 
 
 
-	SendMessage(channel, msg) {
+	SendMessage(channel, msg, typing=false, tts=false) {
 		var self = this;
 		if (self.isRemote) {
 			var msgOBJ = {
 				channel: channel,
-				msg: msg
+				msg: msg,
+				typing: typing,
+      	tts: tts
 			};
 			var commandObj = {
 				type: "SEND_MESSAGE",
@@ -130,10 +131,20 @@ class Bot {
 
 			self.client.write(JSON.stringify(commandObj));
 		}else{
-			self.client.sendMessage({
-					 to: channel,
-					 message: msg
-			 });
+			return new Promise(function(resolve, reject) {
+				self.client.sendMessage({
+					to: channel,
+					message: msg,
+		 			typing: typing,
+		      tts: tts
+				}, function(err, resp) {
+					if(err){
+						reject(err);
+					}else {
+						resolve(resp);
+					}
+				});
+			});
 		}
 	}
 	SendEmbed(channel, embed){
@@ -163,10 +174,10 @@ class Bot {
 		var self = this;
 		self.client.setPresence({game: {name: status}});
 	}
-	
-	SetUsername(nom){
+
+	SetUsername(name){
 		var self = this;
-		self.client.editUserInfo({username: nom});
+		self.client.editUserInfo({username: name});
 	}
 
 	JoinVoiceChannel(voiceID){
@@ -178,8 +189,8 @@ class Bot {
 			}
 		})
 	}
-    
-    LeaveVoiceChannel(voiceID){
+
+  LeaveVoiceChannel(voiceID){
 		var self = this;
 		this.client.leaveVoiceChannel(voiceID,function(err){
 			if(err){
@@ -188,60 +199,46 @@ class Bot {
 			}
 		})
 	}
-
-	JoinUsersVoiceChannel(serverID, userID){
+		JoinUsersVoiceChannel(serverID, userID){
 		var user = this.GetUserByID(serverID, userID);
 		if(!user){
 			return;
 		}
-
 		this.JoinVoiceChannel(user.voice_channel_id);
 	}
-    
     LeaveUsersVoiceChannel(serverID, userID) {
-        var user = this.GetUserByID(serverID, userID);
+    var user = this.GetUserByID(serverID, userID);
 		if(!user){
 			return;
 		}
-
-		this.LeaveVoiceChannel(user.voice_channel_id);
-    }
-
-	GetServerByID(id){
-
+			this.LeaveVoiceChannel(user.voice_channel_id);
+  }
+		GetServerByID(id){
 		var servers = this.client.servers;
 		return servers[id];
 	}
-
-	GetUserByID(serverId, userId){
+		GetUserByID(serverId, userId){
 		var server = this.GetServerByID(serverId);
-
 		if(!server){
 			return;
 		}
-
 		return server.members[userId];
 	}
-
-	GetUserRoles(serverId, userId){
+		GetUserRoles(serverId, userId){
 		var user = this.GetUserByID(serverId, userId);
-
 		if(!user){
 			return;
 		}
-
 		return user.roles;
 	}
 
 	GetRoleById(serverId, roleId){
 		var server = this.GetServerByID(serverId);
-
 		if(!server){
 			return;
 		}
 		return server.roles[roleId];
 	}
-
 }
 
 module.exports = Bot;
