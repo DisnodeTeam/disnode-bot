@@ -239,6 +239,16 @@ class Bot {
 		}
 		return server.roles[roleId];
 	}
+	GetBotInfo(){
+		var self = this;
+		return {
+			username: self.client.username,
+			id: self.client.id,
+			avatar: self.client.avatar,
+			bot: self.client.bot,
+			discriminator: self.client.discriminator,
+		}
+	}
 }
 
 module.exports = Bot;
