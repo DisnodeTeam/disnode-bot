@@ -29,6 +29,8 @@ class CasinoPlugin {
       }else {
         self.disnode.bot.SetStatus("!casino");
       }
+      var botinfo = self.disnode.bot.GetBotInfo();
+      console.dir(botinfo);
       self.disnode.DB.Find("casinoObj", {}).then(function(res) {
         self.casinoObj = res[0];
       })

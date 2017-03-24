@@ -249,6 +249,10 @@ class Bot {
 			discriminator: self.client.discriminator,
 		}
 	}
+	GetUserInfo(UserID){
+		var self = this;
+		return self.client.users[userID];
+	}
 }
 
 module.exports = Bot;
