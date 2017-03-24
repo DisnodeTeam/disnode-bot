@@ -239,6 +239,7 @@ class Bot {
 		}
 		return server.roles[roleId];
 	}
+	//Comment
 	GetBotInfo(){
 		var self = this;
 		return {
