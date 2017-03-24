@@ -6,6 +6,11 @@
       "run": "commandSlot"
     },
     {
+      "cmd": "flip",
+      "desc": "*Flip a Coin, Heads Or Tails!*",
+      "run": "commandCoinFlip"
+    },
+    {
       "cmd": "bal",
       "desc": "*Check yours or others; Money and XP Quickly*",
       "run": "commandBal"
@@ -14,6 +19,11 @@
       "cmd": "betters",
       "desc": "*See who recently played slots!*",
       "run": "recentBettersCommand"
+    },
+    {
+      "cmd": "jackpot",
+      "desc": "*Get Quick info about the Jackpot*",
+      "run": "commandJackpotInfo"
     }
   ]
 }

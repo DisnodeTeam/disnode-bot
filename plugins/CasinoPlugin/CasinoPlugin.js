@@ -145,6 +145,35 @@ class CasinoPlugin {
       })
     }
   }
+  commandJackpotInfo(command){
+    var self = this;
+    self.getPlayer(command).then(function(player) {
+        if(self.checkBan(player, command))return;
+        if(player.money > 8500){
+          var minJackpotBet = (player.money * 0.03);
+        }else var minJackpotBet = 250;
+        self.updateLastSeen(player);
+        self.disnode.bot.SendEmbed(command.msg.channel, {
+          color: 3447003,
+          author: {},
+          fields: [ {
+            name: 'JACKPOT Value',
+            inline: true,
+            value: "$" + numeral(self.casinoObj.jackpotValue).format('0,0.00'),
+          },{
+            name: 'Minimum bet to Win JACKPOT',
+            inline: false,
+            value: "$" + numeral(minJackpotBet).format('0,0.00')
+          }, {
+            name: 'JACKPOT History',
+            inline: false,
+            value: "**Last won by:** " + self.casinoObj.jackpotstat.lastWon + " **Amount Won:** $" + numeral(self.casinoObj.jackpotstat.LatestWin).format('0,0.00'),
+          }],
+            footer: {}
+          }
+        )
+    });
+  }
   commandSlot(command){
     var self = this;
     self.getPlayer(command).then(function(player) {
@@ -315,6 +344,176 @@ class CasinoPlugin {
           }
       }
     })
+  }
+  commandCoinFlip(command){
+      var self = this;
+      self.getPlayer(command).then(function(player) {
+        if(self.checkBan(player, command))return;
+          var flipinfo = {
+            flip: self.getRandomIntInclusive(0,1),
+            winText: "",
+            winAmount: 0,
+            playerPick: 0,
+            tag: ""
+          }
+          if(command.params[0] == "heads"){
+            flipinfo.playerPick = 0;
+            flipinfo.tag = "Heads";
+            flipinfo.ltag = "Tails";
+          }else if (command.params[0] == "tails") {
+            flipinfo.playerPick = 1;
+            flipinfo.tag = "Tails";
+            flipinfo.ltag = "Heads";
+          }else {
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Coin Flip", "Welcome to Coin Flip! You can play by using this command `!casino flip [heads/tails] [bet]` Examples `!casino flip heads 100` and `!casino flip tails 100`");
+            return;
+          }if(command.params[1]){
+            if(command.params[1].toLowerCase() == "allin"){
+              command.params[1] = player.money;
+            }
+          }
+          if(numeral(command.params[1]).value() >= 1){
+            console.log(flipinfo)
+            var bet;
+            var bet = numeral(command.params[1]).value();
+            var timeoutInfo = self.checkTimeout(player, 5);
+            if(player.Admin || player.Premium)timeoutInfo = self.checkTimeout(player, 2);
+            if(!timeoutInfo.pass){
+              console.log("No Go");
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.");
+              return;
+            }
+            if(bet > player.money){// Checks to see if player has enough money for their bet
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'));
+              return;
+            }else{
+              player.money -= bet;
+              player.money = Number(parseFloat(player.money).toFixed(2));
+            }
+            player.stats.coinPlays++;
+            if(flipinfo.flip == flipinfo.playerPick){
+              player.stats.coinWins++;
+              if(flipinfo.playerPick == 0){
+                player.stats.coinHeads++;
+              }else player.stats.coinTails++;
+              flipinfo.winText = flipinfo.tag + " You Win!"
+              flipinfo.winAmount = Number(parseFloat(bet * 1.75).toFixed(2));
+              player.stats.moneyWon += Number(parseFloat(flipinfo.winAmount).toFixed(2));
+              player.stats.moneyWon = Number(parseFloat(player.stats.moneyWon).toFixed(2));
+              player.money += Number(parseFloat(flipinfo.winAmount).toFixed(2));
+              player.money = Number(parseFloat(player.money).toFixed(2));
+              if(bet >= 250){
+                player.xp += 5;
+              }else {
+                flipinfo.winText += " `You bet lower than $250 fair warning here, you wont get any XP`"
+              }
+              console.log("[Casino " + self.getDateTime() + "] Player: " + player.name + " Has Won Coin Flip Winnings: " + flipinfo.winAmount + "original bet: " + bet);
+              self.updateLastSeen(player);
+              self.disnode.bot.SendEmbed(command.msg.channel, {
+                color: 3447003,
+                author: {},
+                fields: [ {
+                  name: ':moneybag: Coin Flip :moneybag:',
+                  inline: false,
+                  value: flipinfo.winText,
+                }, {
+                  name: 'Bet',
+                  inline: true,
+                  value: "$" + numeral(bet).format('0,0.00'),
+                }, {
+                  name: 'Winnings',
+                  inline: true,
+                  value: "$" + numeral(flipinfo.winAmount).format('0,0.00'),
+                }, {
+                  name: 'Net Gain',
+                  inline: true,
+                  value: "$" + numeral(flipinfo.winAmount - bet).format('0,0.00'),
+                }, {
+                  name: 'Balance',
+                  inline: true,
+                  value: "$" + numeral(player.money).format('0,0.00'),
+                }, {
+                  name: 'XP',
+                  inline: true,
+                  value: player.xp,
+                }],
+                  footer: {}
+                }
+              );
+              var currentDate = new Date();
+              var hour = currentDate.getHours();
+              hour = (hour < 10 ? "0" : "") + hour;
+              var min  = currentDate.getMinutes();
+              min = (min < 10 ? "0" : "") + min;
+              var sec  = currentDate.getSeconds();
+              sec = (sec < 10 ? "0" : "") + sec;
+              player.lastMessage = {
+                hour: parseInt(hour),
+                min: parseInt(min),
+                sec: parseInt(sec),
+              }
+              self.disnode.DB.Update("players", {"id":player.id}, player);
+              self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
+            }else {
+              flipinfo.winText = flipinfo.ltag + " House Wins!";
+              if(bet >= 250){}else {
+                flipinfo.winText += " `You bet lower than $250 fair warning here, you wont get any XP`"
+              }
+              if(flipinfo.playerPick == 0){
+                player.stats.coinTails++;
+              }else player.stats.coinHeads++;
+              console.log("[Casino " + self.getDateTime() + "] Player: " + player.name + " Has Lost Coin Flip Winnings: " + flipinfo.winAmount + "original bet: " + bet);
+              self.updateLastSeen(player);
+              self.disnode.bot.SendEmbed(command.msg.channel, {
+                color: 3447003,
+                author: {},
+                fields: [ {
+                  name: ':moneybag: Coin Flip :moneybag:',
+                  inline: false,
+                  value: flipinfo.winText,
+                }, {
+                  name: 'Bet',
+                  inline: true,
+                  value: "$" + numeral(bet).format('0,0.00'),
+                }, {
+                  name: 'Winnings',
+                  inline: true,
+                  value: "$" + numeral(flipinfo.winAmount).format('0,0.00'),
+                }, {
+                  name: 'Net Gain',
+                  inline: true,
+                  value: "$" + numeral(flipinfo.winAmount - bet).format('0,0.00'),
+                }, {
+                  name: 'Balance',
+                  inline: true,
+                  value: "$" + numeral(player.money).format('0,0.00'),
+                }, {
+                  name: 'XP',
+                  inline: true,
+                  value: player.xp,
+                }],
+                  footer: {}
+                }
+              );
+              var currentDate = new Date();
+              var hour = currentDate.getHours();
+              hour = (hour < 10 ? "0" : "") + hour;
+              var min  = currentDate.getMinutes();
+              min = (min < 10 ? "0" : "") + min;
+              var sec  = currentDate.getSeconds();
+              sec = (sec < 10 ? "0" : "") + sec;
+              player.lastMessage = {
+                hour: parseInt(hour),
+                min: parseInt(min),
+                sec: parseInt(sec),
+              }
+            }
+            self.disnode.DB.Update("players", {"id":player.id}, player);
+            self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
+          }else {
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a bet! Example `!casino flip tails 100`");
+          }
+      });
   }
   recentBettersCommand(command){
     var self = this;
