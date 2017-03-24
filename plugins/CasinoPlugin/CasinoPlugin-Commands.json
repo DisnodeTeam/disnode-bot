@@ -9,6 +9,11 @@
       "cmd": "bal",
       "desc": "*Check yours or others; Money and XP Quickly*",
       "run": "commandBal"
+    },
+    {
+      "cmd": "betters",
+      "desc": "*See who recently played slots!*",
+      "run": "recentBettersCommand"
     }
   ]
 }

@@ -17,7 +17,7 @@ class CasinoPlugin {
       {item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},
       {item:":100:"},{item:":100:"},{item:":100:"},{item:":100:"},{item:":key:"}
     ]
-
+    this.recentBetters = [];
     setTimeout(function() {
       var n = self.getRandomIntInclusive(0,3);
       if(n == 0){
@@ -29,12 +29,10 @@ class CasinoPlugin {
       }else {
         self.disnode.bot.SetStatus("!casino");
       }
-      var botinfo = self.disnode.bot.GetBotInfo();
-      console.dir(botinfo);
       self.disnode.DB.Find("casinoObj", {}).then(function(res) {
         self.casinoObj = res[0];
-      })
-      self.updateCoroutine();
+        self.updateCoroutine();
+      });
     }, 1000);
   }
   default (command) {
@@ -110,6 +108,7 @@ class CasinoPlugin {
       })
     }else {
       self.getPlayer(command).then(function(player) {
+        if(self.checkBan(player, command))return;
         self.disnode.bot.SendEmbed(command.msg.channel,
           {
             color: 3447003,
@@ -146,14 +145,14 @@ class CasinoPlugin {
       })
     }
   }
-  commandSlot(command) {
+  commandSlot(command){
     var self = this;
     self.getPlayer(command).then(function(player) {
       if(self.checkBan(player, command))return;
       switch (command.params[0]) {
         case "info":
           if(player.money > 8500){
-            var minJackpotBet = (player.money * 0.015);
+            var minJackpotBet = (player.money * 0.03);
           }else var minJackpotBet = 250;
           self.disnode.bot.SendEmbed(command.msg.channel, {
             color: 3447003,
@@ -196,12 +195,289 @@ class CasinoPlugin {
             });
           break;
         case undefined:
-
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Slots", "Hi, Welcome to the slots! If you need info on the slots the run `!casino slot info`\n\nIf you want to try the slots then do `!casino slot [bet]` for example `casino slot 100` that will run the slot with $100 as the bet");
           break;
         default:
-
+          if(command.params[0]){
+            if(command.params[0].toLowerCase() == "allin"){
+              command.params[0] = player.money;
+            }
+            var bet = numeral(command.params[0]).value();
+            var timeoutInfo = self.checkTimeout(player, 5);
+            if(player.Admin || player.Premium)timeoutInfo = self.checkTimeout(player, 2);
+            if(!timeoutInfo.pass){
+              console.log("[Casino " + self.getDateTime() + "] Player: " + player.name + " Tried the slots before their delay of: " + timeoutInfo.remain.sec);
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.");
+              return;
+            }
+            if(bet > 0.01){
+              if(bet > player.money | bet == NaN | bet == "NaN"){// Checks to see if player has enough money for their bet
+                console.log("Bet: " + bet + " Money: " + numeral(player.money).format('0,0.00'));
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'));
+                return;
+              }else{
+                player.money -= parseFloat(bet);
+                self.casinoObj.jackpotValue += parseFloat(bet);
+                player.money = parseFloat(player.money.toFixed(2));
+                self.casinoObj.jackpotValue = parseFloat(self.casinoObj.jackpotValue.toFixed(2));
+              }
+              var slotInfo = {
+                bet: bet,
+                player: player,
+                winText: "",
+                winAmount: 0,
+                reel1: self.slotItems[self.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                reel2: self.slotItems[self.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                reel3: self.slotItems[self.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                fake1: self.slotItems[self.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                fake2: self.slotItems[self.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                fake3: self.slotItems[self.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                fake4: self.slotItems[self.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                fake5: self.slotItems[self.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                fake6: self.slotItems[self.getRandomIntInclusive(0,(self.slotItems.length - 1))].item
+              }
+              self.didWin(slotInfo);
+              if(player.money > 8500){
+                var minJackpotBet = (player.money * 0.03);
+              }else var minJackpotBet = 250;
+              if(timeoutInfo.remain){
+                console.log("[Casino " + self.getDateTime() + "] Player: " + player.name + " Slot Winnings: " + slotInfo.winAmount + " original bet: " + bet + " Time since they could use this command again: " + timeoutInfo.remain.sec);
+              }else {
+                console.log("[Casino " + self.getDateTime() + "] Player: " + player.name + " Slot Winnings: " + slotInfo.winAmount + " original bet: " + bet);
+              }
+              player.money = parseFloat(player.money.toFixed(2));
+              minJackpotBet = parseFloat(minJackpotBet.toFixed(2));
+              player.stats.moneyWon = parseFloat(parseFloat(player.stats.moneyWon) + parseFloat(slotInfo.winAmount));
+              player.stats.moneyWon = player.stats.moneyWon.toFixed(2);
+              self.casinoObj.jackpotValue = parseFloat(self.casinoObj.jackpotValue.toFixed(2));
+              self.handleRecentBetters(player);
+              self.updateLastSeen(player);
+              self.disnode.bot.SendEmbed(command.msg.channel, {
+                color: 3447003,
+                author: {},
+                fields: [ {
+                  name: ':slot_machine: ' + player.name + ' Slots Result :slot_machine:',
+                  inline: false,
+                  value: "| " + slotInfo.fake1 + slotInfo.fake2 + slotInfo.fake3 + " |\n**>**" + slotInfo.reel1 + slotInfo.reel2 + slotInfo.reel3 +"**<** Pay Line\n| " + slotInfo.fake4 + slotInfo.fake5 + slotInfo.fake6 + " |\n\n" + slotInfo.winText,
+                }, {
+                  name: 'Bet',
+                  inline: true,
+                  value: "$" + numeral(bet).format('0,0.00'),
+                }, {
+                  name: 'Winnings',
+                  inline: true,
+                  value: "$" + numeral(slotInfo.winAmount).format('0,0.00'),
+                }, {
+                  name: 'Net Gain',
+                  inline: true,
+                  value: "$" + numeral(slotInfo.winAmount - bet).format('0,0.00'),
+                }, {
+                  name: 'Balance',
+                  inline: true,
+                  value: "$" + numeral(player.money).format('0,0.00'),
+                }, {
+                  name: 'Keys',
+                  inline: true,
+                  value: player.keys
+                }, {
+                  name: 'XP',
+                  inline: true,
+                  value: player.xp,
+                }, {
+                  name: 'Minimum JACKPOT bet',
+                  inline: true,
+                  value: "$" + numeral(minJackpotBet).format('0,0.00'),
+                }, {
+                  name: 'JACKPOT Value',
+                  inline: true,
+                  value: "$" + numeral(self.casinoObj.jackpotValue).format('0,0.00'),
+                }],
+                  footer: {}
+                }
+              );
+              var currentDate = new Date();
+              var hour = currentDate.getHours();
+              hour = (hour < 10 ? "0" : "") + hour;
+              var min  = currentDate.getMinutes();
+              min = (min < 10 ? "0" : "") + min;
+              var sec  = currentDate.getSeconds();
+              sec = (sec < 10 ? "0" : "") + sec;
+              player.lastMessage = {
+                hour: parseInt(hour),
+                min: parseInt(min),
+                sec: parseInt(sec),
+              }
+              self.disnode.DB.Update("players", {"id":player.id}, player);
+              self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
+            }else {
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a Number for bet or `!casino slot` for general help")
+            }
+          }
       }
     })
+  }
+  recentBettersCommand(command){
+    var self = this;
+    var player = self.getPlayer(command).then(function() {
+      if(self.checkBan(player, command))return;
+    });
+    var msg = "Name // Last Time Played\n";
+    for (var i = 0; i < self.recentBetters.length; i++) {
+      msg += (i+1) + ". **" + self.recentBetters[i].name + "** -=- `" + self.recentBetters[i].time + "`\n";
+    }
+    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Recent Betters -=- Current Time: " + self.getDateTime(), msg);
+  }
+  didWin(slot){
+    var self = this;
+    if(slot.player.money > 8500){
+      var minJackpotBet = (slot.player.money * 0.03);
+    }else var minJackpotBet = 250;
+    minJackpotBet = parseFloat(minJackpotBet.toFixed(2));
+    slot.player.stats.slotPlays++;
+    if((slot.reel1 == ":100:") && (slot.reel2 == ":100:") && (slot.reel3 == ":100:")){
+      if(slot.bet < minJackpotBet){
+        slot.winAmount = parseFloat((slot.bet * 60).toFixed(2));
+        slot.winText = "YOU GOT A JACKPOT! however you didnt meet the minimum bet requirement ($" + minJackpotBet + ") to get the JACKPOT value so here is 60x your bet";
+      }else {
+        slot.winAmount = parseFloat(self.casinoObj.jackpotValue);
+        self.casinoObj.jackpotValue = 1000000;
+        slot.winText = "JACKPOT JACKPOT JACKPOT!!!!!";
+        self.casinoObj.jackpotstat.lastWon = slot.player.name;
+        if(slot.winAmount > self.casinoObj.jackpotstat.HighestWin){
+          self.casinoObj.jackpotstat.HighestWin = slot.winAmount;
+          self.casinoObj.jackpotstat.HighestBy = slot.player.name;
+        }
+      }
+      slot.player.stats.slotJackpots++;
+      slot.player.stats.slotWins++;
+      slot.player.money += parseFloat(slot.winAmount);
+      slot.player.xp += 1000;
+      return;
+    }
+    if((slot.reel1 == ":first_place:") && (slot.reel2 == ":first_place:") && (slot.reel3 == ":first_place:")){
+      slot.winAmount = parseFloat((slot.bet * 16).toFixed(2));
+      slot.winText = "WINNER WINNER HUUUUGE MONEY!";
+      if(slot.player.Premium || slot.player.Admin){
+        slot.winText += " **(Premium Bonus!)**";
+        slot.winAmount += parseFloat(slot.winAmount);
+      }
+      slot.player.stats.slot1s++;
+      slot.player.stats.slotWins++;
+      slot.player.money += parseFloat(slot.winAmount);
+      if(slot.bet >= 250){
+        slot.player.xp += 80;
+      }else {
+        slot.winText += " `You bet lower than $250 fair warning here, you wont get any XP and you cant win the true JACKPOT`"
+      }
+      return;
+    }
+    if((slot.reel1 == ":second_place:") && (slot.reel2 == ":second_place:") && (slot.reel3 == ":second_place:")){
+      slot.winAmount = parseFloat((slot.bet * 8).toFixed(2));
+      slot.winText = "WINNER WINNER BIG MONEY!";
+      if(slot.player.Premium || slot.player.Admin){
+        slot.winText += " **(Premium Bonus!)**";
+        slot.winAmount += parseFloat(slot.winAmount);
+      }
+      slot.player.stats.slot2s++;
+      slot.player.stats.slotWins++;
+      slot.player.money += parseFloat(slot.winAmount);
+      if(slot.bet >= 250){
+        slot.player.xp += 40;
+      }else {
+        slot.winText += " `You bet lower than $250 fair warning here, you wont get any XP and you cant win the true JACKPOT`"
+      }
+      return;
+    }
+    if((slot.reel1 == ":third_place:") && (slot.reel2 == ":third_place:") && (slot.reel3 == ":third_place:")){
+      slot.winAmount = parseFloat((slot.bet * 4).toFixed(2));
+      slot.winText = "WINNER!";
+      if(slot.player.Premium || slot.player.Admin){
+        slot.winText += " **(Premium Bonus!)**";
+        slot.winAmount += parseFloat(slot.winAmount);
+      }
+      slot.player.stats.slot3s++;
+      slot.player.stats.slotWins++;
+      slot.player.money += parseFloat(slot.winAmount);
+      if(slot.bet >= 250){
+        slot.player.xp += 20;
+      }else {
+        slot.winText += " `You bet lower than $250 fair warning here, you wont get any XP and you cant win the true JACKPOT`"
+      }
+      return;
+    }
+    if((slot.reel1 == ":cherries:") && (slot.reel2 == ":cherries:") && (slot.reel3 == ":cherries:")){
+      slot.winAmount = parseFloat((slot.bet * 2).toFixed(2));
+      slot.winText = "Winner";
+      if(slot.player.Premium || slot.player.Admin){
+        slot.winText += " **(Premium Bonus!)**";
+        slot.winAmount += parseFloat(slot.winAmount);
+      }
+      slot.player.stats.slotTripleC++;
+      slot.player.stats.slotWins++;
+      slot.player.money += parseFloat(slot.winAmount);
+      if(slot.bet >= 250){
+        slot.player.xp += 10;
+      }else {
+        slot.winText += " `You bet lower than $250 fair warning here, you wont get any XP and you cant win the true JACKPOT`"
+      }
+      return;
+    }
+    if((slot.reel1 == ":key:") && (slot.reel2 == ":key:") && (slot.reel3 == ":key:")){
+      if(slot.bet < minJackpotBet){
+        slot.winText = "Hey There are some keys here but they are rusted! You didnt put enough money as your bet to restore the keys. oh well... ";
+        return;
+      }
+      slot.winText = "WOW! Thats a lot of keys!";
+      slot.player.keys += 3;
+      return;
+    }
+    if((slot.reel1 == ":key:") || (slot.reel2 == ":key:") || (slot.reel3 == ":key:")){
+      if(slot.bet < minJackpotBet){
+        slot.winText = "Hey There are some keys here but they are rusted! You didnt put enough money as your bet to restore the keys. oh well... ";
+        return;
+      }else {
+        slot.winText = "Hey! a Key! These could be useful later on... ";
+        slot.player.keys++;
+      }
+    }
+    if((slot.reel1 == ":cherries:") || (slot.reel2 == ":cherries:") || (slot.reel3 == ":cherries:")){
+      slot.winAmount = parseFloat((slot.bet / 2).toFixed(2));
+      slot.winText += "Well at least you didn't lose it all...";
+      slot.player.stats.slotSingleC++;
+      slot.player.stats.slotWins++;
+      slot.player.money += parseFloat(slot.winAmount);
+      if(slot.bet >= 250){
+        slot.player.xp += 5;
+      }else {
+        slot.winText += " `You bet lower than $250 fair warning here, you wont get any XP and you cant win the true JACKPOT`"
+      }
+      return;
+    }
+    slot.winAmount = 0;
+    slot.winText += "DANG! Better luck next time!";
+    if(slot.bet >= 250){
+      slot.player.xp += 1;
+    }else {
+      slot.winText += " `You bet lower than $250 fair warning here, you wont get any XP and you cant win the true JACKPOT`"
+    }
+  }
+  handleRecentBetters(player){
+    var self = this;
+    var placed = false;
+    for (var i = 0; i < self.recentBetters.length; i++) {
+      if(self.recentBetters[i].name == player.name){
+        self.recentBetters.splice(i,1);
+        self.recentBetters.unshift({name: player.name, time: self.getDateTime()});
+        placed = true;
+        break;
+      }
+    }
+    if(!placed){
+      self.recentBetters.unshift({name: player.name, time: self.getDateTime()});
+    }
+    while(self.recentBetters.length > 10){
+      self.recentBetters.splice(10, 1)
+    }
   }
   getPlayer(data){
     var self = this;
@@ -300,10 +576,48 @@ class CasinoPlugin {
       })
     });
   }
+  getDateTime() {
+    var date = new Date();
+    var hour = date.getHours();
+    hour = (hour < 10 ? "0" : "") + hour;
+    var min  = date.getMinutes();
+    min = (min < 10 ? "0" : "") + min;
+    var sec  = date.getSeconds();
+    sec = (sec < 10 ? "0" : "") + sec;
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    month = (month < 10 ? "0" : "") + month;
+    var day  = date.getDate();
+    day = (day < 10 ? "0" : "") + day;
+    return hour + ":" + min + ":" + sec + " :: " + month + "/" + day + "/" + year;
+  }
   getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  checkTimeout(player, seconds){
+    var currentDate = new Date();
+    var hour = currentDate.getHours();
+    hour = (hour < 10 ? "0" : "") + hour;
+    var min  = currentDate.getMinutes();
+    min = (min < 10 ? "0" : "") + min;
+    var sec  = currentDate.getSeconds();
+    sec = (sec < 10 ? "0" : "") + sec;
+    if(player.lastMessage == null){
+      player.lastMessage = null;
+      return {pass: true};
+    }
+    var remainingTime = {
+      hour: Number(player.lastMessage.hour - hour),
+      min: Number(player.lastMessage.min - min),
+      sec: Number((player.lastMessage.sec + seconds) - sec)
+    }
+    if(remainingTime.min < 0 | remainingTime.sec < 0 | remainingTime.hour < 0){
+      return {pass: true,  remain: remainingTime};
+    }else if((remainingTime.min <= 0) & (remainingTime.sec <= 0)){
+      return {pass: true,  remain: remainingTime};
+    }else return {pass: false, remain: remainingTime};
   }
   updateLastSeen(player){
       var date = new Date();
@@ -368,6 +682,7 @@ class CasinoPlugin {
         self.disnode.DB.Update("players", {"id":players[i].id}, players[i]);
       }
     });
+    self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
     setTimeout(function() {
       var n = self.getRandomIntInclusive(0,3);
       if(n == 0){
