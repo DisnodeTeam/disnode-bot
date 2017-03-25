@@ -1,16 +1,16 @@
 const fs = require('fs');
 const async = require('async');
 const jsonfile = require('jsonfile');
-const Logging = require('./logging');
+const Logging = require('disnode-logger');
 class Command {
     constructor(disnode) {
         //test
         this.disnode = disnode;
         if(this.disnode.botConfig.prefix){
           this.prefix = this.disnode.botConfig.prefix;
-          Logging.DisnodeInfo("Command", "Start","prefix set to: " + this.prefix);
+          Logging.Info("Command", "Start","prefix set to: " + this.prefix);
         }else {
-          Logging.DisnodeInfo("Command", "Start","no prefix found in config setting default of \'!\'");
+          Logging.Info("Command", "Start","no prefix found in config setting default of \'!\'");
           this.prefix = "!";
         }
     }
@@ -90,7 +90,7 @@ class Command {
           if(this.GetPluginFromCommand(command)){
             plugin = this.GetPluginFromCommand(command);
             if(this.GetCommandObject(plugin, command)){
-              Logging.DisnodeWarning("Command", "CommandParse", "Running a command without plugin prefix, this is heavily not supported and is in beta.");
+              Logging.Warning("Command", "CommandParse", "Running a command without plugin prefix, this is heavily not supported and is in beta.");
               command = this.GetCommandObject(plugin, command);
               callback(plugin, command, params);
             }

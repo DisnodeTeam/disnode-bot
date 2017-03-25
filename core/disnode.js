@@ -5,7 +5,7 @@ const ConfigManager = require('./config');
 const DBManager = require("./db")
 
 const jsonfile = require('jsonfile');
-const Logging = require("disnode-logging");
+const Logging = require("disnode-logger");
 const async = require('async');
 
 class Disnode {

@@ -1,4 +1,4 @@
-const Logging = require("disnode-logging")
+const Logging = require("disnode-logger")
 const jsonfile = require('jsonfile');
 const async = require('async');
 const fs = require('fs');

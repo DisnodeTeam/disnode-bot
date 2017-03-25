@@ -1,7 +1,7 @@
 const fs = require('fs');
 const async = require('async');
 const jsonfile = require('jsonfile');
-const Logging = require("disnode-logging")
+const Logging = require("disnode-logger")
 class PluginManager {
     constructor(disnode, path) {
         this.loaded = [];
