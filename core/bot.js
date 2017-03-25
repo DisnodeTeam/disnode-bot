@@ -121,7 +121,7 @@ class Bot {
 				channel: channel,
 				msg: msg,
 				typing: typing,
-      	tts: tts
+                tts: tts
 			};
 			var commandObj = {
 				type: "SEND_MESSAGE",
@@ -154,12 +154,12 @@ class Bot {
 			embed: embed
 		});
 	}
-	SendCompactEmbed(channel, title, body) {
+	SendCompactEmbed(channel, title, body, color=3447003) {
 		var self = this;
 		self.client.sendMessage({
 			to: channel,
 			embed: {
-				color: 3447003,
+				color: color,
 				author: {},
 				fields: [{
 					name: title,
