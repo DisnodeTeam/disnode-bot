@@ -1,4 +1,5 @@
 const numeral = require('numeral');
+const logger = require('disnode-logger')
 
 class CasinoPlugin {
   constructor() {
@@ -235,13 +236,12 @@ class CasinoPlugin {
             var timeoutInfo = self.checkTimeout(player, 5);
             if(player.Admin || player.Premium)timeoutInfo = self.checkTimeout(player, 2);
             if(!timeoutInfo.pass){
-              console.log("[Casino " + self.getDateTime() + "] Player: " + player.name + " Tried the slots before their delay of: " + timeoutInfo.remain.sec);
+              logger.Info("Casino", "Slot", "Player: " + player.name + " Tried the slots before their delay of: " + timeoutInfo.remain.sec);
               self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.");
               return;
             }
             if(bet > 0.01){
               if(bet > player.money | bet == NaN | bet == "NaN"){// Checks to see if player has enough money for their bet
-                console.log("Bet: " + bet + " Money: " + numeral(player.money).format('0,0.00'));
                 self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'));
                 return;
               }else{
@@ -270,9 +270,9 @@ class CasinoPlugin {
                 var minJackpotBet = (player.money * 0.03);
               }else var minJackpotBet = 250;
               if(timeoutInfo.remain){
-                console.log("[Casino " + self.getDateTime() + "] Player: " + player.name + " Slot Winnings: " + slotInfo.winAmount + " original bet: " + bet + " Time since they could use this command again: " + timeoutInfo.remain.sec);
+                logger.Info("Casino", "Slot", "Player: " + player.name + " Slot Winnings: " + slotInfo.winAmount + " original bet: " + bet + " Time since they could use this command again: " + timeoutInfo.remain.sec);
               }else {
-                console.log("[Casino " + self.getDateTime() + "] Player: " + player.name + " Slot Winnings: " + slotInfo.winAmount + " original bet: " + bet);
+                logger.Info("Casino", "Slot", "Player: " + player.name + " Slot Winnings: " + slotInfo.winAmount + " original bet: " + bet);
               }
               player.money = parseFloat(player.money.toFixed(2));
               minJackpotBet = parseFloat(minJackpotBet.toFixed(2));
@@ -377,13 +377,11 @@ class CasinoPlugin {
           }
         }
         if(numeral(command.params[1]).value() >= 1){
-          console.log(flipinfo)
           var bet;
           var bet = numeral(command.params[1]).value();
           var timeoutInfo = self.checkTimeout(player, 5);
           if(player.Admin || player.Premium)timeoutInfo = self.checkTimeout(player, 2);
           if(!timeoutInfo.pass){
-            console.log("No Go");
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.");
             return;
           }
@@ -411,7 +409,7 @@ class CasinoPlugin {
             }else {
               flipinfo.winText += " `You bet lower than $250 fair warning here, you wont get any XP`"
             }
-            console.log("[Casino " + self.getDateTime() + "] Player: " + player.name + " Has Won Coin Flip Winnings: " + flipinfo.winAmount + "original bet: " + bet);
+            logger.Info("Casino", "CoinFlip", "Player: " + player.name + " Has Won Coin Flip Winnings: " + flipinfo.winAmount + "original bet: " + bet);
             self.updateLastSeen(player);
             self.disnode.bot.SendEmbed(command.msg.channel, {
               color: 3447003,
@@ -466,7 +464,7 @@ class CasinoPlugin {
             if(flipinfo.playerPick == 0){
               player.stats.coinTails++;
             }else player.stats.coinHeads++;
-            console.log("[Casino " + self.getDateTime() + "] Player: " + player.name + " Has Lost Coin Flip Winnings: " + flipinfo.winAmount + "original bet: " + bet);
+            logger.Info("Casino", "CoinFlip", "Player: " + player.name + " Has Lost Coin Flip Winnings: " + flipinfo.winAmount + "original bet: " + bet);
             self.updateLastSeen(player);
             self.disnode.bot.SendEmbed(command.msg.channel, {
               color: 3447003,
@@ -727,9 +725,7 @@ class CasinoPlugin {
             break;
           }
         }
-        self.disnode.DB.Insert("players", newPlayer).then(function(res) {
-          console.log(res);
-        });
+        self.disnode.DB.Insert("players", newPlayer);
         resolve(newPlayer);
         return;
       });
