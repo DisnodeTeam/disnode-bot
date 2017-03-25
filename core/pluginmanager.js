@@ -1,7 +1,7 @@
 const fs = require('fs');
 const async = require('async');
 const jsonfile = require('jsonfile');
-const Logging = require('./logging')
+const Logging = require("disnode-logging")
 class PluginManager {
     constructor(disnode, path) {
         this.loaded = [];
@@ -15,7 +15,7 @@ class PluginManager {
     EnableReload(plugin){
       var self =this;
 
-      Logging.DisnodeInfo("Plugin", "EnableReload", "Enabling Reload for: " + plugin.name)
+      Logging.Info("Plugin", "EnableReload", "Enabling Reload for: " + plugin.name)
       var name = plugin.name;
       var className = name + ".js";
       var commandName = name + "-Commands.json";
@@ -58,36 +58,36 @@ class PluginManager {
           async.waterfall([
               // Check if class exists
               function(callback) {
-                  Logging.DisnodeInfo("PluginManager", "Load-"+name, "Checking for class");
+                  Logging.Info("PluginManager", "Load-"+name, "Checking for class");
                   fs.stat(fullPath + className, function(err, stats) {
                       if (err) {
-                          Logging.DisnodeError("PluginManager", "Load-"+name, "Failed to find Class (" + fullPath + className + ")");
+                          Logging.Error("PluginManager", "Load-"+name, "Failed to find Class (" + fullPath + className + ")");
                           callback(err);
                           return;
                       } else {
-                          Logging.DisnodeSuccess("PluginManager", "Load-"+name, "Found Class");
+                          Logging.Success("PluginManager", "Load-"+name, "Found Class");
                           callback();
                       }
                   });
               },
               // Attempt to import the class
               function(callback) {
-                Logging.DisnodeInfo("PluginManager", "Load-"+name, "Trying to import class");
+                Logging.Info("PluginManager", "Load-"+name, "Trying to import class");
                   try {
                       var NpmRequire = require("../" + fullPath + className);
-                      Logging.DisnodeSuccess("PluginManager", "Load-"+name, "Imported");
+                      Logging.Success("PluginManager", "Load-"+name, "Imported");
                       newPlugin.class = NpmRequire;
                       callback(null);
                   } catch (e) {
                     console.dir(e);
-                    Logging.DisnodeError("PluginManager", "Load-"+name, "Failed to Import: " + className + " - '" + e  + "'");
+                    Logging.Error("PluginManager", "Load-"+name, "Failed to Import: " + className + " - '" + e  + "'");
                     callback(e, null);
                   }
               },
               function(callback) {
-                Logging.DisnodeInfo("PluginManager", "Load-"+name, "Loading Config");
+                Logging.Info("PluginManager", "Load-"+name, "Loading Config");
                 self.disnode.config.Load(newPlugin).then(function(){
-                  Logging.DisnodeSuccess("PluginManager", "Load-"+name, "Loaded Config!");
+                  Logging.Success("PluginManager", "Load-"+name, "Loaded Config!");
                   self.disnode.config.EnableReload(newPlugin);
                   callback();
                 }).catch(callback);
@@ -96,9 +96,9 @@ class PluginManager {
               function(callback) {
                   if(newPlugin.config.run){
                     self.loaded.push(newPlugin);
-                    Logging.DisnodeSuccess("PluginManager","Load-"+name, "Finished Loading");
+                    Logging.Success("PluginManager","Load-"+name, "Finished Loading");
                   }else {
-                    Logging.DisnodeInfo("PluginManager","Load-"+name, "Plugin skipped run = false!");
+                    Logging.Info("PluginManager","Load-"+name, "Plugin skipped run = false!");
                   }
 
                   //console.log(self.loaded);
@@ -130,7 +130,7 @@ class PluginManager {
             if (!_ManagerFolders) {
                 reject("Managers Null!")
             }
-            Logging.DisnodeInfo("PluginManager", "Load", "Loading loaded");
+            Logging.Info("PluginManager", "Load", "Loading loaded");
             async.each(_ManagerFolders, function(folder, everyCB) {
 
               self.LoadPlugin(folder).then(function(result){everyCB(null, result);}).catch(everyCB);
@@ -138,7 +138,7 @@ class PluginManager {
               for(var i=0;i<self.loaded.length;i++){
                 self.EnableReload(self.loaded[i]);
               }
-                Logging.DisnodeInfo("PluginManager", "Load", "Loaded " + self.loaded.length + " plugin(s)");
+                Logging.Info("PluginManager", "Load", "Loaded " + self.loaded.length + " plugin(s)");
                 resolve();
             });
 
@@ -148,15 +148,15 @@ class PluginManager {
     LauchStatic(){
       var self = this;
       return new Promise(function(resolve, reject) {
-          Logging.DisnodeInfo("PluginManager", "LauchStatic", "Launching Static Managers.");
+          Logging.Info("PluginManager", "LauchStatic", "Launching Static Managers.");
           async.each(self.loaded, function(plugin, callback) {
             if(plugin.config.static){
-              Logging.DisnodeInfo("PluginManager", "LauchStatic-"+plugin.name, "Static Plugin Found. Launching");
+              Logging.Info("PluginManager", "LauchStatic-"+plugin.name, "Static Plugin Found. Launching");
               self.Launch(plugin.name, "STATIC").then(function() {
-                  Logging.DisnodeSuccess("PluginManager", "LauchStatic-"+plugin.name, plugin.name + " launched!");
+                  Logging.Success("PluginManager", "LauchStatic-"+plugin.name, plugin.name + " launched!");
                   callback(null,plugin);
               }).catch(function(err){
-                  Logging.DisnodeWarning("PluginManager", "LauchStatic-"+plugin.name, plugin.name + " Failed to Launch! - " + err);
+                  Logging.Warning("PluginManager", "LauchStatic-"+plugin.name, plugin.name + " Failed to Launch! - " + err);
                   callback(err);
               });
             }else{
@@ -170,7 +170,7 @@ class PluginManager {
     Launch(managerName, server) {
         var self = this;
         return new Promise(function(resolve, reject) {
-          Logging.DisnodeInfo("PluginManager", "Launch", "Lauching: " + managerName + " on: " + server)
+          Logging.Info("PluginManager", "Launch", "Lauching: " + managerName + " on: " + server)
             if (!managerName) {
                 reject("[PluginManager 'Launch'] No Manager Name!")
             }
@@ -203,7 +203,7 @@ class PluginManager {
     }
     RunCommandBind(plugin, command){
       if(!plugin[command.command.run]){
-        Logging.DisnodeWarning("PluginManager", "RunCommandBind", "No Function Found for: " + command.command.run);
+        Logging.Warning("PluginManager", "RunCommandBind", "No Function Found for: " + command.command.run);
         return;
       }
       plugin[command.command.run](command);

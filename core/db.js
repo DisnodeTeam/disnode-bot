@@ -1,11 +1,11 @@
-const Logging = require("./logging")
+const Logging = require("disnode-logging")
 const jsonfile = require('jsonfile');
 const async = require('async');
 const fs = require('fs');
 const MongoClient = require('mongodb').MongoClient
 class DB {
 	constructor(disnode) {
-		Logging.DisnodeInfo("DB", "Constructor", "Started!")
+		Logging.Info("DB", "Constructor", "Started!")
 		this.disnode = disnode;
 		this.DB = {};
 	}

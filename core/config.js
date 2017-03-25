@@ -1,16 +1,16 @@
-const Logging = require("./logging")
+const Logging = require("disnode-logging")
 const jsonfile = require('jsonfile');
 const async = require('async');
 const fs = require('fs');
 class Config{
   constructor(){
-    Logging.DisnodeInfo("Config", "Constructor", "Started!")
+    Logging.Info("Config", "Constructor", "Started!")
 
   }
 
   EnableReload(plugin){
     var self =this;
-    Logging.DisnodeInfo("Config", "EnableReload", "Enabling Reload for: " + plugin.name)
+    Logging.Info("Config", "EnableReload", "Enabling Reload for: " + plugin.name)
     var name = plugin.name;
     var className = name + ".js";
     var commandName = name + "-Commands.json";
@@ -35,7 +35,7 @@ class Config{
     var self = this;
     return new Promise(function(resolve, reject) {
 
-      Logging.DisnodeInfo("Config", "Load", "Loading Config for: " + plugin.name)
+      Logging.Info("Config", "Load", "Loading Config for: " + plugin.name)
       console.log(plugin.server);
       var name = plugin.name;
       var className = name + ".js";
@@ -48,36 +48,36 @@ class Config{
       async.waterfall([
 
        function(callback) {
-           Logging.DisnodeInfo("Config", "Load-"+name, "Checking for Command File");
+           Logging.Info("Config", "Load-"+name, "Checking for Command File");
            fs.stat( fullPath + commandName, function(err, stats) {
                if (err) {
-                   Logging.DisnodeWarning("Config", "Load-"+name, "Failed to find Command File (" + fullPath + commandName+")");
+                   Logging.Warning("Config", "Load-"+name, "Failed to find Command File (" + fullPath + commandName+")");
 
                    callback();
                    return;
                } else {
-                   Logging.DisnodeSuccess("Config", "Load-"+name, "Found Command File");
+                   Logging.Success("Config", "Load-"+name, "Found Command File");
                    callback();
                }
            });
 
        },
        function(callback) { // Read File
-         Logging.DisnodeInfo("Config", "Load-"+name, "Loading Command File");
+         Logging.Info("Config", "Load-"+name, "Loading Command File");
            jsonfile.readFile(fullPath + commandName, function(err, obj) {
                if (err) {
                    callback();
-                   Logging.DisnodeWarning("Config", "Load-"+name, "Failed to Load Command JSON File: " + err);
+                   Logging.Warning("Config", "Load-"+name, "Failed to Load Command JSON File: " + err);
                    return;
                }
 
                if(!obj.commands){
                  callback();
-                 Logging.DisnodeWarning("Config", "Load-"+name, "No Command Array found!: " + className);
+                 Logging.Warning("Config", "Load-"+name, "No Command Array found!: " + className);
 
                  return;
                }
-               Logging.DisnodeSuccess("Config", "Load-"+name, "Loaded Command JSON File");
+               Logging.Success("Config", "Load-"+name, "Loaded Command JSON File");
                commandFile = obj.commands;
 
                callback();
@@ -85,16 +85,16 @@ class Config{
        },
 
        function(callback) {
-         Logging.DisnodeInfo("Config", "Load-"+name, "Checking for config file");
+         Logging.Info("Config", "Load-"+name, "Checking for config file");
 
            fs.stat( fullPath + configName, function(err, stats) {
                if (err) {
-                   Logging.DisnodeWarning("Config","Load-"+name, "Failed to find Config File (" + fullPath + configName+")");
+                   Logging.Warning("Config","Load-"+name, "Failed to find Config File (" + fullPath + configName+")");
 
                    callback();
                    return;
                } else {
-                 Logging.DisnodeSuccess("Config", "Load-"+name, "Found Config File");
+                 Logging.Success("Config", "Load-"+name, "Found Config File");
 
                    callback();
                }
@@ -103,16 +103,16 @@ class Config{
        },
 
        function(callback) { // Read File
-         Logging.DisnodeInfo("Config", "Load-"+name, "Loading Config File");
+         Logging.Info("Config", "Load-"+name, "Loading Config File");
            jsonfile.readFile(fullPath + configName, function(err, obj) {
                if (err) {
-                   Logging.DisnodeWarning("Config", "Load-"+name, "Failed to Load Config JSON File: " + err);
+                   Logging.Warning("Config", "Load-"+name, "Failed to Load Config JSON File: " + err);
                    callback();
 
                    return;
                }
 
-               Logging.DisnodeSuccess("Config", "Load-"+name, "Loaded Config JSON File");
+               Logging.Success("Config", "Load-"+name, "Loaded Config JSON File");
                configFile = obj;
 
                callback();
