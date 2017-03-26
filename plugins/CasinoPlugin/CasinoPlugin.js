@@ -544,7 +544,7 @@ class CasinoPlugin {
     });
   }
   commandStore(command){
-
+    
   }
   didWin(slot){
     var self = this;
