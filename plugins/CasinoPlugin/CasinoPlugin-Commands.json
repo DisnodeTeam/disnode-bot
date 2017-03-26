@@ -29,6 +29,11 @@
       "cmd": "jackpot",
       "desc": "*Get Quick info about the Jackpot*",
       "run": "commandJackpotInfo"
+    },
+    {
+      "cmd": "level",
+      "desc": "*Here you can level up to unlock more features*",
+      "run": "commandLevel"
     }
   ]
 }
