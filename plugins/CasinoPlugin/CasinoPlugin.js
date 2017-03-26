@@ -1,5 +1,5 @@
 const numeral = require('numeral');
-const logger = require('disnode-logger')
+const logger = require('disnode-logger');
 
 class CasinoPlugin {
   constructor() {
@@ -50,7 +50,7 @@ class CasinoPlugin {
       });
     }, 1000);
   }
-  default (command) {
+  default(command) {
     var self = this;
     self.getPlayer(command).then(function(player){
       var msg = "";
@@ -89,7 +89,7 @@ class CasinoPlugin {
           self.disnode.bot.SendEmbed(command.msg.channel, {
             color: 1433628,
             author: {},
-            title: res.p.name + ' Balance',
+            title: res.p.name + " Balance",
             fields: [ {
               name: 'Money',
               inline: true,
@@ -128,7 +128,7 @@ class CasinoPlugin {
           {
             color: 1433628,
             author: {},
-            title: player.name + ' Balance',
+            title: player.name + "Balance",
             fields: [ {
               name: 'Money',
               inline: true,
@@ -544,7 +544,154 @@ class CasinoPlugin {
     });
   }
   commandStore(command){
-    
+    var self = this;
+    self.getPlayer(command).then(function(player) {
+      if(self.checkBan(player, command))return;
+      switch (command.params[0]) {
+        case "list":
+          var msg = "**ID**\t//\t**ITEM**\t//\t**COST**\n";
+          for (var i = 0; i < self.store.length; i++) {
+            var cost;
+            if(player.Admin || player.Premium){
+              cost = (self.store[i].cost /2)
+            }else cost = self.store[i].cost;
+            if(self.store[i].type == 0){
+              msg += "" + i + "\t//\t" + self.store[i].item + "\t//\t" + cost + "XP\n";
+            }else {
+              msg += "" + i + "\t//\t" + self.store[i].item + "\t//\t$" + numeral(cost).format('0,0.00') + "\n";
+            }
+          }
+          msg += "\n\n**XP:** " + player.xp + "\nStore items are subject to change, please be aware of prices and items PRIOR to making a purchase!";
+          var title;
+          if(player.Admin || player.Premium){
+            title = "Premium Store List";
+          }else title = "Store List";
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, title, msg);
+          break;
+        case "buy":
+          if(command.params[1] && (command.params[1] >= 0 && command.params[1] <= (self.store.length - 1))){
+            var ID = parseInt(command.params[1]);
+            var quantity = 0;
+            if(command.params[2] == "max"){
+              if(player.Admin || player.Premium){
+                if(self.store[ID].type == 0){
+                  quantity = Math.floor((player.xp / (self.store[ID].cost / 2)));
+                }else {
+                  quantity = Math.floor((player.money / (self.store[ID].cost / 2)));
+                }
+              }else {
+                if(self.store[ID].type == 0){
+                  quantity = Math.floor((player.xp / (self.store[ID].cost)));
+                }else {
+                  quantity = Math.floor((player.money / (self.store[ID].cost)));
+                }
+              }
+            }else quantity = numeral(command.params[2]).value();
+            if(quantity < 1){
+              quantity = 1;
+            }
+            var cost;
+            if(player.Admin || player.Premium){
+              cost = (self.store[ID].cost /2) * quantity;
+            }else cost = self.store[ID].cost * quantity;
+            var costString;
+            if(self.store[ID].type == 0){
+              costString = cost + " XP"
+              if(player.xp < cost){
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much XP!\nNeed: " + cost + "XP\nYou have: " + player.xp);
+                return;
+              }
+            }else {
+              costString = "$" + numeral(cost).format('0,0.00');
+              if(player.money < cost){
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money!\nNeed: $" + numeral(cost).format('0,0.00') + "\nYou have: $" + numeral(player.money).format('0,0.00'));
+                return;
+              }
+            }
+            switch (ID) {
+              case 0:
+                player.xp -= cost;
+                player.money += (1000 * quantity);
+                break;
+              case 1:
+                player.xp -= cost;
+                player.money += (2500 * quantity);
+                break;
+              case 2:
+                player.xp -= cost;
+                player.money += (5000 * quantity);
+                break;
+              case 3:
+                player.xp -= cost;
+                player.money += (10000 * quantity);
+                break;
+              case 4:
+                player.xp -= cost;
+                player.money += (20000 * quantity);
+                break;
+              case 5:
+                player.xp -= cost;
+                player.money += (30000 * quantity);
+                break;
+              case 6:
+                player.xp -= cost;
+                player.perUpdate += (50 * quantity);
+                break;
+              case 7:
+                player.xp -= cost;
+                player.perUpdate += (100 * quantity);
+                break;
+              case 8:
+                player.xp -= cost;
+                player.perUpdate += (200 * quantity);
+                break;
+              case 9:
+                player.xp -= cost;
+                player.perUpdate += (400 * quantity);
+                break;
+              case 10:
+                player.xp -= cost;
+                player.perUpdate += (800 * quantity);
+                break;
+              case 11:
+                player.xp -= cost;
+                player.perUpdate += (1600 * quantity);
+                break;
+              default:
+                break;
+            }
+            self.disnode.bot.SendEmbed(command.msg.channel, {
+              color: 1433628,
+              author: {},
+              fields: [ {
+                name: "Store",
+                inline: false,
+                value: ":white_check_mark: Your purchase of `" + quantity + "x " + self.store[ID].item + "` was successful! Thank you for your business!",
+              }, {
+                name: 'Money',
+                inline: true,
+                value: "$" + numeral(player.money).format('0,0.00'),
+              }, {
+                name: 'Income / 30min.',
+                inline: true,
+                value: "$" + numeral(player.perUpdate).format('0,0.00'),
+              }, {
+                name: 'XP',
+                inline: true,
+                value: player.xp,
+              }],
+                footer: {}
+              }
+            );
+            self.updateLastSeen(player);
+            self.disnode.DB.Update("players", {"id":player.id}, player);
+            self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
+          }
+          break;
+        default:
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Store", "Welcome to the store! to see a list of Items use `!casino store list` use the ID of the item when buying for example `!casino store buy 0`");
+      }
+    });
   }
   didWin(slot){
     var self = this;
@@ -867,7 +1014,7 @@ class CasinoPlugin {
   checkBan(player, command){
     if(player.banned){
       this.disnode.bot.SendEmbed(command.msg.channel, {
-        color: 3447003,
+        color: 16711680,
         author: {},
         fields: [ {
           name: "You have been banned!",

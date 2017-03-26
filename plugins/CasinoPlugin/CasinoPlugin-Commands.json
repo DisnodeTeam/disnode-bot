@@ -21,6 +21,11 @@
       "run": "commandRecentBetters"
     },
     {
+      "cmd": "store",
+      "desc": "*Get more money or more income here!*",
+      "run": "commandStore"
+    },
+    {
       "cmd": "jackpot",
       "desc": "*Get Quick info about the Jackpot*",
       "run": "commandJackpotInfo"
