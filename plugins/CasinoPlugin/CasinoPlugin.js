@@ -598,13 +598,13 @@ class CasinoPlugin {
             if(self.store[ID].type == 0){
               costString = cost + " XP"
               if(player.xp < cost){
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much XP!\nNeed: " + cost + "XP\nYou have: " + player.xp);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much XP!\nNeed: " + cost + "XP\nYou have: " + player.xp, 16772880);
                 return;
               }
             }else {
               costString = "$" + numeral(cost).format('0,0.00');
               if(player.money < cost){
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money!\nNeed: $" + numeral(cost).format('0,0.00') + "\nYou have: $" + numeral(player.money).format('0,0.00'));
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money!\nNeed: $" + numeral(cost).format('0,0.00') + "\nYou have: $" + numeral(player.money).format('0,0.00'), 16772880);
                 return;
               }
             }
@@ -690,6 +690,59 @@ class CasinoPlugin {
           break;
         default:
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Store", "Welcome to the store! to see a list of Items use `!casino store list` use the ID of the item when buying for example `!casino store buy 0`");
+      }
+    });
+  }
+  commandLevel(command){
+    var self = this;
+    self.getPlayer(command).then(function(player) {
+      if(self.checkBan(player, command))return;
+      var cost = player.lv * 250;
+      switch (command.params[0]) {
+        case "up":
+          if(command.params[1] && command.params[1] == "yes"){
+            if(player.xp < cost){
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have enough XP to level up!\n**Need:** " + cost + "\n**Have:** " + player.xp, 16772880);
+            }else {
+              player.lv++;
+              player.money = 10000 * player.lv;
+              player.perUpdate = 1000 * player.lv;
+              player.xp = 0;
+              //1433628
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":white_check_mark: You are now Lv: " + player.lv, 1433628);
+              self.updateLastSeen(player);
+              self.disnode.DB.Update("players", {"id":player.id}, player);
+              self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
+            }
+          }else {
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Are you sure you want to level up? Doing so will ERASE your current progress but keeps your stats, do `!casino level up yes` to reset", 16772880);
+          }
+          break;
+        default:
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1433628,
+            author: {},
+            fields: [ {
+              name: "Level",
+              inline: false,
+              value: "Here is where you can level up! to level up do `!casino level up` Here is some info! The amount to go from your current level to the next is calculated by `currentLV * 250`",
+            }, {
+              name: 'Level',
+              inline: true,
+              value: player.lv,
+            }, {
+              name: 'Cost',
+              inline: true,
+              value: cost,
+            }, {
+              name: 'Remaining XP',
+              inline: true,
+              value: cost - player.xp,
+            }],
+              footer: {}
+            }
+          );
+          break;
       }
     });
   }
