@@ -19,18 +19,18 @@ class CasinoPlugin {
       {item:":100:"},{item:":100:"},{item:":100:"},{item:":100:"},{item:":key:"}
     ]
     this.store = [
-      {cost: 200, type:0, item: "Instant $1,000"},
-      {cost: 500, type:0, item: "Instant $2,500"},
-      {cost: 1000, type:0, item: "Instant $5,000"},
-      {cost: 2000, type:0, item: "Instant $10,000"},
-      {cost: 4000, type:0, item: "Instant $20,000"},
-      {cost: 6000, type:0, item: "Instant $30,000"},
-      {cost: 100, type:0, item: "Add $50 to your income"},
-      {cost: 200, type:0, item: "Add $100 to your income"},
-      {cost: 400, type:0, item: "Add $200 to your income"},
-      {cost: 800, type:0, item: "Add $400 to your income"},
-      {cost: 1600, type:0, item: "Add $800 to your income"},
-      {cost: 3200, type:0, item: "Add $1600 to your income"}
+      {cost: 200, type:0, amount: 1000, item: "Instant $1,000"},
+      {cost: 500, type:0, amount: 2500, item: "Instant $2,500"},
+      {cost: 1000, type:0, amount: 5000, item: "Instant $5,000"},
+      {cost: 2000, type:0, amount: 10000, item: "Instant $10,000"},
+      {cost: 4000, type:0, amount: 20000, item: "Instant $20,000"},
+      {cost: 6000, type:0, amount: 30000, item: "Instant $30,000"},
+      {cost: 100, type:1, amount: 50, item: "Add $50 to your income"},
+      {cost: 200, type:1, amount: 100, item: "Add $100 to your income"},
+      {cost: 400, type:1, amount: 200, item: "Add $200 to your income"},
+      {cost: 800, type:1, amount: 400, item: "Add $400 to your income"},
+      {cost: 1600, type:1, amount: 800, item: "Add $800 to your income"},
+      {cost: 3200, type:1, amount: 1600, item: "Add $1600 to your income"}
     ]
     this.recentBetters = [];
     setTimeout(function() {
@@ -95,13 +95,13 @@ class CasinoPlugin {
               inline: true,
               value: "$" + numeral(res.p.money).format('0,0.00'),
             }, {
-              name: 'Income / 30min.',
+              name: 'Income / Max Income',
               inline: true,
-              value: "$" + numeral(res.p.perUpdate).format('0,0.00'),
+              value: "$" + numeral(res.p.income).format('0,0.00') + " / $" + numeral(res.p.maxIncome).format('0a'),
             }, {
-              name: 'XP',
+              name: 'XP / Next Level',
               inline: true,
-              value: res.p.xp,
+              value: res.p.xp + " / " + (res.p.lv * 250),
             }, {
               name: 'Premium',
               inline: true,
@@ -128,19 +128,19 @@ class CasinoPlugin {
           {
             color: 1433628,
             author: {},
-            title: player.name + "Balance",
+            title: player.name + " Balance",
             fields: [ {
               name: 'Money',
               inline: true,
               value: "$" + numeral(player.money).format('0,0.00'),
             }, {
-              name: 'Income / 30min.',
+              name: 'Income / Max Income',
               inline: true,
-              value: "$" + numeral(player.perUpdate).format('0,0.00'),
+              value: "$" + numeral(player.income).format('0,0.00') + " / $" + numeral(player.maxIncome).format('0a'),
             }, {
-              name: 'XP',
+              name: 'XP / Next Level',
               inline: true,
-              value: player.xp,
+              value: player.xp + " / " + (player.lv * 250),
             }, {
               name: 'Premium',
               inline: true,
@@ -248,7 +248,8 @@ class CasinoPlugin {
             }
             var bet = numeral(command.params[0]).value();
             var timeoutInfo = self.checkTimeout(player, 5);
-            if(player.Admin || player.Premium)timeoutInfo = self.checkTimeout(player, 2);
+            if(player.Premium)timeoutInfo = self.checkTimeout(player, 2);
+            if(player.Admin)timeoutInfo = self.checkTimeout(player, 0);
             if(!timeoutInfo.pass){
               logger.Info("Casino", "Slot", "Player: " + player.name + " Tried the slots before their delay of: " + timeoutInfo.remain.sec);
               self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
@@ -295,6 +296,7 @@ class CasinoPlugin {
               self.casinoObj.jackpotValue = parseFloat(self.casinoObj.jackpotValue.toFixed(2));
               self.handleRecentBetters(player);
               self.updateLastSeen(player);
+              self.checkLV(player, command.msg.channel);
               self.disnode.bot.SendEmbed(command.msg.channel, {
                 color: 1433628,
                 author: {},
@@ -394,7 +396,8 @@ class CasinoPlugin {
           var bet;
           var bet = numeral(command.params[1]).value();
           var timeoutInfo = self.checkTimeout(player, 5);
-          if(player.Admin || player.Premium)timeoutInfo = self.checkTimeout(player, 2);
+          if(player.Premium)timeoutInfo = self.checkTimeout(player, 2);
+          if(player.Admin)timeoutInfo = self.checkTimeout(player, 0);
           if(!timeoutInfo.pass){
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
             return;
@@ -468,8 +471,8 @@ class CasinoPlugin {
               min: parseInt(min),
               sec: parseInt(sec),
             }
-            self.disnode.DB.Update("players", {"id":player.id}, player);
-            self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
+            self.updateLastSeen(player);
+            self.checkLV(player, command.msg.channel);
           }else {
             flipinfo.winText = flipinfo.ltag + " House Wins!";
             if(bet >= 250){}else {
@@ -524,10 +527,11 @@ class CasinoPlugin {
               sec: parseInt(sec),
             }
             self.updateLastSeen(player);
+            self.checkLV(player, command.msg.channel);
           }
           self.disnode.DB.Update("players", {"id":player.id}, player);
           self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
-          }else {
+        }else {
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a bet! Example `!casino flip tails 100`", 16772880);
         }
       });
@@ -555,11 +559,7 @@ class CasinoPlugin {
             if(player.Admin || player.Premium){
               cost = (self.store[i].cost /2)
             }else cost = self.store[i].cost;
-            if(self.store[i].type == 0){
-              msg += "" + i + "\t//\t" + self.store[i].item + "\t//\t" + cost + "XP\n";
-            }else {
-              msg += "" + i + "\t//\t" + self.store[i].item + "\t//\t$" + numeral(cost).format('0,0.00') + "\n";
-            }
+            msg += "" + i + "\t//\t" + self.store[i].item + "\t//\t" + cost + "XP\n";
           }
           msg += "\n\n**XP:** " + player.xp + "\nStore items are subject to change, please be aware of prices and items PRIOR to making a purchase!";
           var title;
@@ -577,16 +577,49 @@ class CasinoPlugin {
                 if(self.store[ID].type == 0){
                   quantity = Math.floor((player.xp / (self.store[ID].cost / 2)));
                 }else {
-                  quantity = Math.floor((player.money / (self.store[ID].cost / 2)));
+                  var remainMax = player.maxIncome - player.income;
+                  var counter = 0;
+                  var cost = (self.store[ID].cost /2);
+                  while (true) {
+                    if((counter * cost) >= player.xp)break;
+                    if((counter * self.store[ID].amount) >= remainMax)break;
+                    counter++;
+                  }
+                  quantity = counter;
+                  if((player.income + (self.store[ID].amount * quantity)) > remainMax){
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Such transaction will exceed your Max Income of: $" + numeral(player.maxIncome).format('0,00.00') + "\nLevel up to increase this max.", 16772880);
+                    return;
+                  }
                 }
               }else {
                 if(self.store[ID].type == 0){
                   quantity = Math.floor((player.xp / (self.store[ID].cost)));
                 }else {
-                  quantity = Math.floor((player.money / (self.store[ID].cost)));
+                  remainMax = player.maxIncome - player.income;
+                  var counter = 1;
+                  var cost = (self.store[ID].cost);
+                  while (true) {
+                    if((counter * cost) >= player.xp)break;
+                    if((counter * self.store[ID].amount) >= remainMax)break;
+                    counter++;
+                  }
+                  quantity = counter;
+                  if((player.income + (self.store[ID].amount * quantity)) > remainMax){
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Such transaction will exceed your Max Income of: $" + numeral(player.maxIncome).format('0,00.00') + "\nLevel up to increase this max.", 16772880);
+                    return;
+                  }
                 }
               }
-            }else quantity = numeral(command.params[2]).value();
+            }else{
+              quantity = numeral(command.params[2]).value();
+              if(self.store[ID].type == 1){
+                var remainMax = player.maxIncome - player.income;
+                if((player.income + (self.store[ID].amount * quantity)) > remainMax){
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Such transaction will exceed your Max Income of: $" + numeral(player.maxIncome).format('0,00.00') + "\nLevel up to increase this max.", 16772880);
+                  return;
+                }
+              }
+            }
             if(quantity < 1){
               quantity = 1;
             }
@@ -595,67 +628,19 @@ class CasinoPlugin {
               cost = (self.store[ID].cost /2) * quantity;
             }else cost = self.store[ID].cost * quantity;
             var costString;
-            if(self.store[ID].type == 0){
-              costString = cost + " XP"
-              if(player.xp < cost){
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much XP!\nNeed: " + cost + "XP\nYou have: " + player.xp, 16772880);
-                return;
-              }
-            }else {
-              costString = "$" + numeral(cost).format('0,0.00');
-              if(player.money < cost){
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money!\nNeed: $" + numeral(cost).format('0,0.00') + "\nYou have: $" + numeral(player.money).format('0,0.00'), 16772880);
-                return;
-              }
+            costString = cost + " XP"
+            if(player.xp < cost){
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much XP!\nNeed: " + cost + "XP\nYou have: " + player.xp, 16772880);
+              return;
             }
-            switch (ID) {
+            switch (self.store[ID].type) {
               case 0:
                 player.xp -= cost;
-                player.money += (1000 * quantity);
+                player.money += (self.store[ID].amount * quantity);
                 break;
               case 1:
                 player.xp -= cost;
-                player.money += (2500 * quantity);
-                break;
-              case 2:
-                player.xp -= cost;
-                player.money += (5000 * quantity);
-                break;
-              case 3:
-                player.xp -= cost;
-                player.money += (10000 * quantity);
-                break;
-              case 4:
-                player.xp -= cost;
-                player.money += (20000 * quantity);
-                break;
-              case 5:
-                player.xp -= cost;
-                player.money += (30000 * quantity);
-                break;
-              case 6:
-                player.xp -= cost;
-                player.perUpdate += (50 * quantity);
-                break;
-              case 7:
-                player.xp -= cost;
-                player.perUpdate += (100 * quantity);
-                break;
-              case 8:
-                player.xp -= cost;
-                player.perUpdate += (200 * quantity);
-                break;
-              case 9:
-                player.xp -= cost;
-                player.perUpdate += (400 * quantity);
-                break;
-              case 10:
-                player.xp -= cost;
-                player.perUpdate += (800 * quantity);
-                break;
-              case 11:
-                player.xp -= cost;
-                player.perUpdate += (1600 * quantity);
+                player.income += (self.store[ID].amount * quantity);
                 break;
               default:
                 break;
@@ -674,7 +659,7 @@ class CasinoPlugin {
               }, {
                 name: 'Income / 30min.',
                 inline: true,
-                value: "$" + numeral(player.perUpdate).format('0,0.00'),
+                value: "$" + numeral(player.income).format('0,0.00'),
               }, {
                 name: 'XP',
                 inline: true,
@@ -690,59 +675,6 @@ class CasinoPlugin {
           break;
         default:
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Store", "Welcome to the store! to see a list of Items use `!casino store list` use the ID of the item when buying for example `!casino store buy 0`");
-      }
-    });
-  }
-  commandLevel(command){
-    var self = this;
-    self.getPlayer(command).then(function(player) {
-      if(self.checkBan(player, command))return;
-      var cost = player.lv * 250;
-      switch (command.params[0]) {
-        case "up":
-          if(command.params[1] && command.params[1] == "yes"){
-            if(player.xp < cost){
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have enough XP to level up!\n**Need:** " + cost + "\n**Have:** " + player.xp, 16772880);
-            }else {
-              player.lv++;
-              player.money = 10000 * player.lv;
-              player.perUpdate = 1000 * player.lv;
-              player.xp = 0;
-              //1433628
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":white_check_mark: You are now Lv: " + player.lv, 1433628);
-              self.updateLastSeen(player);
-              self.disnode.DB.Update("players", {"id":player.id}, player);
-              self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
-            }
-          }else {
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Are you sure you want to level up? Doing so will ERASE your current progress but keeps your stats, do `!casino level up yes` to reset", 16772880);
-          }
-          break;
-        default:
-          self.disnode.bot.SendEmbed(command.msg.channel, {
-            color: 1433628,
-            author: {},
-            fields: [ {
-              name: "Level",
-              inline: false,
-              value: "Here is where you can level up! to level up do `!casino level up` Here is some info! The amount to go from your current level to the next is calculated by `currentLV * 250`",
-            }, {
-              name: 'Level',
-              inline: true,
-              value: player.lv,
-            }, {
-              name: 'Cost',
-              inline: true,
-              value: cost,
-            }, {
-              name: 'Remaining XP',
-              inline: true,
-              value: cost - player.xp,
-            }],
-              footer: {}
-            }
-          );
-          break;
       }
     });
   }
@@ -914,7 +846,8 @@ class CasinoPlugin {
           name:  data.msg.user,
           id: data.msg.userID,
           money: 10000,
-          perUpdate: 1000,
+          income: 1000,
+          maxIncome: 25000,
           xp: 0,
           lv: 1,
           Premium: false,
@@ -1085,6 +1018,14 @@ class CasinoPlugin {
       return false;
     }
   }
+  checkLV(player, channel){
+    var self = this;
+    if(player.xp >= (player.lv * 250)){
+      player.lv++;
+      player.maxIncome = player.maxIncome * 2;
+      self.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lv + "\n**Your max income has been increased to:** $" + numeral(player.maxIncome).format('0,0.00'), 1433628)
+    }
+  }
   updateCoroutine(){
     var self = this;
     self.disnode.DB.Find("players", {}).then(function(players) {
@@ -1093,7 +1034,7 @@ class CasinoPlugin {
           self.updateLastSeen(players[i]);
         }
         if(self.canGetIncome(players[i])){
-          players[i].money += players[i].perUpdate;
+          players[i].money += players[i].income;
         }
         players[i].lastMessage = null;
         self.disnode.DB.Update("players", {"id":players[i].id}, players[i]);
