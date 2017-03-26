@@ -18,6 +18,20 @@ class CasinoPlugin {
       {item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},
       {item:":100:"},{item:":100:"},{item:":100:"},{item:":100:"},{item:":key:"}
     ]
+    this.store = [
+      {cost: 200, type:0, item: "Instant $1,000"},
+      {cost: 500, type:0, item: "Instant $2,500"},
+      {cost: 1000, type:0, item: "Instant $5,000"},
+      {cost: 2000, type:0, item: "Instant $10,000"},
+      {cost: 4000, type:0, item: "Instant $20,000"},
+      {cost: 6000, type:0, item: "Instant $30,000"},
+      {cost: 100, type:0, item: "Add $50 to your income"},
+      {cost: 200, type:0, item: "Add $100 to your income"},
+      {cost: 400, type:0, item: "Add $200 to your income"},
+      {cost: 800, type:0, item: "Add $400 to your income"},
+      {cost: 1600, type:0, item: "Add $800 to your income"},
+      {cost: 3200, type:0, item: "Add $1600 to your income"}
+    ]
     this.recentBetters = [];
     setTimeout(function() {
       var n = self.getRandomIntInclusive(0,3);
@@ -73,7 +87,7 @@ class CasinoPlugin {
       self.findPlayer(command.params[0]).then(function(res) {
         if(res.found){
           self.disnode.bot.SendEmbed(command.msg.channel, {
-            color: 3447003,
+            color: 1433628,
             author: {},
             title: res.p.name + ' Balance',
             fields: [ {
@@ -104,7 +118,7 @@ class CasinoPlugin {
               footer: {}
           });
         }else {
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
         }
       })
     }else {
@@ -112,7 +126,7 @@ class CasinoPlugin {
         if(self.checkBan(player, command))return;
         self.disnode.bot.SendEmbed(command.msg.channel,
           {
-            color: 3447003,
+            color: 1433628,
             author: {},
             title: player.name + ' Balance',
             fields: [ {
@@ -155,7 +169,7 @@ class CasinoPlugin {
         }else var minJackpotBet = 250;
         self.updateLastSeen(player);
         self.disnode.bot.SendEmbed(command.msg.channel, {
-          color: 3447003,
+          color: 1433628,
           author: {},
           fields: [ {
             name: 'JACKPOT Value',
@@ -185,7 +199,7 @@ class CasinoPlugin {
             var minJackpotBet = (player.money * 0.03);
           }else var minJackpotBet = 250;
           self.disnode.bot.SendEmbed(command.msg.channel, {
-            color: 3447003,
+            color: 1433628,
             author: {},
             title: 'Casino Slots',
             description: 'Info',
@@ -237,12 +251,12 @@ class CasinoPlugin {
             if(player.Admin || player.Premium)timeoutInfo = self.checkTimeout(player, 2);
             if(!timeoutInfo.pass){
               logger.Info("Casino", "Slot", "Player: " + player.name + " Tried the slots before their delay of: " + timeoutInfo.remain.sec);
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.");
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
               return;
             }
             if(bet > 0.01){
               if(bet > player.money | bet == NaN | bet == "NaN"){// Checks to see if player has enough money for their bet
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'));
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
                 return;
               }else{
                 player.money -= parseFloat(bet);
@@ -282,7 +296,7 @@ class CasinoPlugin {
               self.handleRecentBetters(player);
               self.updateLastSeen(player);
               self.disnode.bot.SendEmbed(command.msg.channel, {
-                color: 3447003,
+                color: 1433628,
                 author: {},
                 fields: [ {
                   name: ':slot_machine: ' + player.name + ' Slots Result :slot_machine:',
@@ -339,7 +353,7 @@ class CasinoPlugin {
               self.disnode.DB.Update("players", {"id":player.id}, player);
               self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
             }else {
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a Number for bet or `!casino slot` for general help")
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a Number for bet or `!casino slot` for general help", 16772880)
             }
           }
       }
@@ -350,7 +364,7 @@ class CasinoPlugin {
       self.getPlayer(command).then(function(player) {
         if(self.checkBan(player, command))return;
         if(player.lv < 5){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must be Level 5 to Play Coin Flip!");
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must be Level 5 to Play Coin Flip!", 16772880);
           return;
         }
         var flipinfo = {
@@ -369,7 +383,7 @@ class CasinoPlugin {
           flipinfo.tag = "Tails";
           flipinfo.ltag = "Heads";
         }else {
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Coin Flip", "Welcome to Coin Flip! You can play by using this command `!casino flip [heads/tails] [bet]` Examples `!casino flip heads 100` and `!casino flip tails 100`");
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Coin Flip", "Welcome to Coin Flip! You can play by using this command `!casino flip [heads/tails] [bet]` Examples `!casino flip heads 100` and `!casino flip tails 100`", 1433628);
           return;
         }if(command.params[1]){
           if(command.params[1].toLowerCase() == "allin"){
@@ -382,11 +396,11 @@ class CasinoPlugin {
           var timeoutInfo = self.checkTimeout(player, 5);
           if(player.Admin || player.Premium)timeoutInfo = self.checkTimeout(player, 2);
           if(!timeoutInfo.pass){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.");
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
             return;
           }
           if(bet > player.money){// Checks to see if player has enough money for their bet
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'));
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
             return;
           }else{
             player.money -= bet;
@@ -412,7 +426,7 @@ class CasinoPlugin {
             logger.Info("Casino", "CoinFlip", "Player: " + player.name + " Has Won Coin Flip Winnings: " + flipinfo.winAmount + "original bet: " + bet);
             self.updateLastSeen(player);
             self.disnode.bot.SendEmbed(command.msg.channel, {
-              color: 3447003,
+              color: 1433628,
               author: {},
               fields: [ {
                 name: ':moneybag: Coin Flip :moneybag:',
@@ -509,24 +523,28 @@ class CasinoPlugin {
               min: parseInt(min),
               sec: parseInt(sec),
             }
+            self.updateLastSeen(player);
           }
           self.disnode.DB.Update("players", {"id":player.id}, player);
           self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
           }else {
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a bet! Example `!casino flip tails 100`");
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a bet! Example `!casino flip tails 100`", 16772880);
         }
       });
   }
-  recentBettersCommand(command){
+  commandRecentBetters(command){
     var self = this;
-    var player = self.getPlayer(command).then(function() {
+    self.getPlayer(command).then(function(player) {
       if(self.checkBan(player, command))return;
+      var msg = "Name // Last Time Played\n";
+      for (var i = 0; i < self.recentBetters.length; i++) {
+        msg += (i+1) + ". **" + self.recentBetters[i].name + "** -=- `" + self.recentBetters[i].time + "`\n";
+      }
+      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Recent Betters -=- Current Time: " + self.getDateTime(), msg);
     });
-    var msg = "Name // Last Time Played\n";
-    for (var i = 0; i < self.recentBetters.length; i++) {
-      msg += (i+1) + ". **" + self.recentBetters[i].name + "** -=- `" + self.recentBetters[i].time + "`\n";
-    }
-    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Recent Betters -=- Current Time: " + self.getDateTime(), msg);
+  }
+  commandStore(command){
+
   }
   didWin(slot){
     var self = this;
