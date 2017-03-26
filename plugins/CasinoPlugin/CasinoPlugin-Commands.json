@@ -18,7 +18,7 @@
     {
       "cmd": "betters",
       "desc": "*See who recently played slots!*",
-      "run": "recentBettersCommand"
+      "run": "commandRecentBetters"
     },
     {
       "cmd": "jackpot",
