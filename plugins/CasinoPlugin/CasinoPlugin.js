@@ -547,6 +547,133 @@ class CasinoPlugin {
       self.disnode.bot.SendCompactEmbed(command.msg.channel, "Recent Betters -=- Current Time: " + self.getDateTime(), msg);
     });
   }
+  commandStats(command){
+    var self = this;
+    self.getPlayer(command).then(function(player) {
+      if(self.checkBan(player, command))return;
+      if(command.params[0]){
+        self.findPlayer(command.params[0]).then(function(res) {
+          if(res.found){
+            self.disnode.DB.Find("players", {}).then(function(players) {
+              var orderTop = []
+              for (var i = 0; i < players.length; i++) {
+                var placed = false;
+                for (var x = 0; x < orderTop.length; x++) {
+                  if(players[i].money > orderTop[x].money){
+                    orderTop.splice(x, 0, players[i]);
+                    placed = true;
+                    break;
+                  }
+                }
+                if(!placed){
+                  orderTop.push(players[i]);
+                }
+              }
+              for (var i = 0; i < orderTop.length; i++) {
+                if(res.p.id == orderTop[i].id){
+                  var placement = "**Rank**: " + (i+1) + " **out of** " + (orderTop.length);
+                  break;
+                }
+              }
+              var slotstats = "**Slot -=- Wins / Plays**:\t  " + res.p.stats.slotWins + " / " + res.p.stats.slotPlays + "\n" +
+              "**Slot Wins**:\n " +
+              ":cherries: **Single cherries**: " + res.p.stats.slotSingleC + "\n" +
+              ":cherries: :cherries: :cherries: **Triple cherries**: " + res.p.stats.slotTripleC + "\n" +
+              ":third_place: :third_place: :third_place: **Triple 3\'s**: " + res.p.stats.slot3s + "\n" +
+              ":second_place: :second_place: :second_place: **Triple 2\'s**: " + res.p.stats.slot2s + "\n" +
+              ":first_place: :first_place: :first_place: **Triple 1\'s**: " + res.p.stats.slot1s + "\n" +
+              ":100: :100: :100: **JACKPOTS**: " + res.p.stats.slotJackpots + "\n\n";
+              var coinstats = "**Coin Flip -=- Wins / Plays**:\t  " + res.p.stats.coinWins + " / " + res.p.stats.coinPlays + "\n\n" +
+                "**Coin Landed on Heads**: " + res.p.stats.coinHeads + "\n" +
+                "**Coin Landed on Tails**: " + res.p.stats.coinTails;
+              self.disnode.bot.SendEmbed(command.msg.channel,{
+                color: 1433628,
+                author: {},
+                fields: [ {
+                  name: "Stats",
+                  inline: false,
+                  value: placement,
+                }, {
+                  name: 'Slots',
+                  inline: true,
+                  value: slotstats,
+                }, {
+                  name: 'Coin Flip',
+                  inline: true,
+                  value: coinstats,
+                }, {
+                  name: 'Wheel',
+                  inline: true,
+                  value: "Coming soon!",
+                }],
+                  footer: {}
+                }
+              );
+            });
+          }else {
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Player card Not Found Please @mention the user you are trying to send to or make sure you have the correct name if not using a @mention! Also make sure they have a account on the game!\n\n" + res.msg, 16772880);
+          }
+        })
+      }else {
+        self.disnode.DB.Find("players", {}).then(function(players) {
+          var orderTop = []
+          for (var i = 0; i < players.length; i++) {
+            var placed = false;
+            for (var x = 0; x < orderTop.length; x++) {
+              if(players[i].money > orderTop[x].money){
+                orderTop.splice(x, 0, players[i]);
+                placed = true;
+                break;
+              }
+            }
+            if(!placed){
+              orderTop.push(players[i]);
+            }
+          }
+          for (var i = 0; i < orderTop.length; i++) {
+            if(player.id == orderTop[i].id){
+              var placement = "**Rank**: " + (i+1) + " **out of** " + (orderTop.length);
+              break;
+            }
+          }
+          var slotstats = "**Slot -=- Wins / Plays**:\t  " + player.stats.slotWins + " / " + player.stats.slotPlays + "\n" +
+          "**Slot Wins**:\n " +
+          ":cherries: **Single cherries**: " + player.stats.slotSingleC + "\n" +
+          ":cherries: :cherries: :cherries: **Triple cherries**: " + player.stats.slotTripleC + "\n" +
+          ":third_place: :third_place: :third_place: **Triple 3\'s**: " + player.stats.slot3s + "\n" +
+          ":second_place: :second_place: :second_place: **Triple 2\'s**: " + player.stats.slot2s + "\n" +
+          ":first_place: :first_place: :first_place: **Triple 1\'s**: " + player.stats.slot1s + "\n" +
+          ":100: :100: :100: **JACKPOTS**: " + player.stats.slotJackpots + "\n\n";
+          var coinstats = "**Coin Flip -=- Wins / Plays**:\t  " + player.stats.coinWins + " / " + player.stats.coinPlays + "\n\n" +
+            "**Coin Landed on Heads**: " + player.stats.coinHeads + "\n" +
+            "**Coin Landed on Tails**: " + player.stats.coinTails;
+          self.disnode.bot.SendEmbed(command.msg.channel,{
+            color: 1433628,
+            author: {},
+            fields: [ {
+              name: "Stats",
+              inline: false,
+              value: placement,
+            }, {
+              name: 'Slots',
+              inline: true,
+              value: slotstats,
+            }, {
+              name: 'Coin Flip',
+              inline: true,
+              value: coinstats,
+            }, {
+              name: 'Wheel',
+              inline: true,
+              value: "Coming soon!",
+            }],
+              footer: {}
+            }
+          );
+        });
+      }
+    });
+  }
   commandStore(command){
     var self = this;
     self.getPlayer(command).then(function(player) {
@@ -847,7 +974,7 @@ class CasinoPlugin {
           id: data.msg.userID,
           money: 10000,
           income: 1000,
-          maxIncome: 25000,
+          maxIncome: 1000,
           xp: 0,
           lv: 1,
           Premium: false,
@@ -1020,11 +1147,11 @@ class CasinoPlugin {
   }
   checkLV(player, channel){
     var self = this;
-    if(player.xp >= (player.lv * 250)){
+    while(player.xp >= (player.lv * 250)){
       player.lv++;
       player.maxIncome = player.maxIncome * 2;
-      self.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lv + "\n**Your max income has been increased to:** $" + numeral(player.maxIncome).format('0,0.00'), 1433628)
     }
+    self.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lv + "\n**Your max income has been increased to:** $" + numeral(player.maxIncome).format('0,0.00'), 1433628);
   }
   updateCoroutine(){
     var self = this;
