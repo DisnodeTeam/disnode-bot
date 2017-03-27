@@ -31,9 +31,9 @@
       "run": "commandJackpotInfo"
     },
     {
-      "cmd": "level",
-      "desc": "*Here you can level up to unlock more features*",
-      "run": "commandLevel"
+      "cmd": "stats",
+      "desc": "*View you stats for the bot!*",
+      "run": "commandStats"
     }
   ]
 }
