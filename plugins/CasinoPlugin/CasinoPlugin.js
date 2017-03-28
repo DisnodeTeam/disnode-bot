@@ -5,6 +5,45 @@ class CasinoPlugin {
   constructor() {
     var self = this;
     self.casinoObj = {};
+    this.wheelItems = [
+      {display:":white_circle: :zero:", type: 0},
+      {display:":red_circle: :one:", type: 1},
+      {display:":red_circle: :two:", type: 1},
+      {display:":black_circle: :three:", type: 2},
+      {display:":black_circle: :four:", type: 2},
+      {display:":red_circle: :five:", type: 1},
+      {display:":red_circle: :six:", type: 1},
+      {display:":black_circle: :seven:", type: 2},
+      {display:":black_circle: :eight:", type: 2},
+      {display:":red_circle: :nine:", type: 1},
+      {display:":red_circle: :keycap_ten:", type: 1},
+      {display:":black_circle: :one: :one:", type: 2},
+      {display:":black_circle: :one: :two:", type: 2},
+      {display:":red_circle: :one: :three:", type: 1},
+      {display:":red_circle: :one: :four:", type: 1},
+      {display:":black_circle: :one: :five:", type: 2},
+      {display:":black_circle: :one: :six:", type: 2},
+      {display:":red_circle: :one: :seven:", type: 1},
+      {display:":red_circle: :one: :eight:", type: 1},
+      {display:":black_circle: :one: :nine:", type: 2},
+      {display:":black_circle: :two: :zero:", type: 2},
+      {display:":red_circle: :two: :one:", type: 1},
+      {display:":red_circle: :two: :two:", type: 1},
+      {display:":black_circle: :two: :three:", type: 2},
+      {display:":black_circle: :two: :four:", type: 2},
+      {display:":red_circle: :two: :five:", type: 1},
+      {display:":red_circle: :two: :six:", type: 1},
+      {display:":black_circle: :two: :seven:", type: 2},
+      {display:":black_circle: :two: :eight:", type: 2},
+      {display:":red_circle: :two: :nine:", type: 1},
+      {display:":red_circle: :three: :zero:", type: 1},
+      {display:":black_circle: :three: :one:", type: 2},
+      {display:":black_circle: :three: :two:", type: 2},
+      {display:":red_circle: :three: :three:", type: 1},
+      {display:":red_circle: :three: :four:", type: 1},
+      {display:":black_circle: :three: :five:", type: 2},
+      {display:":black_circle: :three: :six:", type: 2}
+    ]
     self.slotItems = [
       {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
       {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
@@ -63,7 +102,7 @@ class CasinoPlugin {
         fields: [ {
           name: 'Casino',
           inline: true,
-          value: "Hello, " + player.name + "!\nCasino Bot is A Discord bot that allows users to play Casino Games on Discord **FOR AMUESMENT ONLY**",
+          value: "Hello, " + player.name + "!\nCasino Bot is A Discord bot that allows users to play Casino Games on Discord **FOR AMUSEMENT ONLY**",
         },{
           name: 'Commands:',
           inline: true,
@@ -536,6 +575,194 @@ class CasinoPlugin {
         }
       });
   }
+  commandWheel(command){
+    var self = this;
+    var wheelInfo;
+    var winspots = [];
+    var whatcontains = {
+      has1st: false,
+      has2nd: false,
+      has3rd: false
+    }
+    var invalidbets = [];
+    var timeoutInfo;
+    self.getPlayer(command).then(function(player) {
+      if(self.checkBan(player, command))return;
+      switch (command.params[0]) {
+        case "spin":
+          if(player.lv < 5){
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must be Level 5 to Play The Wheel!", 16772880);
+            return;
+          }
+          if(command.params[1] == "allin"){
+            var bet = numeral(player.money).value();
+          }else {
+            var bet = numeral(command.params[1]).value();
+          }
+          if(bet > 0){
+            if(player.Premium)timeoutInfo = self.checkTimeout(player, 2);
+            if(player.Admin)timeoutInfo = self.checkTimeout(player, 0);
+            if(!timeoutInfo.pass){
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
+              return;
+            }
+            if(command.params.length > 7){
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You can only put a maximum of 5 Bet Types!", 16772880);
+            }
+            for (var i = 2; i < command.params.length; i++) {
+              if(command.params[i] == undefined)break;
+              if(self.checkValidWheel(command.params[i])){
+                if(command.params[i].toLowerCase() == "1st"){
+                  whatcontains.has1st = true;
+                }
+                if(command.params[i].toLowerCase() == "2nd"){
+                  whatcontains.has2nd = true;
+                }
+                if(command.params[i].toLowerCase() == "3rd"){
+                  whatcontains.has3rd = true;
+                }
+                winspots.push(command.params[i].toLowerCase());
+              }else {
+                invalidbets.push(command.params[i]);
+              }
+            }
+            if(winspots.length == 0){
+              if(invalidbets.length > 0){
+                var msg = "";
+                for (var i = 0; i < invalidbets.length; i++) {
+                  msg += invalidbets[i] + " ";
+                }
+                self.disnode.bot.SendCompactEmbed(command.msg.channel,"Error", ":warning: Please Enter valid bet types! Invalid: " + msg, 16772880);
+                return;
+              }else {
+                self.disnode.bot.SendCompactEmbed(command.msg.channel,"Error", ":warning: Please Enter valid bet types!", 16772880);
+                return;
+              }
+            }
+            if(bet > player.money){// Checks to see if player has enough money for their bet
+              self.disnode.bot.SendCompactEmbed(command.msg.channel,"Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
+              return;
+            }else{
+              player.money -= bet;
+              player.money = numeral(player.money).value();
+            }
+            var wheelInfo = {
+              bet: bet,
+              betperspot: (bet / winspots.length),
+              player: player,
+              winAmount: 0,
+              xpAward: 0,
+              wheelNumber: self.getRandomIntInclusive(0,(self.wheelItems.length - 1)),
+              winspots: winspots,
+              whatcontains: whatcontains
+            }
+            wheelInfo.ball = self.wheelItems[wheelInfo.wheelNumber];
+            self.calculateWheelWins(wheelInfo);
+            player.stats.wheelPlays++;
+            if(wheelInfo.winAmount > 0)player.stats.wheelWins++;
+            player.money += wheelInfo.winAmount;
+            player.xp += wheelInfo.xpAward;
+            logger.Info("Casino", "Wheel", "Wheel Player: " + player.name + " bet: " + bet + " Win: " + wheelInfo.winAmount);
+          }else {
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a number for your bet!", 16772880);
+          }
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1433628,
+            author: {},
+            fields: [ {
+              name: ':money_with_wings: The Wheel :money_with_wings:',
+              inline: false,
+              value: wheelInfo.ball.display,
+            }, {
+              name: 'Bet',
+              inline: true,
+              value: "$" + numeral(bet).format('0,0.00'),
+            }, {
+              name: 'bet per Type',
+              inline: false,
+              value: "$" + numeral(wheelInfo.betperspot).format('0,0.00'),
+            }, {
+              name: 'Winnings',
+              inline: true,
+              value: "$" + numeral(wheelInfo.winAmount).format('0,0.00'),
+            }, {
+              name: 'Net Gain',
+              inline: true,
+              value: "$" + numeral(wheelInfo.winAmount - bet).format('0,0.00'),
+            }, {
+              name: 'Balance',
+              inline: true,
+              value: "$" + numeral(player.money).format('0,0.00'),
+            }, {
+              name: 'XP',
+              inline: true,
+              value: player.xp,
+            }],
+              footer: {}
+            }
+          );
+          var currentDate = new Date();
+          var hour = currentDate.getHours();
+          hour = (hour < 10 ? "0" : "") + hour;
+          var min  = currentDate.getMinutes();
+          min = (min < 10 ? "0" : "") + min;
+          var sec  = currentDate.getSeconds();
+          sec = (sec < 10 ? "0" : "") + sec;
+          player.lastMessage = {
+            hour: parseInt(hour),
+            min: parseInt(min),
+            sec: parseInt(sec),
+          }
+          self.updateLastSeen(player);
+          self.checkLV(player, command.msg.channel);
+          self.disnode.DB.Update("players", {"id":player.id}, player);
+          self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
+          break;
+        case "info":
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+              color: 3447003,
+              author: {},
+              fields: [ {
+                name: ':money_with_wings: The Wheel :money_with_wings:',
+                inline: false,
+                value: "The Wheel acts much like Roulette however it has a differeing rule set to Roulette.",
+              }, {
+                name: 'Playing The Wheel',
+                inline: false,
+                value: "You can play the wheel by typing in `!casino wheel spin [bet] [betType] [betType] ...` EXAMPLE: `!casino wheel spin 100 black`",
+              }, {
+                name: 'Bet Types',
+                inline: true,
+                value: "As shown bet types can be one of the following: `[black,red,(0-36),even,odd,1st,2nd,3rd,low,high]`\n`Black / Red` Number must match color to win.\n`Even / Odd` Win if the number is even or odd depending on what you choose\n`1st / 2nd / 3rd` 1st is numbers 1-12, 2nd is numbers 13-24, 3rd is numbers 25-36\n`Low / High` Low is 1-18, and High is 19-36",
+              }, {
+                name: 'Winnings',
+                inline: true,
+                value: "0 - 37x\nany other number - 36x\n1st/2nd/3rd 3x\nEven/odd/black/red/low/high 2x",
+              }, {
+                name: 'Numbers',
+                inline: true,
+                value: ":white_circle: # ~ 0\n:red_circle: # ~ 1, 2, 5, 6, 9, 10, 13, 14, 17, 18, 21, 22, 25, 26, 29, 30, 33, 34\n:black_circle:  # ~ 3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24, 27, 28, 31, 32, 35, 36,"
+              }],
+              footer: {}
+            }
+          );
+          break;
+        default:
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 3447003,
+            author: {},
+            fields: [ {
+              name: "The Wheel (Roulette)",
+              inline: false,
+              value: "Welcome to The Wheel! You can play by using this command `!casino wheel spin [bet] [betType]` Examples `!casino wheel spin 100 black`\nFor more info on what win types are and how the game is payed out use `!casino wheel info`",
+            }],
+              footer: {}
+            }
+          );
+          break;
+      }
+    });
+  }
   commandRecentBetters(command){
     var self = this;
     self.getPlayer(command).then(function(player) {
@@ -545,6 +772,49 @@ class CasinoPlugin {
         msg += (i+1) + ". **" + self.recentBetters[i].name + "** -=- `" + self.recentBetters[i].time + "`\n";
       }
       self.disnode.bot.SendCompactEmbed(command.msg.channel, "Recent Betters -=- Current Time: " + self.getDateTime(), msg);
+    });
+  }
+  commandTop(command){
+    var self = this;
+    self.getPlayer(command).then(function(player) {
+      if(self.checkBan(player, command))return;
+      self.disnode.DB.Find("players", {}).then(function(players) {
+        var orderTop = [];
+        for (var i = 0; i < players.length; i++) {
+          var placed = false;
+          for (var x = 0; x < orderTop.length; x++) {
+            if(players[i].money > orderTop[x].money){
+              orderTop.splice(x, 0, players[i]);
+              placed = true;
+              break;
+            }
+          }
+          if(!placed){
+            orderTop.push(players[i]);
+          }
+        }
+        var page = 1;
+        var maxindex;
+        var startindex;
+        if (parseInt(command.params[0]) >= 1) {
+          page = Number(parseInt(command.params[0]));
+        }
+        if (page == 1) {
+          page = 1;
+          startindex = 0
+          maxindex = 10;
+        }else {
+          maxindex = (page * 10);
+          startindex = maxindex - 10;
+        }
+
+        var msg = "**Page:** " + page + "\n";
+        for (var i = startindex; i < orderTop.length; i++) {
+          if(i == maxindex)break;
+          msg += "" + (i + 1) + ". **" + orderTop[i].name + "** -=- $" + numeral(orderTop[i].money).format('0,0.00') + "\n";
+        }
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Wealthiest Players", msg);
+      });
     });
   }
   commandStats(command){
@@ -586,6 +856,14 @@ class CasinoPlugin {
               var coinstats = "**Coin Flip -=- Wins / Plays**:\t  " + res.p.stats.coinWins + " / " + res.p.stats.coinPlays + "\n\n" +
                 "**Coin Landed on Heads**: " + res.p.stats.coinHeads + "\n" +
                 "**Coin Landed on Tails**: " + res.p.stats.coinTails;
+              var wheelStats = "**The Wheel -=- Plays / Wins**:\t" + res.p.stats.wheelPlays + " / " +  + res.p.stats.wheelWins + "\n\n" +
+                "**General Wheel Stats -=- Won with / Landed On**\n" +
+                "**0**: " + res.p.stats.wheel0 + " / " + res.p.stats.wheelLanded0 + "\n" +
+                "**Number other than 0**: " + res.p.stats.wheelNumber + " / " + res.p.stats.wheelLandedNumber + "\n" +
+                "**1st, 2nd, 3rd**: " + res.p.stats.wheelsections + " / " + res.p.stats.wheelLandedsections + "\n" +
+                "**High, Low**: " + res.p.stats.wheellowhigh + " / " + res.p.stats.wheelLandedlowhigh + "\n" +
+                "**Even, Odd**: " + res.p.stats.wheelevenodd + " / " + res.p.stats.wheelLandedevenodd + "\n" +
+                "**Red, Black**: " + res.p.stats.wheelcolor + " / " + res.p.stats.wheelLandedcolor;
               self.disnode.bot.SendEmbed(command.msg.channel,{
                 color: 1433628,
                 author: {},
@@ -604,7 +882,7 @@ class CasinoPlugin {
                 }, {
                   name: 'Wheel',
                   inline: true,
-                  value: "Coming soon!",
+                  value: wheelStats,
                 }],
                   footer: {}
                 }
@@ -647,6 +925,14 @@ class CasinoPlugin {
           var coinstats = "**Coin Flip -=- Wins / Plays**:\t  " + player.stats.coinWins + " / " + player.stats.coinPlays + "\n\n" +
             "**Coin Landed on Heads**: " + player.stats.coinHeads + "\n" +
             "**Coin Landed on Tails**: " + player.stats.coinTails;
+            var wheelStats = "**The Wheel -=- Plays / Wins**:\t" + player.stats.wheelPlays + " / " +  + player.stats.wheelWins + "\n\n" +
+              "**General Wheel Stats -=- Won with / Landed On**\n" +
+              "**0**: " + player.stats.wheel0 + " / " + player.stats.wheelLanded0 + "\n" +
+              "**Number other than 0**: " + player.stats.wheelNumber + " / " + player.stats.wheelLandedNumber + "\n" +
+              "**1st, 2nd, 3rd**: " + player.stats.wheelsections + " / " + player.stats.wheelLandedsections + "\n" +
+              "**High, Low**: " + player.stats.wheellowhigh + " / " + player.stats.wheelLandedlowhigh + "\n" +
+              "**Even, Odd**: " + player.stats.wheelevenodd + " / " + player.stats.wheelLandedevenodd + "\n" +
+              "**Red, Black**: " + player.stats.wheelcolor + " / " + player.stats.wheelLandedcolor;
           self.disnode.bot.SendEmbed(command.msg.channel,{
             color: 1433628,
             author: {},
@@ -665,7 +951,7 @@ class CasinoPlugin {
             }, {
               name: 'Wheel',
               inline: true,
-              value: "Coming soon!",
+              value: wheelStats,
             }],
               footer: {}
             }
@@ -993,7 +1279,21 @@ class CasinoPlugin {
             slot1s: 0,
             slotJackpots: 0,
             coinHeads: 0,
-            coinTails: 0
+            coinTails: 0,
+            wheelPlays: 0,
+            wheelWins: 0,
+            wheel0: 0,
+            wheelNumber: 0,
+            wheelsections: 0,
+            wheellowhigh: 0,
+            wheelevenodd: 0,
+            wheelcolor: 0,
+            wheelLanded0: 0,
+            wheelLandedNumber: 0,
+            wheelLandedsections: 0,
+            wheelLandedlowhigh: 0,
+            wheelLandedevenodd: 0,
+            wheelLandedcolor: 0
           },
           keys: 0
         }
@@ -1152,6 +1452,165 @@ class CasinoPlugin {
       player.maxIncome = player.maxIncome * 2;
     }
     self.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lv + "\n**Your max income has been increased to:** $" + numeral(player.maxIncome).format('0,0.00'), 1433628);
+  }
+  calculateWheelWins(wheelInfo){
+    if(wheelInfo.wheelNumber >= 25 && wheelInfo.wheelNumber <= 36) {//WIN 3rd
+      wheelInfo.player.stats.wheelLandedsections++;
+    }else if(wheelInfo.wheelNumber >= 13 & wheelInfo.wheelNumber <= 24) {//WIN 2nd
+      wheelInfo.player.stats.wheelLandedsections++;
+    }else if(wheelInfo.wheelNumber >= 1 & wheelInfo.wheelNumber <= 12) {//WIN 1st
+      wheelInfo.player.stats.wheelLandedsections++;
+    }
+    if((wheelInfo.wheelNumber % 2) != 0) { //WIN Odd
+      wheelInfo.player.stats.wheelLandedevenodd++;
+    }else if((wheelInfo.wheelNumber % 2) == 0){ //WIN Even
+      wheelInfo.player.stats.wheelLandedevenodd++;
+    }
+    if(wheelInfo.ball.type == 2) {//WIN Black
+      wheelInfo.player.stats.wheelLandedcolor++;
+    }else if(wheelInfo.ball.type == 1) {//WIN Red
+      wheelInfo.player.stats.wheelLandedcolor++;
+    }
+    if(wheelInfo.wheelNumber >= 1 && wheelInfo.wheelNumber <= 18){//WIN Low
+      wheelInfo.player.stats.wheelLandedlowhigh++;
+    }else if(wheelInfo.wheelNumber >= 19 && wheelInfo.wheelNumber <= 36){//WIN high
+      wheelInfo.player.stats.wheelLandedlowhigh++;
+    }
+    if(wheelInfo.wheelNumber == 0){//WIN 0
+      wheelInfo.player.stats.wheelLanded0++;
+    }else {
+      wheelInfo.player.stats.wheelLandedNumber++;
+    }
+    for (var i = 0; i < wheelInfo.winspots.length; i++) {
+      if((wheelInfo.wheelNumber % 2) == 0){ //WIN Even
+        if(wheelInfo.winspots[i] == "even"){
+          if(wheelInfo.wheelNumber != 0){
+            wheelInfo.player.stats.wheelevenodd++;
+            wheelInfo.winAmount += (wheelInfo.betperspot * 2);
+            wheelInfo.xpAward += 5;
+            continue;
+          }
+        }
+      }
+      if((wheelInfo.wheelNumber % 2) != 0) { //WIN Odd
+        if(wheelInfo.winspots[i] == "odd"){
+          if(wheelInfo.wheelNumber != 0){
+            wheelInfo.player.stats.wheelevenodd++;
+            wheelInfo.winAmount += (wheelInfo.betperspot * 2);
+            wheelInfo.xpAward += 5;
+            continue;
+          }
+        }
+      }
+      if(wheelInfo.ball.type == 1) {//WIN Red
+        if(wheelInfo.winspots[i] == "red"){
+          wheelInfo.player.stats.wheelcolor++;
+          wheelInfo.winAmount += (wheelInfo.betperspot * 2);
+          wheelInfo.xpAward += 5;
+          continue;
+        }
+      }
+      if(wheelInfo.ball.type == 2) {//WIN Black
+        if(wheelInfo.winspots[i] == "black"){
+          wheelInfo.player.stats.wheelcolor++;
+          wheelInfo.winAmount += (wheelInfo.betperspot * 2);
+          wheelInfo.xpAward += 5;
+          continue;
+        }
+      }
+      if(wheelInfo.wheelNumber >= 1 && wheelInfo.wheelNumber <= 18){//WIN Low
+        if(wheelInfo.winspots[i] == "low"){
+          wheelInfo.player.stats.wheellowhigh++;
+          wheelInfo.winAmount += (wheelInfo.betperspot * 2);
+          wheelInfo.xpAward += 10;
+          continue;
+        }
+      }
+      if(wheelInfo.wheelNumber >= 19 && wheelInfo.wheelNumber <= 36){//WIN high
+        if(wheelInfo.winspots[i] == "high"){
+          wheelInfo.player.stats.wheellowhigh++;
+          wheelInfo.winAmount += (wheelInfo.betperspot * 2);
+          wheelInfo.xpAward += 10;
+          continue;
+        }
+      }
+      if(wheelInfo.wheelNumber >= 1 & wheelInfo.wheelNumber <= 12) {//WIN 1st
+        if(wheelInfo.winspots[i] == "1st"){
+          if(wheelInfo.whatcontains.has1st && wheelInfo.whatcontains.has2nd && wheelInfo.whatcontains.has3rd){
+            wheelInfo.player.stats.wheelsections++;
+            wheelInfo.winAmount += (wheelInfo.betperspot * 2);
+            wheelInfo.xpAward += 25;
+            continue;
+          }else {
+            wheelInfo.player.stats.wheelsections++;
+            wheelInfo.winAmount += (wheelInfo.betperspot * 3);
+            wheelInfo.xpAward += 25;
+            continue;
+          }
+        }
+      }
+      if(wheelInfo.wheelNumber >= 13 & wheelInfo.wheelNumber <= 24) {//WIN 2nd
+        if(wheelInfo.winspots[i] == "2nd"){
+          if(wheelInfo.whatcontains.has1st && wheelInfo.whatcontains.has2nd && wheelInfo.whatcontains.has3rd){
+            wheelInfo.player.stats.wheelsections++;
+            wheelInfo.winAmount += (wheelInfo.betperspot * 2);
+            wheelInfo.xpAward += 25;
+            continue;
+          }else {
+            wheelInfo.player.stats.wheelsections++;
+            wheelInfo.winAmount += (wheelInfo.betperspot * 3);
+            wheelInfo.xpAward += 25;
+            continue;
+          }
+        }
+      }
+      if(wheelInfo.wheelNumber >= 25 && wheelInfo.wheelNumber <= 36) {//WIN 3rd
+        if(wheelInfo.winspots[i] == "3rd"){
+          if(wheelInfo.whatcontains.has1st && wheelInfo.whatcontains.has2nd && wheelInfo.whatcontains.has3rd){
+            wheelInfo.player.stats.wheelsections++;
+            wheelInfo.winAmount += (wheelInfo.betperspot * 2);
+            wheelInfo.xpAward += 25;
+            continue;
+          }else {
+            wheelInfo.player.stats.wheelsections++;
+            wheelInfo.winAmount += (wheelInfo.betperspot * 3);
+            wheelInfo.xpAward += 25;
+            continue;
+          }
+        }
+      }
+      if(wheelInfo.wheelNumber == 0){//WIN 0
+        if(numeral(wheelInfo.winspots[i]).value() == 0){
+          wheelInfo.player.stats.wheel0++;
+          wheelInfo.winAmount += (wheelInfo.betperspot * 37);
+          wheelInfo.xpAward += 100;
+          continue;
+        }
+      }else {//WIN OTHERNUM
+        if(wheelInfo.winspots[i] != "1st" && wheelInfo.winspots[i] != "2nd" && wheelInfo.winspots[i] != "3rd"){
+          if(numeral(wheelInfo.winspots[i]).value() == wheelInfo.wheelNumber){
+            wheelInfo.player.stats.wheelNumber++;
+            wheelInfo.winAmount += (wheelInfo.betperspot * 36);
+            wheelInfo.xpAward += 75;
+            continue;
+          }
+        }
+      }
+    }
+  }
+  checkValidWheel(bet){
+    if(bet.toLowerCase() == "black"){return true;}
+    if(bet.toLowerCase() == "red"){return true;}
+    if(bet.toLowerCase() == "even"){return true;}
+    if(bet.toLowerCase() == "odd"){return true;}
+    if(bet.toLowerCase() == "low"){return true;}
+    if(bet.toLowerCase() == "high"){return true;}
+    if(bet.toLowerCase() == "1st"){return true;}
+    if(bet.toLowerCase() == "2nd"){return true;}
+    if(bet.toLowerCase() == "3rd"){return true;}
+    if(bet.toLowerCase() == "0"){return true;}
+    if(parseInt(bet) > 0 && parseInt(bet) <= 36 && parseInt(bet) == bet){return true;}
+    return false;
   }
   updateCoroutine(){
     var self = this;
