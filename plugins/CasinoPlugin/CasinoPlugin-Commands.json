@@ -11,9 +11,19 @@
       "run": "commandCoinFlip"
     },
     {
+      "cmd": "wheel",
+      "desc": "*Play a nice game of roulette!*",
+      "run": "commandWheel"
+    },
+    {
       "cmd": "bal",
       "desc": "*Check yours or others; Money and XP Quickly*",
       "run": "commandBal"
+    },
+    {
+      "cmd": "top",
+      "desc": "*See whos on top and compete with your friends!*",
+      "run": "commandTop"
     },
     {
       "cmd": "betters",
