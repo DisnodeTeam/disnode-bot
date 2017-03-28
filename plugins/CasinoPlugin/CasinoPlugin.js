@@ -876,13 +876,13 @@ class CasinoPlugin {
                   inline: true,
                   value: slotstats,
                 }, {
-                  name: 'Coin Flip',
-                  inline: true,
-                  value: coinstats,
-                }, {
                   name: 'Wheel',
                   inline: true,
                   value: wheelStats,
+                }, {
+                  name: 'Coin Flip',
+                  inline: true,
+                  value: coinstats,
                 }],
                   footer: {}
                 }
@@ -945,13 +945,13 @@ class CasinoPlugin {
               inline: true,
               value: slotstats,
             }, {
-              name: 'Coin Flip',
-              inline: true,
-              value: coinstats,
-            }, {
               name: 'Wheel',
               inline: true,
               value: wheelStats,
+            }, {
+              name: 'Coin Flip',
+              inline: true,
+              value: coinstats,
             }],
               footer: {}
             }
@@ -1447,11 +1447,13 @@ class CasinoPlugin {
   }
   checkLV(player, channel){
     var self = this;
+    var lvup = false;
     while(player.xp >= (player.lv * 250)){
       player.lv++;
       player.maxIncome = player.maxIncome * 2;
+      lvup = true;
     }
-    self.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lv + "\n**Your max income has been increased to:** $" + numeral(player.maxIncome).format('0,0.00'), 1433628);
+    if(lvup)self.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lv + "\n**Your max income has been increased to:** $" + numeral(player.maxIncome).format('0,0.00'), 1433628);
   }
   calculateWheelWins(wheelInfo){
     if(wheelInfo.wheelNumber >= 25 && wheelInfo.wheelNumber <= 36) {//WIN 3rd
