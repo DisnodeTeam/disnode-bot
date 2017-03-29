@@ -15,6 +15,10 @@
     {
       "cmd": "username",
       "run": "commandUsername"
+    },
+    {
+      "cmd": "servers",
+      "run": "commandServers"
     }
   ]
 }
