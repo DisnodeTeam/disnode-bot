@@ -71,6 +71,76 @@ class CasinoPlugin {
       {cost: 1600, type:1, amount: 800, item: "Add $800 to your income"},
       {cost: 3200, type:1, amount: 1600, item: "Add $1600 to your income"}
     ]
+    this.cratesys = {
+      crates: [
+        {
+          name: "Basic",
+          cost: 1,
+          items: [
+            {item:"$10,000", type: 0, amount: 10000},
+            {item:"$25,000", type: 0, amount: 25000},
+            {item:"$50,000", type: 0, amount: 50000},
+            {item:"100XP", type: 1, amount: 100},
+            {item:"250XP", type: 1, amount: 250},
+            {item:"500XP", type: 1, amount: 500}
+          ]
+        },
+        {
+          name: "Good",
+          cost: 5,
+          items: [
+            {item:"$50,000", type: 0, amount: 50000},
+            {item:"$75,000", type: 0, amount: 75000},
+            {item:"$100,000", type: 0, amount: 100000},
+            {item:"500XP", type: 1, amount: 500},
+            {item:"750XP", type: 1, amount: 750},
+            {item:"1000XP", type: 1, amount: 1000}
+          ]
+        },
+        {
+          name: "Great",
+          cost: 25,
+          items: [
+            {item:"$100,000", type: 0, amount: 100000},
+            {item:"$150,000", type: 0, amount: 150000},
+            {item:"$200,000", type: 0, amount: 200000},
+            {item:"1000XP", type: 1, amount: 1000},
+            {item:"1500XP", type: 1, amount: 1500},
+            {item:"2000XP", type: 1, amount: 2000}
+          ]
+        },
+        {
+          name: "Epic",
+          cost: 75,
+          items: [
+            {item:"$150,000", type: 0, amount: 150000},
+            {item:"$200,000", type: 0, amount: 200000},
+            {item:"$225,000", type: 0, amount: 225000},
+            {item:"1500XP", type: 1, amount: 1500},
+            {item:"2000XP", type: 1, amount: 2000},
+            {item:"2250XP", type: 1, amount: 2250}
+          ]
+        },
+        {
+          name: "Ultimate",
+          cost: 100,
+          items: [
+            {item:"$1,000,000", type: 0, amount: 1000000},
+            {item:"10000XP", type: 1, amount: 10000},
+            {item:"1 Income", type: 2},
+          ]
+        },
+        {
+          name: "Omega",
+          cost: 200,
+          items: [
+            {item:"$1,500,000", type: 0, amount: 1500000},
+            {item:"15000XP", type: 1, amount: 15000},
+            {item:"2 Income", type: 3}
+          ]
+        }
+      ]
+    }
     this.recentBetters = [];
     setTimeout(function() {
       var n = self.getRandomIntInclusive(0,3);
@@ -815,6 +885,12 @@ class CasinoPlugin {
         }
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Wealthiest Players", msg);
       });
+    });
+  }
+  commandCrate(command){
+    var self = this;
+    self.getPlayer(command).then(function() {
+
     });
   }
   commandStats(command){
