@@ -90,6 +90,34 @@ class OwnerPlugin {
             footer: {}
         });
     }
+    commandServers(command) {
+      var self = this;
+      if (command.msg.userID == this.owner) {
+        var serverids = Object.keys(self.disnode.bot.client.servers);
+        var servers = '';
+        for(var i = 0; i < serverids.length; i++) {
+          var amount = i + 1;
+          if (servers == '') {
+            servers += amount + ". " + self.disnode.bot.client.servers[serverids[i]].name + "\n";
+          } else if (i == serverids.length) {
+            serers += amount + ". " + self.disnode.bot.client.servers[serverids[i]].name;
+          } else {
+            servers += amount + ". " + self.disnode.bot.client.servers[serverids[i]].name + "\n";
+          }
+        }
+        var results = "```\n" + servers + "```\n**Servers:** " + serverids.length + "\n**Users:** " + Object.keys(self.disnode.bot.client.users).length;
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Servers List", results);
+      } else self.disnode.bot.SendEmbed(command.msg.channel, {
+          color: 15158332,
+          author: {},
+          fields: [{
+              name: "Stop",
+              inline: false,
+              value: "**You're not my Owner**",
+          }],
+          footer: {}
+      });
+    }
 
 
 }
