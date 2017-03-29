@@ -180,6 +180,15 @@ class Bot {
 		self.client.editUserInfo({username: name});
 	}
 
+	SetServerName(serverId, servername){
+		var self = this;
+		self.client.editServer(
+        {
+            serverID: serverId, 
+            name: servername
+        });
+	}
+
 	JoinVoiceChannel(voiceID){
 		var self = this;
 		this.client.joinVoiceChannel(voiceID,function(err){
