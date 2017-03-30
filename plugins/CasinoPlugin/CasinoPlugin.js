@@ -185,46 +185,61 @@ class CasinoPlugin {
   commandBal(command){
     var self = this;
     if(command.params[0] != undefined){
-      self.findPlayer(command.params[0]).then(function(res) {
-        if(res.found){
-          self.disnode.bot.SendEmbed(command.msg.channel, {
-            color: 1433628,
-            author: {},
-            title: res.p.name + " Balance",
-            fields: [ {
-              name: 'Money',
-              inline: true,
-              value: "$" + numeral(res.p.money).format('0,0.00'),
-            }, {
-              name: 'Income / Max Income',
-              inline: true,
-              value: "$" + numeral(res.p.income).format('0,0.00') + " / " + numeral(res.p.maxIncome).format('0a'),
-            }, {
-              name: 'XP / Next Level',
-              inline: true,
-              value: res.p.xp + " / " + (res.p.lv * 250),
-            }, {
-              name: 'Premium',
-              inline: true,
-              value: res.p.Premium,
-            }, {
-              name: 'Keys',
-              inline: true,
-              value: res.p.keys,
-            }, {
-              name: 'Level',
-              inline: true,
-              value: res.p.lv,
-            }],
-              footer: {}
-          });
-        }else {
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+      self.getPlayer(command).then(function(player) {
+        if(self.checkBan(player, command))return;
+        if(player.Admin || player.Mod){}else {
+          if(!self.doChannelCheck(command)){
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+            return;
+          }
         }
-      })
+        self.findPlayer(command.params[0]).then(function(res) {
+          if(res.found){
+            self.disnode.bot.SendEmbed(command.msg.channel, {
+              color: 1433628,
+              author: {},
+              title: res.p.name + " Balance",
+              fields: [ {
+                name: 'Money',
+                inline: true,
+                value: "$" + numeral(res.p.money).format('0,0.00'),
+              }, {
+                name: 'Income / Max Income',
+                inline: true,
+                value: "$" + numeral(res.p.income).format('0,0.00') + " / " + numeral(res.p.maxIncome).format('0a'),
+              }, {
+                name: 'XP / Next Level',
+                inline: true,
+                value: res.p.xp + " / " + (res.p.lv * 250),
+              }, {
+                name: 'Premium',
+                inline: true,
+                value: res.p.Premium,
+              }, {
+                name: 'Keys',
+                inline: true,
+                value: res.p.keys,
+              }, {
+                name: 'Level',
+                inline: true,
+                value: res.p.lv,
+              }],
+                footer: {}
+            });
+          }else {
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+          }
+        });
+      });
     }else {
       self.getPlayer(command).then(function(player) {
         if(self.checkBan(player, command))return;
+        if(player.Admin || player.Mod){}else {
+          if(!self.doChannelCheck(command)){
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+            return;
+          }
+        }
         self.disnode.bot.SendEmbed(command.msg.channel,
           {
             color: 1433628,
@@ -265,6 +280,12 @@ class CasinoPlugin {
     var self = this;
     self.getPlayer(command).then(function(player) {
       if(self.checkBan(player, command))return;
+      if(player.Admin || player.Mod){}else {
+        if(!self.doChannelCheck(command)){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          return;
+        }
+      }
       var msleft = self.timer.getRemainingTime();
       var minRemain = Math.floor(msleft / 60000);
       var secondsRemain = ((msleft / 1000) - (minRemain * 60));
@@ -275,6 +296,12 @@ class CasinoPlugin {
     var self = this;
     self.getPlayer(command).then(function(player) {
         if(self.checkBan(player, command))return;
+        if(player.Admin || player.Mod){}else {
+          if(!self.doChannelCheck(command)){
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+            return;
+          }
+        }
         if(player.money > 8500){
           var minJackpotBet = (player.money * 0.03);
         }else var minJackpotBet = 250;
@@ -304,6 +331,12 @@ class CasinoPlugin {
     var self = this;
     self.getPlayer(command).then(function(player) {
       if(self.checkBan(player, command))return;
+      if(player.Admin || player.Mod){}else {
+        if(!self.doChannelCheck(command)){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          return;
+        }
+      }
       switch (command.params[0]) {
         case "info":
           if(player.money > 8500){
@@ -465,6 +498,12 @@ class CasinoPlugin {
       var self = this;
       self.getPlayer(command).then(function(player) {
         if(self.checkBan(player, command))return;
+        if(player.Admin || player.Mod){}else {
+          if(!self.doChannelCheck(command)){
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+            return;
+          }
+        }
         if(player.lv < 5){
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must be Level 5 to Play Coin Flip!", 16772880);
           return;
@@ -627,6 +666,12 @@ class CasinoPlugin {
     var timeoutInfo;
     self.getPlayer(command).then(function(player) {
       if(self.checkBan(player, command))return;
+      if(player.Admin || player.Mod){}else {
+        if(!self.doChannelCheck(command)){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          return;
+        }
+      }
       switch (command.params[0]) {
         case "spin":
           if(player.lv < 5){
@@ -795,6 +840,12 @@ class CasinoPlugin {
     var self = this;
     self.getPlayer(command).then(function(player) {
       if(self.checkBan(player, command))return;
+      if(player.Admin || player.Mod){}else {
+        if(!self.doChannelCheck(command)){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          return;
+        }
+      }
       var msg = "Name // Last Time Played\n";
       for (var i = 0; i < self.recentBetters.length; i++) {
         msg += (i+1) + ". **" + self.recentBetters[i].name + "** -=- `" + self.recentBetters[i].time + "`\n";
@@ -806,6 +857,12 @@ class CasinoPlugin {
     var self = this;
     self.getPlayer(command).then(function(player) {
       if(self.checkBan(player, command))return;
+      if(player.Admin || player.Mod){}else {
+        if(!self.doChannelCheck(command)){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          return;
+        }
+      }
       self.disnode.DB.Find("players", {}).then(function(players) {
         var orderTop = [];
         for (var i = 0; i < players.length; i++) {
@@ -849,6 +906,12 @@ class CasinoPlugin {
     var self = this;
     self.getPlayer(command).then(function(player) {
       if(self.checkBan(player, command))return;
+      if(player.Admin || player.Mod){}else {
+        if(!self.doChannelCheck(command)){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          return;
+        }
+      }
       switch (command.params[0]) {
         case "open":
           if(player.Premium)timeoutInfo = self.checkTimeout(player, 2);
@@ -927,6 +990,12 @@ class CasinoPlugin {
     var self = this;
     self.getPlayer(command).then(function(player) {
       if(self.checkBan(player, command))return;
+      if(player.Admin || player.Mod){}else {
+        if(!self.doChannelCheck(command)){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          return;
+        }
+      }
       if(command.params[0]){
         self.findPlayer(command.params[0]).then(function(res) {
           if(res.found){
@@ -1325,6 +1394,12 @@ class CasinoPlugin {
     var self = this;
     self.getPlayer(command).then(function(player) {
       if(self.checkBan(player, command))return;
+      if(player.Admin || player.Mod){}else {
+        if(!self.doChannelCheck(command)){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          return;
+        }
+      }
       switch (command.params[0]) {
         case "list":
           var msg = "**ID**\t//\t**ITEM**\t//\t**COST**\n";
@@ -1992,6 +2067,15 @@ class CasinoPlugin {
     if(bet.toLowerCase() == "0"){return true;}
     if(parseInt(bet) > 0 && parseInt(bet) <= 36 && parseInt(bet) == bet){return true;}
     return false;
+  }
+  doChannelCheck(command){
+    if(command.msg.server == '236338097955143680'){
+      if(command.msg.channel == '275395383071342594')return false;
+      if(command.msg.channel == '236338097955143680')return false;
+      if(command.msg.channel == '269892884688404482')return false;
+      if(command.msg.channel == '268049832596340746')return false;
+      return true;
+    }else return true;
   }
   updateCoroutine(){
     var self = this;
