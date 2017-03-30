@@ -9,25 +9,25 @@ class DB {
 		this.disnode = disnode;
 		this.DB = {};
 	}
-	Init() {
+	Init(db) {
 		var self = this;
 		return new Promise(function (resolve, reject) {
 			var url = "mongodb://";
-			if(self.disnode.botConfig.db.use_auth){
-				var user = encodeURIComponent(self.disnode.botConfig.db.dba_user);
-				var pwd = encodeURIComponent(self.disnode.botConfig.db.dba_pwd);
+			if(db.use_auth){
+				var user = encodeURIComponent(db.dba_user);
+				var pwd = encodeURIComponent(db.dba_pwd);
 				url += user + ":" + pwd + "@";
 			}
-			if (!self.disnode.botConfig.db.db_host || self.disnode.botConfig.db.db_host == "") {
+			if (!db.db_host || db.db_host == "") {
 				reject("No MongoDB Host IP!");
 				return;
 			}
-			url += self.disnode.botConfig.db.db_host;
-			if(!self.disnode.botConfig.db.db_port || self.disnode.botConfig.db.db_port == ""){}else {
-				url += ":" + self.disnode.botConfig.db.db_port;
+			url += db.db_host;
+			if(!db.db_port || db.db_port == ""){}else {
+				url += ":" + db.db_port;
 			}
-			if(!self.disnode.botConfig.db.db_defaultDB || self.disnode.botConfig.db.db_defaultDB == ""){}else {
-				url += "/" + self.disnode.botConfig.db.db_defaultDB;
+			if(!db.db_defaultDB || db.db_defaultDB == ""){}else {
+				url += "/" + db.db_defaultDB;
 			}
 
 			MongoClient.connect(url, function (err, db) {
