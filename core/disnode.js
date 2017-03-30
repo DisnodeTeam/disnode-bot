@@ -86,7 +86,7 @@ class Disnode {
             Logging.Info("Disnode", "Start", "Loading DB Manager");
             self.DB = new DBManager(self);
             Logging.Info("Disnode", "Start", "Connecting to DB...");
-            self.DB.Init().then(function(){
+            self.DB.Init(self.disnode.botConfig.db).then(function(){
               Logging.Success("Disnode", "Start", "DB Connected!");
               callback();
             }).catch(callback);
