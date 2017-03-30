@@ -26,15 +26,7 @@ class Disnode {
             callback();
           }).catch(callback);
         },
-        function(callback) {
-          Logging.Info("Disnode", "Start", "Setting Communication Server");
-          self.communication = new Communication(self);
-          Logging.Info("Disnode", "Start", "Starting Communication Server");
-          self.communication.StartClient().then(function(){
-            Logging.Success("Disnode", "Start", "Started Communication Server");
-            callback();
-          });
-        },
+
         // Connect to Discord
         function(callback) {
           Logging.Info("Disnode", "Start", "Connecting to Discord");
@@ -54,6 +46,19 @@ class Disnode {
           self.config = new ConfigManager();
 
           callback();
+        },
+        function(callback) {
+          if(self.botConfig.db.use_db){
+            Logging.Info("Disnode", "Start", "Loading DB Manager");
+            self.DB = new DBManager(self);
+            Logging.Info("Disnode", "Start", "Connecting to DB...");
+            self.DB.Init(self.botConfig.db).then(function(){
+              Logging.Success("Disnode", "Start", "DB Connected!");
+              callback();
+            }).catch(callback);
+          }else {
+            Logging.Info("Disnode", "Start", "Loading of DB skipped because user wished not to use DB");
+          }
         },
         // Load Functions
         function(callback) {
@@ -81,19 +86,7 @@ class Disnode {
           callback();
         },
 
-        function(callback) {
-          if(self.botConfig.db.use_db){
-            Logging.Info("Disnode", "Start", "Loading DB Manager");
-            self.DB = new DBManager(self);
-            Logging.Info("Disnode", "Start", "Connecting to DB...");
-            self.DB.Init(self.botConfig.db).then(function(){
-              Logging.Success("Disnode", "Start", "DB Connected!");
-              callback();
-            }).catch(callback);
-          }else {
-            Logging.Info("Disnode", "Start", "Loading of DB skipped because user wished not to use DB");
-          }
-        },
+
 
       ], function (err, result) {
           if(err){

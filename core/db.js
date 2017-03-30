@@ -30,12 +30,12 @@ class DB {
 				url += "/" + db.db_defaultDB;
 			}
 
-			MongoClient.connect(url, function (err, db) {
+			MongoClient.connect(url, function (err, connectedDB) {
 				if (err) {
 					reject(err);
 					return;
 				}
-				self.DB = db;
+				self.DB = connectedDB;
 				resolve();
 
 				return;
