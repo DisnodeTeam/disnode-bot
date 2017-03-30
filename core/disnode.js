@@ -3,7 +3,7 @@ const PluginManager = require ('./pluginmanager');
 const CommandManager = require('./command');
 const ConfigManager = require('./config');
 const DBManager = require("./db")
-
+const Communication = require("./communication");
 const jsonfile = require('jsonfile');
 const Logging = require("disnode-logger");
 const async = require('async');
@@ -25,6 +25,15 @@ class Disnode {
             Logging.Success("Disnode", "Start", "Loaded Config");
             callback();
           }).catch(callback);
+        },
+        function(callback) {
+          Logging.Info("Disnode", "Start", "Setting Communication Server");
+          self.communication = new Communication(self);
+          Logging.Info("Disnode", "Start", "Starting Communication Server");
+          self.communication.StartClient().then(function(){
+            Logging.Success("Disnode", "Start", "Started Communication Server");
+            callback();
+          });
         },
         // Connect to Discord
         function(callback) {

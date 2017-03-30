@@ -2,7 +2,7 @@ var net = require('net');
 
 var shortid = require('shortid');
 var Discord = require('discord.io');
-
+var Logger = require('disnode-logger');
 class Bot {
 	constructor(key, disnode) {
 		this.key = key;
@@ -17,41 +17,24 @@ class Bot {
 		var self = this;
 		return new Promise(function (resolve, reject) {
 
+			var clientSettings = {
+				autorun: true,
+				token: self.key
+			};
+			var botCount = self.disnode.communication.connetionCount;
 
-			if (self.disnode.botConfig.balancerEnabled == true) {
-				if (!self.disnode.botConfig.balancerIP) {
-					reject("No Load Balancer IP!");
-				}
-				if (!self.disnode.botConfig.balancerPORT) {
-					reject("No Load Balancer Port!");
-				}
-
-				self.client.type == "REMOTE";
-				self.client = new net.Socket();
-				self.client.connect(self.disnode.botConfig.balancerPORT, self.disnode.botConfig.balancerIP, function () {
-					self.remoteID = shortid.generate();
-					self.client.write(JSON.stringify({
-						type: "REGISTER",
-						id: self.remoteID
-					}))
-					self.client.on('data', (data) => self.ParseRemoteCommand(data));
-					self.isRemote = true;
-					resolve("Connected to remote Load Balancer!");
-					return;
-				});
-			} else {
-				self.client = new Discord.Client({
-					autorun: true,
-					token: self.key
-				});
-
-				self.client.on('ready', function (event) {
-					self.SetUpLocalBinds();
-					resolve();
-				});
-
-
+			if(self.disnode.botConfig.shardCount){
+				Logger.Info("BotJS", "Connect", "Sharding: " + (botCount + 1) + "/" +self.disnode.botConfig.shardCount)
+				clientSettings.shard = [botCount,self.disnode.botConfig.shardCount]
 			}
+
+			self.client = new Discord.Client(clientSettings);
+
+			self.client.on('ready', function (event) {
+				self.SetUpLocalBinds();
+				console.log(self.client.internals);
+				resolve();
+			});
 
 		});
 	}
@@ -71,20 +54,6 @@ class Bot {
 		});
 	}
 
-	ParseRemoteCommand(command) {
-		var self = this;
-		var obj = JSON.parse(command);
-
-		switch (obj.type) {
-		case "RECV_MESSAGE":
-
-			if (self.bind_onMessage) {
-				self.bind_onMessage(obj.data);
-			} else {
-
-			}
-		}
-	}
 
 
 
@@ -116,36 +85,20 @@ class Bot {
 
 	SendMessage(channel, msg, typing=false, tts=false) {
 		var self = this;
-		if (self.isRemote) {
-			var msgOBJ = {
-				channel: channel,
-				msg: msg,
+		return new Promise(function(resolve, reject) {
+			self.client.sendMessage({
+				to: channel,
+				message: msg,
 				typing: typing,
-                tts: tts
-			};
-			var commandObj = {
-				type: "SEND_MESSAGE",
-				id: self.remoteID,
-				data: msgOBJ
-			};
-
-			self.client.write(JSON.stringify(commandObj));
-		}else{
-			return new Promise(function(resolve, reject) {
-				self.client.sendMessage({
-					to: channel,
-					message: msg,
-		 			typing: typing,
-		      tts: tts
-				}, function(err, resp) {
-					if(err){
-						reject(err);
-					}else {
-						resolve(resp);
-					}
-				});
+				tts: tts
+			}, function(err, resp) {
+				if(err){
+					reject(err);
+				}else {
+					resolve(resp);
+				}
 			});
-		}
+		});
 	}
 	SendEmbed(channel, embed){
 		var self = this;
@@ -184,7 +137,7 @@ class Bot {
 		var self = this;
 		self.client.editServer(
         {
-            serverID: serverId, 
+            serverID: serverId,
             name: servername
         });
 	}

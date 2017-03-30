@@ -161,6 +161,7 @@ class CasinoPlugin {
   }
   default(command) {
     var self = this;
+    console.log("IM RUNNINNG!");
     self.getPlayer(command).then(function(player){
       var msg = "";
       for (var i = 0; i < self.class.commands.length; i++) {
