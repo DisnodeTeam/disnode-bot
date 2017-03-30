@@ -60,17 +60,7 @@ class CasinoPlugin {
     ]
     this.store = [
       {cost: 200, type:0, amount: 1000, item: "Instant $1,000"},
-      {cost: 500, type:0, amount: 2500, item: "Instant $2,500"},
-      {cost: 1000, type:0, amount: 5000, item: "Instant $5,000"},
-      {cost: 2000, type:0, amount: 10000, item: "Instant $10,000"},
-      {cost: 4000, type:0, amount: 20000, item: "Instant $20,000"},
-      {cost: 6000, type:0, amount: 30000, item: "Instant $30,000"},
       {cost: 100, type:1, amount: 50, item: "Add $50 to your income"},
-      {cost: 200, type:1, amount: 100, item: "Add $100 to your income"},
-      {cost: 400, type:1, amount: 200, item: "Add $200 to your income"},
-      {cost: 800, type:1, amount: 400, item: "Add $400 to your income"},
-      {cost: 1600, type:1, amount: 800, item: "Add $800 to your income"},
-      {cost: 3200, type:1, amount: 1600, item: "Add $1600 to your income"}
     ]
     this.cratesys = {
       crates: [
@@ -1454,7 +1444,7 @@ class CasinoPlugin {
           }
           break;
         default:
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Store", "Welcome to the store! to see a list of Items use `!casino store list` use the ID of the item when buying for example `!casino store buy 0`");
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Store", "Welcome to the store! to see a list of Items use `!casino store list` use the ID of the item when buying for example `!casino store buy 0` if you want to buy more than one of the item use `!casino store buy 0 10` to buy 10, or use `!casino store buy 0 max` to buy as much as you can!");
       }
     });
   }
