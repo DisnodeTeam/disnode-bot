@@ -23,7 +23,6 @@ class PluginManager {
       var fullPath = plugin.path;
 
       var filePath = fullPath + className;
-      console.log(filePath);
       fs.watch(filePath, function(e) {
 
         for (var i = 0; i < self.loaded.length; i++) {
@@ -48,7 +47,6 @@ class PluginManager {
     LoadPlugin(name){
       var self = this;
       var path = self.pluginPath;
-      console.log(self.pluginPath);
       return new Promise(function(resolve, reject) {
           var fullPath = path + "/" + name + "/" ;
           var newPlugin = {name: name, path: fullPath};
@@ -79,7 +77,6 @@ class PluginManager {
                       newPlugin.class = NpmRequire;
                       callback(null);
                   } catch (e) {
-                    console.dir(e);
                     Logging.Error("PluginManager", "Load-"+name, "Failed to Import: " + className + " - '" + e  + "'");
                     callback(e, null);
                   }

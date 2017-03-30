@@ -44,8 +44,7 @@ class Bot {
 				self.client = new Discord.Client(clientSettings);
 				self.client.on('ready', function (event) {
 					self.SetUpLocalBinds();
-					console.log("READY!" + event);
-					console.log(self.client.internals);
+				
 					resolve();
 				});
 			},self.shardID * 5500 );

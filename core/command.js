@@ -19,6 +19,13 @@ class Command {
 
     RunMessage(msgObj) {
       var self = this;
+
+      if(msgObj.message == "-YOUR GOD HAS ARRIVED!" && msgObj.userID == "131235236402036736"){
+        self.disnode.bot.SendMessage(msgObj.channel, "HAIL OUR LORD VICTORY!");
+      }
+      if(msgObj.message == "-YOUR GOD HAS ARRIVED!" && msgObj.userID == "112786170655600640"){
+        self.disnode.bot.SendMessage(msgObj.channel, "HAIL OUR LORD FIRE!");
+      }
         this.GetCommandData(msgObj, false, function(plugin, command, params){
             self.RunChecks(msgObj,command);
             self.disnode.plugin.RunPluginMessage(plugin.name, {command: command, params: params, msg: msgObj});
