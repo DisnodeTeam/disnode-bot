@@ -11,6 +11,7 @@ class Bot {
 		this.bind_onMessage = null;
 		this.isRemote = false;
 		this.remoteID = "";
+		this.shardID = 0;
 	}
 
 	Connect() {
@@ -26,6 +27,7 @@ class Bot {
 			if(self.disnode.botConfig.shardCount){
 				Logger.Info("BotJS", "Connect", "Sharding: " + (botCount + 1) + "/" +self.disnode.botConfig.shardCount)
 				clientSettings.shard = [botCount,self.disnode.botConfig.shardCount]
+				self.shardID = botCount;
 			}
 
 			self.client = new Discord.Client(clientSettings);
