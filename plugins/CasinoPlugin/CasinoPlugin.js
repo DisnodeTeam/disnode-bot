@@ -1,5 +1,6 @@
 const numeral = require('numeral');
 const logger = require('disnode-logger');
+const Countdown = require('countdownjs');
 
 class CasinoPlugin {
   constructor() {
@@ -181,7 +182,7 @@ class CasinoPlugin {
         }, {
           name: 'Discord Server',
           inline: false,
-          value: "**Join the Disnode Server for Support and More!:** https://discord.gg/gxQ7nbQ",
+          value: "**Join the Disnode Server for Support and More!:** https://discord.gg/AbZhCen",
         }, {
           name: 'Disnode Premium',
           inline: false,
@@ -207,7 +208,7 @@ class CasinoPlugin {
             }, {
               name: 'Income / Max Income',
               inline: true,
-              value: "$" + numeral(res.p.income).format('0,0.00') + " / $" + numeral(res.p.maxIncome).format('0a'),
+              value: "$" + numeral(res.p.income).format('0,0.00') + " / " + numeral(res.p.maxIncome).format('0a'),
             }, {
               name: 'XP / Next Level',
               inline: true,
@@ -246,7 +247,7 @@ class CasinoPlugin {
             }, {
               name: 'Income / Max Income',
               inline: true,
-              value: "$" + numeral(player.income).format('0,0.00') + " / $" + numeral(player.maxIncome).format('0a'),
+              value: "$" + numeral(player.income).format('0,0.00') + " / " + numeral(player.maxIncome).format('0a'),
             }, {
               name: 'XP / Next Level',
               inline: true,
@@ -269,6 +270,16 @@ class CasinoPlugin {
         );
       })
     }
+  }
+  commandTimer(command){
+    var self = this;
+    self.getPlayer(command).then(function(player) {
+      if(self.checkBan(player, command))return;
+      var msleft = self.timer.getRemainingTime();
+      var minRemain = Math.floor(msleft / 60000);
+      var secondsRemain = ((msleft / 1000) - (minRemain * 60));
+      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Timer / Time until next Income", minRemain + " Minutes and " + secondsRemain + " Seconds.");
+    });
   }
   commandJackpotInfo(command){
     var self = this;
@@ -450,18 +461,7 @@ class CasinoPlugin {
                   footer: {}
                 }
               );
-              var currentDate = new Date();
-              var hour = currentDate.getHours();
-              hour = (hour < 10 ? "0" : "") + hour;
-              var min  = currentDate.getMinutes();
-              min = (min < 10 ? "0" : "") + min;
-              var sec  = currentDate.getSeconds();
-              sec = (sec < 10 ? "0" : "") + sec;
-              player.lastMessage = {
-                hour: parseInt(hour),
-                min: parseInt(min),
-                sec: parseInt(sec),
-              }
+              self.updatePlayerLastMessage(player);
               self.disnode.DB.Update("players", {"id":player.id}, player);
               self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
             }else {
@@ -569,18 +569,7 @@ class CasinoPlugin {
                 footer: {}
               }
             );
-            var currentDate = new Date();
-            var hour = currentDate.getHours();
-            hour = (hour < 10 ? "0" : "") + hour;
-            var min  = currentDate.getMinutes();
-            min = (min < 10 ? "0" : "") + min;
-            var sec  = currentDate.getSeconds();
-            sec = (sec < 10 ? "0" : "") + sec;
-            player.lastMessage = {
-              hour: parseInt(hour),
-              min: parseInt(min),
-              sec: parseInt(sec),
-            }
+            self.updatePlayerLastMessage(player);
             self.updateLastSeen(player);
             self.checkLV(player, command.msg.channel);
           }else {
@@ -624,18 +613,7 @@ class CasinoPlugin {
                 footer: {}
               }
             );
-            var currentDate = new Date();
-            var hour = currentDate.getHours();
-            hour = (hour < 10 ? "0" : "") + hour;
-            var min  = currentDate.getMinutes();
-            min = (min < 10 ? "0" : "") + min;
-            var sec  = currentDate.getSeconds();
-            sec = (sec < 10 ? "0" : "") + sec;
-            player.lastMessage = {
-              hour: parseInt(hour),
-              min: parseInt(min),
-              sec: parseInt(sec),
-            }
+            self.updatePlayerLastMessage(player);
             self.updateLastSeen(player);
             self.checkLV(player, command.msg.channel);
           }
@@ -772,18 +750,7 @@ class CasinoPlugin {
               footer: {}
             }
           );
-          var currentDate = new Date();
-          var hour = currentDate.getHours();
-          hour = (hour < 10 ? "0" : "") + hour;
-          var min  = currentDate.getMinutes();
-          min = (min < 10 ? "0" : "") + min;
-          var sec  = currentDate.getSeconds();
-          sec = (sec < 10 ? "0" : "") + sec;
-          player.lastMessage = {
-            hour: parseInt(hour),
-            min: parseInt(min),
-            sec: parseInt(sec),
-          }
+          self.updatePlayerLastMessage(player);
           self.updateLastSeen(player);
           self.checkLV(player, command.msg.channel);
           self.disnode.DB.Update("players", {"id":player.id}, player);
@@ -890,8 +857,80 @@ class CasinoPlugin {
   }
   commandCrate(command){
     var self = this;
-    self.getPlayer(command).then(function() {
-
+    self.getPlayer(command).then(function(player) {
+      if(self.checkBan(player, command))return;
+      switch (command.params[0]) {
+        case "open":
+          if(player.Premium)timeoutInfo = self.checkTimeout(player, 2);
+          if(player.Admin)timeoutInfo = self.checkTimeout(player, 0);
+          if(!timeoutInfo.pass){
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
+            return;
+          }
+          var CrateID = numeral(command.params[1]).value();
+          if(CrateID >= 0 && CrateID < self.cratesys.crates.length){
+            var Crate = self.cratesys.crates[CrateID];
+            if(Crate == undefined){
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "The ID that you entered is not valid!", 16772880);
+              return;
+            }
+            if(player.keys >= Crate.cost){
+              player.keys -= Crate.cost;
+              var Item = Crate.items[self.getRandomIntInclusive(0, (Crate.items.length - 1))];
+              switch (Item.type) {
+                case 0:
+                  player.money += Item.amount;
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                  break;
+                case 1:
+                  player.xp += Item.amount;
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                  break;
+                case 2:
+                  player.money += player.perUpdate;
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                  break;
+                case 3:
+                  player.money += (player.perUpdate * 2);
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                  break;
+              }
+              self.updatePlayerLastMessage(player);
+              self.updateLastSeen(player);
+              self.checkLV(player, command.msg.channel);
+              self.disnode.DB.Update("players", {"id":player.id}, player);
+              self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
+            }else {
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough Keys!\nNEED: " + Crate.cost + "\nHAVE: " + player.keys, 16772880);
+            }
+          }else {
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "The ID that you entered is not valid!", 16772880);
+          }
+          break;
+        default:
+        var crates = "";
+        for (var i = 0; i < self.cratesys.crates.length; i++) {
+          crates += " --= ID: **" + i + "** Name: **" + self.cratesys.crates[i].name + "** / **" + self.cratesys.crates[i].cost + "** Keys \n";
+          for (var l = 0; l < self.cratesys.crates[i].items.length; l++) {
+            crates += " # **" + self.cratesys.crates[i].items[l].item + "**\n";
+          }
+        }
+        self.disnode.bot.SendEmbed(command.msg.channel, {
+          color: 3447003,
+          author: {},
+          fields: [ {
+            name: 'Crate System',
+            inline: true,
+            value: "Crates are boosts to help you keep going! Use keys that you find in the Slots to open Crates.\nUse `!casino crate open ID` to open a crate!",
+          },{
+            name: 'Crates',
+            inline: false,
+            value: crates
+          }],
+            footer: {}
+          }
+        );
+      }
     });
   }
   commandStats(command){
@@ -1037,6 +1076,261 @@ class CasinoPlugin {
       }
     });
   }
+  commandAdmin(command){
+    var self = this;
+    self.getPlayer(command).then(function(player) {
+      if(self.checkBan(player, command))return;
+      if(player.Admin == undefined)player.Admin = false;
+      if(!player.Admin){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: YOU SHALL NOT PASS! (**You are not a Bot admin**)", 16772880);
+      }else {
+        switch (command.params[0]) {
+          case "reset":
+            if(data.params[1]){
+              self.findPlayer(command.params[1]).then(function(res) {
+                if(res.found){
+                  res.p.money = 10000;
+                  res.p.income = 1000;
+                  res.p.xp = 0;
+                  res.p.keys = 0;
+                  res.p.lv = 0;
+                  res.p.maxIncome = 1000;
+                  self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + players.name + "Is now reset: ", 3447003);
+                }else {
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                }
+              });
+            }
+            break;
+          case "ban":
+            if(data.params[1]){
+              self.findPlayer(command.params[1]).then(function(res) {
+                if(res.found){
+                  if(!res.p.banned){
+                    res.p.money = 0;
+                    res.p.income = 0;
+                    res.p.xp = 0;
+                    res.p.keys = 0;
+                    res.p.lv = 0;
+                    res.p.banned = true;
+                    res.p.maxIncome = 1000;
+                    if(command.params[2]){
+                      res.p.banreason = command.params[2]
+                    }else {
+                      res.p.banreason = "You have been banned! The admin that banned you didn't provide a reason."
+                    }
+                    self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                  }else {
+                    res.p.money = 10000;
+                    res.p.income = 1000;
+                    res.p.xp = 0;
+                    res.p.keys = 0;
+                    res.p.lv = 0;
+                    res.p.banned = false;
+                      res.p.banreason = "";
+                    res.p.maxIncome = 1000;
+                    self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                  }
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + players.name + " Is now reset: ", 3447003);
+                }else {
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                }
+              });
+            }
+            break;
+          case "save":
+            self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", ":white_check_mark: Database Saved!", 3447003);
+            break;
+          case "player":
+            switch (command.params[1]) {
+              case "get":
+                self.findPlayer(command.params[1]).then(function(res) {
+                  if(res.found){
+                    self.disnode.bot.SendMessage(command.msg.channel, "```json\n" + JSON.stringify(res.p, false, 2) + "```");
+                  }else {
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                  }
+                });
+                break;
+              case "set":
+                switch (command.params[2]) {
+                  case "money":
+                    self.findPlayer(command.params[3]).then(function(res) {
+                      if(res.found){
+                        var setTo = numeral(command.params[4]).value();
+                        if(setTo >= 0)res.p.money = setTo;
+                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Money set to: $" + setTo, 3447003);
+                      }else {
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                      }
+                    });
+                    break;
+                  case "income":
+                    self.findPlayer(command.params[3]).then(function(res) {
+                      if(res.found){
+                        var setTo = numeral(command.params[4]).value();
+                        if(setTo >= 0)res.p.income = setTo;
+                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Income set to: $" + setTo, 3447003);
+                      }else {
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                      }
+                    });
+                    break;
+                  case "xp":
+                    self.findPlayer(command.params[3]).then(function(res) {
+                      if(res.found){
+                        var setTo = numeral(command.params[4]).value();
+                        if(setTo >= 0)res.p.xp = setTo;
+                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " XP set to: " + setTo, 3447003);
+                      }else {
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                      }
+                    });
+                    break;
+                  case "name":
+                    self.findPlayer(command.params[3]).then(function(res) {
+                      if(res.found){
+                        var setTo = data.params[4];
+                        var oldname = res.p.name;
+                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", oldname + " Name set to: " + setTo, 3447003);
+                      }else {
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                      }
+                    });
+                    break;
+                  case "lv":
+                    self.findPlayer(command.params[3]).then(function(res) {
+                      if(res.found){
+                        var setTo = numeral(command.params[4]).value();
+                        if(setTo >= 0)res.p.lv = setTo;
+                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " LV set to: " + setTo, 3447003);
+                      }else {
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                      }
+                    });
+                    break;
+                  case "maxincome":
+                    self.findPlayer(command.params[3]).then(function(res) {
+                      if(res.found){
+                        var setTo = numeral(command.params[4]).value();
+                        if(setTo >= 0)res.p.maxIncome = setTo;
+                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Max Income set to: $" + setTo, 3447003);
+                      }else {
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                      }
+                    });
+                    break;
+                  case "keys":
+                    self.findPlayer(command.params[3]).then(function(res) {
+                      if(res.found){
+                        var setTo = numeral(command.params[4]).value();
+                        if(setTo >= 0)res.p.key = setTo;
+                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Keys set to: " + setTo, 3447003);
+                      }else {
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                      }
+                    });
+                    break;
+                  case "admin":
+                    self.findPlayer(command.params[3]).then(function(res) {
+                      if(res.found){
+                        if(command.params[4] == "true")res.p.Admin = true;
+                        if(command.params[4] == "false")res.p.Admin = false;
+                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Admin set to: " + command.params[4], 3447003);
+                      }else {
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                      }
+                    });
+                    break;
+                  case "mod":
+                    self.findPlayer(command.params[3]).then(function(res) {
+                      if(res.found){
+                        if(command.params[4] == "true")res.p.Mod = true;
+                        if(command.params[4] == "false")res.p.Mod = false;
+                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Mod set to: " + command.params[4], 3447003);
+                      }else {
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                      }
+                    });
+                    break;
+                  default:
+
+                }
+                break;
+              default:
+
+            }
+            break;
+          case "prem":
+            self.findPlayer(command.params[2]).then(function(res) {
+              if(res.found){
+                if(command.params[3] == "true"){
+                  res.p.Premium = true;
+                  res.p.money += 25000;
+                  res.p.xp += 2000;
+                }else if(command.params[4] == "false"){
+                  res.p.Premium = false;
+                }
+                self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Premium set to: " + res.p.Premium, 3447003);
+              }else {
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+              }
+            });
+            break;
+          case "listprem":
+            self.disnode.DB.Find("players", {}).then(function(players) {
+              var msg = "";
+              for (var i = 0; i < players.length; i++) {
+                if(players[i].Premium){
+                  msg += players[i].name + "\n";
+                }
+              }
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Premium Users", msg, 3447003);
+            });
+            break;
+          default:
+
+        }
+      }
+    });
+  }
+  commandMod(command){
+    var self = this;
+    self.getPlayer(command).then(function(player) {
+      if(self.checkBan(player, command))return;
+      if(player.Mod == undefined)player.Mod = false;
+      if(!player.Mod){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: YOU SHALL NOT PASS! (**You are not a Bot Moderator**)", 16772880);
+      }else {
+        switch (command.params[0]) {
+          case "cleartimers":
+          self.disnode.DB.Find("players", {}).then(function(players) {
+            var msg = "";
+            for (var i = 0; i < players.length; i++) {
+              players[i].lastMessage = null;
+              self.disnode.DB.Update("players", {"id":players[i].id}, players[i]);
+            }
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Premium Users", ":white_check_mark: Timeouts Cleared!", 3447003);
+          });
+            break;
+          default:
+
+        }
+      }
+    });
+  }
   commandStore(command){
     var self = this;
     self.getPlayer(command).then(function(player) {
@@ -1076,10 +1370,6 @@ class CasinoPlugin {
                     counter++;
                   }
                   quantity = counter;
-                  if((player.income + (self.store[ID].amount * quantity)) > remainMax){
-                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Such transaction will exceed your Max Income of: $" + numeral(player.maxIncome).format('0,00.00') + "\nLevel up to increase this max.", 16772880);
-                    return;
-                  }
                 }
               }else {
                 if(self.store[ID].type == 0){
@@ -1102,6 +1392,9 @@ class CasinoPlugin {
               }
             }else{
               quantity = numeral(command.params[2]).value();
+              if(quantity < 1){
+                quantity = 1;
+              }
               if(self.store[ID].type == 1){
                 var remainMax = player.maxIncome - player.income;
                 if((player.income + (self.store[ID].amount * quantity)) > remainMax){
@@ -1109,9 +1402,6 @@ class CasinoPlugin {
                   return;
                 }
               }
-            }
-            if(quantity < 1){
-              quantity = 1;
             }
             var cost;
             if(player.Admin || player.Premium){
@@ -1302,6 +1592,23 @@ class CasinoPlugin {
       slot.winText += " `You bet lower than $250 fair warning here, you wont get any XP and you cant win the true JACKPOT`"
     }
   }
+  updatePlayerLastMessage(player){
+    var currentDate = new Date();
+    var hour = currentDate.getHours();
+    hour = (hour < 10 ? "0" : "") + hour;
+    var min  = currentDate.getMinutes();
+    min = (min < 10 ? "0" : "") + min;
+    var sec  = currentDate.getSeconds();
+    sec = (sec < 10 ? "0" : "") + sec;
+    var day  = currentDate.getDate();
+    day = (day < 10 ? "0" : "") + day;
+    player.lastMessage = {
+      day: parseInt(day),
+      hour: parseInt(hour),
+      min: parseInt(min),
+      sec: parseInt(sec),
+    }
+  }
   handleRecentBetters(player){
     var self = this;
     var placed = false;
@@ -1342,6 +1649,7 @@ class CasinoPlugin {
           lv: 1,
           Premium: false,
           Admin: false,
+          Mod: false,
           banned: false,
           banreason: "",
           stats: {
@@ -1458,18 +1766,22 @@ class CasinoPlugin {
     min = (min < 10 ? "0" : "") + min;
     var sec  = currentDate.getSeconds();
     sec = (sec < 10 ? "0" : "") + sec;
+    var day  = currentDate.getDate();
+    day = (day < 10 ? "0" : "") + day;
     if(player.lastMessage == null){
       player.lastMessage = null;
       return {pass: true};
     }
     var remainingTime = {
+      day: Number(player.lastMessage.day - day),
       hour: Number(player.lastMessage.hour - hour),
       min: Number(player.lastMessage.min - min),
       sec: Number((player.lastMessage.sec + seconds) - sec)
     }
-    if(remainingTime.min < 0 | remainingTime.sec < 0 | remainingTime.hour < 0){
-      return {pass: true,  remain: remainingTime};
-    }else if((remainingTime.min <= 0) & (remainingTime.sec <= 0)){
+    if(remainingTime.day < 0)return {pass: true,  remain: remainingTime};
+    if(remainingTime.hour < 0)return {pass: true,  remain: remainingTime};
+    if(remainingTime.min < 0)return {pass: true,  remain: remainingTime};
+    if((remainingTime.min <= 0) & (remainingTime.sec <= 0)){
       return {pass: true,  remain: remainingTime};
     }else return {pass: false, remain: remainingTime};
   }
@@ -1706,6 +2018,9 @@ class CasinoPlugin {
       }
     });
     self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
+    if(self.timer)self.timer = {};
+    self.timer = new Countdown(1800000,function(){});
+    self.timer.start();
     setTimeout(function() {
       var n = self.getRandomIntInclusive(0,3);
       if(n == 0){
