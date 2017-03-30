@@ -22,21 +22,36 @@ class Bot {
 				autorun: true,
 				token: self.key
 			};
-			var botCount = self.disnode.communication.connetionCount;
+
 
 			if(self.disnode.botConfig.shardCount){
-				Logger.Info("BotJS", "Connect", "Sharding: " + (botCount + 1) + "/" +self.disnode.botConfig.shardCount)
-				clientSettings.shard = [botCount,self.disnode.botConfig.shardCount]
-				self.shardID = botCount;
+				var method = self.disnode.botConfig.shardMode || "com";
+
+				switch(method){
+					case "pm2":
+					self.shardID = Number(process.env.pm_id)|| 0;
+					break;
+					case "arg":
+					self.shardID = Number(process.argv[2]) || 0;
+					break;
+				}
+
+				Logger.Info("BotJS", "Connect", "Sharding: " + self.shardID  + "/" +self.disnode.botConfig.shardCount)
+				clientSettings.shard = [self.shardID,self.disnode.botConfig.shardCount]
+
 			}
+			setTimeout(function () {
+				self.client = new Discord.Client(clientSettings);
+				self.client.on('ready', function (event) {
+					self.SetUpLocalBinds();
+					console.log("READY!" + event);
+					console.log(self.client.internals);
+					resolve();
+				});
+			},self.shardID * 5500 );
 
-			self.client = new Discord.Client(clientSettings);
 
-			self.client.on('ready', function (event) {
-				self.SetUpLocalBinds();
-				console.log(self.client.internals);
-				resolve();
-			});
+
 
 		});
 	}
