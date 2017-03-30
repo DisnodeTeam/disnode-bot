@@ -62,9 +62,10 @@ class OwnerPlugin {
     }
     commandStatus(command) {
         var self = this;
+        var status = command.params.join(" ");
         if (command.msg.userID == this.owner) {
-            self.disnode.bot.SetStatus(command.params[0]);
-            self.disnode.bot.SendMessage(command.msg.channel, "Status Set To - **Playing " + command.params[0] + "**");
+            self.disnode.bot.SetStatus(status);
+            self.disnode.bot.SendMessage(command.msg.channel, "Status Set To - **Playing " + status + "**");
         } else {
             self.disnode.bot.SendEmbed(command.msg.channel, {
                 color: 15158332,
