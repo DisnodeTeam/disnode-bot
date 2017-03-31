@@ -34,17 +34,7 @@ commandRestart(command) {
             footer: {}
         });
         self.disnode.Restart();
-    } else self.disnode.bot.SendEmbed(command.msg.channel, {
-        color: 0xd600c4,
-        author: {},
-        fields: [{
-            name: "Stop",
-            inline: false,
-            value: "**You're not my Owner**",
-        }],
-        footer: {}
-    });
-    Logging.Warning(command.msg.user, command.msg.userID, "Tried using " + self.disnode.botConfig.prefix + "" + command.command.cmd);
+    } else self.AccessDenied(command);
 }
 commandShutdown(command) {
     var self = this;
@@ -62,17 +52,7 @@ commandShutdown(command) {
         self.disnode.bot.Disconnect();
         sleep(1000);
         process.exit();
-    } else self.disnode.bot.SendEmbed(command.msg.channel, {
-        color: 15158332,
-        author: {},
-        fields: [{
-            name: "Stop",
-            inline: false,
-            value: "**You're not my Owner**",
-        }],
-        footer: {}
-    });
-    Logging.Warning(command.msg.user, command.msg.userID, "Tried using " + self.disnode.botConfig.prefix + "" + command.command.cmd);
+    } else self.AccessDenied(command);
 }
 commandStatus(command) {
     var self = this;
@@ -89,17 +69,7 @@ commandStatus(command) {
             }],
             footer: {}
         });
-    } else self.disnode.bot.SendEmbed(command.msg.channel, {
-        color: 15158332,
-        author: {},
-        fields: [{
-            name: "Stop",
-            inline: false,
-            value: "**You're not my Owner**",
-        }],
-        footer: {}
-    });
-    Logging.Warning(command.msg.user, command.msg.userID, "Tried using " + self.disnode.botConfig.prefix + "" + command.command.cmd);
+    } else self.AccessDenied(command);
 }
 commandUsername(command) {
     console.log(command.params);
@@ -117,17 +87,7 @@ commandUsername(command) {
             footer: {}
         });
         Logging.Warning("Owner", "Username", "Changed");
-    } else self.disnode.bot.SendEmbed(command.msg.channel, {
-        color: 15158332,
-        author: {},
-        fields: [{
-            name: "Stop",
-            inline: false,
-            value: "**You're not my Owner**",
-        }],
-        footer: {}
-    });
-    Logging.Warning(command.msg.user, command.msg.userID, "Tried using " + self.disnode.botConfig.prefix + "" + command.command.cmd);
+    } else self.AccessDenied(command);
 }
 commandServers(command) {
     var self = this;
@@ -155,17 +115,7 @@ commandServers(command) {
             }],
             footer: {}
         });
-    } else self.disnode.bot.SendEmbed(command.msg.channel, {
-        color: 15158332,
-        author: {},
-        fields: [{
-            name: "Stop",
-            inline: false,
-            value: "**You're not my Owner**",
-        }],
-        footer: {}
-    });
-    Logging.Warning(command.msg.user, command.msg.userID, "Tried using " + self.disnode.botConfig.prefix + "" + command.command.cmd);
+    } else self.AccessDenied(command);
 }
 commandEval(command) {
     var self = this;
@@ -182,7 +132,11 @@ commandEval(command) {
         } catch (errors) {
             self.disnode.bot.SendMessage(command.msg.channel, errors)
         }
-    } else self.disnode.bot.SendEmbed(command.msg.channel, {
+    } else self.AccessDenied(command);
+}
+  AccessDenied(command) {
+    var self = this;
+    self.disnode.bot.SendEmbed(command.msg.channel, {
         color: 15158332,
         author: {},
         fields: [{
@@ -193,7 +147,7 @@ commandEval(command) {
         footer: {}
     });
     Logging.Warning(command.msg.user, command.msg.userID, "Tried using " + self.disnode.botConfig.prefix + "" + command.command.cmd);
-}
+  }
 
 }
 module.exports = OwnerPlugin
