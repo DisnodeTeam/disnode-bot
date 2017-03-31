@@ -130,6 +130,22 @@ class OwnerPlugin {
             Logging.Warning(command.msg.user, command.msg.userID, "Tried using " + self.disnode.botConfig.prefix + "" + command.command.cmd)
         };
     }
+    commandEval(command) {
+    var self = this;
+    try {
+        var codes = command.msg.message.split("eval ")[1];
+        console.log(codes);
+        var results = eval("(() => { " + codes + " })();");
+        console.log(results);
+        console.log(typeof results);
+        if (results === "[object Object]") {
+            results = JSON.stringify(results, null, 4);
+    }
+        self.disnode.bot.SendMessage(command.msg.channel, "```" + results + "```")
+    } catch (errors) {
+        self.disnode.bot.SendMessage(command.msg.channel, errors)
+    }
+}
 
 
 }
