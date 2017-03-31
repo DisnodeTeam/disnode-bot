@@ -134,16 +134,15 @@ class OwnerPlugin {
     var self = this;
     try {
         var codes = command.msg.message.split("eval ")[1];
-        console.log(codes);
         var results = eval("(() => { " + codes + " })();");
-        console.log(results);
-        console.log(typeof results);
         if (results === "[object Object]") {
-            results = JSON.stringify(results, null, 4);
-    }
-        self.disnode.bot.SendMessage(command.msg.channel, "```" + results + "```")
+          results = JSON.stringify(results, null, 4);
+        }
+        if (typeof results !== 'string')
+            results = require('util').inspect(results);
+        self.disnode.bot.SendMessage(command.msg.channel, "```js\n" + results + "```")
     } catch (errors) {
-        self.disnode.bot.SendMessage(command.msg.channel, errors)
+        self.disnode.bot.SendMessage(command.msg.channel, "```js\n" + errors + "```")
     }
 }
 
