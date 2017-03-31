@@ -11,6 +11,7 @@ class DB {
 	}
 	Init(db) {
 		var self = this;
+		if(!db.use_db)return;
 		return new Promise(function (resolve, reject) {
 			var url = "mongodb://";
 			if(db.use_auth){
