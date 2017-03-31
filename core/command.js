@@ -4,7 +4,6 @@ const jsonfile = require('jsonfile');
 const Logging = require('disnode-logger');
 class Command {
     constructor(disnode) {
-        //test
         this.disnode = disnode;
         if(this.disnode.botConfig.prefix){
           this.prefix = this.disnode.botConfig.prefix;
@@ -19,7 +18,6 @@ class Command {
 
     RunMessage(msgObj) {
       var self = this;
-// hi mom
       if(msgObj.message == "-YOUR GOD HAS ARRIVED!" && msgObj.userID == "131235236402036736"){
         self.disnode.bot.SendMessage(msgObj.channel, "HAIL OUR LORD VICTORY!");
       }

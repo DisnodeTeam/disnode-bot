@@ -739,6 +739,7 @@ class CasinoPlugin {
               xpAward: 0,
               wheelNumber: self.getRandomIntInclusive(0,(self.wheelItems.length - 1)),
               winspots: winspots,
+              ball: 0,
               whatcontains: whatcontains
             }
             wheelInfo.ball = self.wheelItems[wheelInfo.wheelNumber];
@@ -750,6 +751,7 @@ class CasinoPlugin {
             logger.Info("Casino", "Wheel", "Wheel Player: " + player.name + " bet: " + bet + " Win: " + wheelInfo.winAmount);
           }else {
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a number for your bet!", 16772880);
+            return;
           }
           self.disnode.bot.SendEmbed(command.msg.channel, {
             color: 1433628,
@@ -1436,7 +1438,7 @@ class CasinoPlugin {
                     if((counter * self.store[ID].amount) >= remainMax)break;
                     counter++;
                   }
-                  quantity = counter;
+                  quantity = counter - 1;
                 }
               }else {
                 if(self.store[ID].type == 0){
@@ -1450,7 +1452,7 @@ class CasinoPlugin {
                     if((counter * self.store[ID].amount) >= remainMax)break;
                     counter++;
                   }
-                  quantity = counter;
+                  quantity = counter - 1;
                   if((player.income + (self.store[ID].amount * quantity)) > remainMax){
                     self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Such transaction will exceed your Max Income of: $" + numeral(player.maxIncome).format('0,00.00') + "\nLevel up to increase this max.", 16772880);
                     return;
@@ -1465,10 +1467,14 @@ class CasinoPlugin {
               if(self.store[ID].type == 1){
                 var remainMax = player.maxIncome - player.income;
                 if((player.income + (self.store[ID].amount * quantity)) > remainMax){
+                  console.log(self.store[ID].amount * quantity + " / " + remainMax);
                   self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Such transaction will exceed your Max Income of: $" + numeral(player.maxIncome).format('0,00.00') + "\nLevel up to increase this max.", 16772880);
                   return;
                 }
               }
+            }
+            if(quantity < 1){
+              quantity = 1;
             }
             var cost;
             if(player.Admin || player.Premium){
@@ -1522,6 +1528,81 @@ class CasinoPlugin {
           break;
         default:
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Store", "Welcome to the store! to see a list of Items use `!casino store list` use the ID of the item when buying for example `!casino store buy 0` if you want to buy more than one of the item use `!casino store buy 0 10` to buy 10, or use `!casino store buy 0 max` to buy as much as you can!");
+      }
+    });
+  }
+  commandTransfer(command){
+    var self = this;
+    self.getPlayer(command).then(function(player) {
+      if(self.checkBan(player, command))return;
+      if(player.Admin || player.Mod){}else {
+        if(!self.doChannelCheck(command)){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          return;
+        }
+      }
+      var timeoutInfo = self.checkTimeout(player, 5);
+      if(player.Premium)timeoutInfo = self.checkTimeout(player, 2);
+      if(player.Admin)timeoutInfo = self.checkTimeout(player, 0);
+      if(!timeoutInfo.pass){
+        logger.Info("Casino", "Slot", "Player: " + player.name + " Tried the slots before their delay of: " + timeoutInfo.remain.sec);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
+        return;
+      }
+      if(command.params[0]){
+        self.findPlayer(command.params[0]).then(function(res) {
+          if(res.found){
+            var transferPlayer = res.p;
+            var toTransfer = numeral(command.params[1]).value();
+            if(transferPlayer.id == player.id){
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You cant transfer to yourself!", 16772880);
+              return;
+            }
+            if(toTransfer > 0){
+              if(toTransfer > player.money){
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
+                return;
+              }else {
+                var pbalbef = player.money
+                var sbalbef = transferPlayer.money
+                player.money -= toTransfer;
+                transferPlayer.money += toTransfer
+                player.money = Number(parseFloat(player.money).toFixed(2));
+                transferPlayer.money = Number(parseFloat(transferPlayer.money).toFixed(2));
+                self.disnode.bot.SendEmbed(command.msg.channel, {
+                  color: 3447003,
+                  author: {},
+                  fields: [ {
+                    name: 'From',
+                    inline: false,
+                    value: player.name + "\nBalance Proir: $" + numeral(pbalbef).format('0,0.00') + "\nBalance After: $" + numeral(player.money).format('0,0.00'),
+                  }, {
+                    name: 'To',
+                    inline: false,
+                    value: transferPlayer.name + "\nBalance Proir: $" + numeral(sbalbef).format('0,0.00') + "\nBalance After: $" + numeral(transferPlayer.money).format('0,0.00'),
+                  }, {
+                    name: 'Amount',
+                    inline: true,
+                    value: "$ " + numeral(toTransfer).format('0,0.00'),
+                  }, {
+                    name: "Status",
+                    inline: false,
+                    value: ":white_check_mark: Transfer complete!",
+                  }],
+                    footer: {}
+                  }
+                );
+                self.disnode.DB.Update("players", {"id":transferPlayer.id}, transferPlayer);
+                self.disnode.DB.Update("players", {"id":player.id}, player);
+                return;
+              }
+            }else {
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a number for the transfer amount! example `!casino transfer FireGamer3 100`", 16772880);
+            }
+          }else {
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+          }
+        });
       }
     });
   }

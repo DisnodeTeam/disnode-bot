@@ -64,6 +64,11 @@
       "cmd": "stats",
       "desc": "*View you stats for the bot!*",
       "run": "commandStats"
+    },
+    {
+      "cmd": "transfer",
+      "desc": "*Transfer money to other players!*",
+      "run": "commandTransfer"
     }
   ]
 }
