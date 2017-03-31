@@ -1261,6 +1261,7 @@ class CasinoPlugin {
                       if(res.found){
                         var setTo = command.params[4];
                         var oldname = res.p.name;
+                        res.p.name = setTo;
                         self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", oldname + " Name set to: " + setTo, 3447003);
                       }else {
