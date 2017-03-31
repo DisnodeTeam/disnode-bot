@@ -19,6 +19,10 @@
     {
       "cmd": "servers",
       "run": "commandServers"
+    },
+    {
+      "cmd": "eval",
+      "run": "commandEval"
     }
   ]
 }
