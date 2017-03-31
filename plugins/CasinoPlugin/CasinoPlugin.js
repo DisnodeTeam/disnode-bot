@@ -207,7 +207,7 @@ class CasinoPlugin {
               }, {
                 name: 'Income / Max Income',
                 inline: true,
-                value: "$" + numeral(res.p.income).format('0,0.00') + " / " + numeral(res.p.maxIncome).format('0a'),
+                value: "$" + numeral(res.p.income).format('0,0.00') + " / " + numeral(res.p.maxIncome).format('0.0a'),
               }, {
                 name: 'XP / Next Level',
                 inline: true,
@@ -253,7 +253,7 @@ class CasinoPlugin {
             }, {
               name: 'Income / Max Income',
               inline: true,
-              value: "$" + numeral(player.income).format('0,0.00') + " / " + numeral(player.maxIncome).format('0a'),
+              value: "$" + numeral(player.income).format('0,0.00') + " / " + numeral(player.maxIncome).format('0.0a'),
             }, {
               name: 'XP / Next Level',
               inline: true,
@@ -1150,7 +1150,7 @@ class CasinoPlugin {
       }else {
         switch (command.params[0]) {
           case "reset":
-            if(data.params[1]){
+            if(command.params[1]){
               self.findPlayer(command.params[1]).then(function(res) {
                 if(res.found){
                   res.p.money = 10000;
@@ -1160,7 +1160,7 @@ class CasinoPlugin {
                   res.p.lv = 0;
                   res.p.maxIncome = 1000;
                   self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + players.name + "Is now reset: ", 3447003);
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + res.p.name + " Is now reset", 3447003);
                 }else {
                   self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
                 }
@@ -1168,7 +1168,7 @@ class CasinoPlugin {
             }
             break;
           case "ban":
-            if(data.params[1]){
+            if(command.params[1]){
               self.findPlayer(command.params[1]).then(function(res) {
                 if(res.found){
                   if(!res.p.banned){
@@ -1196,7 +1196,7 @@ class CasinoPlugin {
                     res.p.maxIncome = 1000;
                     self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
                   }
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + players.name + " Is now reset: ", 3447003);
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + res.p.name + " Is now Banned", 3447003);
                 }else {
                   self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
                 }
@@ -2001,7 +2001,7 @@ class CasinoPlugin {
     var lvup = false;
     while(player.xp >= (player.lv * 1000)){
       player.lv++;
-      player.maxIncome = player.maxIncome * 2;
+      player.maxIncome = player.maxIncome * 1.2;
       lvup = true;
     }
     if(lvup)self.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lv + "\n**Your max income has been increased to:** $" + numeral(player.maxIncome).format('0,0.00'), 1433628);
