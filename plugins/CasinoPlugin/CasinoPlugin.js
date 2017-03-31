@@ -1432,8 +1432,10 @@ class CasinoPlugin {
             var quantity = 0;
             if(command.params[2] == "max"){
               if(player.Admin || player.Premium){
-                if(self.store[ID].type == 0 || self.store[ID].type == 2){
+                if(self.store[ID].type == 0){
                   quantity = Math.floor((player.xp / (self.store[ID].cost / 2)));
+                }else if(self.store[ID].type == 2){
+                  quantity = Math.floor((player.money / (self.store[ID].cost / 2)));
                 }else {
                   var remainMax = player.maxIncome - player.income;
                   var counter = 0;
@@ -1446,8 +1448,10 @@ class CasinoPlugin {
                   quantity = counter - 1;
                 }
               }else {
-                if(self.store[ID].type == 0 || self.store[ID].type == 2){
+                if(self.store[ID].type == 0){
                   quantity = Math.floor((player.xp / (self.store[ID].cost)));
+                }else if(self.store[ID].type == 2){
+                  quantity = Math.floor((player.money / (self.store[ID].cost)));
                 }else {
                   var remainMax = player.maxIncome - player.income;
                   var counter = 1;
@@ -1484,7 +1488,7 @@ class CasinoPlugin {
             var costString;
             if(self.store[ID].type == 2){
               costString =  "$" + cost;
-              if(player.xp < cost){
+              if(player.money < cost){
                 self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money!\nNeed: $" + cost + "\nYou have: $" + player.money, 16772880);
                 return;
               }
