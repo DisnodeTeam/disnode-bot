@@ -61,6 +61,7 @@ class CasinoPlugin {
     this.store = [
       {cost: 200, type:0, amount: 1000, item: "Instant $1,000"},
       {cost: 100, type:1, amount: 50, item: "Add $50 to your income"},
+      {cost: 1000000, type:2, amount: 50, item: "Get 50XP"},
     ]
     this.cratesys = {
       crates: [
@@ -71,9 +72,9 @@ class CasinoPlugin {
             {item:"$10,000", type: 0, amount: 10000},
             {item:"$25,000", type: 0, amount: 25000},
             {item:"$50,000", type: 0, amount: 50000},
+            {item:"50XP", type: 1, amount: 50},
             {item:"100XP", type: 1, amount: 100},
-            {item:"250XP", type: 1, amount: 250},
-            {item:"500XP", type: 1, amount: 500}
+            {item:"150XP", type: 1, amount: 150}
           ]
         },
         {
@@ -83,9 +84,9 @@ class CasinoPlugin {
             {item:"$50,000", type: 0, amount: 50000},
             {item:"$75,000", type: 0, amount: 75000},
             {item:"$100,000", type: 0, amount: 100000},
-            {item:"500XP", type: 1, amount: 500},
-            {item:"750XP", type: 1, amount: 750},
-            {item:"1000XP", type: 1, amount: 1000}
+            {item:"150XP", type: 1, amount: 150},
+            {item:"250XP", type: 1, amount: 250},
+            {item:"350XP", type: 1, amount: 350}
           ]
         },
         {
@@ -256,7 +257,7 @@ class CasinoPlugin {
             }, {
               name: 'XP / Next Level',
               inline: true,
-              value: player.xp + " / " + (player.lv * 250),
+              value: player.xp + " / " + (player.lv * 1000),
             }, {
               name: 'Premium',
               inline: true,
@@ -944,11 +945,11 @@ class CasinoPlugin {
                   self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
                   break;
                 case 2:
-                  player.money += player.perUpdate;
+                  player.money += player.income;
                   self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
                   break;
                 case 3:
-                  player.money += (player.perUpdate * 2);
+                  player.money += (player.income * 2);
                   self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
                   break;
               }
@@ -1209,7 +1210,7 @@ class CasinoPlugin {
           case "player":
             switch (command.params[1]) {
               case "get":
-                self.findPlayer(command.params[1]).then(function(res) {
+                self.findPlayer(command.params[2]).then(function(res) {
                   if(res.found){
                     self.disnode.bot.SendMessage(command.msg.channel, "```json\n" + JSON.stringify(res.p, false, 2) + "```");
                   }else {
@@ -1412,7 +1413,11 @@ class CasinoPlugin {
             if(player.Admin || player.Premium){
               cost = (self.store[i].cost /2)
             }else cost = self.store[i].cost;
-            msg += "" + i + "\t//\t" + self.store[i].item + "\t//\t" + cost + "XP\n";
+            if(self.store[i].type == 2){
+              msg += "" + i + "\t//\t" + self.store[i].item + "\t//\t$" + cost + "\n";
+            }else {
+              msg += "" + i + "\t//\t" + self.store[i].item + "\t//\t" + cost + "XP\n";
+            }
           }
           msg += "\n\n**XP:** " + player.xp + "\nStore items are subject to change, please be aware of prices and items PRIOR to making a purchase!";
           var title;
@@ -1427,7 +1432,7 @@ class CasinoPlugin {
             var quantity = 0;
             if(command.params[2] == "max"){
               if(player.Admin || player.Premium){
-                if(self.store[ID].type == 0){
+                if(self.store[ID].type == 0 || self.store[ID].type == 2){
                   quantity = Math.floor((player.xp / (self.store[ID].cost / 2)));
                 }else {
                   var remainMax = player.maxIncome - player.income;
@@ -1441,10 +1446,10 @@ class CasinoPlugin {
                   quantity = counter - 1;
                 }
               }else {
-                if(self.store[ID].type == 0){
+                if(self.store[ID].type == 0 || self.store[ID].type == 2){
                   quantity = Math.floor((player.xp / (self.store[ID].cost)));
                 }else {
-                  remainMax = player.maxIncome - player.income;
+                  var remainMax = player.maxIncome - player.income;
                   var counter = 1;
                   var cost = (self.store[ID].cost);
                   while (true) {
@@ -1453,10 +1458,6 @@ class CasinoPlugin {
                     counter++;
                   }
                   quantity = counter - 1;
-                  if((player.income + (self.store[ID].amount * quantity)) > remainMax){
-                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Such transaction will exceed your Max Income of: $" + numeral(player.maxIncome).format('0,00.00') + "\nLevel up to increase this max.", 16772880);
-                    return;
-                  }
                 }
               }
             }else{
@@ -1466,8 +1467,8 @@ class CasinoPlugin {
               }
               if(self.store[ID].type == 1){
                 var remainMax = player.maxIncome - player.income;
-                if((player.income + (self.store[ID].amount * quantity)) > remainMax){
-                  console.log(self.store[ID].amount * quantity + " / " + remainMax);
+                if(((self.store[ID].amount * quantity)) > remainMax){
+                  console.log((self.store[ID].amount * quantity) + " / " + remainMax);
                   self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Such transaction will exceed your Max Income of: $" + numeral(player.maxIncome).format('0,00.00') + "\nLevel up to increase this max.", 16772880);
                   return;
                 }
@@ -1481,10 +1482,18 @@ class CasinoPlugin {
               cost = (self.store[ID].cost /2) * quantity;
             }else cost = self.store[ID].cost * quantity;
             var costString;
-            costString = cost + " XP"
-            if(player.xp < cost){
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much XP!\nNeed: " + cost + "XP\nYou have: " + player.xp, 16772880);
-              return;
+            if(self.store[ID].type == 2){
+              costString =  "$" + cost;
+              if(player.xp < cost){
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money!\nNeed: $" + cost + "\nYou have: $" + player.money, 16772880);
+                return;
+              }
+            }else {
+              costString = cost + " XP"
+              if(player.xp < cost){
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much XP!\nNeed: " + cost + "XP\nYou have: " + player.xp, 16772880);
+                return;
+              }
             }
             switch (self.store[ID].type) {
               case 0:
@@ -1494,6 +1503,10 @@ class CasinoPlugin {
               case 1:
                 player.xp -= cost;
                 player.income += (self.store[ID].amount * quantity);
+                break;
+              case 2:
+                player.money -= cost;
+                player.xp += (self.store[ID].amount * quantity);
                 break;
               default:
                 break;
@@ -1619,13 +1632,10 @@ class CasinoPlugin {
         slot.winText = "YOU GOT A JACKPOT! however you didnt meet the minimum bet requirement ($" + minJackpotBet + ") to get the JACKPOT value so here is 60x your bet";
       }else {
         slot.winAmount = parseFloat(self.casinoObj.jackpotValue);
-        self.casinoObj.jackpotValue = 1000000;
+        self.casinoObj.jackpotValue = 100000;
         slot.winText = "JACKPOT JACKPOT JACKPOT!!!!!";
         self.casinoObj.jackpotstat.lastWon = slot.player.name;
-        if(slot.winAmount > self.casinoObj.jackpotstat.HighestWin){
-          self.casinoObj.jackpotstat.HighestWin = slot.winAmount;
-          self.casinoObj.jackpotstat.HighestBy = slot.player.name;
-        }
+        self.casinoObj.jackpotstat.LatestWin = slot.winAmount;
       }
       slot.player.stats.slotJackpots++;
       slot.player.stats.slotWins++;
@@ -1985,7 +1995,7 @@ class CasinoPlugin {
   checkLV(player, channel){
     var self = this;
     var lvup = false;
-    while(player.xp >= (player.lv * 250)){
+    while(player.xp >= (player.lv * 1000)){
       player.lv++;
       player.maxIncome = player.maxIncome * 2;
       lvup = true;
