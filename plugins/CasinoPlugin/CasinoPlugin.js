@@ -684,8 +684,9 @@ class CasinoPlugin {
             var bet = numeral(command.params[1]).value();
           }
           if(bet > 0){
-            if(player.Premium)timeoutInfo = self.checkTimeout(player, 2);
-            if(player.Admin)timeoutInfo = self.checkTimeout(player, 0);
+          var timeoutInfo = self.checkTimeout(player, 5);
+          if(player.Premium)timeoutInfo = self.checkTimeout(player, 2);
+          if(player.Admin)timeoutInfo = self.checkTimeout(player, 0);
             if(!timeoutInfo.pass){
               self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
               return;
@@ -914,8 +915,9 @@ class CasinoPlugin {
       }
       switch (command.params[0]) {
         case "open":
-          if(player.Premium)timeoutInfo = self.checkTimeout(player, 2);
-          if(player.Admin)timeoutInfo = self.checkTimeout(player, 0);
+        var timeoutInfo = self.checkTimeout(player, 5);
+        if(player.Premium)timeoutInfo = self.checkTimeout(player, 2);
+        if(player.Admin)timeoutInfo = self.checkTimeout(player, 0);
           if(!timeoutInfo.pass){
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
             return;
@@ -1332,9 +1334,9 @@ class CasinoPlugin {
             }
             break;
           case "prem":
-            self.findPlayer(command.params[2]).then(function(res) {
+            self.findPlayer(command.params[1]).then(function(res) {
               if(res.found){
-                if(command.params[3] == "true"){
+                if(command.params[2] == "true"){
                   res.p.Premium = true;
                   res.p.money += 25000;
                   res.p.xp += 2000;

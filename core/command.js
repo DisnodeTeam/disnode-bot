@@ -19,7 +19,7 @@ class Command {
 
     RunMessage(msgObj) {
       var self = this;
-
+// hi mom
       if(msgObj.message == "-YOUR GOD HAS ARRIVED!" && msgObj.userID == "131235236402036736"){
         self.disnode.bot.SendMessage(msgObj.channel, "HAIL OUR LORD VICTORY!");
       }
