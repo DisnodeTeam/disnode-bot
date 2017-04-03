@@ -2201,23 +2201,22 @@ class CasinoPlugin {
     });
     self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
     if(self.timer)self.timer = {};
-    self.timer = new Countdown(1800000,function(){});
-    self.timer.start();
-      setTimeout(function() {
-        if(self.AutoStatus()) {
-          var n = self.getRandomIntInclusive(0,3);
-          if(n == 0){
-            self.disnode.bot.SetStatus("!casino slot");
-          }else if (n == 1) {
-            self.disnode.bot.SetStatus("!casino wheel");
-          }else if (n == 2) {
-            self.disnode.bot.SetStatus("!casino flip");
-          }else {
-            self.disnode.bot.SetStatus("!casino");
-          }
+    self.timer = new Countdown(1800000,function(){
+      if(self.AutoStatus()) {
+        var n = self.getRandomIntInclusive(0,3);
+        if(n == 0){
+          self.disnode.bot.SetStatus("!casino slot");
+        }else if (n == 1) {
+          self.disnode.bot.SetStatus("!casino wheel");
+        }else if (n == 2) {
+          self.disnode.bot.SetStatus("!casino flip");
+        }else {
+          self.disnode.bot.SetStatus("!casino");
         }
-        self.updateCoroutine();
-      }, 1800000);
+      }
+      self.updateCoroutine();
+    });
+    self.timer.start();
   }
 }
 
