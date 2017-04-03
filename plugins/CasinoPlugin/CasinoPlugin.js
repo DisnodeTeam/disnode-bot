@@ -133,7 +133,7 @@ class CasinoPlugin {
       ]
     }
     this.recentBetters = [];
-    setTimeout(function() {
+    if (self.AutoStatus()) {
       var n = self.getRandomIntInclusive(0,3);
       if(n == 0){
         self.disnode.bot.SetStatus("!casino slot");
@@ -148,7 +148,7 @@ class CasinoPlugin {
         self.casinoObj = res[0];
         self.updateCoroutine();
       });
-    }, 1000);
+    }
   }
   default(command) {
     var self = this;
@@ -2188,19 +2188,35 @@ class CasinoPlugin {
     if(self.timer)self.timer = {};
     self.timer = new Countdown(1800000,function(){});
     self.timer.start();
-    setTimeout(function() {
-      var n = self.getRandomIntInclusive(0,3);
-      if(n == 0){
-        self.disnode.bot.SetStatus("!casino slot");
-      }else if (n == 1) {
-        self.disnode.bot.SetStatus("!casino wheel");
-      }else if (n == 2) {
-        self.disnode.bot.SetStatus("!casino flip");
-      }else {
-        self.disnode.bot.SetStatus("!casino");
-      }
-      self.updateCoroutine();
-    }, 1800000);
+    if (self.AutoStatus()) {
+      setTimeout(function() {
+        var n = self.getRandomIntInclusive(0,3);
+        if(n == 0){
+          self.disnode.bot.SetStatus("!casino slot");
+        }else if (n == 1) {
+          self.disnode.bot.SetStatus("!casino wheel");
+        }else if (n == 2) {
+          self.disnode.bot.SetStatus("!casino flip");
+        }else {
+          self.disnode.bot.SetStatus("!casino");
+        }
+        self.updateCoroutine();
+      }, 1799000);
+    }
+  }
+  AutoStatus() {
+    var self = this;
+    try {
+      setTimeout(function() {
+        if (self.class.config.autoStatus) {
+          return true
+        } else {
+          return false
+        }
+      }, 1000);
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
 
