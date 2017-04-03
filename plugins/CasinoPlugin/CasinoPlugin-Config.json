@@ -1,6 +1,7 @@
 {
   "prefix":"casino",
   "requirePrefix":true,
+  "autoStatus": true,
   "static": true,
   "run":true
 }
