@@ -18,7 +18,25 @@ class Stats {
   getUptime(){
     var self = this;
     var currentTime = new Date();
-    return currentTime - self.startDateTime;
+    var elapsed = currentTime - self.startDateTime;
+    var days = 0;
+    var hours = 0;
+    var minutes = 0;
+    var seconds = parseInt(elapsed / 1000);
+    var miliseconds = elapsed % 1000;
+    while (seconds > 60) {
+      minutes++;
+      seconds -= 60;
+      if (minutes == 60) {
+        hours++;
+        minutes = 0;
+      }
+      if(hours == 24){
+        days++
+        hours = 0;
+      }
+    }
+    return days + " Days\n" + hours + " Hours\n" + minutes + " Minutes\n" + seconds + " Seconds\n" + miliseconds + " Miliseconds";
   }
   updateServerMemberCount(){
     var self = this;

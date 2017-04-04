@@ -12,12 +12,16 @@ class DisnodePlugin {
         inline: false,
         value: "Bot Info and Stats. Some info is updated every minute",
       }, {
-        name: 'Total Messages',
+        name: 'Uptime',
         inline: false,
+        value: self.disnode.stats.getUptime(),
+      }, {
+        name: 'Total Messages',
+        inline: true,
         value: self.disnode.stats.messages,
       }, {
         name: 'Commands',
-        inline: false,
+        inline: true,
         value: self.disnode.stats.messagesParsed,
       }, {
         name: 'Servers',
@@ -25,11 +29,11 @@ class DisnodePlugin {
         value: self.disnode.stats.serverCount,
       }, {
         name: 'Channels',
-        inline: false,
+        inline: true,
         value: self.disnode.stats.channelCount,
       }, {
         name: 'Members',
-        inline: false,
+        inline: true,
         value: self.disnode.stats.memberCount,
       }, {
         name: 'Open DM\'s',
