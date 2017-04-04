@@ -96,7 +96,7 @@ class Command {
           if(this.GetPluginFromCommand(command)){
             plugin = this.GetPluginFromCommand(command);
             if(this.GetCommandObject(plugin, command)){
-              Logging.Warning("Command", "CommandParse", "Running a command without plugin prefix, this is heavily not supported and is in beta.");
+              Logging.Warning("Command", "CommandParse", "Running a command without plugin prefix, this is heavily not supported");
               command = this.GetCommandObject(plugin, command);
               callback(plugin, command, params);
             }
