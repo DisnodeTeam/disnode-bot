@@ -730,6 +730,8 @@ class CasinoPlugin {
               self.disnode.bot.SendCompactEmbed(command.msg.channel,"Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
               return;
             }else{
+              var minbet = player.money * 0.015;
+              var warn = "";
               player.money -= bet;
               player.money = numeral(player.money).value();
             }
@@ -749,7 +751,12 @@ class CasinoPlugin {
             player.stats.wheelPlays++;
             if(wheelInfo.winAmount > 0)player.stats.wheelWins++;
             player.money += wheelInfo.winAmount;
-            player.xp += wheelInfo.xpAward;
+            if(bet < minbet){
+              warn = "\n`You didn't bet your Minimum bet to get XP, please note the amount you need to bet below`"
+            }else {
+              player.xp += wheelInfo.xpAward;
+            }
+            minbet = player.money * 0.015;
             logger.Info("Casino", "Wheel", "Wheel Player: " + player.name + " bet: " + bet + " Win: " + wheelInfo.winAmount);
           }else {
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a number for your bet!", 16772880);
@@ -761,7 +768,7 @@ class CasinoPlugin {
             fields: [ {
               name: ':money_with_wings: The Wheel :money_with_wings:',
               inline: false,
-              value: wheelInfo.ball.display,
+              value: wheelInfo.ball.display + warn,
             }, {
               name: 'Bet',
               inline: true,
@@ -782,6 +789,10 @@ class CasinoPlugin {
               name: 'Balance',
               inline: true,
               value: "$" + numeral(player.money).format('0,0.00'),
+            }, {
+              name: 'Min Bet',
+              inline: true,
+              value: "$" + numeral(minbet).format('0,0.00'),
             }, {
               name: 'XP',
               inline: true,
@@ -904,6 +915,55 @@ class CasinoPlugin {
           msg += "" + (i + 1) + ". **" + orderTop[i].name + "** -=- $" + numeral(orderTop[i].money).format('0,0.00') + "\n";
         }
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Wealthiest Players", msg);
+      });
+    });
+  }
+  commandTopLV(command){
+    var self = this;
+    self.getPlayer(command).then(function(player) {
+      if(self.checkBan(player, command))return;
+      if(player.Admin || player.Mod){}else {
+        if(!self.doChannelCheck(command)){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          return;
+        }
+      }
+      self.disnode.DB.Find("players", {}).then(function(players) {
+        var orderTop = [];
+        for (var i = 0; i < players.length; i++) {
+          var placed = false;
+          for (var x = 0; x < orderTop.length; x++) {
+            if(players[i].lv > orderTop[x].lv){
+              orderTop.splice(x, 0, players[i]);
+              placed = true;
+              break;
+            }
+          }
+          if(!placed){
+            orderTop.push(players[i]);
+          }
+        }
+        var page = 1;
+        var maxindex;
+        var startindex;
+        if (parseInt(command.params[0]) >= 1) {
+          page = Number(parseInt(command.params[0]));
+        }
+        if (page == 1) {
+          page = 1;
+          startindex = 0
+          maxindex = 10;
+        }else {
+          maxindex = (page * 10);
+          startindex = maxindex - 10;
+        }
+
+        var msg = "**Page:** " + page + "\n";
+        for (var i = startindex; i < orderTop.length; i++) {
+          if(i == maxindex)break;
+          msg += "" + (i + 1) + ". **" + orderTop[i].name + "** -=- Level: " + orderTop[i].lv + "\n";
+        }
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Experienced Players", msg);
       });
     });
   }

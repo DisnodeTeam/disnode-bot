@@ -26,6 +26,11 @@
       "run": "commandTop"
     },
     {
+      "cmd": "lvtop",
+      "desc": "*See whos on top and compete with your friends!*",
+      "run": "commandTopLV"
+    },
+    {
       "cmd": "betters",
       "desc": "*See who recently played slots!*",
       "run": "commandRecentBetters"
@@ -36,7 +41,7 @@
       "run": "commandCrate"
     },
     {
-      "cmd": "timer",
+      "cmd": "time",
       "desc": "*See how much time is left until your next income!*",
       "run": "commandTimer"
     },
