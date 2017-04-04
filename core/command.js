@@ -118,6 +118,7 @@ class Command {
       var found = null;
       for (var i = 0; i < pluginClasses.length; i++) {
         if(pluginClasses[i].config.requirePrefix == undefined || pluginClasses[i].config.requirePrefix == false){
+          if(pluginClasses[i].commands == null)continue;
           for (var j = 0; j < pluginClasses[i].commands.length; j++) {
             if(pluginClasses[i].commands[j].cmd == command){
               found = pluginClasses[i];
