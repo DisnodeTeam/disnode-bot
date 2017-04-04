@@ -11,9 +11,6 @@ class Stats {
     this.memberCount = 0;
     this.channelCount = 0;
     this.directMessageCount = 0;
-    setTimeout(function() {
-      self.updateServerMemberCount();
-    }, 1000);
   }
   getUptime(){
     var self = this;
@@ -36,7 +33,15 @@ class Stats {
         hours = 0;
       }
     }
-    return days + " Days\n" + hours + " Hours\n" + minutes + " Minutes\n" + seconds + " Seconds\n" + miliseconds + " Miliseconds";
+    if(days > 0){
+      return days + " Days" + hours + " Hours " + minutes + " Minutes " + seconds + " Seconds " + miliseconds + " Miliseconds";
+    }else if (hours > 0) {
+      return hours + " Hours " + minutes + " Minutes " + seconds + " Seconds " + miliseconds + " Miliseconds";
+    }else if (minutes > 0) {
+      return minutes + " Minutes " + seconds + " Seconds " + miliseconds + " Miliseconds";
+    }else {
+      return seconds + " Seconds " + miliseconds + " Miliseconds";
+    }
   }
   updateServerMemberCount(){
     var self = this;
@@ -44,9 +49,6 @@ class Stats {
     self.memberCount = Object.keys(self.disnode.bot.client.users).length;
     self.channelCount = Object.keys(self.disnode.bot.client.channels).length;
     self.directMessageCount = Object.keys(self.disnode.bot.client.directMessages).length;
-    setTimeout(function() {
-      self.updateServerMemberCount();
-    }, 60000);
   }
 }
 module.exports = Stats;

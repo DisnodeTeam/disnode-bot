@@ -4,13 +4,14 @@ class DisnodePlugin {
   }
   default(command){
     var self = this;
+    self.disnode.stats.updateServerMemberCount();
     self.disnode.bot.SendEmbed(command.msg.channel,{
       color: 3447003,
       author: {},
       fields: [ {
         name: 'Disnode Info',
         inline: false,
-        value: "Bot Info and Stats. Some info is updated every minute",
+        value: "Bot Info and Stats",
       }, {
         name: 'Uptime',
         inline: false,
