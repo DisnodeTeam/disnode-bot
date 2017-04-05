@@ -24,23 +24,29 @@ class PluginManager {
 
       var filePath = fullPath + className;
       fs.watch(filePath, function(e) {
-
+        delete require.cache[require.resolve("../" + filePath)]
         for (var i = 0; i < self.loaded.length; i++) {
           if(self.loaded[i].name == name){
             self.loaded.splice(i, 1);
           }
         }
-
+        console.log(self.loaded);
         for (var i = 0; i < self.launched.length; i++) {
+          console.log(self.launched[i].class.name);
           if(self.launched[i].class.name == name){
             self.launched.splice(i, 1);
           }
+
+
         }
+        fs.unwatchFile(filePath);
+        self.LoadPlugin(name).then(function(res){
 
-        self.LoadPlugin(name);
 
-        });
+        })
 
+
+      });
 
     }
 
@@ -73,6 +79,7 @@ class PluginManager {
                 Logging.Info("PluginManager", "Load-"+name, "Trying to import class");
                   try {
                       var NpmRequire = require("../" + fullPath + className);
+
                       Logging.Success("PluginManager", "Load-"+name, "Imported");
                       newPlugin.class = NpmRequire;
                       callback(null);
@@ -99,7 +106,7 @@ class PluginManager {
                   }
 
                   //console.log(self.loaded);
-                  callback();
+                  callback(null,newPlugin);
               },
           ], function(err, result) {
               if(err){

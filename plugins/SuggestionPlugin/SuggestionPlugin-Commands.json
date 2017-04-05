@@ -1,0 +1,9 @@
+{
+  "commands":[
+    {
+      "cmd": "channel",
+      "run": "commandChannel",
+      "roles": ["236338599585513472"]
+    }
+  ]
+}

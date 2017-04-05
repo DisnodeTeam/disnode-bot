@@ -3,5 +3,5 @@
   "requirePrefix":true,
   "autoStatus": true,
   "static": true,
-  "run":true
+  "run":false
 }

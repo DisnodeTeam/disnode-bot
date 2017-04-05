@@ -1,0 +1,5 @@
+{
+  "prefix":"suggest",
+  "static": "true",
+  "run": "true"
+}

@@ -11,7 +11,7 @@ class TestPlugin {
       var self = this;
         console.log("Running");
         console.log(  self.disnode.bot.GetUserRoles(command.msg.server, command.msg.userID));
-        this.disnode.bot.SendMessage(command.msg.channel, "TEST", {});
+        this.disnode.bot.SendMessage(command.msg.channel, "TE3ST", {});
     }
 
     commandWhitelist(command) {

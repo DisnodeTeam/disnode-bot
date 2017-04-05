@@ -1,4 +1,7 @@
-class IDPlugin {
+//TODO: Change this!
+var DBClass = require("../../core/db")
+
+class SuggestionPlugin {
   constructor() {
 
 
@@ -8,17 +11,16 @@ class IDPlugin {
 
     this.disnode.bot.SendCompactEmbed(command.msg.channel, "Commands", "!id roles \n");
   }
-  commandRoles(command){
+  commandChannel(command){
     var server = this.disnode.bot.GetServerByID(command.msg.server);
     var final = "";
     for (var key in server.roles) {
     	if ( server.roles.hasOwnProperty(key)) {
-        final += "`" +  server.roles[key].name + '` --- `' +  server.roles[key].id  + "`\n";
-
+        final += "`" +  server.roles[key].name + '` -- `' +  server.roles[key].id  + "`\n";
     	}
     }
     this.disnode.bot.SendCompactEmbed(command.msg.channel, "Roles", final);
   }
 }
 
-module.exports = IDPlugin;
+module.exports = SuggestionPlugin;
