@@ -1,7 +1,6 @@
 {
-  "prefix":"casino",
+  "prefix":"disnode",
   "requirePrefix":true,
-  "autoStatus": true,
   "static": true,
   "run":true
 }

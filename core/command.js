@@ -18,6 +18,12 @@ class Command {
 
     RunMessage(msgObj) {
       var self = this;
+      if(msgObj.server != "DM"){
+        if(self.disnode.bot.GetUserByID(msgObj.server, msgObj.userID) != undefined){
+          if(self.disnode.bot.GetUserByID(msgObj.server, msgObj.userID).bot)return;
+        }
+      }
+      self.disnode.stats.messages++;
       if(msgObj.message == "-YOUR GOD HAS ARRIVED!" && msgObj.userID == "131235236402036736"){
         self.disnode.bot.SendMessage(msgObj.channel, "HAIL OUR LORD VICTORY!");
       }
@@ -86,6 +92,7 @@ class Command {
           if(this.GetCommandObject(plugin, command)){
               params.shift();
             command = this.GetCommandObject(plugin, command);
+            self.disnode.stats.messagesParsed++;
             callback(plugin, command, params);
           }else{
             callback(plugin, {"cmd":command, "run":"default"}, params);
@@ -95,8 +102,9 @@ class Command {
           if(this.GetPluginFromCommand(command)){
             plugin = this.GetPluginFromCommand(command);
             if(this.GetCommandObject(plugin, command)){
-              Logging.Warning("Command", "CommandParse", "Running a command without plugin prefix, this is heavily not supported and is in beta.");
+              Logging.Warning("Command", "CommandParse", "Running a command without plugin prefix, this is heavily not supported");
               command = this.GetCommandObject(plugin, command);
+              self.disnode.stats.messagesParsed++;
               callback(plugin, command, params);
             }
           }
@@ -117,6 +125,7 @@ class Command {
       var found = null;
       for (var i = 0; i < pluginClasses.length; i++) {
         if(pluginClasses[i].config.requirePrefix == undefined || pluginClasses[i].config.requirePrefix == false){
+          if(pluginClasses[i].commands == null)continue;
           for (var j = 0; j < pluginClasses[i].commands.length; j++) {
             if(pluginClasses[i].commands[j].cmd == command){
               found = pluginClasses[i];

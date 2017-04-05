@@ -103,6 +103,7 @@ class PluginManager {
               },
           ], function(err, result) {
               if(err){
+                console.log(err);
                 reject(err);
                 return;
               }

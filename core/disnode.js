@@ -4,6 +4,7 @@ const CommandManager = require('./command');
 const ConfigManager = require('./config');
 const DBManager = require("./db")
 const Communication = require("./communication");
+const Stats = require('./stats');
 const jsonfile = require('jsonfile');
 const Logging = require("disnode-logger");
 const async = require('async');
@@ -22,6 +23,7 @@ class Disnode {
           Logging.Info("Disnode", "Start", "Loading Config");
           self.LoadBotConfig().then(function(){
             self.bot = new DiscordBot(self.botConfig.key, self);
+            self.stats = new Stats(self);
             Logging.Success("Disnode", "Start", "Loaded Config");
             callback();
           }).catch(callback);
@@ -44,7 +46,6 @@ class Disnode {
         function(callback) {
           Logging.Info("Disnode", "Start", "Loading Config Manager");
           self.config = new ConfigManager();
-
           callback();
         },
         function(callback) {
