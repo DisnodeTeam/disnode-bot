@@ -60,7 +60,7 @@ class CasinoPlugin {
     ]
     this.store = [
       {cost: 200, type:0, amount: 1000, item: "Instant $1,000"},
-      {cost: 1000000, type:1, amount: 50, item: "Add $50 to your income"},
+      {cost: 100000, type:1, amount: 50, item: "Add $50 to your income"},
     ]
     this.cratesys = {
       crates: [
@@ -155,7 +155,6 @@ class CasinoPlugin {
   }
   default(command) {
     var self = this;
-    console.log("IM RUNNINNG!");
     self.utils.getPlayer(command).then(function(player){
       var msg = "";
       for (var i = 0; i < self.class.commands.length; i++) {
@@ -289,7 +288,7 @@ class CasinoPlugin {
           return;
         }
       }
-      var msleft = self.timer.getRemainingTime();
+      var msleft = self.utils.timer.getRemainingTime();
       var minRemain = Math.floor(msleft / 60000);
       var secondsRemain = ((msleft / 1000) - (minRemain * 60));
       self.disnode.bot.SendCompactEmbed(command.msg.channel, "Timer / Time until next Income", minRemain + " Minutes and " + secondsRemain + " Seconds.");
@@ -398,8 +397,8 @@ class CasinoPlugin {
             if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
             if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
             if(!timeoutInfo.pass){
-              logger.Info("Casino", "Slot", "Player: " + player.name + " Tried the slots before their delay of: " + timeoutInfo.remain.sec);
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
+              logger.Info("Casino", "Slot", "Player: " + player.name + " Tried the slots before their delay of: " + timeoutInfo.remain);
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
               return;
             }
             if(bet > 0.01){
@@ -432,7 +431,7 @@ class CasinoPlugin {
                 var minJackpotBet = (player.money * 0.03);
               }else var minJackpotBet = 250;
               if(timeoutInfo.remain){
-                logger.Info("Casino", "Slot", "Player: " + player.name + " Slot Winnings: " + slotInfo.winAmount + " original bet: " + bet + " Time since they could use this command again: " + timeoutInfo.remain.sec);
+                logger.Info("Casino", "Slot", "Player: " + player.name + " Slot Winnings: " + slotInfo.winAmount + " original bet: " + bet + " Time since they could use this command again: " + timeoutInfo.remain);
               }else {
                 logger.Info("Casino", "Slot", "Player: " + player.name + " Slot Winnings: " + slotInfo.winAmount + " original bet: " + bet);
               }
@@ -541,13 +540,14 @@ class CasinoPlugin {
           if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
           if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
           if(!timeoutInfo.pass){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
             return;
           }
           if(bet > player.money){// Checks to see if player has enough money for their bet
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
             return;
           }else{
+            var minbet = player.money * 0.015;
             player.money -= bet;
             player.money = Number(parseFloat(player.money).toFixed(2));
           }
@@ -563,13 +563,14 @@ class CasinoPlugin {
             player.stats.moneyWon = Number(parseFloat(player.stats.moneyWon).toFixed(2));
             player.money += Number(parseFloat(flipinfo.winAmount).toFixed(2));
             player.money = Number(parseFloat(player.money).toFixed(2));
-            if(bet >= 250){
+            if(bet >= minbet){
               player.xp += 5;
             }else {
-              flipinfo.winText += " `You bet lower than $250 fair warning here, you wont get any XP`"
+              flipinfo.winText += " `You bet lower than $" + numeral(minbet).format('0,0.00') + " fair warning here, you wont get any XP`"
             }
             logger.Info("Casino", "CoinFlip", "Player: " + player.name + " Has Won Coin Flip Winnings: " + flipinfo.winAmount + "original bet: " + bet);
             self.utils.updateLastSeen(player);
+            minbet = player.money * 0.015;
             self.disnode.bot.SendEmbed(command.msg.channel, {
               color: 1433628,
               author: {},
@@ -593,6 +594,10 @@ class CasinoPlugin {
                 name: 'Balance',
                 inline: true,
                 value: "$" + numeral(player.money).format('0,0.00'),
+              }, {
+                name: 'Minimum Bet',
+                inline: true,
+                value: "$" + numeral(minbet).format('0,0.00'),
               }, {
                 name: 'XP',
                 inline: true,
@@ -691,7 +696,7 @@ class CasinoPlugin {
           if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
           if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
             if(!timeoutInfo.pass){
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
               return;
             }
             if(command.params.length > 7){
@@ -864,8 +869,8 @@ class CasinoPlugin {
         }
       }
       var msg = "Name // Last Time Played\n";
-      for (var i = 0; i < self.recentBetters.length; i++) {
-        msg += (i+1) + ". **" + self.recentBetters[i].name + "** -=- `" + self.recentBetters[i].time + "`\n";
+      for (var i = 0; i < self.utils.recentBetters.length; i++) {
+        msg += (i+1) + ". **" + self.utils.recentBetters[i].name + "** -=- `" + self.utils.recentBetters[i].time + "`\n";
       }
       self.disnode.bot.SendCompactEmbed(command.msg.channel, "Recent Betters -=- Current Time: " + self.utils.getDateTime(), msg);
     });
@@ -984,7 +989,7 @@ class CasinoPlugin {
         if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
         if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
           if(!timeoutInfo.pass){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
             return;
           }
           var CrateID = numeral(command.params[1]).value();
@@ -1617,7 +1622,7 @@ class CasinoPlugin {
       if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
       if(!timeoutInfo.pass){
         logger.Info("Casino", "Slot", "Player: " + player.name + " Tried the slots before their delay of: " + timeoutInfo.remain.sec);
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain.sec + " seconds** before playing again.", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
         return;
       }
       if(command.params[0]){

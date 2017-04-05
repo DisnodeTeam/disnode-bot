@@ -7,6 +7,7 @@ class CasinoUtils {
     this.disnode = disnode;
     this.class = classobj;
     this.casinoObj = {};
+    this.recentBetters = [];
   }
   didWin(slot){
     var self = this;
@@ -140,21 +141,8 @@ class CasinoUtils {
     }
   }
   updatePlayerLastMessage(player){
-    var currentDate = new Date();
-    var hour = currentDate.getHours();
-    hour = (hour < 10 ? "0" : "") + hour;
-    var min  = currentDate.getMinutes();
-    min = (min < 10 ? "0" : "") + min;
-    var sec  = currentDate.getSeconds();
-    sec = (sec < 10 ? "0" : "") + sec;
-    var day  = currentDate.getDate();
-    day = (day < 10 ? "0" : "") + day;
-    player.lastMessage = {
-      day: parseInt(day),
-      hour: parseInt(hour),
-      min: parseInt(min),
-      sec: parseInt(sec),
-    }
+    var currentDate = new Date().getTime();
+    player.lastMessage = parseInt(currentDate);
   }
   handleRecentBetters(player){
     var self = this;
@@ -307,56 +295,58 @@ class CasinoUtils {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
   checkTimeout(player, seconds){
-    var currentDate = new Date();
-    var hour = currentDate.getHours();
-    hour = (hour < 10 ? "0" : "") + hour;
-    var min  = currentDate.getMinutes();
-    min = (min < 10 ? "0" : "") + min;
-    var sec  = currentDate.getSeconds();
-    sec = (sec < 10 ? "0" : "") + sec;
-    var day  = currentDate.getDate();
-    day = (day < 10 ? "0" : "") + day;
+    var self = this;
+    var currentDate = new Date().getTime();
     if(player.lastMessage == null){
-      player.lastMessage = null;
       return {pass: true};
     }
-    var remainingTime = {
-      day: Number(player.lastMessage.day - day),
-      hour: Number(player.lastMessage.hour - hour),
-      min: Number(player.lastMessage.min - min),
-      sec: Number((player.lastMessage.sec + seconds) - sec)
+    var targetMS = player.lastMessage + (seconds * 1000);
+    var remainingMS = currentDate - targetMS;
+    if(remainingMS >= 0){
+      var elapsedObj = self.getElapsedTime(remainingMS);
+      return {pass: true, remain: elapsedObj.days + " Days" + elapsedObj.hours + " Hours " + elapsedObj.minutes + " Minutes " + elapsedObj.seconds + " Seconds " + elapsedObj.miliseconds + " Miliseconds"};
+    }else {
+      remainingMS = -remainingMS;
+      var elapsedObj = self.getElapsedTime(remainingMS);
+      return {pass: false, remain: elapsedObj.minutes + " Minutes " + elapsedObj.seconds + " Seconds"};
     }
-    if(remainingTime.day < 0)return {pass: true,  remain: remainingTime};
-    if(remainingTime.hour < 0)return {pass: true,  remain: remainingTime};
-    if(remainingTime.min < 0)return {pass: true,  remain: remainingTime};
-    if((remainingTime.min <= 0) & (remainingTime.sec <= 0)){
-      return {pass: true,  remain: remainingTime};
-    }else return {pass: false, remain: remainingTime};
   }
-  updateLastSeen(player){
-      var date = new Date();
-      var year = date.getFullYear();
-      var month = date.getMonth() + 1;
-      month = numeral((month < 10 ? "0" : "") + month).value();
-      var day  = date.getDate();
-      day = numeral((day < 10 ? "0" : "") + day).value();
-      player.lastSeen = {
-        pmonth: numeral(month).value(),
-        pday: numeral(day).value(),
-        pyear: numeral(year).value()
+  getElapsedTime(ms){
+    var days = 0;
+    var hours = 0;
+    var minutes = 0;
+    var seconds = parseInt(ms / 1000);
+    var miliseconds = ms % 1000;
+    while (seconds > 60) {
+      minutes++;
+      seconds -= 60;
+      if (minutes == 60) {
+        hours++;
+        minutes = 0;
+      }
+      if(hours == 24){
+        days++
+        hours = 0;
       }
     }
+    return {
+      days: days,
+      hours: hours,
+      minutes: minutes,
+      seconds: seconds,
+      miliseconds: miliseconds
+    }
+  }
+  updateLastSeen(player){
+      var date = new Date().getTime();
+      player.lastSeen = parseInt(date);
+    }
   canGetIncome(player){
-    var date = new Date();
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-    month = numeral((month < 10 ? "0" : "") + month).value();
-    var day  = date.getDate();
-    day = numeral((day < 10 ? "0" : "") + day).value();
-    var yearsPassed = year - player.lastSeen.pyear;
-    var monthsPassed = month - player.lastSeen.pmonth;
-    var daysPassed = day - player.lastSeen.pday;
-    if((yearsPassed > 0) | (monthsPassed > 0) | (daysPassed > 2)){
+    var self = this;
+    var date = new Date().getTime();
+    var elapsed = date - player.lastSeen;
+    var elapsedObj = self.getElapsedTime(elapsed);
+    if((elapsedObj.days >= 2)){
       return false;
     }
     return true;
@@ -556,7 +546,6 @@ class CasinoUtils {
     if(command.msg.server == '236338097955143680'){
       if(command.msg.channel == '275395383071342594')return false;
       if(command.msg.channel == '236338097955143680')return false;
-      if(command.msg.channel == '269892884688404482')return false;
       if(command.msg.channel == '268049832596340746')return false;
       return true;
     }else return true;
