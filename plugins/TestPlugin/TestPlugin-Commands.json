@@ -20,6 +20,11 @@
 
     },
     {
+      "cmd": "instance",
+      "run": "commandInstance"
+
+    },
+    {
       "cmd": "roles",
       "run": "commandRole",
       "roles":["236338599585513472"]

@@ -14,6 +14,20 @@ class TestPlugin {
         this.disnode.bot.SendMessage(command.msg.channel, "TE3ST", {});
     }
 
+    commandInstance(command) {
+        var self = this;
+        self.disnode.plugin.Launch("PremiumPlugin","LOCAL").then(function(plugin){
+          plugin.GetUserRole(command.msg.userID).then(function(role){
+            if(role == "USER_NOT_FOUND"){
+                self.disnode.bot.SendMessage(command.msg.channel, "You are not signed up on the DisnodeTeam website! (could not find user in DB)");
+              return;
+            }
+            self.disnode.bot.SendMessage(command.msg.channel, "PREM STATUS: " + role);
+
+          })
+        });
+    }
+
     commandWhitelist(command) {
 
       var self = this;

@@ -186,6 +186,7 @@ class PluginManager {
             var newInstance = new Manager.class(server);
             newInstance.server = server;
             newInstance.class = Manager;
+            newInstance.Close = function(){self.ClosePlugin(newInstance);}
             newInstance.disnode = self.disnode;
             self.launched.push(newInstance);
             resolve(newInstance);
@@ -233,6 +234,15 @@ class PluginManager {
             }
         }
         return found;
+    }
+
+    ClosePlugin(plugin){
+      var self = this;
+
+      var i = self.launched.indexOf(plugin);
+      Logging.Info("PluginManager", "ClosePlugin", "Plugin: " + plugin.class.name + " closed! ID: " + i + " Server: " + plugin.server);
+      self.launched.splice(i, 1);
+
     }
 }
 
