@@ -31,6 +31,29 @@ class DBManager{
     });
   }
 
+  Init(settings){
+    var self = this;
+    logger.Info("DBManager", "Init", "Requesting DB Instance: " + settings.DBName)
+
+    if(!settings){return;}
+
+    var _checkDB = self.CheckForInstance(settings.DBName);
+
+    if(_checkDB != null){
+      logger.Success("DBManager", "Init", "DB Instance Found: " + settings.DBName)
+      return _checkDB;
+    }
+
+    logger.Info("DBManager", "Init", "Creating and Connecting new DB Instance: " + settings.DBName)
+
+    var _newDB = new DBClass(settings);
+    _newDB.Connect();
+    self.instances.push(_newDB);
+    return _newDB;
+
+    logger.Success("DBManager", "Init", "DB Instance Created: " + settings.DBName)
+
+
   CheckForInstance(DBName){
     var self = this;
     for (var i = 0; i < self.instances.length; i++) {
