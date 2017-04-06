@@ -565,6 +565,7 @@ class CasinoUtils {
   }
   updateCoroutine(){
     var self = this;
+    self.disnode.DB.Init(self.disnode.botConfig.db);
     self.disnode.DB.Find("players", {}).then(function(players) {
       for (var i = 0; i < players.length; i++) {
         if(players[i].lastSeen == undefined){
