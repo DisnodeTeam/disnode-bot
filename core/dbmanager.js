@@ -1,0 +1,47 @@
+var DBClass = require ("./db")
+var logger = require('disnode-logger');
+class DBManager{
+  constructor(disnode){
+    self.disnode = disnode;
+    self.instances = [];
+  }
+
+  InitPromise(settings){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      logger.Info("DBManager", "InitPromise", "Requesting DB Instance: " + settings.DBName)
+      if(!settings){reject("No Settings!"); return;}
+
+      var _checkDB = self.CheckForInstance(settings.DBName);
+      if(_checkDB != null){
+        logger.Success("DBManager", "InitPromise", "DB Instance Found: " + settings.DBName)
+        resolve(_checkDB);
+        return;
+      }
+      logger.Info("DBManager", "InitPromise", "Creating and Connecting new DB Instance: " + settings.DBName)
+      var _newDB = new DBClass(settings);
+      _newDB.Connect().then(function(){
+        self.instances.push(_newDB);
+        logger.Success("DBManager", "InitPromise", "DB Instance Created and Connected: " + settings.DBName)
+        resolve(_newDB);
+        return;
+      }).catch(reject);
+
+
+    });
+  }
+
+  CheckForInstance(DBName){
+    var self = this;
+    for (var i = 0; i < self.instances.length; i++) {
+      var instance = self.instances[i];
+      if(instance.name = DBName){
+        return(instance);
+      }
+    }
+
+    return null;
+  }
+}
+
+module.exports = DBManager;
