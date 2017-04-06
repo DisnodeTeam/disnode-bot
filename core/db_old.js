@@ -9,31 +9,26 @@ class DB {
 		this.disnode = disnode;
 		this.DB = {};
 	}
-	Init(settings) {
+	Init(db) {
 		var self = this;
-		self.settings = settings;
-		self.name = settings.DBName;
-
-	}
-	Connect(){
+		if(!db.use_db)return;
 		return new Promise(function (resolve, reject) {
 			var url = "mongodb://";
-
-			if(self.settings.auth){
-				var user = encodeURIComponent(self.settings.user);
-				var pwd =  encodeURIComponent(self.settings.pass);
+			if(db.use_auth){
+				var user = encodeURIComponent(db.dba_user);
+				var pwd = encodeURIComponent(db.dba_pwd);
 				url += user + ":" + pwd + "@";
 			}
-			if (!self.settings.host || self.settings.host == "") {
+			if (!db.db_host || db.db_host == "") {
 				reject("No MongoDB Host IP!");
 				return;
 			}
-			url += self.settings.host;
-			if(!self.settings.port || self.settings.port == ""){}else {
+			url += db.db_host;
+			if(!db.db_port || db.db_port == ""){}else {
 				url += ":" + db.db_port;
 			}
-			if(!self.settings.DBName || self.settings.DBName == ""){}else {
-				url += "/" + self.settings.DBName;
+			if(!db.db_defaultDB || db.db_defaultDB == ""){}else {
+				url += "/" + db.db_defaultDB;
 			}
 
 			MongoClient.connect(url, function (err, connectedDB) {
@@ -49,6 +44,7 @@ class DB {
 			});
 		});
 	}
+
 	Insert(collection, data) {
 		var self = this;
 
