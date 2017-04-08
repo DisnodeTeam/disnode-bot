@@ -1,12 +1,14 @@
 //TODO: Change this!
-var DBClass = require("../../core/db")
+
 
 class SuggestionPlugin {
   constructor() {
 
 
   }
-
+  Launch(){
+      this.db = this.disnode.db.Init({DBName: "SuggestionPlugin"});
+  }
   default (command) {
 
     this.disnode.bot.SendCompactEmbed(command.msg.channel, "Commands", "!id roles \n");

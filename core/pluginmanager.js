@@ -188,6 +188,7 @@ class PluginManager {
             newInstance.class = Manager;
             newInstance.Close = function(){self.ClosePlugin(newInstance);}
             newInstance.disnode = self.disnode;
+            if(newInstance.Launch){newInstance.Launch();}
             self.launched.push(newInstance);
             resolve(newInstance);
         });
