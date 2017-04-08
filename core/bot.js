@@ -116,12 +116,44 @@ class Bot {
             });
         });
     }
+
+    EditMessage(channel, msgID, msg, typing = false, tts = false) {
+        var self = this;
+        return new Promise(function(resolve, reject) {
+            self.client.editMessage({
+              channelID: channel,
+              messageID: msgID,
+              message: {
+                to: channel,
+                message: msg,
+                typing: typing,
+                tts: tts
+              }
+            }, function(err, resp) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(resp);
+                }
+            });
+        });
+
+    }
     SendEmbed(channel, embed) {
         var self = this;
-        self.client.sendMessage({
-            to: channel,
-            embed: embed
+        return new Promise(function(resolve, reject) {
+          self.client.sendMessage({
+              to: channel,
+              embed: embed
+          }, function(err, resp) {
+              if (err) {
+                  reject(err);
+              } else {
+                  resolve(resp);
+              }
+          });
         });
+
     }
     SendCompactEmbed(channel, title, body, color = 3447003) {
         var self = this;
@@ -137,6 +169,23 @@ class Bot {
                 }],
                 footer: {}
             }
+        });
+    }
+
+    EditEmbed(channel, msgID, embed) {
+        var self = this;
+        return new Promise(function(resolve, reject) {
+            self.client.editMessage({
+              channelID: channel,
+              messageID: msgID,
+              embed: embed
+            }, function(err, resp) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(resp);
+                }
+            });
         });
     }
     SetStatus(status) {
