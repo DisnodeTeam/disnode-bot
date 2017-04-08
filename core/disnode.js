@@ -2,7 +2,7 @@ const DiscordBot = require('./bot');
 const PluginManager = require ('./pluginmanager');
 const CommandManager = require('./command');
 const ConfigManager = require('./config');
-const DBManager = require("./db_old")
+const DBManager = require("./dbmanager")
 const Communication = require("./communication");
 const Stats = require('./stats');
 const jsonfile = require('jsonfile');
@@ -51,12 +51,8 @@ class Disnode {
         function(callback) {
           if(self.botConfig.db.use_db){
             Logging.Info("Disnode", "Start", "Loading DB Manager");
-            self.DB = new DBManager(self);
-            Logging.Info("Disnode", "Start", "Connecting to DB...");
-            self.DB.Init(self.botConfig.db).then(function(){
-              Logging.Success("Disnode", "Start", "DB Connected!");
-              callback();
-            }).catch(callback);
+            self.db = new DBManager(self);
+            callback();
           }else {
             Logging.Info("Disnode", "Start", "Loading of DB skipped because user wished not to use DB");
           }

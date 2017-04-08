@@ -4,18 +4,20 @@ const async = require('async');
 const fs = require('fs');
 const MongoClient = require('mongodb').MongoClient
 class DB {
-	constructor(disnode) {
-		Logging.Info("DB", "Constructor", "Started!")
+	constructor(disnode, settings) {
+
+
+		Logging.Info("DB", "Constructor", "Started" )
 		this.disnode = disnode;
 		this.DB = {};
-	}
-	Init(settings) {
-		var self = this;
-		self.settings = settings;
-		self.name = settings.DBName;
+		this.settings = settings;
+		this.name = settings.DBName;
 
 	}
+
 	Connect(){
+
+		var self = this;
 		return new Promise(function (resolve, reject) {
 			var url = "mongodb://";
 
@@ -30,7 +32,7 @@ class DB {
 			}
 			url += self.settings.host;
 			if(!self.settings.port || self.settings.port == ""){}else {
-				url += ":" + db.db_port;
+				url += ":" + self.settings.port;
 			}
 			if(!self.settings.DBName || self.settings.DBName == ""){}else {
 				url += "/" + self.settings.DBName;
@@ -69,7 +71,7 @@ class DB {
 
     return new Promise(function (resolve, reject) {
       var _collection = self.DB.collection(collection);
-			_collection.updateOne(identifier, {$set : newData}, function (err, result) {
+			_collection.updateOne(identifier, {$set : newData}, {upsert: true}, function (err, result) {
 				if(err){
           reject(err);
           return;
