@@ -1,6 +1,6 @@
 const DiscordBot = require('./bot');
 const PluginManager = require ('./pluginmanager');
-const CommandManager = require('./command');
+const CommandManager = require('./commandmanager');
 const ConfigManager = require('./config');
 const DBManager = require("./dbmanager")
 const Communication = require("./communication");
@@ -132,8 +132,10 @@ class Disnode {
     }
 
     OnMessage (msg){
-      if(this.command){
-        this.command.RunMessage(msg);
+      var commandInstance = this.command.GetCommandInstance(msg.server);
+
+      if(commandInstance){
+        commandInstance.RunMessage(msg);
       }else{
         Logging.Warning("Disnode", "Message", "No Command Handler!");
       }

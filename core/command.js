@@ -3,8 +3,9 @@ const async = require('async');
 const jsonfile = require('jsonfile');
 const Logging = require('disnode-logger');
 class Command {
-    constructor(disnode) {
+    constructor(disnode, server) {
         this.disnode = disnode;
+        this.server  = server;
         if(this.disnode.botConfig.prefix){
           this.prefix = this.disnode.botConfig.prefix;
           Logging.Info("Command", "Start","prefix set to: " + this.prefix);
@@ -18,6 +19,7 @@ class Command {
 
     RunMessage(msgObj) {
       var self = this;
+
       if(msgObj.server != "DM"){
         if(self.disnode.bot.GetUserByID(msgObj.server, msgObj.userID) != undefined){
           if(self.disnode.bot.GetUserByID(msgObj.server, msgObj.userID).bot)return;
