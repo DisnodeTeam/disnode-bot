@@ -44,6 +44,9 @@ class DB {
 					return;
 				}
 				self.DB = connectedDB;
+				self.DB.on('close', function () {
+    			self.AttemptReconnect();
+  			});
 				resolve();
 
 				return;
@@ -51,6 +54,13 @@ class DB {
 			});
 		});
 	}
+
+	AttemptReconnect(){
+		setInterval(function () {
+			this.Connect();
+		}, 5000);
+	}
+
 	Insert(collection, data) {
 		var self = this;
 

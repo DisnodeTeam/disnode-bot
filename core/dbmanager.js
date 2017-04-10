@@ -10,7 +10,7 @@ class DBManager{
   InitPromise(settings){
     var self = this;
     return new Promise(function(resolve, reject) {
-      ;
+
       var DefaultDB = self.disnode.botConfig.db;
 
       settings = merge(DefaultDB, settings);
