@@ -40,8 +40,13 @@ class SuggestionPlugin {
           {
             name: "Implmented",
             inline: true,
-            value: false
-         }
+            value: self.ParseCheck(false)
+         },
+         {
+           name: "Approved",
+           inline: true,
+           value: self.ParseCheck(false)
+        }
           ],
           footer: {}
         }).then(function(res){
@@ -49,6 +54,7 @@ class SuggestionPlugin {
           var newObj=  {
             suggestion: suggestion,
             implmented: false,
+            approved: false,
             by: command.msg.user,
             msg:{id: res.id, channel:res.channel_id }
           }
@@ -100,7 +106,12 @@ class SuggestionPlugin {
             name: "Implmented",
             inline: true,
             value: self.ParseCheck(cur.implmented)
-         }
+         },
+         {
+           name: "Approved",
+           inline: true,
+           value: self.ParseCheck(cur.implmented)
+        }
           ],
           footer: {}
         });
