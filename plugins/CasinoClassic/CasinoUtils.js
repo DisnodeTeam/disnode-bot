@@ -582,13 +582,13 @@ class CasinoUtils {
       if(self.AutoStatus()) {
         var n = self.getRandomIntInclusive(0,3);
         if(n == 0){
-          self.disnode.bot.SetStatus("!casino slot");
+          self.disnode.bot.SetStatus("!cc slot");
         }else if (n == 1) {
-          self.disnode.bot.SetStatus("!casino wheel");
+          self.disnode.bot.SetStatus("!cc wheel");
         }else if (n == 2) {
-          self.disnode.bot.SetStatus("!casino flip");
+          self.disnode.bot.SetStatus("!cc flip");
         }else {
-          self.disnode.bot.SetStatus("!casino");
+          self.disnode.bot.SetStatus("!cc");
         }
       }
       self.updateCoroutine();

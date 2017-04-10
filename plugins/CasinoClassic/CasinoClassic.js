@@ -483,13 +483,13 @@ class CasinoPlugin {
             if (self.utils.AutoStatus()) {
                 var n = self.utils.getRandomIntInclusive(0, 3);
                 if (n == 0) {
-                    self.disnode.bot.SetStatus("!casino slot");
+                    self.disnode.bot.SetStatus("!cc slot");
                 } else if (n == 1) {
-                    self.disnode.bot.SetStatus("!casino wheel");
+                    self.disnode.bot.SetStatus("!cc wheel");
                 } else if (n == 2) {
-                    self.disnode.bot.SetStatus("!casino flip");
+                    self.disnode.bot.SetStatus("!cc flip");
                 } else {
-                    self.disnode.bot.SetStatus("!casino");
+                    self.disnode.bot.SetStatus("!cc");
                 }
             }
         }, 1000);
@@ -723,7 +723,7 @@ class CasinoPlugin {
                     });
                     break;
                 case undefined:
-                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Slots", "Hi, Welcome to the slots! If you need info on the slots the run `!casino slot info`\n\nIf you want to try the slots then do `!casino slot [bet]` for example `casino slot 100` that will run the slot with $100 as the bet");
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Slots", "Hi, Welcome to the slots! If you need info on the slots the run `!cc slot info`\n\nIf you want to try the slots then do `!cc slot [bet]` for example `cc slot 100` that will run the slot with $100 as the bet");
                     break;
                 default:
                     if (command.params[0]) {
@@ -830,7 +830,7 @@ class CasinoPlugin {
                                 "id": self.utils.casinoObj.id
                             }, self.utils.casinoObj);
                         } else {
-                            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a Number for bet or `!casino slot` for general help", 16772880)
+                            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a Number for bet or `!cc slot` for general help", 16772880)
                         }
                     }
             }
@@ -862,7 +862,7 @@ class CasinoPlugin {
                 flipinfo.tag = "Tails";
                 flipinfo.ltag = "Heads";
             } else {
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Coin Flip", "Welcome to Coin Flip! You can play by using this command `!casino flip [heads/tails] [bet]` Examples `!casino flip heads 100` and `!casino flip tails 100`", 1433628);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Coin Flip", "Welcome to Coin Flip! You can play by using this command `!cc flip [heads/tails] [bet]` Examples `!cc flip heads 100` and `!cc flip tails 100`", 1433628);
                 return;
             }
             if (command.params[1]) {
@@ -994,7 +994,7 @@ class CasinoPlugin {
                     "id": self.utils.casinoObj.id
                 }, self.utils.casinoObj);
             } else {
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a bet! Example `!casino flip tails 100`", 16772880);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a bet! Example `!cc flip tails 100`", 16772880);
             }
         });
     }
@@ -1159,7 +1159,7 @@ class CasinoPlugin {
                         }, {
                             name: 'Playing The Wheel',
                             inline: false,
-                            value: "You can play the wheel by typing in `!casino wheel spin [bet] [betType] [betType] ...` EXAMPLE: `!casino wheel spin 100 black`",
+                            value: "You can play the wheel by typing in `!cc wheel spin [bet] [betType] [betType] ...` EXAMPLE: `!cc wheel spin 100 black`",
                         }, {
                             name: 'Bet Types',
                             inline: true,
@@ -1183,7 +1183,7 @@ class CasinoPlugin {
                         fields: [{
                             name: "The Wheel (Roulette)",
                             inline: false,
-                            value: "Welcome to The Wheel! You can play by using this command `!casino wheel spin [bet] [betType]` Examples `!casino wheel spin 100 black`\nFor more info on what win types are and how the game is payed out use `!casino wheel info`",
+                            value: "Welcome to The Wheel! You can play by using this command `!cc wheel spin [bet] [betType]` Examples `!cc wheel spin 100 black`\nFor more info on what win types are and how the game is payed out use `!cc wheel info`",
                         }],
                         footer: {}
                     });
@@ -1333,7 +1333,7 @@ class CasinoPlugin {
                         fields: [{
                             name: 'Crate System',
                             inline: true,
-                            value: "Crates are boosts to help you keep going! Use keys that you find in the Slots to open Crates.\nUse `!casino crate open ID` to open a crate!",
+                            value: "Crates are boosts to help you keep going! Use keys that you find in the Slots to open Crates.\nUse `!cc crate open ID` to open a crate!",
                         }, {
                             name: 'Crates',
                             inline: false,
@@ -1862,7 +1862,7 @@ class CasinoPlugin {
                     }
                     break;
                 default:
-                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Store", "Welcome to the store! to see a list of Items use `!casino store list` use the ID of the item when buying for example `!casino store buy 0` if you want to buy more than one of the item use `!casino store buy 0 10` to buy 10, or use `!casino store buy 0 max` to buy as much as you can!");
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Store", "Welcome to the store! to see a list of Items use `!cc store list` use the ID of the item when buying for example `!cc store buy 0` if you want to buy more than one of the item use `!cc store buy 0 10` to buy 10, or use `!cc store buy 0 max` to buy as much as you can!");
             }
         });
     }
@@ -1933,9 +1933,9 @@ class CasinoPlugin {
                                     "id": player.id
                                 }, player);
                                 return;
-                            }
+                              }
                         } else {
-                            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a number for the transfer amount! example `!casino transfer FireGamer3 100`", 16772880);
+                            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a number for the transfer amount! example `!cc transfer FireGamer3 100`", 16772880);
                         }
                     } else {
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
