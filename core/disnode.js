@@ -132,6 +132,10 @@ class Disnode {
     }
 
     OnMessage (msg){
+
+      if(!this.command){
+        return;
+      }
       var commandInstance = this.command.GetCommandInstance(msg.server);
 
       if(commandInstance){
