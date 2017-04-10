@@ -1,0 +1,79 @@
+{
+  "commands":[
+    {
+      "cmd": "slot",
+      "desc": "*Slots (general help)*",
+      "run": "commandSlot"
+    },
+    {
+      "cmd": "flip",
+      "desc": "*Flip a Coin, Heads Or Tails!*",
+      "run": "commandCoinFlip"
+    },
+    {
+      "cmd": "wheel",
+      "desc": "*Play a nice game of roulette!*",
+      "run": "commandWheel"
+    },
+    {
+      "cmd": "bal",
+      "desc": "*Check yours or others; Money and XP Quickly*",
+      "run": "commandBal"
+    },
+    {
+      "cmd": "top",
+      "desc": "*See whos on top and compete with your friends!*",
+      "run": "commandTop"
+    },
+    {
+      "cmd": "lvtop",
+      "desc": "*See whos on top and compete with your friends!*",
+      "run": "commandTopLV"
+    },
+    {
+      "cmd": "betters",
+      "desc": "*See who recently played slots!*",
+      "run": "commandRecentBetters"
+    },
+    {
+      "cmd": "crate",
+      "desc": "*Use keys and open Crates for money and XP!*",
+      "run": "commandCrate"
+    },
+    {
+      "cmd": "time",
+      "desc": "*See how much time is left until your next income!*",
+      "run": "commandTimer"
+    },
+    {
+      "cmd": "admin",
+      "desc": "*Admin Commands (FireGamer3 / VictoryForPhil)*",
+      "run": "commandAdmin"
+    },
+    {
+      "cmd": "mod",
+      "desc": "*Moderator Commands (Our Server Mods)*",
+      "run": "commandMod"
+    },
+    {
+      "cmd": "store",
+      "desc": "*Get more money or more income here!*",
+      "run": "commandStore"
+    },
+    {
+      "cmd": "jackpot",
+      "desc": "*Get Quick info about the Jackpot*",
+      "run": "commandJackpotInfo"
+    },
+    {
+      "cmd": "stats",
+      "desc": "*View you stats for the bot!*",
+      "run": "commandStats"
+    },
+    {
+      "cmd": "transfer",
+      "desc": "*Transfer money to other players!*",
+      "run": "commandTransfer"
+    }
+  ]
+}

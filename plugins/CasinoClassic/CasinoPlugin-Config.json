@@ -1,0 +1,7 @@
+{
+  "prefix":"cc",
+  "requirePrefix":true,
+  "autoStatus": true,
+  "static": true,
+  "run":false
+}
