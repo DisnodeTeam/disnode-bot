@@ -16,11 +16,11 @@ class Stats {
     var self = this;
     var currentTime = new Date();
     var elapsed = currentTime - self.startDateTime;
+    var weeks = 0;
     var days = 0;
     var hours = 0;
     var minutes = 0;
     var seconds = parseInt(elapsed / 1000);
-    var miliseconds = elapsed % 1000;
     while (seconds > 60) {
       minutes++;
       seconds -= 60;
@@ -28,19 +28,19 @@ class Stats {
         hours++;
         minutes = 0;
       }
-      if(hours == 24){
+      if (hours == 24) {
         days++
         hours = 0;
       }
     }
-    if(days > 0){
-      return days + " Days" + hours + " Hours " + minutes + " Minutes " + seconds + " Seconds " + miliseconds + " Miliseconds";
-    }else if (hours > 0) {
-      return hours + " Hours " + minutes + " Minutes " + seconds + " Seconds " + miliseconds + " Miliseconds";
-    }else if (minutes > 0) {
-      return minutes + " Minutes " + seconds + " Seconds " + miliseconds + " Miliseconds";
-    }else {
-      return seconds + " Seconds " + miliseconds + " Miliseconds";
+    if (days > 0) {
+      return days + " days, " + hours + " hours, " + minutes + " minutes and " + seconds + " seconds.";
+    } else if (hours > 0) {
+      return hours + " hours, " + minutes + " minutes and " + seconds + " seconds.";
+    } else if (minutes > 0) {
+      return minutes + " minutes and " + seconds + " seconds.";
+    } else {
+      return seconds + " seconds.";
     }
   }
   updateServerMemberCount(){
