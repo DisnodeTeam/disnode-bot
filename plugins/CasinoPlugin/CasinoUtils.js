@@ -8,6 +8,8 @@ class CasinoUtils {
     this.class = classobj;
     this.casinoObj = {};
     this.recentBetters = [];
+    this.testingmode = true;
+    this.DB = this.disnode.db.Init({});
   }
   didWin(slot){
     var self = this;
@@ -166,7 +168,7 @@ class CasinoUtils {
     var self = this;
     var players = [];
     return new Promise(function(resolve, reject) {
-      self.disnode.DB.Find("players", {}).then(function(found) {
+      self.DB.Find("players", {}).then(function(found) {
         players = found;
         for (var i = 0; i < players.length; i++) {
           if(data.msg.userID == players[i].id){
@@ -224,7 +226,7 @@ class CasinoUtils {
             break;
           }
         }
-        self.disnode.DB.Insert("players", newPlayer);
+        self.DB.Insert("players", newPlayer);
         resolve(newPlayer);
         return;
       });
@@ -239,7 +241,7 @@ class CasinoUtils {
   findPlayer(info){
     var self = this;
     return new Promise(function(resolve, reject) {
-      self.disnode.DB.Find("players", {}).then(function(players) {
+      self.DB.Find("players", {}).then(function(players) {
         var id = self.parseMention(info);
         for (var i = 0; i < players.length; i++) {
           if(players[i].id == id){
@@ -565,8 +567,8 @@ class CasinoUtils {
   }
   updateCoroutine(){
     var self = this;
-    self.disnode.DB.Init(self.disnode.botConfig.db);
-    self.disnode.DB.Find("players", {}).then(function(players) {
+    if(self.testingmode)return;
+    self.DB.Find("players", {}).then(function(players) {
       for (var i = 0; i < players.length; i++) {
         if(players[i].lastSeen == undefined){
           self.updateLastSeen(players[i]);
@@ -578,10 +580,10 @@ class CasinoUtils {
           players[i].money += players[i].income;
         }
         players[i].lastMessage = null;
-        self.disnode.DB.Update("players", {"id":players[i].id}, players[i]);
+        self.DB.Update("players", {"id":players[i].id}, players[i]);
       }
     });
-    self.disnode.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
+    self.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
     if(self.timer)self.timer.stop();
     self.timer = new Countdown(1800000,function(){
       if(self.AutoStatus()) {

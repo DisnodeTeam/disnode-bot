@@ -147,7 +147,7 @@ class CasinoPlugin {
           self.disnode.bot.SetStatus("!casino");
         }
       }
-      self.disnode.DB.Find("casinoObj", {}).then(function(res) {
+      self.utils.DB.Find("casinoObj", {}).then(function(res) {
         self.utils.casinoObj = res[0];
         self.utils.updateCoroutine();
       });
@@ -487,8 +487,8 @@ class CasinoPlugin {
                 }
               );
               self.utils.updatePlayerLastMessage(player);
-              self.disnode.DB.Update("players", {"id":player.id}, player);
-              self.disnode.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
+              self.utils.DB.Update("players", {"id":player.id}, player);
+              self.utils.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
             }else {
               self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a Number for bet or `!casino slot` for general help", 16772880)
             }
@@ -654,8 +654,8 @@ class CasinoPlugin {
             self.utils.updateLastSeen(player);
             self.utils.checkLV(player, command.msg.channel);
           }
-          self.disnode.DB.Update("players", {"id":player.id}, player);
-          self.disnode.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
+          self.utils.DB.Update("players", {"id":player.id}, player);
+          self.utils.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
         }else {
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a bet! Example `!casino flip tails 100`", 16772880);
         }
@@ -810,8 +810,8 @@ class CasinoPlugin {
           self.utils.updatePlayerLastMessage(player);
           self.utils.updateLastSeen(player);
           self.utils.checkLV(player, command.msg.channel);
-          self.disnode.DB.Update("players", {"id":player.id}, player);
-          self.disnode.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
+          self.utils.DB.Update("players", {"id":player.id}, player);
+          self.utils.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
           break;
         case "info":
           self.disnode.bot.SendEmbed(command.msg.channel, {
@@ -885,7 +885,7 @@ class CasinoPlugin {
           return;
         }
       }
-      self.disnode.DB.Find("players", {}).then(function(players) {
+      self.utils.DB.Find("players", {}).then(function(players) {
         var orderTop = [];
         for (var i = 0; i < players.length; i++) {
           var placed = false;
@@ -934,7 +934,7 @@ class CasinoPlugin {
           return;
         }
       }
-      self.disnode.DB.Find("players", {}).then(function(players) {
+      self.utils.DB.Find("players", {}).then(function(players) {
         var orderTop = [];
         for (var i = 0; i < players.length; i++) {
           var placed = false;
@@ -1023,8 +1023,8 @@ class CasinoPlugin {
               self.utils.updatePlayerLastMessage(player);
               self.utils.updateLastSeen(player);
               self.utils.checkLV(player, command.msg.channel);
-              self.disnode.DB.Update("players", {"id":player.id}, player);
-              self.disnode.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
+              self.utils.DB.Update("players", {"id":player.id}, player);
+              self.utils.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
             }else {
               self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough Keys!\nNEED: " + Crate.cost + "\nHAVE: " + player.keys, 16772880);
             }
@@ -1071,7 +1071,7 @@ class CasinoPlugin {
       if(command.params[0]){
         self.utils.findPlayer(command.params[0]).then(function(res) {
           if(res.found){
-            self.disnode.DB.Find("players", {}).then(function(players) {
+            self.utils.DB.Find("players", {}).then(function(players) {
               var orderTop = []
               for (var i = 0; i < players.length; i++) {
                 var placed = false;
@@ -1140,7 +1140,7 @@ class CasinoPlugin {
           }
         })
       }else {
-        self.disnode.DB.Find("players", {}).then(function(players) {
+        self.utils.DB.Find("players", {}).then(function(players) {
           var orderTop = []
           for (var i = 0; i < players.length; i++) {
             var placed = false;
@@ -1227,7 +1227,7 @@ class CasinoPlugin {
                   res.p.lv = 1;
                   res.p.nextlv = 500;
                   res.p.maxIncome = 1000;
-                  self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                  self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                   self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + res.p.name + " Is now reset", 3447003);
                 }else {
                   self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
@@ -1252,7 +1252,7 @@ class CasinoPlugin {
                     }else {
                       res.p.banreason = "You have been banned! The admin that banned you didn't provide a reason."
                     }
-                    self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                    self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                   }else {
                     res.p.money = 10000;
                     res.p.income = 1000;
@@ -1263,7 +1263,7 @@ class CasinoPlugin {
                     res.p.banned = false;
                       res.p.banreason = "";
                     res.p.maxIncome = 1000;
-                    self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                    self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                   }
                   self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + res.p.name + " Is now Banned", 3447003);
                 }else {
@@ -1273,7 +1273,7 @@ class CasinoPlugin {
             }
             break;
           case "save":
-            self.disnode.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
+            self.utils.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", ":white_check_mark: Database Saved!", 3447003);
             break;
           case "player":
@@ -1294,7 +1294,7 @@ class CasinoPlugin {
                       if(res.found){
                         var setTo = numeral(command.params[4]).value();
                         if(setTo >= 0)res.p.money = setTo;
-                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Money set to: $" + setTo, 3447003);
                       }else {
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
@@ -1306,7 +1306,7 @@ class CasinoPlugin {
                       if(res.found){
                         var setTo = numeral(command.params[4]).value();
                         if(setTo >= 0)res.p.income = setTo;
-                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Income set to: $" + setTo, 3447003);
                       }else {
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
@@ -1318,7 +1318,7 @@ class CasinoPlugin {
                       if(res.found){
                         var setTo = numeral(command.params[4]).value();
                         if(setTo >= 0)res.p.xp = setTo;
-                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " XP set to: " + setTo, 3447003);
                       }else {
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
@@ -1331,7 +1331,7 @@ class CasinoPlugin {
                         var setTo = command.params[4];
                         var oldname = res.p.name;
                         res.p.name = setTo;
-                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", oldname + " Name set to: " + setTo, 3447003);
                       }else {
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
@@ -1343,7 +1343,7 @@ class CasinoPlugin {
                       if(res.found){
                         var setTo = numeral(command.params[4]).value();
                         if(setTo >= 0)res.p.lv = setTo;
-                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " LV set to: " + setTo, 3447003);
                       }else {
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
@@ -1355,7 +1355,7 @@ class CasinoPlugin {
                       if(res.found){
                         var setTo = numeral(command.params[4]).value();
                         if(setTo >= 0)res.p.maxIncome = setTo;
-                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Max Income set to: $" + setTo, 3447003);
                       }else {
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
@@ -1367,7 +1367,7 @@ class CasinoPlugin {
                       if(res.found){
                         var setTo = numeral(command.params[4]).value();
                         if(setTo >= 0)res.p.key = setTo;
-                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Keys set to: " + setTo, 3447003);
                       }else {
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
@@ -1379,7 +1379,7 @@ class CasinoPlugin {
                       if(res.found){
                         if(command.params[4] == "true")res.p.Admin = true;
                         if(command.params[4] == "false")res.p.Admin = false;
-                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Admin set to: " + command.params[4], 3447003);
                       }else {
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
@@ -1391,7 +1391,7 @@ class CasinoPlugin {
                       if(res.found){
                         if(command.params[4] == "true")res.p.Mod = true;
                         if(command.params[4] == "false")res.p.Mod = false;
-                        self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                        self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Mod set to: " + command.params[4], 3447003);
                       }else {
                         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
@@ -1416,7 +1416,7 @@ class CasinoPlugin {
                 }else if(command.params[4] == "false"){
                   res.p.Premium = false;
                 }
-                self.disnode.DB.Update("players", {"id":res.p.id}, res.p);
+                self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                 self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Premium set to: " + res.p.Premium, 3447003);
               }else {
                 self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
@@ -1424,7 +1424,7 @@ class CasinoPlugin {
             });
             break;
           case "listprem":
-            self.disnode.DB.Find("players", {}).then(function(players) {
+            self.utils.DB.Find("players", {}).then(function(players) {
               var msg = "";
               for (var i = 0; i < players.length; i++) {
                 if(players[i].Premium){
@@ -1450,11 +1450,11 @@ class CasinoPlugin {
       }else {
         switch (command.params[0]) {
           case "cleartimers":
-          self.disnode.DB.Find("players", {}).then(function(players) {
+          self.utils.DB.Find("players", {}).then(function(players) {
             var msg = "";
             for (var i = 0; i < players.length; i++) {
               players[i].lastMessage = null;
-              self.disnode.DB.Update("players", {"id":players[i].id}, players[i]);
+              self.utils.DB.Update("players", {"id":players[i].id}, players[i]);
             }
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Premium Users", ":white_check_mark: Timeouts Cleared!", 3447003);
           });
@@ -1598,8 +1598,8 @@ class CasinoPlugin {
               }
             );
             self.utils.updateLastSeen(player);
-            self.disnode.DB.Update("players", {"id":player.id}, player);
-            self.disnode.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
+            self.utils.DB.Update("players", {"id":player.id}, player);
+            self.utils.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
           }
           break;
         default:
@@ -1668,8 +1668,8 @@ class CasinoPlugin {
                     footer: {}
                   }
                 );
-                self.disnode.DB.Update("players", {"id":transferPlayer.id}, transferPlayer);
-                self.disnode.DB.Update("players", {"id":player.id}, player);
+                self.utils.DB.Update("players", {"id":transferPlayer.id}, transferPlayer);
+                self.utils.DB.Update("players", {"id":player.id}, player);
                 return;
               }
             }else {

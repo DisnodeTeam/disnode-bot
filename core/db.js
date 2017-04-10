@@ -37,7 +37,7 @@ class DB {
 			if(!self.settings.DBName || self.settings.DBName == ""){}else {
 				url += "/" + self.settings.DBName;
 			}
-
+			console.log(url);
 			MongoClient.connect(url, function (err, connectedDB) {
 				if (err) {
 					reject(err);
