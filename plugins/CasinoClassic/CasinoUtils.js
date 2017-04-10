@@ -9,7 +9,7 @@ class CasinoUtils {
     this.class = classobj;
     this.casinoObj = {};
     this.recentBetters = [];
-    this.testingmode = false;
+    this.testingmode = true;
     this.disnode.db.InitPromise({}).then(function(dbo) {
       self.DB = dbo;
       self.DB.Find("casinoObj", {}).then(function(res) {

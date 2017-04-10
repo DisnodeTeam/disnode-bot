@@ -559,9 +559,9 @@ class CasinoPlugin {
                                 inline: true,
                                 value: res.p.Premium,
                             }, {
-                                name: ' ',
+                                name: '𝅳 𝅳𝅳 𝅳𝅳𝅳 𝅳𝅳𝅳',
                                 inline: true,
-                                value: " ",
+                                value: '𝅳 𝅳𝅳 𝅳𝅳𝅳 𝅳𝅳𝅳',
                             }, {
                                 name: 'Keys',
                                 inline: true,
@@ -604,9 +604,9 @@ class CasinoPlugin {
                         inline: true,
                         value: player.Premium,
                     }, {
-                        name: ' ',
+                        name: '𝅳 𝅳𝅳 𝅳𝅳𝅳 𝅳𝅳𝅳',
                         inline: true,
-                        value: " ",
+                        value: '𝅳 𝅳𝅳 𝅳𝅳𝅳 𝅳𝅳𝅳',
                     }, {
                         name: 'Keys',
                         inline: true,
