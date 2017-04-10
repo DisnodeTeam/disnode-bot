@@ -4,12 +4,19 @@ const Countdown = require('countdownjs');
 
 class CasinoUtils {
   constructor(disnode, classobj) {
+    var self = this;
     this.disnode = disnode;
     this.class = classobj;
     this.casinoObj = {};
     this.recentBetters = [];
     this.testingmode = true;
-    this.DB = this.disnode.db.Init({});
+    this.disnode.db.InitPromise({}).then(function(dbo) {
+      self.DB = dbo;
+      self.DB.Find("casinoObj", {}).then(function(res) {
+        self.casinoObj = res[0];
+        self.updateCoroutine();
+      });
+    });
   }
   didWin(slot){
     var self = this;

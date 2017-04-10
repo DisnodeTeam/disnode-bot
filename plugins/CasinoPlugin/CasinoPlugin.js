@@ -147,10 +147,6 @@ class CasinoPlugin {
           self.disnode.bot.SetStatus("!casino");
         }
       }
-      self.utils.DB.Find("casinoObj", {}).then(function(res) {
-        self.utils.casinoObj = res[0];
-        self.utils.updateCoroutine();
-      });
     }, 1000);
   }
   default(command) {
