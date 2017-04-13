@@ -283,14 +283,86 @@ class Bot {
         var self = this;
         return self.client.users[userID];
     }
-    /**
-     * converts any resource id into a date object
-     * representing when that id was created
-     * @param  {string} resourceID [the resource id]
-     * @return {Date}              [the date the resource was created]
-     */
     GetSnowflakeDate(resourceID) {
         return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
+    }
+    GetMessage(channelID, MessageID){
+      var self = this;
+      return new Promise(function(resolve, reject) {
+        self.client.getMessage({
+          channelID: channelID,
+          MessageID: MessageID
+        }, function (err, res) {
+          if(err){
+            reject(err);
+          }else {
+            resolve(res);
+          }
+        })
+      });
+    }
+    AddReaction(channelID, messageID, reaction){
+      var self = this;
+      return new Promise(function(resolve, reject) {
+        self.client.addReaction({
+          channelID: channelID,
+          messageID: messageID,
+          reaction: reaction
+        }, function(err, res) {
+          if(err){
+            reject(err);
+          }else {
+            resolve(res);
+          }
+        });
+      });
+    }
+    GetReaction(channelID, messageID, reaction){
+      var self = this;
+      return new Promise(function(resolve, reject) {
+        self.client.getReaction({
+          channelID: channelID,
+          messageID: messageID,
+          reaction: reaction
+        }, function(err, res) {
+          if(err){
+            reject(err);
+          }else {
+            resolve(res);
+          }
+        });
+      });
+    }
+    RemoveReaction(channelID, messageID, reaction){
+      var self = this;
+      return new Promise(function(resolve, reject) {
+        self.client.removeReaction({
+          channelID: channelID,
+          messageID: messageID,
+          reaction: reaction
+        }, function(err, res) {
+          if(err){
+            reject(err);
+          }else {
+            resolve(res);
+          }
+        });
+      });
+    }
+    RemoveAllReactions(channelID, messageID){
+      var self = this;
+      return new Promise(function(resolve, reject) {
+        self.client.AddReaction({
+          channelID: channelID,
+          messageID: messageID
+        }, function(err, res) {
+          if(err){
+            reject(err);
+          }else {
+            resolve(res);
+          }
+        });
+      });
     }
 }
 

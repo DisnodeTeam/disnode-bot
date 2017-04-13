@@ -74,6 +74,11 @@
       "cmd": "transfer",
       "desc": "*Transfer money to other players!*",
       "run": "commandTransfer"
+    },
+    {
+      "cmd": "test",
+      "desc": "*test*",
+      "run": "commandTest"
     }
   ]
 }

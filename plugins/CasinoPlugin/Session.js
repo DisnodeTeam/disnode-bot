@@ -1,0 +1,42 @@
+const numeral = require('numeral');
+const logger = require('disnode-logger');
+
+class Session {
+  constructor(id) {
+    this.id = id;
+    this.game = {};
+    this.timeouts = [];
+    logger.Success("Session", "New Session", "Created a new session with id: " + id);
+  }
+  getGame(){
+    var self = this;
+    return self.game;
+  }
+  setGame(game){
+    var self = this;
+    self.game = game;
+  }
+  createTimeout(func, time){
+    var self = this;
+    var tid = setTimeout(func, time);
+    self.timeouts.push(tid);
+    return tid;
+  }
+  removeTimeout(id){
+    var self = this;
+    for (var i = 0; i < self.timeouts.length; i++) {
+      if(self.timeouts[i].id == id){
+        clearTimeout(self.timeouts[i]);
+        self.timeouts.splice(i,1);
+        break;
+      }
+    }
+  }
+  cleanup(){
+    var self = this;
+    for (var i = 0; i < self.timeouts.length; i++) {
+      clearTimeout(self.timeouts[i]);
+    }
+  }
+}
+module.exports = Session;

@@ -1678,6 +1678,21 @@ class CasinoPlugin {
       }
     });
   }
+  commandTest(command){
+    var self = this;
+    self.disnode.bot.SendMessage(command.msg.channel, "test").then(function(res) {
+      self.disnode.bot.AddReaction(command.msg.channel, res.id, "white_check_mark");
+      setTimeout(function() {
+        self.disnode.bot.GetMessage(command.msg.channel, res.id).then(function(message) {
+          for (var i = 0; i < message.length; i++) {
+            if(message[i].id == res.id){
+              self.disnode.bot.SendMessage(command.msg.channel, "```json\n" + JSON.stringify(message[i].reactions, false, 2) + "```");
+            }
+          }
+        })
+      }, 6000);
+    });
+  }
 }
 
 module.exports = CasinoPlugin;
