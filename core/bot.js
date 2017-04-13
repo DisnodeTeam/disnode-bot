@@ -283,6 +283,15 @@ class Bot {
         var self = this;
         return self.client.users[userID];
     }
+    /**
+     * converts any resource id into a date object
+     * representing when that id was created
+     * @param  {string} resourceID [the resource id]
+     * @return {Date}              [the date the resource was created]
+     */
+    GetSnowflakeDate(resourceID) {
+        return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
+    }
 }
 
 module.exports = Bot;
