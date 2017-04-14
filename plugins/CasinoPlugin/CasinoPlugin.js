@@ -2,6 +2,7 @@ const numeral = require('numeral');
 const logger = require('disnode-logger');
 const Countdown = require('countdownjs');
 const CasinoUtils = require('./CasinoUtils')
+const dateformat = require('dateformat');
 
 class CasinoPlugin {
   constructor() {
@@ -1680,18 +1681,16 @@ class CasinoPlugin {
   }
   commandTest(command){
     var self = this;
-    self.disnode.bot.SendMessage(command.msg.channel, "test").then(function(res) {
-      self.disnode.bot.AddReaction(command.msg.channel, res.id, "white_check_mark");
-      setTimeout(function() {
-        self.disnode.bot.GetMessage(command.msg.channel, res.id).then(function(message) {
-          for (var i = 0; i < message.length; i++) {
-            if(message[i].id == res.id){
-              self.disnode.bot.SendMessage(command.msg.channel, "```json\n" + JSON.stringify(message[i].reactions, false, 2) + "```");
-            }
-          }
-        })
-      }, 6000);
-    });
+    var code = command.params.join(" ");
+    if(command.msg.userID != "112786170655600640")return;
+    console.log(code);
+    try {
+      var evaled = eval(code);
+      if(typeof evaled !== "string")evaled = require("util").inspect(evaled);
+      self.disnode.bot.SendMessage(command.msg.channel,"```\n" + evaled + "\n```");
+    } catch (e) {
+      self.disnode.bot.SendMessage(command.msg.channel,"```\n" + e + "\n```");
+    }
   }
 }
 

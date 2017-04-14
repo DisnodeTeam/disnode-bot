@@ -1888,7 +1888,7 @@ class CasinoPlugin {
                                     quantity = Math.floor((player.money / (self.store[ID].cost)));
                                 }
                             }
-                        } else quantity = numeral(data.params[2]).value();
+                        } else quantity = numeral(command.params[2]).value();
                         if (quantity < 1) {
                             quantity = 1;
                         }
