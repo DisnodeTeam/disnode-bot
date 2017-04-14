@@ -284,16 +284,112 @@ class CasinoPlugin {
                 item: "Instant $1,000"
             },
             {
+                cost: 500,
+                type: 0,
+                amount: 2500,
+                item: "Instant $2,500"
+            },
+            {
+                cost: 1000,
+                type: 0,
+                amount: 5000,
+                item: "Instant $5,000"
+            },
+            {
+                cost: 2000,
+                type: 0,
+                amount: 10000,
+                item: "Instant $10,000"
+            },
+            {
+                cost: 4000,
+                type: 0,
+                amount: 20000,
+                item: "Instant $20,000"
+            },
+            {
+                cost: 6000,
+                type: 0,
+                amount: 30000,
+                item: "Instant $30,000"
+            },
+            {
                 cost: 100,
                 type: 1,
                 amount: 50,
                 item: "Add $50 to your income"
             },
             {
+                cost: 200,
+                type: 1,
+                amount: 100,
+                item: "Add $100 to your income"
+            },
+            {
+                cost: 400,
+                type: 1,
+                amount: 200,
+                item: "Add $200 to your income"
+            },
+            {
+                cost: 800,
+                type: 1,
+                amount: 400,
+                item: "Add $400 to your income"
+            },
+            {
+                cost: 1600,
+                type: 1,
+                amount: 800,
+                item: "Add $800 income"
+            },
+            {
+                cost: 3200,
+                type: 1,
+                amount: 1600,
+                item: "Add $1,600 to your income"
+            },
+            {
                 cost: 10000,
                 type: 2,
                 amount: 50,
                 item: "Instant 50XP"
+            },
+            {
+                cost: 20000,
+                type: 2,
+                amount: 100,
+                item: "Instant 100XP"
+            },
+            {
+                cost: 40000,
+                type: 2,
+                amount: 200,
+                item: "Instant 200XP"
+            },
+            {
+                cost: 80000,
+                type: 2,
+                amount: 400,
+                item: "Instant 400XP"
+            },
+            {
+                cost: 160000,
+                type: 2,
+                amount: 800,
+                item: "Instant 800XP"
+            },
+            {
+                cost: 320000,
+                type: 2,
+                amount: 1600,
+                item: "Instant 1600XP"
+            },
+            {
+                cost: 640000,
+                type: 2,
+                amount: 3200,
+                item: "Instant 3200XP"
             }
         ]
         this.cratesys = {
