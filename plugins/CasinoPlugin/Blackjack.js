@@ -98,7 +98,7 @@ class Blackjack {
       if(newSession.game.playerHand.high == 21){
         var Winnings = newSession.game.wager * 2.5
         player.money += Winnings;
-        self.showGameStatus(newSession.game, channel);
+        self.showGameStatus(newSession.game, channel, player);
         self.disnode.bot.SendEmbed(channel, {
           color: 3447003,
           author: {},
@@ -130,7 +130,7 @@ class Blackjack {
         return;
       }
       self.disnode.bot.SendCompactEmbed(channel, "Blackjack " + player.name, "Game Created! (If you dont finish the game in 30 minutes it will autoend and you will lose your wager!)");
-      self.showGameStatus(newSession.game, channel);
+      self.showGameStatus(newSession.game, channel, player);
     }else {
       self.disnode.bot.SendCompactEmbed(channel, "Blackjack " + player.name, "Can't create game you have a running session!");
     }
@@ -141,17 +141,17 @@ class Blackjack {
     if(session != false){
       self.drawCard(session.game.deck, session.game.playerHand);
       if(session.game.playerHand.high > 21){
-        self.showGameStatus(session.game, channel);
+        self.showGameStatus(session.game, channel, player);
         self.disnode.bot.SendCompactEmbed(channel, "Blackjack " + player.name, "Bust! Thanks for playing!");
         self.endSession(player, channel);
         return;
       }else if (session.game.playerHand.high == 21) {
-        self.showGameStatus(session.game, channel);
+        self.showGameStatus(session.game, channel, player);
         self.disnode.bot.SendCompactEmbed(channel, "Blackjack " + player.name, "Blackjack!");
         self.stand(player, channel);
         return;
       }
-      self.showGameStatus(session.game, channel);
+      self.showGameStatus(session.game, channel, player);
     }else {
       self.disnode.bot.SendCompactEmbed(channel, "Blackjack " + player.name, "Your not playing a game You can't do this yet!");
     }
@@ -166,7 +166,7 @@ class Blackjack {
       if(session.game.dealerHand.high > 21){
         var Winnings = session.game.wager * 2
         player.money += Winnings;
-        self.showGameStatus(session.game, channel);
+        self.showGameStatus(session.game, channel, player);
         self.disnode.bot.SendEmbed(channel, {
           color: 3447003,
           author: {},
@@ -198,7 +198,7 @@ class Blackjack {
       }else if (session.game.dealerHand.high < session.game.playerHand.high) {
         var Winnings = session.game.wager * 2
         player.money += Winnings;
-        self.showGameStatus(session.game, channel);
+        self.showGameStatus(session.game, channel, player);
         self.disnode.bot.SendEmbed(channel, {
           color: 3447003,
           author: {},
@@ -228,7 +228,7 @@ class Blackjack {
         );
         self.endSession(player, channel);
       }else if (session.game.dealerHand.high == session.game.playerHand.high) {
-        self.showGameStatus(session.game, channel);
+        self.showGameStatus(session.game, channel, player);
         if(session.game.dealerHand.high == 21 && session.game.dealerHand.cards.length == 2){
           self.disnode.bot.SendCompactEmbed(channel, "Blackjack " + player.name, "Dealer got a Natural Blackjack! Thanks for playing!");
           self.endSession(player, channel);
@@ -265,11 +265,11 @@ class Blackjack {
         );
         self.endSession(player, channel);
       }else if (session.game.dealerHand.high == 21) {
-        self.showGameStatus(session.game, channel);
+        self.showGameStatus(session.game, channel, player);
         self.disnode.bot.SendCompactEmbed(channel, "Blackjack " + player.name, "Dealer got a Blackjack! Thanks for playing!");
         self.endSession(player, channel);
       }else if (session.game.dealerHand.high > session.game.playerHand.high) {
-        self.showGameStatus(session.game, channel);
+        self.showGameStatus(session.game, channel, player);
         self.disnode.bot.SendCompactEmbed(channel, "Blackjack " + player.name, "Dealer has a better hand! Thanks for playing!");
         self.endSession(player, channel);
       }
@@ -277,7 +277,7 @@ class Blackjack {
       self.disnode.bot.SendCompactEmbed(channel, "Blackjack " + player.name, "Your not playing a game You can't do this yet!");
     }
   }
-  showGameStatus(game, channel){
+  showGameStatus(game, channel, player){
     var self = this;
     var playerCards = "";
     var playerPoints = "";

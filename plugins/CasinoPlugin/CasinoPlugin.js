@@ -1424,7 +1424,6 @@ class CasinoPlugin {
             break;
           case "eval":
             command.params.splice(0,1);
-            var self = this;
             var code = command.params.join(" ");
             console.log(code);
             try {
