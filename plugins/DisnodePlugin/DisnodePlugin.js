@@ -13,18 +13,6 @@ class DisnodePlugin {
                 inline: false,
                 value: "Bot Info and Stats",
             }, {
-                name: 'Shard #',
-                inline: true,
-                value: self.disnode.bot.shardID + ' of ' + self.disnode.botConfig.shardCount,
-            }, {
-                name: 'Shard Mode',
-                inline: true,
-                value: '' + self.disnode.botConfig.shardMode,
-            }, {
-                name: 'Uptime',
-                inline: true,
-                value: self.disnode.stats.getUptime(),
-            }, {
                 name: 'Servers',
                 inline: true,
                 value: self.disnode.stats.serverCount,
@@ -48,6 +36,18 @@ class DisnodePlugin {
                 name: 'Total Messages',
                 inline: true,
                 value: self.disnode.stats.messages,
+            }, {
+                name: 'Shard #',
+                inline: true,
+                value: self.disnode.bot.shardID + ' of ' + self.disnode.botConfig.shardCount,
+            }, {
+                name: 'Shard Mode',
+                inline: true,
+                value: '' + self.disnode.botConfig.shardMode,
+            }, {
+                name: 'Uptime',
+                inline: true,
+                value: self.disnode.stats.getUptime(),
             }],
             footer: {}
         });
