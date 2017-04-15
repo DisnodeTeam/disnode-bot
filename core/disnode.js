@@ -55,13 +55,14 @@ class Disnode {
             callback();
           }else {
             Logging.Info("Disnode", "Start", "Loading of DB skipped because user wished not to use DB");
+            callback();
           }
         },
         // Load Functions
         function(callback) {
           Logging.Info("Disnode", "Start", "Loading Plugins");
           self.plugin = new PluginManager(self, "./plugins");
-          self.plugin.Load().then(function(){
+          self.plugin.LoadPlugins().then(function(){
             Logging.Success("Disnode", "Start", "Plugins Loaded!");
             callback();
           }).catch(callback);

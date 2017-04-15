@@ -19,6 +19,7 @@
   "dependencies": {
     "async": "^2.1.4",
     "colors": "^1.1.2",
+    "countdownjs": "^2.0.0",
     "discord.io": "^2.5.0",
     "discord.js": "^11.0.0",
     "disnode-logger": "0.0.1",

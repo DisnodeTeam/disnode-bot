@@ -17,7 +17,8 @@ class Bot {
     Connect() {
         var self = this;
         return new Promise(function(resolve, reject) {
-
+            resolve();
+            return;
             var clientSettings = {
                 autorun: true,
                 token: self.key
