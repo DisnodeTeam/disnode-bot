@@ -2,9 +2,9 @@ const numeral = require('numeral');
 const logger = require('disnode-logger');
 
 class Session {
-  constructor(id) {
+  constructor(id, game={}) {
     this.id = id;
-    this.game = {};
+    this.game = game;
     this.timeouts = [];
     logger.Success("Session", "New Session", "Created a new session with id: " + id);
   }
