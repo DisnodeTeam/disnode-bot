@@ -61,6 +61,9 @@ class PluginManager{
         function(cb){
           self.LoadPluginClass(newPlugin,cb)
         },
+        function(cb){
+          self.LoadPluginJsonFiles(newPlugin,cb)
+        },
       ], function (err, result) {
         if(err){
           reject(err);
@@ -104,6 +107,7 @@ class PluginManager{
         plugin.path      = self.PluginFolder + "/" + plugin.name + "/";
 
         callback(null);
+        return;
     });
 
   }
@@ -116,6 +120,9 @@ class PluginManager{
     try{
       var _require = require("../" + plugin.classPath);
       Logger.Success("PluginManager", "LoadPluginClass-"+plugin.name, "Imported Class");
+
+      plugin.class = _require;
+
       callback(null, _require);
       return;
     }catch(err){
@@ -125,11 +132,44 @@ class PluginManager{
     }
   }
 
-  GetPluginJsonFiles(){
+  LoadPluginJsonFiles(plugin, callback){
+    var self = this;
+    var allFiles = fs.readdirSync(plugin.path);
+    plugin.files = allFiles;;
 
-  }
+    async.each(allFiles, function(file, everyCB) {
 
-  LoadPluginJsonFiles(){
+      var ending = file.substring(file.indexOf("."));
+      if(ending != ".json"){
+        everyCB();
+        return;
+      }
+
+      var SuffixIndex = file.indexOf('-') + 1;
+
+      if(SuffixIndex == 0){
+        Logger.Warning("PluginManager", plugin.name + "-LoadPluginJsonFiles", "Error When Loading ["+file+"]"+ ": No Suffix!");
+        everyCB();
+        return;
+      }
+
+      var Suffix = file.substring(SuffixIndex, file.indexOf("."));
+
+
+      jsonfile.readFile(plugin.path + file, function(err, obj){
+        if(err){
+          Logger.Warning("PluginManager", plugin.name + "-LoadPluginJsonFiles", "Error When Loading ["+file+"]"+ err);
+          everyCB(err);
+          return;
+        }
+        Logger.Success("PluginManager", plugin.name + "-LoadPluginJsonFiles", "Loaded ["+file+"]");
+
+        plugin[Suffix] = obj;
+        everyCB();
+
+      })
+
+    }, callback);
 
   }
 

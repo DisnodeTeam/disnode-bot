@@ -1,7 +1,7 @@
 const DiscordBot = require('./bot');
 const PluginManager = require ('./pluginmanager');
 const CommandManager = require('./commandmanager');
-const ConfigManager = require('./config');
+
 const DBManager = require("./dbmanager")
 const Communication = require("./communication");
 const Stats = require('./stats');
@@ -42,12 +42,7 @@ class Disnode {
           self.bot.bindOnMessage((data) => self.OnMessage(data));
           callback();
         },
-        // Create Command Handler
-        function(callback) {
-          Logging.Info("Disnode", "Start", "Loading Config Manager");
-          self.config = new ConfigManager();
-          callback();
-        },
+  
         function(callback) {
           if(self.botConfig.db.use_db){
             Logging.Info("Disnode", "Start", "Loading DB Manager");
