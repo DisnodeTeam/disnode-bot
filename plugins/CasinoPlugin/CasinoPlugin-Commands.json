@@ -76,9 +76,9 @@
       "run": "commandTransfer"
     },
     {
-      "cmd": "test",
-      "desc": "*test*",
-      "run": "commandTest"
+      "cmd": "21",
+      "desc": "*Play blackjack*",
+      "run": "commandBlackjack"
     }
   ]
 }

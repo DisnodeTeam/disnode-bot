@@ -8,14 +8,6 @@ class Session {
     this.timeouts = [];
     logger.Success("Session", "New Session", "Created a new session with id: " + id);
   }
-  getGame(){
-    var self = this;
-    return self.game;
-  }
-  setGame(game){
-    var self = this;
-    self.game = game;
-  }
   createTimeout(func, time){
     var self = this;
     var tid = setTimeout(func, time);

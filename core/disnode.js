@@ -12,6 +12,7 @@ const async = require('async');
 class Disnode {
     constructor(config) {
         this.botConfigPath = config;
+        this.ready = false;
     }
 
     Start() {
@@ -80,6 +81,7 @@ class Disnode {
         function(callback) {
           Logging.Info("Disnode", "Start", "Loading Command Handler");
           self.command = new CommandManager(self);
+          self.ready = true;
           callback();
         },
 

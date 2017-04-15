@@ -1,7 +1,8 @@
 const numeral = require('numeral');
 const logger = require('disnode-logger');
 const Countdown = require('countdownjs');
-const CasinoUtils = require('./CasinoUtils')
+const CasinoUtils = require('./CasinoUtils');
+const Blackjack = require('./Blackjack');
 const dateformat = require('dateformat');
 
 class CasinoPlugin {
@@ -136,6 +137,7 @@ class CasinoPlugin {
     this.recentBetters = [];
     setTimeout(function() {
       self.utils = new CasinoUtils(self.disnode, self.class);
+      self.Blackjack = new Blackjack(self.disnode);
       if(self.utils.AutoStatus()) {
         var n = self.utils.getRandomIntInclusive(0,3);
         if(n == 0){
@@ -503,8 +505,8 @@ class CasinoPlugin {
             return;
           }
         }
-        if(player.lv < 5){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must be Level 5 to Play Coin Flip!", 16772880);
+        if(player.lv < 2){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must be Level 2 to Play Coin Flip!", 16772880);
           return;
         }
         var flipinfo = {
@@ -679,8 +681,8 @@ class CasinoPlugin {
       }
       switch (command.params[0]) {
         case "spin":
-          if(player.lv < 5){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must be Level 5 to Play The Wheel!", 16772880);
+          if(player.lv < 2){
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must be Level 2 to Play The Wheel!", 16772880);
             return;
           }
           if(command.params[1] == "allin"){
@@ -1210,7 +1212,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin == undefined)player.Admin = false;
       if(!player.Admin){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: YOU SHALL NOT PASS! (**You are not a Bot admin**)", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: YOU SHALL NOT PASS! (**You are not an Admin in the Disnode Official Discord Server**)", 16772880);
       }else {
         switch (command.params[0]) {
           case "reset":
@@ -1420,6 +1422,19 @@ class CasinoPlugin {
               }
             });
             break;
+          case "eval":
+            command.params.splice(0,1);
+            var self = this;
+            var code = command.params.join(" ");
+            console.log(code);
+            try {
+              var evaled = eval(code);
+              if(typeof evaled !== "string")evaled = require("util").inspect(evaled);
+              self.disnode.bot.SendMessage(command.msg.channel,"```\n" + evaled + "\n```");
+            } catch (e) {
+              self.disnode.bot.SendMessage(command.msg.channel,"```\n" + e + "\n```");
+            }
+            break;
           case "listprem":
             self.utils.DB.Find("players", {}).then(function(players) {
               var msg = "";
@@ -1443,7 +1458,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Mod == undefined)player.Mod = false;
       if(!player.Mod){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: YOU SHALL NOT PASS! (**You are not a Bot Moderator**)", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: YOU SHALL NOT PASS! (**You are not a Moderator or above in the Disnode Official Discord Server**)", 16772880);
       }else {
         switch (command.params[0]) {
           case "cleartimers":
@@ -1648,11 +1663,11 @@ class CasinoPlugin {
                   fields: [ {
                     name: 'From',
                     inline: false,
-                    value: player.name + "\nBalance Proir: $" + numeral(pbalbef).format('0,0.00') + "\nBalance After: $" + numeral(player.money).format('0,0.00'),
+                    value: player.name + "\nBalance Prior: $" + numeral(pbalbef).format('0,0.00') + "\nBalance After: $" + numeral(player.money).format('0,0.00'),
                   }, {
                     name: 'To',
                     inline: false,
-                    value: transferPlayer.name + "\nBalance Proir: $" + numeral(sbalbef).format('0,0.00') + "\nBalance After: $" + numeral(transferPlayer.money).format('0,0.00'),
+                    value: transferPlayer.name + "\nBalance Prior: $" + numeral(sbalbef).format('0,0.00') + "\nBalance After: $" + numeral(transferPlayer.money).format('0,0.00'),
                   }, {
                     name: 'Amount',
                     inline: true,
@@ -1679,18 +1694,40 @@ class CasinoPlugin {
       }
     });
   }
-  commandTest(command){
+  commandBlackjack(command){
     var self = this;
-    var code = command.params.join(" ");
-    if(command.msg.userID != "112786170655600640")return;
-    console.log(code);
-    try {
-      var evaled = eval(code);
-      if(typeof evaled !== "string")evaled = require("util").inspect(evaled);
-      self.disnode.bot.SendMessage(command.msg.channel,"```\n" + evaled + "\n```");
-    } catch (e) {
-      self.disnode.bot.SendMessage(command.msg.channel,"```\n" + e + "\n```");
-    }
+    self.utils.getPlayer(command).then(function(player) {
+      if(!player.Premium){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Blackjack is currently in beta, therefore only Permium members may access this game mode right now. To learn more about Premium and its perks look at the bottom of `!casino` Thanks for your support of our bots!", 16772880);
+        return;
+      }
+      switch (command.params[0]) {
+        case "start":
+          if(command.params[1]){
+            var wager = numeral(command.params[1]).value();
+            if(wager > 0){
+              if(player.money > wager){
+                player.money -= wager;
+                self.Blackjack.newGame(player, wager, command.msg.channel);
+              }else {
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
+              }
+            }
+          }
+          break;
+        case "hit":
+          self.Blackjack.hit(player, command.msg.channel);
+          break;
+        case "stand":
+          self.Blackjack.stand(player, command.msg.channel);
+          break;
+        default:
+          var commands = "`!casino 21 start (bet)` - Start a game of blackjack with a Wager amount\n`!casino 21 hit` - Draw a card (In game)\n`!casino 21 stand` - End your turn and let the dealer start playing (In game)";
+          self.disnode.bot.SendCompactEmbed(command.msg.channel,"Blackjack", commands);
+          break;
+      }
+      self.utils.DB.Update("players", {"id":player.id}, player);
+    });
   }
 }
 
