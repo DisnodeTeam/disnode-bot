@@ -26,11 +26,6 @@
       "run": "commandTop"
     },
     {
-      "cmd": "lvtop",
-      "desc": "*See whos on top and compete with your friends!*",
-      "run": "commandTopLV"
-    },
-    {
       "cmd": "betters",
       "desc": "*See who recently played slots!*",
       "run": "commandRecentBetters"
