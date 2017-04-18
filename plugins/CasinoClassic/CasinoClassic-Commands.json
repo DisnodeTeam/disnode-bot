@@ -69,6 +69,11 @@
       "cmd": "transfer",
       "desc": "*Transfer money to other players!*",
       "run": "commandTransfer"
+    },
+    {
+      "cmd": "invite",
+      "desc": "*Invite link for the bot*",
+      "run": "commandInvite"
     }
   ]
 }
