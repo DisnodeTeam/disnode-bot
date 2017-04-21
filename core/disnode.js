@@ -42,7 +42,7 @@ class Disnode {
           self.bot.bindOnMessage((data) => self.OnMessage(data));
           callback();
         },
-  
+
         function(callback) {
           if(self.botConfig.db.use_db){
             Logging.Info("Disnode", "Start", "Loading DB Manager");
@@ -53,24 +53,6 @@ class Disnode {
             callback();
           }
         },
-        // Load Functions
-        function(callback) {
-          Logging.Info("Disnode", "Start", "Loading Plugins");
-          self.plugin = new PluginManager(self, "./plugins");
-          self.plugin.LoadPlugins().then(function(){
-            Logging.Success("Disnode", "Start", "Plugins Loaded!");
-            callback();
-          }).catch(callback);
-        },
-        // Launch Static Plugins
-        function(callback) {
-          Logging.Info("Disnode", "Start", "Launching static plugins");
-          self.plugin.LauchStatic().then(function(){
-            Logging.Success("Disnode", "Start", "Static Plugins Launched!");
-            callback();
-          }).catch(callback);
-        },
-        // Bind Events
 
         // Create Command Handler
         function(callback) {

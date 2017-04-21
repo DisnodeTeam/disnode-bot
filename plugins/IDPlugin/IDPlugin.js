@@ -3,7 +3,9 @@ class IDPlugin {
 
 
   }
-
+  test(){
+    console.log("WORKIN!");
+  }
   default (command) {
 
     this.disnode.bot.SendCompactEmbed(command.msg.channel, "Commands", "!id roles \n");

@@ -1,18 +1,23 @@
 const fs = require('fs');
 const async = require('async');
+const PluginManager = require("./PluginManager")
 const jsonfile = require('jsonfile');
 const Logging = require('disnode-logger');
 class Command {
     constructor(disnode, server) {
         this.disnode = disnode;
         this.server  = server;
+        this.plugin   = new PluginManager(disnode, server);
+        Logging.Success("Command-"+this.server, "Start","New Command Instnace Created!");
         if(this.disnode.botConfig.prefix){
           this.prefix = this.disnode.botConfig.prefix;
-          Logging.Info("Command", "Start","prefix set to: " + this.prefix);
+          Logging.Info("Command-"+this.server, "Start","prefix set to: " + this.prefix);
         }else {
-          Logging.Info("Command", "Start","no prefix found in config setting default of \'!\'");
+          Logging.Info("Command-"+this.server, "Start","no prefix found in config setting default of \'!\'");
           this.prefix = "!";
         }
+
+        this.plugin.LoadAllPlugins();
     }
 
 
@@ -32,10 +37,12 @@ class Command {
       if(msgObj.message == "-YOUR GOD HAS ARRIVED!" && msgObj.userID == "112786170655600640"){
         self.disnode.bot.SendMessage(msgObj.channel, "HAIL OUR LORD FIRE!");
       }
+      /*
         this.GetCommandData(msgObj, false, function(plugin, command, params){
             self.RunChecks(msgObj,command);
-            self.disnode.plugin.RunPluginMessage(plugin.name, {command: command, params: params, msg: msgObj});
+            self.plugin.RunPluginMessage(plugin.name, {command: command, params: params, msg: msgObj});
         });
+        */
     }
 
     RunChecks(msg,command){
@@ -113,7 +120,7 @@ class Command {
         }
     }
     CheckForPrefix(prefix){
-      var pluginClasses = this.disnode.plugin.loaded;
+      var pluginClasses = this.plugin.loaded;
       var found = null;
       for (var i = 0; i < pluginClasses.length; i++) {
         if(pluginClasses[i].config.prefix == prefix){
@@ -123,7 +130,7 @@ class Command {
       return found;
     }
     GetPluginFromCommand(command){
-      var pluginClasses = this.disnode.plugin.loaded;
+      var pluginClasses = this.plugin.loaded;
       var found = null;
       for (var i = 0; i < pluginClasses.length; i++) {
         if(pluginClasses[i].config.requirePrefix == undefined || pluginClasses[i].config.requirePrefix == false){

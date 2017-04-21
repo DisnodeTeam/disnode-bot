@@ -1,0 +1,7 @@
+{
+  "name":"Premium Plugin",
+  "id": "premium-plugin",
+  "script": "PremiumPlugin.js",
+  "commands": "Commands.json",
+  "config" : "Config.json"
+}
