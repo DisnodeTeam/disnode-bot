@@ -86,7 +86,8 @@ class Bot {
                     userID: userID,
                     channel: channelID,
                     message: message,
-                    server: _server
+                    server: _server,
+                    obj: event.d // modify however you want it, added to get message ID and others
                 }
                 self.bind_onMessage(msgObject);
             }
