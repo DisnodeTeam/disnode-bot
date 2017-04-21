@@ -22,7 +22,7 @@ class ServerManager{
     }
 
     var _newInstance = new CommandManager(self.disnode,server);
-    self.instances.push(_newInstance);
+    self.commandManagers.push(_newInstance);
 
     logger.Success("ServerManager", "GetCommandInstance", "CommandManager Created: " + server)
 
@@ -41,7 +41,7 @@ class ServerManager{
     }
 
     var _newInstance = new PluginManager(self.disnode,server);
-    self.instances.push(_newInstance);
+    self.pluginManagers.push(_newInstance);
 
     logger.Success("ServerManager", "GetCommandInstance", "PluginManager Created: " + server)
 

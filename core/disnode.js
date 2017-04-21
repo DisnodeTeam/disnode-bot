@@ -1,8 +1,5 @@
 const DiscordBot = require('./bot');
-const PluginManager = require ('./pluginmanager');
-const CommandManager = require('./commandmanager');
-
-const DBManager = require("./dbmanager")
+const ServerManager = require ('./servermanager');
 const Communication = require("./communication");
 const Stats = require('./stats');
 const jsonfile = require('jsonfile');
@@ -40,24 +37,16 @@ class Disnode {
         function(callback) {
           Logging.Info("Disnode", "Start", "Binding Events");
           self.bot.bindOnMessage((data) => self.OnMessage(data));
+          Logging.Success("Disnode", "Start", "Binded Events");
           callback();
         },
 
-        function(callback) {
-          if(self.botConfig.db.use_db){
-            Logging.Info("Disnode", "Start", "Loading DB Manager");
-            self.db = new DBManager(self);
-            callback();
-          }else {
-            Logging.Info("Disnode", "Start", "Loading of DB skipped because user wished not to use DB");
-            callback();
-          }
-        },
 
         // Create Command Handler
         function(callback) {
-          Logging.Info("Disnode", "Start", "Loading Command Handler");
-          self.command = new CommandManager(self);
+          Logging.Info("Disnode", "Start", "Loading Server Manager");
+          self.server = new ServerManager(self);
+          Logging.Success("Disnode", "Start", "Loaded Server Manager");
           callback();
         },
 
@@ -110,7 +99,7 @@ class Disnode {
     }
 
     OnMessage (msg){
-      var commandInstance = this.command.GetCommandInstance(msg.server);
+      var commandInstance = this.server.GetCommandInstance(msg.server);
 
       if(commandInstance){
         commandInstance.RunMessage(msg);

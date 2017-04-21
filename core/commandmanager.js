@@ -1,13 +1,14 @@
 const fs = require('fs');
 const async = require('async');
-const PluginManager = require("./PluginManager")
+
 const jsonfile = require('jsonfile');
 const Logging = require('disnode-logger');
-class Command {
+class CommandManager {
     constructor(disnode, server) {
         this.disnode = disnode;
         this.server  = server;
-        this.plugin   = new PluginManager(disnode, server);
+        this.plugin  = disnode.server.GetPluginInstance(server);
+
         Logging.Success("Command-"+this.server, "Start","New Command Instnace Created!");
         if(this.disnode.botConfig.prefix){
           this.prefix = this.disnode.botConfig.prefix;
@@ -203,4 +204,4 @@ function GetParams(raw){
   }
   return parms;
 }
-module.exports = Command;
+module.exports = CommandManager;
