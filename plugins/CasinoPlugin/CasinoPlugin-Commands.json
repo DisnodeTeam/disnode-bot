@@ -46,16 +46,6 @@
       "run": "commandTimer"
     },
     {
-      "cmd": "admin",
-      "desc": "*Admin Commands (FireGamer3 / VictoryForPhil)*",
-      "run": "commandAdmin"
-    },
-    {
-      "cmd": "mod",
-      "desc": "*Moderator Commands (Our Server Mods)*",
-      "run": "commandMod"
-    },
-    {
       "cmd": "store",
       "desc": "*Get more money or more income here!*",
       "run": "commandStore"

@@ -156,6 +156,15 @@ class CasinoPlugin {
   }
   default(command) {
     var self = this;
+    if(command.params[0] == 'dev'){
+      command.params.splice(0,1);
+      self.commandAdmin(command);
+      return;
+    }else if (command.params[0] =='mod') {
+      command.params.splice(0,1);
+      self.commandMod(command);
+      return;
+    }
     self.utils.getPlayer(command).then(function(player){
       var msg = "";
       for (var i = 0; i < self.class.commands.length; i++) {
