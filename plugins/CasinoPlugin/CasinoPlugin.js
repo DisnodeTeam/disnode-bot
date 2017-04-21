@@ -139,13 +139,15 @@ class CasinoPlugin {
       self.utils = new CasinoUtils(self.disnode, self.class);
       self.Blackjack = new Blackjack(self.disnode);
       if(self.utils.AutoStatus()) {
-        var n = self.utils.getRandomIntInclusive(0,3);
+        var n = self.utils.getRandomIntInclusive(0,4);
         if(n == 0){
           self.disnode.bot.SetStatus("!casino slot");
         }else if (n == 1) {
           self.disnode.bot.SetStatus("!casino wheel");
         }else if (n == 2) {
           self.disnode.bot.SetStatus("!casino flip");
+        }else if (n == 3) {
+          self.disnode.bot.SetStatus("!casino 21");
         }else {
           self.disnode.bot.SetStatus("!casino");
         }

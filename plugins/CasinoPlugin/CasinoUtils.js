@@ -594,13 +594,15 @@ class CasinoUtils {
     if(self.timer)self.timer.stop();
     self.timer = new Countdown(1800000,function(){
       if(self.AutoStatus()) {
-        var n = self.getRandomIntInclusive(0,3);
+        var n = self.getRandomIntInclusive(0,4);
         if(n == 0){
           self.disnode.bot.SetStatus("!casino slot");
         }else if (n == 1) {
           self.disnode.bot.SetStatus("!casino wheel");
         }else if (n == 2) {
           self.disnode.bot.SetStatus("!casino flip");
+        }else if (n == 3) {
+          self.disnode.bot.SetStatus("!casino 21");
         }else {
           self.disnode.bot.SetStatus("!casino");
         }

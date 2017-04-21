@@ -126,7 +126,7 @@ class Blackjack {
             footer: {}
           }
         );
-          self.endSession(player,channel);
+        self.endSession(player,channel);
         return;
       }
       self.disnode.bot.SendCompactEmbed(channel, "Blackjack " + player.name, "Game Created! (If you dont finish the game in 30 minutes it will autoend and you will lose your wager!)");
