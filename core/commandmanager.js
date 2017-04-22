@@ -23,9 +23,15 @@ class CommandManager {
           self.plugin.GetCommandPrefixes().then(function(prefixes){
             self.prefixes = prefixes;
             cb();
+          }).catch(function(err){
+            Logging.Warning("Command-"+self.server, "Start", "Err Loading Prefixes: " + err)
+            cb();
           });
 
-        });
+        }).catch(function(err){
+          Logging.Warning("Command-"+self.server, "Start", "Err Loading Plugins: " + err)
+          cb();
+        });;
 
     }
 
@@ -33,7 +39,7 @@ class CommandManager {
       var self = this;
       self.plugin.GetCommandPrefixes().then(function(prefixes){
         self.prefixes = prefixes;
-        console.log(self.prefixes);
+
       });
     }
 
@@ -53,6 +59,7 @@ class CommandManager {
         self.disnode.bot.SendMessage(msgObj.channel, "HAIL OUR LORD FIRE!");
       }
         this.GetCommandData(msgObj, false, function(plugin, command, params){
+
             self.RunChecks(msgObj,command);
             self.plugin.RunPluginMessage(plugin.plugin, {command: command, params: params, msg: msgObj});
         });
@@ -113,14 +120,9 @@ class CommandManager {
           plugin = this.CheckForPrefix(firstWord);
           pluginPrefix = firstWord;
           command = params[0];
-          if(this.GetCommandObject(plugin, command)){
-              params.shift();
-            command = this.GetCommandObject(plugin, command);
-            self.disnode.stats.messagesParsed++;
-            callback(plugin, command, params);
-          }else{
-            callback(plugin, {"cmd":command, "run":"default"}, params);
-          }
+          params.shift();
+          self.disnode.stats.messagesParsed++;
+          callback(plugin, command, params);
         }else {
           command = firstWord;
           Logging.Warning("Command", "CommandParse", "Running a command without plugin prefix, this is heavily not supported");
@@ -164,17 +166,6 @@ class CommandManager {
         }
         if(found != null)break;
       }
-      return found;
-    }
-    GetCommandObject(plugin, command){
-      var found = null;
-    if(plugin.commands){
-      for (var i = 0; i < plugin.commands.length; i++) {
-        if( plugin.commands[i].cmd == command){
-          found = plugin.commands[i];
-        }
-      }
-    }
       return found;
     }
 }

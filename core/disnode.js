@@ -5,7 +5,7 @@ const Stats = require('./stats');
 const jsonfile = require('jsonfile');
 const Logging = require("disnode-logger");
 const async = require('async');
-
+const DBManager = require('./dbmanager')
 class Disnode {
     constructor(config) {
         this.botConfigPath = config;
@@ -40,7 +40,16 @@ class Disnode {
           Logging.Success("Disnode", "Start", "Binded Events");
           callback();
         },
-
+        function(callback) {
+          if(self.botConfig.db.use_db){
+            Logging.Info("Disnode", "Start", "Loading DB Manager");
+            self.db = new DBManager(self);
+            callback();
+          }else {
+            Logging.Info("Disnode", "Start", "Loading of DB skipped because user wished not to use DB");
+            callback();
+          }
+       },
 
         // Create Command Handler
         function(callback) {
@@ -100,7 +109,7 @@ class Disnode {
 
     OnMessage (msg){
       this.server.GetCommandInstancePromise(msg.server).then(function(inst){
-      
+
         if(inst){
           inst.RunMessage(msg);
         }else{

@@ -77,7 +77,7 @@ class ServerManager{
 
     for (var i = 0; i < self.commandManagers.length; i++) {
       var instance = self.commandManagers[i];
-      if(instance.server = server){
+      if(instance.server == server){
         return(instance);
       }
     }
@@ -90,7 +90,7 @@ class ServerManager{
 
     for (var i = 0; i < self.pluginManagers.length; i++) {
       var instance = self.pluginManagers[i];
-      if(instance.server = server){
+      if(instance.server == server){
         return(instance);
       }
     }
