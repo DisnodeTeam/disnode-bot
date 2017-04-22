@@ -4,24 +4,38 @@ const async = require('async');
 const jsonfile = require('jsonfile');
 const Logging = require('disnode-logger');
 class CommandManager {
-    constructor(disnode, server) {
-        this.disnode = disnode;
-        this.server  = server;
-        this.plugin  = disnode.server.GetPluginInstance(server);
-
-        Logging.Success("Command-"+this.server, "Start","New Command Instnace Created!");
-        if(this.disnode.botConfig.prefix){
-          this.prefix = this.disnode.botConfig.prefix;
-          Logging.Info("Command-"+this.server, "Start","prefix set to: " + this.prefix);
+    constructor(disnode, server, cb) {
+        this.disnode  = disnode;
+        this.server   = server;
+        this.plugin   = disnode.server.GetPluginInstance(server);
+        this.prefixes = [];
+        var self = this;
+        Logging.Success("Command-"+self.server, "Start","New Command Instnace Created!");
+        if(self.disnode.botConfig.prefix){
+          self.prefix = self.disnode.botConfig.prefix;
+          Logging.Info("Command-"+self.server, "Start","prefix set to: " + self.prefix);
         }else {
-          Logging.Info("Command-"+this.server, "Start","no prefix found in config setting default of \'!\'");
-          this.prefix = "!";
+          Logging.Info("Command-"+self.server, "Start","no prefix found in config setting default of \'!\'");
+          self.prefix = "!";
         }
 
-        this.plugin.LoadAllPlugins();
+        self.plugin.LoadAllPlugins().then(function(){
+          self.plugin.GetCommandPrefixes().then(function(prefixes){
+            self.prefixes = prefixes;
+            cb();
+          });
+
+        });
+
     }
 
-
+    UpdateAllPrefixes(){
+      var self = this;
+      self.plugin.GetCommandPrefixes().then(function(prefixes){
+        self.prefixes = prefixes;
+        console.log(self.prefixes);
+      });
+    }
 
     RunMessage(msgObj) {
       var self = this;
@@ -38,12 +52,10 @@ class CommandManager {
       if(msgObj.message == "-YOUR GOD HAS ARRIVED!" && msgObj.userID == "112786170655600640"){
         self.disnode.bot.SendMessage(msgObj.channel, "HAIL OUR LORD FIRE!");
       }
-      /*
         this.GetCommandData(msgObj, false, function(plugin, command, params){
             self.RunChecks(msgObj,command);
-            self.plugin.RunPluginMessage(plugin.name, {command: command, params: params, msg: msgObj});
+            self.plugin.RunPluginMessage(plugin.plugin, {command: command, params: params, msg: msgObj});
         });
-        */
     }
 
     RunChecks(msg,command){
@@ -74,6 +86,7 @@ class CommandManager {
     }
 
     GetCommandData(msgObj, ignoreFirst, callback) {
+
         var self = this;
         var msg = msgObj.message;
         var firstLetter = msg.substring(0, 1);
@@ -95,6 +108,7 @@ class CommandManager {
         }else{
           firstWord = msg.substring(1, SpaceIndex);
         }
+
         if(this.CheckForPrefix(firstWord) != null){
           plugin = this.CheckForPrefix(firstWord);
           pluginPrefix = firstWord;
@@ -109,6 +123,8 @@ class CommandManager {
           }
         }else {
           command = firstWord;
+          Logging.Warning("Command", "CommandParse", "Running a command without plugin prefix, this is heavily not supported");
+          /*
           if(this.GetPluginFromCommand(command)){
             plugin = this.GetPluginFromCommand(command);
             if(this.GetCommandObject(plugin, command)){
@@ -118,14 +134,17 @@ class CommandManager {
               callback(plugin, command, params);
             }
           }
+          */
         }
     }
     CheckForPrefix(prefix){
-      var pluginClasses = this.plugin.loaded;
+
+      var prefixes = this.prefixes;
       var found = null;
-      for (var i = 0; i < pluginClasses.length; i++) {
-        if(pluginClasses[i].config.prefix == prefix){
-          found = pluginClasses[i];
+      for (var i = 0; i < prefixes.length; i++) {
+
+        if(prefixes[i].prefix == prefix){
+          found = prefixes[i]
         }
       }
       return found;

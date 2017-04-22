@@ -27,9 +27,31 @@ class ServerManager{
     logger.Success("ServerManager", "GetCommandInstance", "CommandManager Created: " + server)
 
     return _newInstance;
-
-
   }
+
+  GetCommandInstancePromise(server){
+    var self = this;
+
+    return new Promise(function(resolve, reject) {
+      var _checkInstance = self.CheckForCommandInstance(server);
+
+      if(_checkInstance != null){
+
+        resolve(_checkInstance);
+        return;
+      }
+
+      var _newInstance = new CommandManager(self.disnode,server,function(){
+        self.commandManagers.push(_newInstance);
+
+        logger.Success("ServerManager", "GetCommandInstance", "CommandManager Created: " + server)
+
+        resolve(_newInstance);
+      });
+
+    });
+  }
+
 
   GetPluginInstance(server){
     var self = this;

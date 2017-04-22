@@ -99,13 +99,16 @@ class Disnode {
     }
 
     OnMessage (msg){
-      var commandInstance = this.server.GetCommandInstance(msg.server);
+      this.server.GetCommandInstancePromise(msg.server).then(function(inst){
+      
+        if(inst){
+          inst.RunMessage(msg);
+        }else{
+          Logging.Warning("Disnode", "Message", "No Command Handler!");
+        }
+      });
 
-      if(commandInstance){
-        commandInstance.RunMessage(msg);
-      }else{
-        Logging.Warning("Disnode", "Message", "No Command Handler!");
-      }
+
     }
 
 
