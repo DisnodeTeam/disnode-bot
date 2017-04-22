@@ -1,6 +1,6 @@
 var Logger       = require("disnode-logger");
 const async      = require('async');
-const fs         = require('fs');
+const fs         = require('fs-extra')
 const jsonfile   = require('jsonfile');
 const Stopwatch  = require('timer-stopwatch');
 const merge      = require('merge');
@@ -17,6 +17,7 @@ class PluginManager{
 
   LoadAllPlugins(){
     var self = this;
+
     return new Promise(function(resolve, reject) {
       timer.start();
       Logger.Info("PluginManager-"+self.server, "LoadAllPlugins", "Loading All Plugins!")
@@ -59,6 +60,7 @@ class PluginManager{
       ], function(err, res){
 
         timer.stop();
+        self.AddServerPlugin("premium-plugin");
         Logger.Success("PluginManager-"+self.server, "LoadAllPlugins", "Loaded "+ self.plugins.length + " plugins in " + timer.ms + "ms!");
         timer.reset();
         resolve();
@@ -120,6 +122,33 @@ class PluginManager{
     }
     plugin[commandObj.run](messageObject);
 
+  }
+
+  AddServerPlugin(pluginId){
+    var self = this;
+    self.MakeServerFolder();
+    for (var i = 0; i < self.plugins.length; i++) {
+     if(self.plugins[i].isServer){
+       return;
+     }
+
+     if(self.plugins[i].id == pluginId){
+       var newPath =self.plugins[i].path.replace("plugins/", "servers/"+this.server);
+       console.log(newPath);
+
+       fs.copy(self.plugins[i].path, newPath, function (err) {
+       	 if (err) return console.error(err)
+       	 console.log('success!')
+       });
+     }
+    }
+  }
+
+  MakeServerFolder(){
+    var dir = "./servers/"+this.server;
+    if (!fs.existsSync(dir)){
+      fs.mkdirSync(dir);
+    }
   }
 
   GetPluginByID(pluginID){

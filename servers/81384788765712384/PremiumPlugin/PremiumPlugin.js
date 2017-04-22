@@ -18,7 +18,7 @@ class PremiumPlugin {
   }
   GetUserRole(userID){
       var self = this;
-    
+      console.log("RUNNING CHECK!");
       return new Promise(function(resolve, reject) {
 
       self.disnode.DB.Find("users", {discordID: userID}).then(function(res){
