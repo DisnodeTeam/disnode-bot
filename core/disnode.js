@@ -6,6 +6,8 @@ const jsonfile = require('jsonfile');
 const Logging = require("disnode-logger");
 const async = require('async');
 const DBManager = require('./dbmanager')
+
+const test = require('../plugins/PluginManager/Plugin');
 class Disnode {
     constructor(config) {
         this.botConfigPath = config;

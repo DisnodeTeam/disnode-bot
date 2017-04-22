@@ -20,6 +20,8 @@ class PluginManager{
 
     return new Promise(function(resolve, reject) {
       timer.start();
+      self.instances.length = 0;
+      self.plugins.length = 0;
       Logger.Info("PluginManager-"+self.server, "LoadAllPlugins", "Loading All Plugins!")
 
       async.waterfall([
@@ -60,7 +62,7 @@ class PluginManager{
       ], function(err, res){
 
         timer.stop();
-        self.AddServerPlugin("premium-plugin");
+
         Logger.Success("PluginManager-"+self.server, "LoadAllPlugins", "Loaded "+ self.plugins.length + " plugins in " + timer.ms + "ms!");
         timer.reset();
         resolve();
@@ -97,6 +99,8 @@ class PluginManager{
       self.GetScriptRequire(pluginFile).then(function(requireClass){
         _newPlugin = merge(new requireClass(), pluginFile);
         _newPlugin.disnode = self.disnode;
+        _newPlugin.pluginManager = self;
+
         return self.GetConfigFile(_newPlugin)
       }).then(function(config){
         _newPlugin.config = config;
@@ -134,13 +138,35 @@ class PluginManager{
 
      if(self.plugins[i].id == pluginId){
        var newPath =self.plugins[i].path.replace("plugins/", "servers/"+this.server);
-       console.log(newPath);
 
        fs.copy(self.plugins[i].path, newPath, function (err) {
        	 if (err) return console.error(err)
-       	 console.log('success!')
+       	 self.LoadAllPlugins();
        });
      }
+    }
+  }
+
+  RemoveServerPlugin(pluginId){
+    var self = this;
+    self.MakeServerFolder();
+    for (var i = 0; i < self.plugins.length; i++) {
+     if(self.plugins[i].isServer == false){
+
+       return;
+     }
+
+     if(self.plugins[i].id == pluginId){
+       var newPath =self.plugins[i].path.replace("plugins/", "servers/"+this.server);
+
+
+       fs.remove(self.plugins[i].path, err => {
+       	if (err) return console.error(err)
+        self.LoadAllPlugins();
+       	console.log('success!')
+       })
+     }
+
     }
   }
 

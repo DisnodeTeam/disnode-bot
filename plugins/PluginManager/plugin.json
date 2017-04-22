@@ -1,0 +1,7 @@
+{
+  "name":"Plugin Manager",
+  "id": "plugin-manager",
+  "script": "Plugin.js",
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}
