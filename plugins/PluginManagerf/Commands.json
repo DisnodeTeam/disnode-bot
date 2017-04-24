@@ -9,7 +9,7 @@
       "run": "commandRemove"
     },
     {
-      "cmd": "list",
+      "cmd": "lis2t",
       "run": "commandList"
     }
 

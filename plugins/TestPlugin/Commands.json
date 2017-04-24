@@ -1,0 +1,16 @@
+{
+  "commands":[
+    {
+      "cmd": "state",
+      "run": "commandState"
+    },
+    {
+      "cmd": "stateSet",
+      "run": "commandStateSet"
+    },
+    {
+      "cmd": "stateGet",
+      "run": "commandStateGet"
+    }
+  ]
+}

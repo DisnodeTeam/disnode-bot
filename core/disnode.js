@@ -1,13 +1,14 @@
 const DiscordBot = require('./bot');
 const ServerManager = require ('./servermanager');
-const Communication = require("./communication");
+const Communication = require ("./communication");
+const StateManager  = require ('./statemanager');
 const Stats = require('./stats');
 const jsonfile = require('jsonfile');
 const Logging = require("disnode-logger");
 const async = require('async');
 const DBManager = require('./dbmanager')
 
-const test = require('../plugins/PluginManager/Plugin');
+
 class Disnode {
     constructor(config) {
         this.botConfigPath = config;
@@ -52,7 +53,12 @@ class Disnode {
             callback();
           }
        },
-
+       function(callback) {
+         Logging.Info("Disnode", "Start", "Loading State Manager");
+         self.state = new StateManager(self);
+         Logging.Success("Disnode", "Start", "Loaded State Manager");
+         callback();
+       },
         // Create Command Handler
         function(callback) {
           Logging.Info("Disnode", "Start", "Loading Server Manager");

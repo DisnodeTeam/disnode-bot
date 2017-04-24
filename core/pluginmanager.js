@@ -13,6 +13,7 @@ class PluginManager{
     this.disnode   = disnode;
     this.instances = [];
     this.plugins   = [];
+
   }
 
   LoadAllPlugins(){
@@ -41,6 +42,7 @@ class PluginManager{
           self.GetPluginFiles("./plugins/",false).then(function(plugins){
 
             if(!plugins){cb();return}
+
             for (var i = 0; i < plugins.length; i++) {
 
               var alreadyAdded = false;
@@ -100,6 +102,7 @@ class PluginManager{
         _newPlugin = merge(new requireClass(), pluginFile);
         _newPlugin.disnode = self.disnode;
         _newPlugin.pluginManager = self;
+        _newPlugin.server = self.server;
 
         return self.GetConfigFile(_newPlugin)
       }).then(function(config){
@@ -141,7 +144,7 @@ class PluginManager{
 
        fs.copy(self.plugins[i].path, newPath, function (err) {
        	 if (err) return console.error(err)
-       	 self.LoadAllPlugins();
+         this.LoadAllPlugins();
        });
      }
     }
@@ -162,7 +165,7 @@ class PluginManager{
 
        fs.remove(self.plugins[i].path, err => {
        	if (err) return console.error(err)
-        self.LoadAllPlugins();
+        this.LoadAllPlugins();
        	console.log('success!')
        })
      }
@@ -175,6 +178,7 @@ class PluginManager{
     if (!fs.existsSync(dir)){
       fs.mkdirSync(dir);
     }
+
   }
 
   GetPluginByID(pluginID){
