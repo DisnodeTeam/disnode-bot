@@ -1,0 +1,7 @@
+{
+  "name":"ID Plugin",
+  "id": "id-plugin",
+  "script": "IDPlugin.js",
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}

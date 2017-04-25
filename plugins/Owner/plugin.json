@@ -1,0 +1,7 @@
+{
+  "name":"Owner Plugin",
+  "id": "owner-plugin",
+  "script": "Owner.js",
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}

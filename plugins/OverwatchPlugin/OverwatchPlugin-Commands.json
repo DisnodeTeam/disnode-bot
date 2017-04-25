@@ -1,9 +1,0 @@
-{
-  "commands":[
-    {
-      "cmd": "profile",
-      "run": "commandProfile"
-    }
-
-  ]
-}
