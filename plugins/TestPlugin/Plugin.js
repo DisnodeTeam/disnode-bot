@@ -17,7 +17,7 @@ class Template {
 
     }
     self.sendServer = command.msg.channel;
-    self.disnode.state.CallFunction(self, "testStateFunction","TEST");
+    self.state.CallFunction("testStateFunction","TEST");
   }
   commandStateSet(command){
     this.state.data[command.params[0]] = command.params[1];

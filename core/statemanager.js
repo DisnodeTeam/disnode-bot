@@ -20,20 +20,21 @@ class StateManager{
     return state;
   }
 
-  CallFunction(plugin, name,params){
-    var self = this;
-    Logger.Info("StateManager-"+ plugin.id, "CallFunction", "CallingFunction: " + name);
-
-    for (var i = 0; i < self.states[plugin.id].plugins.length; i++) {
-      var _plugin = self.states[plugin.id].plugins[i];
-      _plugin[name](params);
-    }
-
-  }
 
   CreateState(plugin){
     Logger.Success("StateManager-"+ plugin.id, "CreateState", "Creating State: " + plugin.id);
-    this.states[plugin.id] = {plugins: [], data: {}};
+    this.states[plugin.id] = {plugins: [], data: {}, owner: plugin};
+    this.states[plugin.id].CallFunction = function(name,params){
+      var self = this;
+
+      Logger.Info("StateManager-"+ self.owner.id, "CallFunction", "CallingFunction: " + name);
+
+      for (var i = 0; i < self.plugins.length; i++) {
+        var _plugin = self.plugins[i];
+        _plugin[name](params);
+      }
+
+    }
 
     return this.states[plugin.id];
   }
