@@ -16,6 +16,10 @@ class StateManager{
     if(!state){
       state = self.CreateState(plugin);
     }
+    if(state.plugins.length == 0){
+      plugin.stateAuth = true;
+      Logger.Info("StateManager-" + plugin.id, "Init", "Auth set true for: " + plugin.server);
+    }
     state.plugins.push(plugin);
     return state;
   }
