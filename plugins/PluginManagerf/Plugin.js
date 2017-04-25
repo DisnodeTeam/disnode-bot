@@ -17,15 +17,47 @@ class PluginManager {
   }
   commandList(command){
     var self = this;
-    var self = this;
-
-    var listText = "Plugins: \n";
+    var LoadedText = "";
 
     for (var i = 0; i < self.pluginManager.plugins.length; i++) {
      var _plugin = self.pluginManager.plugins[i];
-     listText +=" - **" + _plugin.name + "** - **" + _plugin.id + "** - *" + _plugin.path + "*\n";
+     LoadedText +=" - **" + _plugin.name + "** - *" + _plugin.id + "* - `" + _plugin.path + "`\n";
     }
-    self.disnode.bot.SendMessage(command.msg.channel,listText);
+
+    var LaucnhedText = "";
+
+    for (var i = 0; i < self.pluginManager.instances.length; i++) {
+     var _plugin = self.pluginManager.instances[i];
+     LaucnhedText +=" - **" + _plugin.name + "** - *" + _plugin.id + "* - `" + _plugin.path + "`\n";
+   }
+
+    self.disnode.bot.SendEmbed(command.msg.channel, {
+        color: 3447003,
+        author: {},
+        fields: [{
+            name: "**Server**",
+            inline: true,
+            value: "**Server:** `" + self.server + "`"
+        },
+        {
+            name: "Stats",
+            inline: true,
+            value: "**Instances:** `" + self.pluginManager.instances.length + "` **- Loaded:** `" + self.pluginManager.plugins.length + '`'
+        },
+        {
+            name: "Loaded",
+            inline: true,
+            value: LoadedText
+        },{
+            name: "Launched",
+            inline: true,
+            value: LaucnhedText
+        }],
+        footer: {}
+    });
+
+
+
   }
 
   commandRemove(command){
