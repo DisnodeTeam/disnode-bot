@@ -1,6 +1,11 @@
 {
   "commands":[
     {
+      "cmd": "rules",
+      "desc": "*Rules for CasinoBot*",
+      "run": "commandRules"
+    },
+    {
       "cmd": "slot",
       "desc": "*Slots (general help)*",
       "run": "commandSlot"
