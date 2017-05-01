@@ -1797,7 +1797,7 @@ class CasinoPlugin {
                                     res.p.Premium = true;
                                     res.p.money += 25000;
                                     res.p.xp += 2000;
-                                } else if (command.params[4] == "false") {
+                                } else if (command.params[2] == "false") {
                                     res.p.Premium = false;
                                 }
                                 self.utils.DB.Update("players", {
