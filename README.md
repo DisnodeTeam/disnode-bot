@@ -1,59 +1,33 @@
-# Disnode [Discord](https://discord.gg/0prrdN1joHCrVhdw)
-Public effort in making Awesome Discord Bots
-#Offical Docs:
-[Disnode Docs](https://disnode.readme.io/docs)
 
-#Installing:
-`npm install disnode --save`
+<p align="center"><img src="http://i.imgur.com/QFVRJPU.png"></p>
+<h1 align="center">Disnode</h1>
 
-#Adding Managers:
-Options is optional;
+Software Powering Communities
 
-Included Managers:
-```js
-testBot.addManager({name:"NAME", options:{}});
-```
-SelfMade
-```js
-testBot.addManager({name:"NAME",path:"./Manager.js", options:{}});
-```
-NPM (put the npm package name into path)
-```js
-testBot.addManager({name:"NAME",path:"disnode-manager", options:{}});
-```
+[![Discord](https://discordapp.com/api/guilds/236338097955143680/widget.png)](https://discord.gg/AbZhCen)
 
-#Example Bot
-```js
-var DisnodeBot = require("../src/Disnode.js");
-var testBot = new DisnodeBot("BOT_OAUTH_HERE", "./TestBotConfig.json"); /
-testBot.on("Bot_Ready", function(){
-    console.log('[TEST_BOT - BotReady] Bot Ready.');
-    testBot.loadConfig(OnLoad);
-});
-var OnLoad = function(){
-  testBot.addManager({name:"CommandHandler", options:{prefix: "!"}});
-  testBot.addManager({name:"MusicManager", options:{voiceEvents: true, maxVolume:2.0}});
-  testBot.addManager({name:"HelpManager", options:{}});
-  testBot.addManager({name:"CleverManager", options:{channelid:"ID of a channel for cleverbot to use"}});
-  testBot.addManager({name:"Wolfram", options:{key:"KEY_HERE"}});
-  testBot.addManager({name:"DiscordManager", options:{}});
-  testBot.addManager({name:"SayManager", options:{}});
+### [Offical Docs](https://disnode.readme.io/docs)
 
-  testBot.CommandHandler.AddContext(botCommands,"TestBot");
-  testBot.CommandHandler.LoadList(testBot.config.commands);
-}
+### Getting Started:
 
-testBot.on("Bot_Init", function () { //event emitter that is called before bot ready
-  console.log("[TEST_BOT - BotReady] Bot Init.");
-});
-
-
-testBot.on("Bot_RawMessage", function(msg){ //event emitter called when the bot obtains a message
-  console.log("[TEST_BOT - RawMessage] |" + msg.author.name + " :: " + msg.content);
-});
-//export a function that starts the bot. this allows you to have a script that launches more than one Disnode Bot
-exports.Start = function () {
-  testBot.startBot();
-};
-
-````
+#### Installing
+`npm install disnode --save && npm install`
+##### Bot Config
+Make a file called Bot-Config.json in `/bots` and fill it in with your bots information
+* ```json
+  {
+  "key": "Bot Token Here",
+     "prefix" : "Bot Prefix",
+  "db": {
+     "use_db" : false,
+     "auth" : false,
+     "user" : "",
+     "pass" : "",
+     "host" : "",
+     "port" : "",
+     "DBName" : ""
+        }
+  }
+  ```
+##### Starting Up
+ `node Run.js` or [pm2](http://pm2.keymetrics.io/) can run your bot.
