@@ -282,7 +282,7 @@ class Bot {
     }
     GetUserInfo(UserID) {
         var self = this;
-        return self.client.users[userID];
+        return self.client.users[UserID];
     }
     GetSnowflakeDate(resourceID) {
         return new Date(parseInt(resourceID) / 4194304 + 1420070400000);

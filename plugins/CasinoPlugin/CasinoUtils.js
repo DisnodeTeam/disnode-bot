@@ -572,7 +572,7 @@ class CasinoUtils {
     }
   }
   updateCoroutine(){
-    var self = this;
+    var self = this;    
     if(self.class.config.testing)return;
     self.DB.Find("players", {}).then(function(players) {
       for (var i = 0; i < players.length; i++) {
