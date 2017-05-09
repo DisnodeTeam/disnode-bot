@@ -579,8 +579,8 @@ class CasinoUtils {
         if(players[i].lastSeen == undefined){
           self.updateLastSeen(players[i]);
         }
-        if(players[i].nextlv == undefined){
-          players[i].nextlv = (players[i].lv * 1000);
+        if(players[i].rules == undefined){
+          players[i].rules = false;
         }
         if(self.canGetIncome(players[i])){
           players[i].money += players[i].income;

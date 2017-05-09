@@ -198,6 +198,10 @@ class CasinoPlugin {
     var self = this;
     if(command.params[0] != undefined){
       self.utils.getPlayer(command).then(function(player) {
+        if(!player.rules){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+          return;
+        }
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
@@ -245,6 +249,10 @@ class CasinoPlugin {
       });
     }else {
       self.utils.getPlayer(command).then(function(player) {
+        if(!player.rules){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+          return;
+        }
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
@@ -291,6 +299,10 @@ class CasinoPlugin {
   commandTimer(command){
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
@@ -307,6 +319,10 @@ class CasinoPlugin {
   commandJackpotInfo(command){
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
@@ -342,6 +358,10 @@ class CasinoPlugin {
   commandSlot(command){
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
@@ -509,6 +529,10 @@ class CasinoPlugin {
   commandCoinFlip(command){
       var self = this;
       self.utils.getPlayer(command).then(function(player) {
+        if(!player.rules){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+          return;
+        }
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
@@ -683,6 +707,10 @@ class CasinoPlugin {
     var invalidbets = [];
     var timeoutInfo;
     self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
@@ -871,6 +899,10 @@ class CasinoPlugin {
   commandRecentBetters(command){
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
@@ -888,6 +920,10 @@ class CasinoPlugin {
   commandTop(command){
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
@@ -937,6 +973,10 @@ class CasinoPlugin {
   commandTopLV(command){
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
@@ -986,6 +1026,10 @@ class CasinoPlugin {
   commandCrate(command){
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
@@ -1071,6 +1115,10 @@ class CasinoPlugin {
   commandStats(command){
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
@@ -1423,7 +1471,7 @@ class CasinoPlugin {
                   res.p.Premium = true;
                   res.p.money += 25000;
                   res.p.xp += 2000;
-                }else if(command.params[4] == "false"){
+                }else if(command.params[2] == "false"){
                   res.p.Premium = false;
                 }
                 self.utils.DB.Update("players", {"id":res.p.id}, res.p);
@@ -1490,6 +1538,10 @@ class CasinoPlugin {
   commandStore(command){
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
@@ -1632,6 +1684,10 @@ class CasinoPlugin {
   commandTransfer(command){
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
@@ -1707,6 +1763,10 @@ class CasinoPlugin {
   commandBlackjack(command){
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
       if(!player.Premium){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Blackjack is currently in beta, therefore only Permium members may access this game mode right now. To learn more about Premium and its perks look at the bottom of `!casino` Thanks for your support of our bots!", 16772880);
         return;
@@ -1738,6 +1798,45 @@ class CasinoPlugin {
       }
       self.utils.DB.Update("players", {"id":player.id}, player);
     });
+  }
+  commandRules(command){
+    var self = this;
+    switch (command.params[0]) {
+      case "accept":
+        self.utils.getPlayer(command).then(function(player) {
+          player.rules = true;
+          self.utils.DB.Update("players", {"id":player.id}, player);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Rules", "Thanks for accepting the rules! Enjoy our bot.");
+        });
+        break;
+      default:
+      self.disnode.bot.SendEmbed(command.msg.channel, {
+        color: 1433628,
+        author: {},
+        fields: [ {
+          name: 'Casino Rules',
+          inline: false,
+          value: "Hello, Please read the rules",
+        }, {
+          name: 'Alts',
+          inline: false,
+          value: "ALTS or alternative accounts are not allowed anyone using an ALTS will have that alt banned",
+        }, {
+          name: 'Accept',
+          inline: false,
+          value: "To accept these rules type: !casino rules accept (Read the rest of the rules first)",
+        }, {
+          name: 'Bots and Macros',
+          inline: false,
+          value: "The use of macros or bots is not allowed",
+        }, {
+          name: 'Premium',
+          inline: false,
+          value: "If you get Premium you must pay for the first month of your Premium membership or face account reset",
+        }],
+          footer: {}
+        });
+    }
   }
 }
 

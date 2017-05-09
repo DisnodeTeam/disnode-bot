@@ -1,1 +1,1 @@
-var TestBot = require("./bots/TestBot");
+var TestBot = require("./bots/Bot");
