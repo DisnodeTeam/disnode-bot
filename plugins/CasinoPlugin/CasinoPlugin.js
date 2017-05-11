@@ -1768,7 +1768,7 @@ class CasinoPlugin {
         return;
       }
       if(!player.Premium){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Blackjack is currently in beta, therefore only Permium members may access this game mode right now. To learn more about Premium and its perks look at the bottom of `!casino` Thanks for your support of our bots!", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Blackjack is currently in beta, therefore only Premium members may access this game mode right now. To learn more about Premium and its perks look at the bottom of `!casino` Thanks for your support of our bots!", 16772880);
         return;
       }
       switch (command.params[0]) {
