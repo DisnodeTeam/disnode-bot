@@ -194,6 +194,10 @@ class CasinoPlugin {
       });
     });
   }
+  commandInvite(command){
+    var self = this;
+    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Invite", "https://discordapp.com/oauth2/authorize?client_id=263330369409908736&scope=bot&permissions=19456");
+  }
   commandBal(command){
     var self = this;
     if(command.params[0] != undefined){

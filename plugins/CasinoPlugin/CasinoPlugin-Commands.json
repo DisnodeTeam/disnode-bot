@@ -6,6 +6,11 @@
       "run": "commandRules"
     },
     {
+      "cmd": "invite",
+      "desc": "*Invite link for CasinoBot*",
+      "run": "commandInvite"
+    },
+    {
       "cmd": "slot",
       "desc": "*Slots (general help)*",
       "run": "commandSlot"
