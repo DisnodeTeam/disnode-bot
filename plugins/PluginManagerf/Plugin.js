@@ -114,6 +114,47 @@ class PluginManager {
       }
     });
   }
+  commandBrowse(command){
+    var self = this;
+
+    axios.get(" http://localhost:8000/api/plugins/").then(function(res){
+      var suc = res.data.type;
+      switch(suc){
+        case "SUC":
+          var plugins = res.data.data;
+          var page = 1;
+          var maxindex;
+          var startindex;
+          if (parseInt(command.params[0]) >= 1) {
+            page = Number(parseInt(command.params[0]));
+          }
+          if (page == 1) {
+            page = 1;
+            startindex = 0
+            maxindex = 10;
+          }else {
+            maxindex = (page * 10);
+            startindex = maxindex - 10;
+          }
+
+          var msg = "**Page:** " + page + "\n";
+          for (var i = startindex; i < plugins.length; i++) {
+            if(i == maxindex)break;
+            if(plugins[i].verified){  msg += "-`" + plugins[i].id + "` - **" + plugins[i].name + "** - *" + plugins[i].desc + "*\n";}
+
+
+
+        }
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Plugins (Only Verified Plugins, see http://disnodeteam.com/#/plugins for all)", msg);
+
+
+        break;
+        case "ERR":
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", res.data.data);
+        break;
+      }
+    });
+  }
 
   commandRemove(command){
     var self = this;
