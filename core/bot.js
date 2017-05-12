@@ -365,6 +365,24 @@ class Bot {
         });
       });
     }
+    pageResults(arr, page, perPage=10){
+      var returnArr = [];
+      var maxindex;
+      var startindex;
+      if (page == 1) {
+        page = 1;
+        startindex = 0
+        maxindex = perPage;
+      }else {
+        maxindex = (page * perPage);
+        startindex = maxindex - perPage;
+      }
+      for (var i = startindex; i < arr.length; i++) {
+        if(i == maxindex)break;
+        returnArr.push(arr[i]);
+      }
+      return returnArr;
+    }
 }
 
 module.exports = Bot;
