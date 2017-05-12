@@ -17,7 +17,7 @@ class Bot {
     Connect() {
         var self = this;
         return new Promise(function(resolve, reject) {
-            
+
             var clientSettings = {
                 autorun: true,
                 token: self.key
@@ -172,6 +172,11 @@ class Bot {
         });
     }
 
+
+    SendReactionEmbed(channel, user, embed, reactions){
+      var self = this;
+      
+    }
     EditEmbed(channel, msgID, embed) {
         var self = this;
         return new Promise(function(resolve, reject) {

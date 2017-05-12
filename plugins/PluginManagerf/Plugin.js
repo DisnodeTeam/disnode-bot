@@ -10,10 +10,12 @@ class PluginManager {
   commandAdd(command){
     var self = this;
     if(!command.params[0]){
-      self.disnode.bot.SendMessage(command.msg.channel, "Please Enter a Plugin ID!" );
+      self.disnode.bot.SendMessage(command.msg.channel, "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)" );
     }
-
-    self.pluginManager.AddServerPlugin(command.params[0]);
+    self.disnode.bot.SendMessage(command.msg.channel,"**Downloading Plugin:** `" + command.params[0] + "`")
+    self.pluginManager.AddServerPlugin(command.params[0]).then(function(){
+      self.disnode.bot.SendMessage(command.msg.channel,"**Added Plugin! This plugin can now be used and configured for this server!:** `" + command.params[0] + "`")
+    });
   }
   commandList(command){
     var self = this;

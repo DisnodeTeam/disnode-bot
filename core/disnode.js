@@ -1,6 +1,6 @@
 const DiscordBot = require('./bot');
 const ServerManager = require ('./servermanager');
-const Communication = require ("./communication");
+
 const StateManager  = require ('./statemanager');
 const Stats = require('./stats');
 const jsonfile = require('jsonfile');

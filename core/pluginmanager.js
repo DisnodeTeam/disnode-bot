@@ -4,7 +4,8 @@ const fs         = require('fs-extra')
 const jsonfile   = require('jsonfile');
 const Stopwatch  = require('timer-stopwatch');
 const merge      = require('merge');
-
+const http = require('http');
+const unzip = require('unzip');
 var timer = new Stopwatch();
 
 class PluginManager{
@@ -29,9 +30,11 @@ class PluginManager{
         // Load Server Plugins
         function(cb){
           self.GetPluginFiles("./servers/"+self.server, true).then(function(plugins){
+
             if(!plugins){cb();return}
             for (var i = 0; i < plugins.length; i++) {
               self.plugins.push(plugins[i]);
+              console.log("ADDING: " + plugins[i].name);
             }
             cb();
           })
@@ -131,23 +134,27 @@ class PluginManager{
 
   }
 
-  AddServerPlugin(pluginId){
+  AddServerPlugin(pluginId, cb){
     var self = this;
-    self.MakeServerFolder();
-    for (var i = 0; i < self.plugins.length; i++) {
-     if(self.plugins[i].isServer){
-       return;
-     }
+    return new Promise(function(resolve, reject) {
+      self.command   = self.disnode.server.GetCommandInstance(self.server);
+      self.MakeServerFolder();
+      var newPath ="servers/"+self.server;
 
-     if(self.plugins[i].id == pluginId){
-       var newPath =self.plugins[i].path.replace("plugins/", "servers/"+this.server);
+      var request = http.get("http://localhost:8000/api/plugins/download/"+pluginId, function(response) {
+        response.pipe(unzip.Extract({ path: newPath }));
+        response.on("end", function(){
+        setTimeout(function () {
+          self.LoadAllPlugins().then(function(){
+            self.command.UpdateAllPrefixes();
+            resolve();
+          });
 
-       fs.copy(self.plugins[i].path, newPath, function (err) {
-       	 if (err) return console.error(err)
-         this.LoadAllPlugins();
-       });
-     }
-    }
+         }, 1000);
+       })
+
+     });
+    });
   }
 
   RemoveServerPlugin(pluginId){
@@ -205,6 +212,8 @@ class PluginManager{
       } catch (e) {
         resolve();
       }
+
+
       async.each(folders, function(_folder, cb){
 
         jsonfile.readFile(path + "/" + _folder + "/plugin.json", function(err,obj){
@@ -239,7 +248,7 @@ class PluginManager{
       var prefix = [];
 
       async.each(self.plugins, function(plugin,cb){
-
+        console.log("PREFIX: " + plugin.name);
         self.GetConfigFile(plugin).then(function(config){
 
           prefix.push({plugin: plugin.id, prefix: config.prefix});
