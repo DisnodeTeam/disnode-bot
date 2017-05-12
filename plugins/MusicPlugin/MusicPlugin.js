@@ -1,6 +1,6 @@
 const logger = require('disnode-logger');
 const ytdl = require('ytdl-core');
-const fs = require('fs');
+
 class MusicPlugin {
   constructor() {
     this.voices = []
@@ -66,16 +66,12 @@ class MusicPlugin {
       var member = self.disnode.bot.GetServerMemberByID(command.msg.userID, command.msg.server);
       if(member.voice_channel_id){
         for (var i = 0; i < self.voices.length; i++) {
+          self.closing = true;
           if(self.voices[i].voiceChannel == member.voice_channel_id){
-            if(!self.voices[i].playRunning){
-              self.voices.splice(i,1);
-              self.disnode.bot.client.leaveVoiceChannel(member.voice_channel_id);
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Left", "I Left your voice channel!");
-              return
-            }else {
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Can't leave right now!",16772880);
-              return
-            }
+            self.voices.splice(i,1);
+            self.disnode.bot.client.leaveVoiceChannel(member.voice_channel_id);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Left", "I Left your voice channel!");
+            return
           }
         }
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You need to be in the same voice channel as me!",16772880);
@@ -136,24 +132,24 @@ class MusicPlugin {
       self.disnode.bot.SendCompactEmbed(voice.senderChannel, "Playing","**" + voice.queue[0] + "**");
       self.disnode.bot.client.getAudioContext(voice.voiceChannel,function(err,stream) {
         if(err){
-          console.log(err);
+          return console.console.log(err);
         }
         console.log("Starting ytdl");
-        voice.ytStream = ytdl(voice.queue[0], {filter: "audioonly"});
+        voice.ytStream = ytdl(voice.queue[0], {filter: "audioonly"}).pipe(stream, {end: false});
         console.log("pipe to stream");
-        voice.ytStream.pipe(fs.createWriteStream(voice.voiceChannel + '.mp3'));
         console.log("Binding end event");
         voice.ytStream.on('end', function(){
           console.log("End event called");
-          fs.createReadStream(voice.voiceChannel + '.mp3').pipe(stream, {end: false});
-          stream.on('done',function() {
-            if(voice.queue.length == 0){
-              voice.playRunning = false;
-              voice.ytStream.destroy();
-            }else{
-              self.PlayStream(voice);
+          if(voice.queue.length == 0){
+            voice.playRunning = false;
+            voice.ytStream.destory();
+          }else{
+            if(self.closing){
+              self.playStream(voice);
+            }else {
+              self.closing = false;
             }
-          })
+          }
         });
         voice.queue.splice(0,1);
       });
