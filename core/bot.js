@@ -255,6 +255,9 @@ class Bot {
         }
         return server.members[userId];
     }
+    GetServerMemberByID(userID,serverID){
+      return this.client.servers[serverID].members[userID];
+    }
     GetUserRoles(serverId, userId) {
         var user = this.GetUserByID(serverId, userId);
         if (!user) {
