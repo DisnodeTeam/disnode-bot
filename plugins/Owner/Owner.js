@@ -94,14 +94,32 @@ class OwnerPlugin {
     if (command.msg.userID == this.owner) {
       var serverids = Object.keys(self.disnode.bot.client.servers);
       var servers = '';
-      for (var i = 0; i < serverids.length; i++) {
+      //Pageable results
+      var page = 1;
+      var maxindex;
+      var startindex;
+      if (parseInt(command.params[0]) >= 1) {
+        page = Number(parseInt(command.params[0]));
+      }
+      if (page == 1) {
+        page = 1;
+        startindex = 0
+        maxindex = 10;
+      }else {
+        maxindex = (page * 10);
+        startindex = maxindex - 10;
+      }
+      //end
+      for (var i = startindex; i < serverids.length; i++) {
+        if(i == maxindex)break;
         var amount = i + 1;
+        var server = self.disnode.bot.client.servers[serverids[i]]
         if (servers == '') {
-          servers += "**" + amount + ". " + self.disnode.bot.client.servers[serverids[i]].name + "** - (" + self.disnode.bot.client.servers[serverids[i]].id + ")\n";
+          servers += "**" + amount + ". " + server.name + "** - (" + server.id + ")\n";
         } else if (i == serverids.length) {
-          serers += "**" + amount + ". " + self.disnode.bot.client.servers[serverids[i]].name + "** - (" + self.disnode.bot.client.servers[serverids[i]].id + ")";;
+          serers += "**" + amount + ". " + server.name + "** - (" + server.id + ")";;
         } else {
-          servers += "**" + amount + ". " + self.disnode.bot.client.servers[serverids[i]].name + "** - (" + self.disnode.bot.client.servers[serverids[i]].id + ")\n";
+          servers += "**" + amount + ". " + server.name + "** - (" + server.id + ")\n";
         }
       }
       var results = "" + servers + "\n**Servers:** " + serverids.length + "\n**Users:** " + Object.keys(self.disnode.bot.client.users).length;

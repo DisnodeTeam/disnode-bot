@@ -4,5 +4,5 @@
   "autoStatus": true,
   "static": true,
   "run":true,
-  "testing":false
+  "testing":true
 }
