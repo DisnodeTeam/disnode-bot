@@ -6,6 +6,7 @@ const Stopwatch  = require('timer-stopwatch');
 const merge      = require('merge');
 const http = require('http');
 const unzip = require('unzip');
+
 var timer = new Stopwatch();
 
 class PluginManager{
@@ -248,7 +249,7 @@ class PluginManager{
       var prefix = [];
 
       async.each(self.plugins, function(plugin,cb){
-        console.log("PREFIX: " + plugin.name);
+
         self.GetConfigFile(plugin).then(function(config){
 
           prefix.push({plugin: plugin.id, prefix: config.prefix});

@@ -11,6 +11,10 @@
     {
       "cmd": "list",
       "run": "commandList"
+    },
+    {
+      "cmd": "info",
+      "run": "commandInfo"
     }
 
   ]
