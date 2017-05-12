@@ -23,6 +23,10 @@
     {
       "cmd": "eval",
       "run": "commandEval"
+    },
+    {
+      "cmd" : "leave",
+      "run" : "commandLeave"
     }
   ]
 }
