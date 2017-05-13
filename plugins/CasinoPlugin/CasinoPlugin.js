@@ -135,9 +135,9 @@ class CasinoPlugin {
       ]
     }
     this.recentBetters = [];
+    this.state = self.disnode.state.Init(self);
     setTimeout(function() {
-      self.utils = new CasinoUtils(self.disnode, self.class);
-      self.Blackjack = new Blackjack(self.disnode);
+      self.utils = new CasinoUtils(self.disnode, self.class, self.state, this);
       if(self.utils.AutoStatus()) {
         var n = self.utils.getRandomIntInclusive(0,4);
         if(n == 0){

@@ -3,16 +3,18 @@ const logger = require('disnode-logger');
 const Countdown = require('countdownjs');
 
 class CasinoUtils {
-  constructor(disnode, classobj) {
+  constructor(disnode, classobj, state, plugin) {
     var self = this;
     this.disnode = disnode;
     this.class = classobj;
-    this.casinoObj = {};
+    this.state = state;
+    this.plugin = plugin;
+    this.state.data.casinoObj = {};
     this.recentBetters = [];
     this.disnode.db.InitPromise({}).then(function(dbo) {
       self.DB = dbo;
       self.DB.Find("casinoObj", {}).then(function(res) {
-        self.casinoObj = res[0];
+        self.state.data.casinoObj = res[0];
         self.updateCoroutine();
       });
     });
@@ -29,11 +31,11 @@ class CasinoUtils {
         slot.winAmount = parseFloat((slot.bet * 60).toFixed(2));
         slot.winText = "YOU GOT A JACKPOT! however you didnt meet the minimum bet requirement ($" + minJackpotBet + ") to get the JACKPOT value so here is 60x your bet";
       }else {
-        slot.winAmount = parseFloat(self.casinoObj.jackpotValue);
-        self.casinoObj.jackpotValue = 100000;
+        slot.winAmount = parseFloat(self.state.data.casinoObj.jackpotValue);
+        self.state.data.casinoObj.jackpotValue = 100000;
         slot.winText = "JACKPOT JACKPOT JACKPOT!!!!!";
-        self.casinoObj.jackpotstat.lastWon = slot.player.name;
-        self.casinoObj.jackpotstat.LatestWin = slot.winAmount;
+        self.state.data.casinoObj.jackpotstat.lastWon = slot.player.name;
+        self.state.data.casinoObj.jackpotstat.LatestWin = slot.winAmount;
       }
       slot.player.stats.slotJackpots++;
       slot.player.stats.slotWins++;
@@ -572,8 +574,12 @@ class CasinoUtils {
     }
   }
   updateCoroutine(){
-    var self = this;    
-    if(self.class.config.testing)return;
+    var self = this;
+    if(self.testingmode)return;
+    if(!self.plugin.stateAuth){
+      console.log("Im not auth!");
+      return;
+    }
     self.DB.Find("players", {}).then(function(players) {
       for (var i = 0; i < players.length; i++) {
         if(players[i].lastSeen == undefined){
@@ -589,7 +595,7 @@ class CasinoUtils {
         self.DB.Update("players", {"id":players[i].id}, players[i]);
       }
     });
-    self.DB.Update("casinoObj", {"id":self.casinoObj.id}, self.casinoObj);
+    self.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
     if(self.timer)self.timer.stop();
     self.timer = new Countdown(1800000,function(){
       if(self.AutoStatus()) {
