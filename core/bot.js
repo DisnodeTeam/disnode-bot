@@ -92,8 +92,8 @@ class Bot {
     SetUpLocalBinds() {
         var self = this;
         self.client.on('message', function(user, userID, channelID, message, event) {
-        
-            if (self.bind_onMessage && self.disnode.ready) {
+            var firstLetter = message.substring(0, self.disnode.botConfig.prefix.length);
+            if (self.bind_onMessage && self.disnode.ready && firstLetter == self.disnode.botConfig.prefix) {
                 var _server = "DM";
                 if (self.client.channels[channelID]) {
                     _server = self.client.channels[channelID].guild_id;
