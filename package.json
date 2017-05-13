@@ -38,7 +38,6 @@
     "timer-stopwatch": "^0.2.0",
     "twitch-api": "^0.4.6",
     "unzip": "^0.1.11",
-    "walk": "^2.3.9"
     "walk": "^2.3.9",
     "ytdl-core": "^0.14.0"
   }
