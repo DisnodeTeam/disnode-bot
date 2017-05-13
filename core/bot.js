@@ -283,7 +283,7 @@ class Bot {
     * Bans the specified user id from the server
     * @param {string} serverID - ID of the server
     * @param {string} userID - ID of the user going to be banned
-    * @param {number} Days - The number of days worth of messages to delete (this is optional)
+    * @param {number} Days - (Optional)The number of days worth of messages to delete
     */
     Ban(sID, uID, Days) {
         var self = this;
@@ -448,6 +448,12 @@ class Bot {
         })
       });
     }
+    /**
+    * Adds reaction to a message
+    * @param {string} channelID - ID of the channel
+    * @param {string} messageID - ID of the message
+    * @param {string} reactionID - ID or unicode of a reactionID
+    */
     AddReaction(channelID, messageID, reaction){
       var self = this;
       return new Promise(function(resolve, reject) {
@@ -464,6 +470,12 @@ class Bot {
         });
       });
     }
+    /**
+    * Gets reaction of a message
+    * @param {string} channelID - ID of the channel
+    * @param {string} messageID - ID of the message
+    * @param {string} reactionID - ID or unicode of a reactionID
+    */
     GetReaction(channelID, messageID, reaction){
       var self = this;
       return new Promise(function(resolve, reject) {
@@ -480,6 +492,12 @@ class Bot {
         });
       });
     }
+    /**
+    * Removes reaction from a message
+    * @param {string} channelID - ID of the channel
+    * @param {string} messageID - ID of the message
+    * @param {string} reactionID - ID or unicode of a reactionID
+    */
     RemoveReaction(channelID, messageID, reaction){
       var self = this;
       return new Promise(function(resolve, reject) {
@@ -496,6 +514,11 @@ class Bot {
         });
       });
     }
+    /**
+    * Removes all reactions from a message
+    * @param {string} channelID - ID of the channel
+    * @param {string} messageID - ID of the message
+    */
     RemoveAllReactions(channelID, messageID){
       var self = this;
       return new Promise(function(resolve, reject) {
@@ -511,6 +534,12 @@ class Bot {
         });
       });
     }
+    /**
+    * Pagify results
+    * @param {array} arr - Array to be paged
+    * @param {integer} page - Page number
+    * @param {integer} perPage - Results per page
+    */
     pageResults(arr, page, perPage=10){
       var returnArr = [];
       var maxindex;
