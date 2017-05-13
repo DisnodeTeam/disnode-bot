@@ -115,10 +115,14 @@ class PluginManager{
         return self.GetCommandFile(_newPlugin);
       }).then(function(commands){
         _newPlugin.commands =commands;
+
         if(_newPlugin.Init){
-          _newPlugin.Init();
+          _newPlugin.Init(function(){
+            resolve(_newPlugin);
+          })
+        }else{
+          resolve(_newPlugin);
         }
-        resolve(_newPlugin)
       }).catch(function(err){
         console.log(err);
         reject(err);
