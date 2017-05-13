@@ -1,7 +1,7 @@
 
 const axios = require('axios');
 class PluginManager {
-  constructor() {
+  Init(){
 
   }
   default(command){ // This is the default command that is ran when you do your bot prefix and your plugin prefix example   !ping

@@ -103,10 +103,11 @@ class PluginManager{
       var _newPlugin = {};
 
       self.GetScriptRequire(pluginFile).then(function(requireClass){
+        pluginFile.disnode = self.disnode;
+        pluginFile.pluginManager = self;
+        pluginFile.server = self.server;
         _newPlugin = merge(new requireClass(), pluginFile);
-        _newPlugin.disnode = self.disnode;
-        _newPlugin.pluginManager = self;
-        _newPlugin.server = self.server;
+
 
         return self.GetConfigFile(_newPlugin)
       }).then(function(config){
@@ -114,6 +115,7 @@ class PluginManager{
         return self.GetCommandFile(_newPlugin);
       }).then(function(commands){
         _newPlugin.commands =commands;
+        _newPlugin.Init();
         resolve(_newPlugin)
       }).catch(function(err){
         console.log(err);
