@@ -1,5 +1,6 @@
 const Logging = require('disnode-logger');
 const pmx = require('pmx');
+var probe = pmx.probe();
 class Stats {
   constructor(disnode) {
     var self = this;
@@ -15,32 +16,32 @@ class Stats {
     this.pluginManagers = 0;
     this.commandManagers = 0;
     this.pluginInstances = 0;
-
+    var self = this;
     var metric1 = probe.metric({
       name    : 'Plugin Managers',
       value   : function() {
-        return this.pluginManagers
+        return self.pluginManagers
       }
     });
 
     var metric2 = probe.metric({
       name    : 'Command Managers',
       value   : function() {
-        return this.commandManagers
+        return self.commandManagers
       }
     });
 
     var metric3 = probe.metric({
       name    : 'Plugin Instances',
       value   : function() {
-        return this.pluginInstances
+        return self.pluginInstances
       }
     });
 
     var metric4 = probe.metric({
       name    : 'messagesParsed',
       value   : function() {
-        return this.messagesParsed
+        return self.messagesParsed
       }
     });
 
