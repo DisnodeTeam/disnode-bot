@@ -135,10 +135,13 @@ class CasinoPlugin {
       ]
     }
     this.recentBetters = [];
-    this.state = self.disnode.state.Init(self);
-    setTimeout(function() {
-      self.utils = new CasinoUtils(self.disnode, self.class, self.state, this);
-      if(self.utils.AutoStatus()) {
+  }
+  Init(done){
+    var self = this;
+    self.state = self.disnode.state.Init(self);
+    self.utils = new CasinoUtils(self.disnode, self.state, this);
+    self.utils.init().then(function() {
+      if(self.utils.AutoStatus() && self.stateAuth) {
         var n = self.utils.getRandomIntInclusive(0,4);
         if(n == 0){
           self.disnode.bot.SetStatus("!casino slot");
@@ -152,7 +155,7 @@ class CasinoPlugin {
           self.disnode.bot.SetStatus("!casino");
         }
       }
-    }, 1000);
+    });
   }
   default(command) {
     var self = this;
@@ -167,8 +170,8 @@ class CasinoPlugin {
     }
     self.utils.getPlayer(command).then(function(player){
       var msg = "";
-      for (var i = 0; i < self.class.commands.length; i++) {
-        msg += self.disnode.botConfig.prefix + self.class.config.prefix + " " + self.class.commands[i].cmd + " - " + self.class.commands[i].desc + "\n";
+      for (var i = 0; i < self.commands.length; i++) {
+        msg += self.disnode.botConfig.prefix + self.config.prefix + " " + self.commands[i].cmd + " - " + self.commands[i].desc + "\n";
       }
       self.disnode.bot.SendEmbed(command.msg.channel, {
         color: 3447003,
@@ -300,26 +303,6 @@ class CasinoPlugin {
       })
     }
   }
-  commandTimer(command){
-    var self = this;
-    self.utils.getPlayer(command).then(function(player) {
-      if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
-        return;
-      }
-      if(self.utils.checkBan(player, command))return;
-      if(player.Admin || player.Mod){}else {
-        if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
-          return;
-        }
-      }
-      var msleft = self.utils.timer.getRemainingTime();
-      var minRemain = Math.floor(msleft / 60000);
-      var secondsRemain = ((msleft / 1000) - (minRemain * 60));
-      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Timer / Time until next Income", minRemain + " Minutes and " + secondsRemain + " Seconds.");
-    });
-  }
   commandJackpotInfo(command){
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
@@ -344,7 +327,7 @@ class CasinoPlugin {
           fields: [ {
             name: 'JACKPOT Value',
             inline: true,
-            value: "$" + numeral(self.utils.casinoObj.jackpotValue).format('0,0.00'),
+            value: "$" + numeral(self.state.data.casinoObj.jackpotValue).format('0,0.00'),
           },{
             name: 'Minimum bet to Win JACKPOT',
             inline: false,
@@ -352,7 +335,7 @@ class CasinoPlugin {
           }, {
             name: 'JACKPOT History',
             inline: false,
-            value: "**Last won by:** " + self.utils.casinoObj.jackpotstat.lastWon + " **Amount Won:** $" + numeral(self.utils.casinoObj.jackpotstat.LatestWin).format('0,0.00'),
+            value: "**Last won by:** " + self.state.data.casinoObj.jackpotstat.lastWon + " **Amount Won:** $" + numeral(self.state.data.casinoObj.jackpotstat.LatestWin).format('0,0.00'),
           }],
             footer: {}
           }
@@ -409,11 +392,11 @@ class CasinoPlugin {
             },{
               name: 'Jackpot',
               inline: false,
-              value: "Jackpot Value is increased every time someone plays slots, the value is increased by the players bet amount and has a default value of $100,000\n**Current Jackpot Value: **$" + numeral(self.utils.casinoObj.jackpotValue).format('0,0.00'),
+              value: "Jackpot Value is increased every time someone plays slots, the value is increased by the players bet amount and has a default value of $100,000\n**Current Jackpot Value: **$" + numeral(self.state.data.casinoObj.jackpotValue).format('0,0.00'),
             }, {
               name: 'Jackpot History',
               inline: true,
-              value: "**Last won by:** " + self.utils.casinoObj.jackpotstat.lastWon,
+              value: "**Last won by:** " + self.state.data.casinoObj.jackpotstat.lastWon,
             }],
               footer: {}
             });
@@ -441,9 +424,9 @@ class CasinoPlugin {
                 return;
               }else{
                 player.money -= parseFloat(bet);
-                self.utils.casinoObj.jackpotValue += parseFloat(bet);
+                self.state.data.casinoObj.jackpotValue += parseFloat(bet);
                 player.money = parseFloat(player.money.toFixed(2));
-                self.utils.casinoObj.jackpotValue = parseFloat(self.utils.casinoObj.jackpotValue.toFixed(2));
+                self.state.data.casinoObj.jackpotValue = parseFloat(self.state.data.casinoObj.jackpotValue.toFixed(2));
               }
               var slotInfo = {
                 bet: bet,
@@ -473,7 +456,7 @@ class CasinoPlugin {
               minJackpotBet = parseFloat(minJackpotBet.toFixed(2));
               player.stats.moneyWon = parseFloat(parseFloat(player.stats.moneyWon) + parseFloat(slotInfo.winAmount));
               player.stats.moneyWon = player.stats.moneyWon.toFixed(2);
-              self.utils.casinoObj.jackpotValue = parseFloat(self.utils.casinoObj.jackpotValue.toFixed(2));
+              self.state.data.casinoObj.jackpotValue = parseFloat(self.state.data.casinoObj.jackpotValue.toFixed(2));
               self.utils.handleRecentBetters(player);
               self.utils.updateLastSeen(player);
               self.utils.checkLV(player, command.msg.channel);
@@ -515,14 +498,14 @@ class CasinoPlugin {
                 }, {
                   name: 'JACKPOT Value',
                   inline: true,
-                  value: "$" + numeral(self.utils.casinoObj.jackpotValue).format('0,0.00'),
+                  value: "$" + numeral(self.state.data.casinoObj.jackpotValue).format('0,0.00'),
                 }],
                   footer: {}
                 }
               );
               self.utils.updatePlayerLastMessage(player);
               self.utils.DB.Update("players", {"id":player.id}, player);
-              self.utils.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
+              self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
             }else {
               self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a Number for bet or `!casino slot` for general help", 16772880)
             }
@@ -693,7 +676,7 @@ class CasinoPlugin {
             self.utils.checkLV(player, command.msg.channel);
           }
           self.utils.DB.Update("players", {"id":player.id}, player);
-          self.utils.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
+          self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
         }else {
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a bet! Example `!casino flip tails 100`", 16772880);
         }
@@ -853,7 +836,7 @@ class CasinoPlugin {
           self.utils.updateLastSeen(player);
           self.utils.checkLV(player, command.msg.channel);
           self.utils.DB.Update("players", {"id":player.id}, player);
-          self.utils.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
+          self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
           break;
         case "info":
           self.disnode.bot.SendEmbed(command.msg.channel, {
@@ -1082,7 +1065,7 @@ class CasinoPlugin {
               self.utils.updateLastSeen(player);
               self.utils.checkLV(player, command.msg.channel);
               self.utils.DB.Update("players", {"id":player.id}, player);
-              self.utils.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
+              self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
             }else {
               self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough Keys!\nNEED: " + Crate.cost + "\nHAVE: " + player.keys, 16772880);
             }
@@ -1335,7 +1318,7 @@ class CasinoPlugin {
             }
             break;
           case "save":
-            self.utils.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
+            self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", ":white_check_mark: Database Saved!", 3447003);
             break;
           case "player":
@@ -1677,7 +1660,7 @@ class CasinoPlugin {
             );
             self.utils.updateLastSeen(player);
             self.utils.DB.Update("players", {"id":player.id}, player);
-            self.utils.DB.Update("casinoObj", {"id":self.utils.casinoObj.id}, self.utils.casinoObj);
+            self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
           }
           break;
         default:

@@ -270,32 +270,56 @@ class Bot {
             name: servername
         });
     }
-
+    /**
+    * Kicks the specified user id from the server
+    * @param {string} serverID - ID of the server
+    * @param {string} userID - ID of the user going to be kicked
+    */
     Kick(sID, uID) {
         var self = this;
         self.client.kick({serverID: sID, userID: uID});
     }
-
+    /**
+    * Bans the specified user id from the server
+    * @param {string} serverID - ID of the server
+    * @param {string} userID - ID of the user going to be banned
+    * @param {number} Days - (Optional)The number of days worth of messages to delete
+    */
     Ban(sID, uID, Days) {
         var self = this;
         self.client.ban({serverID: sID, userID: uID, lastDays: Days});
     }
-
+    /**
+    * Unabn the specified user id from the server
+    * @param {string} serverID - ID of the server
+    * @param {string} userID - ID of the user going to be unbanned
+    */
     Unban(sID, uID) {
         var self = this;
         self.client.unban({serverID: sID, userID: uID});
     }
-
+    /**
+    * Mutes the specified user id from the server
+    * @param {string} serverID - ID of the server
+    * @param {string} userID - ID of the user going to be muted
+    */
     Mute(sID, uID) {
         var self = this;
         self.client.mute({serverID: sID, userID: uID});
     }
-
+    /**
+    * Unmutes the specified user id from the server
+    * @param {string} serverID - ID of the server
+    * @param {string} userID - ID of the user going to be unmuted
+    */
     Unmute(sID, uID) {
         var self = this;
         self.client.unmute({serverID: sID, userID: uID});
     }
-
+    /**
+    * Joins the channel that the user is in
+    * @param {string} voiceID - ID of the voice channel
+    */
     JoinVoiceChannel(voiceID) {
         var self = this;
         this.client.joinVoiceChannel(voiceID, function(err) {
@@ -304,7 +328,10 @@ class Bot {
             } else {}
         })
     }
-
+    /**
+    * Leaves the channel that the user is in
+    * @param {string} voiceID - ID of the voice channel
+    */
     LeaveVoiceChannel(voiceID) {
         var self = this;
         this.client.leaveVoiceChannel(voiceID, function(err) {
@@ -313,6 +340,11 @@ class Bot {
             } else {}
         })
     }
+    /**
+    * Joins the channel that the user is in
+    * @param {string} serverID - ID of the server
+    * @param {string} userID - ID of the user its joining
+    */
     JoinUsersVoiceChannel(serverID, userID) {
         var user = this.GetUserByID(serverID, userID);
         if (!user) {
@@ -320,6 +352,11 @@ class Bot {
         }
         this.JoinVoiceChannel(user.voice_channel_id);
     }
+    /**
+    * Leaves the channel that the user is in
+    * @param {string} serverID - ID of the server
+    * @param {string} userID - ID of the user its leaving
+    */
     LeaveUsersVoiceChannel(serverID, userID) {
         var user = this.GetUserByID(serverID, userID);
         if (!user) {
@@ -327,20 +364,27 @@ class Bot {
         }
         this.LeaveVoiceChannel(user.voice_channel_id);
     }
+    /**
+    * Get a lot of information about the server
+    * @param {string} serverID - ID of the server
+    */
     GetServerByID(id) {
         var servers = this.client.servers;
         return servers[id];
     }
-    GetUserByID(serverId, userId) {
-        var server = this.GetServerByID(serverId);
-        if (!server) {
-            return;
-        }
-        return server.members[userId];
-    }
-    GetServerMemberByID(userID,serverID){
+    /**
+    * Gets information about that user in the server
+    * @param {string} serverID - ID of the server
+    * @param {string} userID - Id of the user
+    */
+    GetUserByID(userID,serverID){
       return this.client.servers[serverID].members[userID];
     }
+    /**
+    * Gets the roles that the specified user in the server has
+    * @param {string} serverID - ID of the server
+    * @param {string} userID - Id of the user
+    */
     GetUserRoles(serverId, userId) {
         var user = this.GetUserByID(serverId, userId);
         if (!user) {
@@ -348,7 +392,11 @@ class Bot {
         }
         return user.roles;
     }
-
+    /**
+    * Gets information about the specified role
+    * @param {string} serverID - ID of the server
+    * @param {string} roleID - Id of the role
+    */
     GetRoleById(serverId, roleId) {
         var server = this.GetServerByID(serverId);
         if (!server) {
@@ -356,6 +404,9 @@ class Bot {
         }
         return server.roles[roleId];
     }
+    /**
+    * Gets information about the bot
+    */
     GetBotInfo() {
         var self = this;
         return {
@@ -366,6 +417,10 @@ class Bot {
             discriminator: self.client.discriminator,
         }
     }
+    /**
+    * Gets minimal information about the specified user
+    * @param {string} userID - ID of the user
+    */
     GetUserInfo(UserID) {
         var self = this;
         return self.client.users[UserID];
@@ -373,6 +428,11 @@ class Bot {
     GetSnowflakeDate(resourceID) {
         return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
     }
+    /**
+    * Gets message info of a message
+    * @param {string} channelID - ID of the channel
+    * @param {string} messageID - ID of the message
+    */
     GetMessage(channelID, MessageID){
       var self = this;
       return new Promise(function(resolve, reject) {
@@ -388,6 +448,12 @@ class Bot {
         })
       });
     }
+    /**
+    * Adds reaction to a message
+    * @param {string} channelID - ID of the channel
+    * @param {string} messageID - ID of the message
+    * @param {string} reactionID - ID or unicode of a reactionID
+    */
     AddReaction(channelID, messageID, reaction){
       var self = this;
       return new Promise(function(resolve, reject) {
@@ -404,6 +470,12 @@ class Bot {
         });
       });
     }
+    /**
+    * Gets reaction of a message
+    * @param {string} channelID - ID of the channel
+    * @param {string} messageID - ID of the message
+    * @param {string} reactionID - ID or unicode of a reactionID
+    */
     GetReaction(channelID, messageID, reaction){
       var self = this;
       return new Promise(function(resolve, reject) {
@@ -420,6 +492,12 @@ class Bot {
         });
       });
     }
+    /**
+    * Removes reaction from a message
+    * @param {string} channelID - ID of the channel
+    * @param {string} messageID - ID of the message
+    * @param {string} reactionID - ID or unicode of a reactionID
+    */
     RemoveReaction(channelID, messageID, reaction){
       var self = this;
       return new Promise(function(resolve, reject) {
@@ -436,6 +514,11 @@ class Bot {
         });
       });
     }
+    /**
+    * Removes all reactions from a message
+    * @param {string} channelID - ID of the channel
+    * @param {string} messageID - ID of the message
+    */
     RemoveAllReactions(channelID, messageID){
       var self = this;
       return new Promise(function(resolve, reject) {
@@ -451,6 +534,12 @@ class Bot {
         });
       });
     }
+    /**
+    * Pagify results
+    * @param {array} arr - Array to be paged
+    * @param {integer} page - Page number
+    * @param {integer} perPage - Results per page
+    */
     pageResults(arr, page, perPage=10){
       var returnArr = [];
       var maxindex;

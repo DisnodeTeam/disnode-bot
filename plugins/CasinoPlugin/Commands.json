@@ -51,11 +51,6 @@
       "run": "commandCrate"
     },
     {
-      "cmd": "time",
-      "desc": "*See how much time is left until your next income!*",
-      "run": "commandTimer"
-    },
-    {
       "cmd": "store",
       "desc": "*Get more money or more income here!*",
       "run": "commandStore"

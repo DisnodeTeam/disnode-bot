@@ -3,19 +3,25 @@ const logger = require('disnode-logger');
 const Countdown = require('countdownjs');
 
 class CasinoUtils {
-  constructor(disnode, classobj, state, plugin) {
+  constructor(disnode, state, plugin) {
     var self = this;
     this.disnode = disnode;
-    this.class = classobj;
     this.state = state;
     this.plugin = plugin;
     this.state.data.casinoObj = {};
     this.recentBetters = [];
-    this.disnode.db.InitPromise({}).then(function(dbo) {
-      self.DB = dbo;
-      self.DB.Find("casinoObj", {}).then(function(res) {
-        self.state.data.casinoObj = res[0];
-        self.updateCoroutine();
+    self.DB;
+  }
+  init(){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.disnode.db.InitPromise({}).then(function(dbo) {
+        self.DB = dbo;
+        self.DB.Find("casinoObj", {}).then(function(res) {
+          self.state.data.casinoObj = res[0];
+          self.updateCoroutine();
+          resolve();
+        });
       });
     });
   }
@@ -563,7 +569,7 @@ class CasinoUtils {
   AutoStatus() {
     var self = this;
     try {
-      if(self.class.config.autoStatus) {
+      if(self.plugin.config.autoStatus) {
         return true
       }else {
         return false
@@ -575,7 +581,7 @@ class CasinoUtils {
   }
   updateCoroutine(){
     var self = this;
-    if(self.testingmode)return;
+    if(self.plugin.config.testing)return;
     if(!self.plugin.stateAuth){
       console.log("Im not auth!");
       return;

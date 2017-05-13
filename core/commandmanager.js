@@ -125,7 +125,6 @@ class CommandManager {
           callback(plugin, command, params);
         }else {
           command = firstWord;
-          Logging.Warning("Command", "CommandParse", "Running a command without plugin prefix, this is heavily not supported");
           /*
           if(this.GetPluginFromCommand(command)){
             plugin = this.GetPluginFromCommand(command);
