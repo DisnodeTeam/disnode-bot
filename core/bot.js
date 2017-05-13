@@ -13,7 +13,9 @@ class Bot {
         this.remoteID = "";
         this.shardID = 0;
     }
-
+    /**
+    * Connect to Discord
+    */
     Connect() {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -54,7 +56,9 @@ class Bot {
 
         });
     }
-
+    /**
+    * disconnect from Discord
+    */
     Disconnect() {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -62,7 +66,9 @@ class Bot {
             resolve();
         });
     }
-
+    /**
+    * Restart your bot
+    */
     Restart() {
         var self = this;
         self.Disconnect().then(function() {
@@ -99,7 +105,13 @@ class Bot {
     }
 
 
-
+    /**
+    * Send a normal message
+    * @param {string} channel - ChannelID of where to send the message
+    * @param {string} msg - The message to send
+    * @param {bool} typing - (Optional)Set typing to true or false when sending the message (default false)
+    * @param {bool} tts - (Optional)Set tts to true or false when sending the message (default false)
+    */
     SendMessage(channel, msg, typing = false, tts = false) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -117,7 +129,14 @@ class Bot {
             });
         });
     }
-
+    /**
+    * Edit a Message
+    * @param {string} channel - ChannelID of where to send the message
+    * @param {string} msgID - Message ID of the message you want to edit
+    * @param {string} msg - The message to send
+    * @param {bool} typing - (Optional)Set typing to true or false when sending the message (default false)
+    * @param {bool} tts - (Optional)Set tts to true or false when sending the message (default false)
+    */
     EditMessage(channel, msgID, msg, typing = false, tts = false) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -140,6 +159,11 @@ class Bot {
         });
 
     }
+    /**
+    * send a message as a embed
+    * @param {string} channel - ChannelID of where to send the message
+    * @param {object} embed - the Embed Object to send
+    */
     SendEmbed(channel, embed) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -156,6 +180,13 @@ class Bot {
         });
 
     }
+    /**
+    * send an embed as a compact one, less lines defining a embed object
+    * @param {string} channel - ChannelID of where to send the message
+    * @param {string} title - The title of the embed
+    * @param {string} body - The body of the embed
+    * @param {int|RGBint} color - (Optional)RGB Int of what color the embed should be (default 3447003)
+    */
     SendCompactEmbed(channel, title, body, color = 3447003) {
         var self = this;
         self.client.sendMessage({
@@ -172,7 +203,12 @@ class Bot {
             }
         });
     }
-
+    /**
+    * Edit an embed
+    * @param {string} channel - ChannelID of where to send the message
+    * @param {string} msgID - Message ID of the message you want to edit
+    * @param {object} embed - the Embed Object to send
+    */
     EditEmbed(channel, msgID, embed) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -189,6 +225,10 @@ class Bot {
             });
         });
     }
+    /**
+    * Set the bots playing game
+    * @param {string} status - What you want your bot to be playing
+    */
     SetStatus(status) {
         var self = this;
         self.client.setPresence({
@@ -197,14 +237,21 @@ class Bot {
             }
         });
     }
-
+    /**
+    * Set the bots username
+    * @param {string} name - What you want your bot's username to be
+    */
     SetUsername(name) {
         var self = this;
         self.client.editUserInfo({
             username: name
         });
     }
-
+    /**
+    * Allows you to change a server's name (need proper permissions to do)
+    * @param {string} serverID - Server ID of the server you want to change
+    * @param {string} servername - What you wantto set the servername to be
+    */
     SetServerName(serverId, servername) {
         var self = this;
         self.client.editServer({
