@@ -1,4 +1,43 @@
-var Logger       = require("disnode-logger");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>pluginmanager.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Bot.html">Bot</a><ul class='methods'><li data-type='method'><a href="Bot.html#Connect">Connect</a></li><li data-type='method'><a href="Bot.html#Disconnect">Disconnect</a></li><li data-type='method'><a href="Bot.html#EditEmbed">EditEmbed</a></li><li data-type='method'><a href="Bot.html#EditMessage">EditMessage</a></li><li data-type='method'><a href="Bot.html#Restart">Restart</a></li><li data-type='method'><a href="Bot.html#SendCompactEmbed">SendCompactEmbed</a></li><li data-type='method'><a href="Bot.html#SendEmbed">SendEmbed</a></li><li data-type='method'><a href="Bot.html#SendMessage">SendMessage</a></li><li data-type='method'><a href="Bot.html#SetServerName">SetServerName</a></li><li data-type='method'><a href="Bot.html#SetStatus">SetStatus</a></li><li data-type='method'><a href="Bot.html#SetUsername">SetUsername</a></li></ul></li><li><a href="Disnode.html">Disnode</a><ul class='methods'><li data-type='method'><a href="Disnode.html#LoadBotConfig">LoadBotConfig</a></li><li data-type='method'><a href="Disnode.html#OnMessage">OnMessage</a></li><li data-type='method'><a href="Disnode.html#Restart">Restart</a></li><li data-type='method'><a href="Disnode.html#Start">Start</a></li><li data-type='method'><a href="Disnode.html#Stop">Stop</a></li></ul></li><li><a href="PluginManager.html">PluginManager</a><ul class='methods'><li data-type='method'><a href="PluginManager.html#AddServerPlugin">AddServerPlugin</a></li><li data-type='method'><a href="PluginManager.html#GetCommandFile">GetCommandFile</a></li><li data-type='method'><a href="PluginManager.html#GetCommandObject">GetCommandObject</a></li><li data-type='method'><a href="PluginManager.html#GetCommandPrefixes">GetCommandPrefixes</a></li><li data-type='method'><a href="PluginManager.html#GetConfigFile">GetConfigFile</a></li><li data-type='method'><a href="PluginManager.html#GetInstanceByID">GetInstanceByID</a></li><li data-type='method'><a href="PluginManager.html#GetPluginByID">GetPluginByID</a></li><li data-type='method'><a href="PluginManager.html#GetPluginFiles">GetPluginFiles</a></li><li data-type='method'><a href="PluginManager.html#GetScriptRequire">GetScriptRequire</a></li><li data-type='method'><a href="PluginManager.html#LaunchPlugin">LaunchPlugin</a></li><li data-type='method'><a href="PluginManager.html#LoadAllPlugins">LoadAllPlugins</a></li><li data-type='method'><a href="PluginManager.html#MakeServerFolder">MakeServerFolder</a></li><li data-type='method'><a href="PluginManager.html#RemoveServerPlugin">RemoveServerPlugin</a></li><li data-type='method'><a href="PluginManager.html#RunCommandBind">RunCommandBind</a></li><li data-type='method'><a href="PluginManager.html#RunPluginMessage">RunPluginMessage</a></li><li data-type='method'><a href="PluginManager.html#SetCommandFile">SetCommandFile</a></li><li data-type='method'><a href="PluginManager.html#SetConfigFile">SetConfigFile</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">pluginmanager.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var Logger       = require("disnode-logger");
 const async      = require('async');
 const fs         = require('fs-extra')
 const jsonfile   = require('jsonfile');
@@ -40,7 +79,7 @@ class PluginManager{
           self.GetPluginFiles("./servers/"+self.server, true).then(function(plugins){
 
             if(!plugins){cb();return}
-            for (var i = 0; i < plugins.length; i++) {
+            for (var i = 0; i &lt; plugins.length; i++) {
               self.plugins.push(plugins[i]);
 
             }
@@ -54,11 +93,11 @@ class PluginManager{
 
             if(!plugins){cb();return}
 
-            for (var i = 0; i < plugins.length; i++) {
+            for (var i = 0; i &lt; plugins.length; i++) {
 
               var alreadyAdded = false;
               //Run Check for alreadyAdded plugins
-              for (var x = 0; x < self.plugins.length; x++) {
+              for (var x = 0; x &lt; self.plugins.length; x++) {
 
                 if(self.plugins[x].id == plugins[i].id){
                   alreadyAdded = true;
@@ -196,7 +235,7 @@ class PluginManager{
   RemoveServerPlugin(pluginId){
     var self = this;
     self.MakeServerFolder();
-    for (var i = 0; i < self.plugins.length; i++) {
+    for (var i = 0; i &lt; self.plugins.length; i++) {
      if(self.plugins[i].isServer == false){
 
        return;
@@ -231,7 +270,7 @@ class PluginManager{
    * @param {string} pluginID - Plugin to Download and Add
    */
   GetPluginByID(pluginID){
-    for (var i = 0; i < this.plugins.length; i++) {
+    for (var i = 0; i &lt; this.plugins.length; i++) {
       if(this.plugins[i].id == pluginID){return this.plugins[i]}
     }
   }
@@ -240,7 +279,7 @@ class PluginManager{
    * @param {string} pluginID - Plugin to Download and Add
    */
   GetInstanceByID(pluginID){
-    for (var i = 0; i < this.instances.length; i++) {
+    for (var i = 0; i &lt; this.instances.length; i++) {
 
       if(this.instances[i].id == pluginID){return this.instances[i]}
     }
@@ -325,7 +364,7 @@ class PluginManager{
   GetCommandObject(plugin, commandString){
     var _cmds = plugin.commands || [];
     var _found;
-    for (var i = 0; i < _cmds.length; i++) {
+    for (var i = 0; i &lt; _cmds.length; i++) {
       if(_cmds[i].cmd == commandString){
         _found = _cmds[i];
       }
@@ -485,3 +524,22 @@ class PluginManager{
 }
 
 module.exports = PluginManager;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat May 13 2017 15:22:35 GMT-0700 (Pacific Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
