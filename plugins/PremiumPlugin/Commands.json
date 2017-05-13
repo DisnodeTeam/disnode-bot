@@ -1,0 +1,8 @@
+{
+  "commands":[
+    {
+      "cmd": "test",
+      "run": "commandTest"
+    }
+  ]
+}

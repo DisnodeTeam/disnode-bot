@@ -11,6 +11,8 @@ class Stats {
     this.memberCount = 0;
     this.channelCount = 0;
     this.directMessageCount = 0;
+    this.serverManagers = 0;
+    
   }
   getUptime(){
     var self = this;

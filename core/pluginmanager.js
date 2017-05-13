@@ -1,250 +1,410 @@
-const fs = require('fs');
-const async = require('async');
-const jsonfile = require('jsonfile');
-const Logging = require("disnode-logger")
-class PluginManager {
-    constructor(disnode, path) {
-        this.loaded = [];
-        this.launched = [];
-        this.disnode = disnode;
-        this.pluginPath = path;
-        var self = this;
-        Logging.AddRemoteVal("Instances", function(){return self.launched.length});
-    }
+var Logger       = require("disnode-logger");
+const async      = require('async');
+const fs         = require('fs-extra')
+const jsonfile   = require('jsonfile');
+const Stopwatch  = require('timer-stopwatch');
+const merge      = require('merge');
+const http = require('http');
+const unzip = require('unzip');
 
-    EnableReload(plugin){
-      var self =this;
+var timer = new Stopwatch();
 
-      Logging.Info("Plugin", "EnableReload", "Enabling Reload for: " + plugin.name)
-      var name = plugin.name;
-      var className = name + ".js";
-      var commandName = name + "-Commands.json";
-      var configName = name + "-Config.json";
-      var fullPath = plugin.path;
+class PluginManager{
+  constructor(disnode, server){
+    this.server    = server;
+    this.disnode   = disnode;
+    this.instances = [];
+    this.plugins   = [];
 
-      var filePath = fullPath + className;
-      fs.watch(filePath, function(e) {
-        delete require.cache[require.resolve("../" + filePath)]
-        for (var i = 0; i < self.loaded.length; i++) {
-          if(self.loaded[i].name == name){
-            self.loaded.splice(i, 1);
-          }
-        }
-        console.log(self.loaded);
-        for (var i = 0; i < self.launched.length; i++) {
-          console.log(self.launched[i].class.name);
-          if(self.launched[i].class.name == name){
-            self.launched.splice(i, 1);
-          }
+  }
 
+  LoadAllPlugins(){
+    var self = this;
 
-        }
-        fs.unwatchFile(filePath);
-        self.LoadPlugin(name).then(function(res){
+    return new Promise(function(resolve, reject) {
+      timer.start();
+      self.instances.length = 0;
+      self.plugins.length = 0;
+      Logger.Info("PluginManager-"+self.server, "LoadAllPlugins", "Loading All Plugins!")
 
+      async.waterfall([
+        // Load Server Plugins
+        function(cb){
+          self.GetPluginFiles("./servers/"+self.server, true).then(function(plugins){
 
-        })
+            if(!plugins){cb();return}
+            for (var i = 0; i < plugins.length; i++) {
+              self.plugins.push(plugins[i]);
+              console.log("ADDING: " + plugins[i].name);
+            }
+            cb();
+          })
+        },
+        function(cb){
+        //Load Default Plugins
 
+          self.GetPluginFiles("./plugins/",false).then(function(plugins){
 
-      });
+            if(!plugins){cb();return}
 
-    }
+            for (var i = 0; i < plugins.length; i++) {
 
-    LoadPlugin(name){
-      var self = this;
-      var path = self.pluginPath;
-      return new Promise(function(resolve, reject) {
-          var fullPath = path + "/" + name + "/" ;
-          var newPlugin = {name: name, path: fullPath};
-          var importClass = null;
+              var alreadyAdded = false;
+              //Run Check for alreadyAdded plugins
+              for (var x = 0; x < self.plugins.length; x++) {
 
-          var className = name + ".js";
-          async.waterfall([
-              // Check if class exists
-              function(callback) {
-                  Logging.Info("PluginManager", "Load-"+name, "Checking for class");
-                  fs.stat(fullPath + className, function(err, stats) {
-                      if (err) {
-                          Logging.Error("PluginManager", "Load-"+name, "Failed to find Class (" + fullPath + className + ")");
-                          callback(err);
-                          return;
-                      } else {
-                          Logging.Success("PluginManager", "Load-"+name, "Found Class");
-                          callback();
-                      }
-                  });
-              },
-              // Attempt to import the class
-              function(callback) {
-                Logging.Info("PluginManager", "Load-"+name, "Trying to import class");
-                  try {
-                      var NpmRequire = require("../" + fullPath + className);
-
-                      Logging.Success("PluginManager", "Load-"+name, "Imported");
-                      newPlugin.class = NpmRequire;
-                      callback(null);
-                  } catch (e) {
-                    Logging.Error("PluginManager", "Load-"+name, "Failed to Import: " + className + " - '" + e  + "'");
-                    callback(e, null);
-                  }
-              },
-              function(callback) {
-                Logging.Info("PluginManager", "Load-"+name, "Loading Config");
-                self.disnode.config.Load(newPlugin).then(function(){
-                  Logging.Success("PluginManager", "Load-"+name, "Loaded Config!");
-                  self.disnode.config.EnableReload(newPlugin);
-                  callback();
-                }).catch(callback);
-              },
-              // Finished Loading, adds class to array
-              function(callback) {
-                  if(newPlugin.config.run){
-                    self.loaded.push(newPlugin);
-                    Logging.Success("PluginManager","Load-"+name, "Finished Loading");
-                  }else {
-                    Logging.Info("PluginManager","Load-"+name, "Plugin skipped run = false!");
-                  }
-
-                  //console.log(self.loaded);
-                  callback(null,newPlugin);
-              },
-          ], function(err, result) {
-              if(err){
-                console.log(err);
-                reject(err);
-                return;
+                if(self.plugins[x].id == plugins[i].id){
+                  alreadyAdded = true;
+                }
               }
 
-              resolve(result);
-
-          });
-      });
-    }
-
-    Load() {
-        var self = this;
-        var path = self.pluginPath;
-        return new Promise(function(resolve, reject) {
-            if (!path) {
-                reject("No Path!");
-            }
-            var _ManagerFolders = [];
-            //Load Directories. Its sync since this Function is already
-            //wrapped in a Promise
-            _ManagerFolders = fs.readdirSync(path);
-            if (!_ManagerFolders) {
-                reject("Managers Null!")
-            }
-            Logging.Info("PluginManager", "Load", "Loading loaded");
-            async.each(_ManagerFolders, function(folder, everyCB) {
-
-              self.LoadPlugin(folder).then(function(result){everyCB(null, result);}).catch(everyCB);
-            }, function(err, res) {
-              for(var i=0;i<self.loaded.length;i++){
-                self.EnableReload(self.loaded[i]);
+              if(!alreadyAdded){
+                self.plugins.push(plugins[i]);
               }
-                Logging.Info("PluginManager", "Load", "Loaded " + self.loaded.length + " plugin(s)");
-                resolve();
-            });
-
-
-        });
-    }
-    LauchStatic(){
-      var self = this;
-      return new Promise(function(resolve, reject) {
-          Logging.Info("PluginManager", "LauchStatic", "Launching Static Managers.");
-          async.each(self.loaded, function(plugin, callback) {
-            if(plugin.config.static){
-              Logging.Info("PluginManager", "LauchStatic-"+plugin.name, "Static Plugin Found. Launching");
-              self.Launch(plugin.name, "STATIC").then(function() {
-                  Logging.Success("PluginManager", "LauchStatic-"+plugin.name, plugin.name + " launched!");
-                  callback(null,plugin);
-              }).catch(function(err){
-                  Logging.Warning("PluginManager", "LauchStatic-"+plugin.name, plugin.name + " Failed to Launch! - " + err);
-                  callback(err);
-              });
-            }else{
-              callback(null,plugin);
             }
-          },function(err, result) {
+            cb();
+          }).catch(cb);
+        }
+      ], function(err, res){
+
+        timer.stop();
+
+        Logger.Success("PluginManager-"+self.server, "LoadAllPlugins", "Loaded "+ self.plugins.length + " plugins in " + timer.ms + "ms!");
+        timer.reset();
+        resolve();
+      })
+    });
+  }
+
+  RunPluginMessage(pluginID, commandObject){
+
+    var self = this;
+
+
+    var plugin = self.GetInstanceByID(pluginID);
+
+    if(!plugin){
+      self.LaunchPlugin(pluginID, commandObject).then(function(launched){
+        self.instances.push(launched);
+        self.RunCommandBind(launched, commandObject);
+
+      });
+    }else{
+      self.RunCommandBind(plugin, commandObject);
+
+    }
+  }
+
+  LaunchPlugin(pluginID, commandObject){
+    var self = this;
+    Logger.Info("PluginManager-" + this.server, "LaunchPlugin", "Launching Plugin: " + pluginID);
+    return new Promise(function(resolve, reject) {
+      var pluginFile = self.GetPluginByID(pluginID);
+      var _newPlugin = {};
+
+      self.GetScriptRequire(pluginFile).then(function(requireClass){
+        _newPlugin = merge(new requireClass(), pluginFile);
+        _newPlugin.disnode = self.disnode;
+        _newPlugin.pluginManager = self;
+        _newPlugin.server = self.server;
+
+        return self.GetConfigFile(_newPlugin)
+      }).then(function(config){
+        _newPlugin.config = config;
+        return self.GetCommandFile(_newPlugin);
+      }).then(function(commands){
+        _newPlugin.commands =commands;
+        resolve(_newPlugin)
+      }).catch(function(err){
+        console.log(err);
+        reject(err);
+      })
+
+    });
+  }
+
+  RunCommandBind(plugin, messageObject){
+
+    var commandObj = this.GetCommandObject(plugin, messageObject.command);
+
+    if(!plugin[commandObj.run]){
+      Logger.Warning("PluginManager-" + this.server, "RunCommandBind", "No Function Found for: " + commandObj.run);
+      return;
+    }
+    plugin[commandObj.run](messageObject);
+
+  }
+
+  AddServerPlugin(pluginId, cb){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.command   = self.disnode.server.GetCommandInstance(self.server);
+      self.MakeServerFolder();
+      var newPath ="servers/"+self.server;
+
+      var request = http.get("http://www.disnodeteam.com/api/plugins/download/"+pluginId, function(response) {
+        response.pipe(unzip.Extract({ path: newPath }));
+        response.on("end", function(){
+        setTimeout(function () {
+          self.LoadAllPlugins().then(function(){
+            self.command.UpdateAllPrefixes();
             resolve();
           });
-      });
-    }
-    Launch(managerName, server) {
-        var self = this;
-        return new Promise(function(resolve, reject) {
-          Logging.Info("PluginManager", "Launch", "Lauching: " + managerName + " on: " + server)
-            if (!managerName) {
-                reject("[PluginManager 'Launch'] No Manager Name!")
-            }
-            var Manager = self.GetPluginFromLoaded(managerName);
-            if (!Manager) {
-                reject("[PluginManager 'Launch'] No Manager Found!")
-            }
-            var newInstance = new Manager.class(server);
-            newInstance.server = server;
-            newInstance.class = Manager;
-            newInstance.Close = function(){self.ClosePlugin(newInstance);}
-            newInstance.disnode = self.disnode;
-            if(newInstance.Launch){newInstance.Launch();}
-            self.launched.push(newInstance);
-            resolve(newInstance);
-        });
-    }
-    RunPluginMessage(pluginName, commandObj){
-      var self = this;
-      var serverID = commandObj.msg.server;
 
-      var plugins = self.GetPluginsFromLaunched(pluginName, serverID);
-      if(plugins.length != 0){
-        for (var i = 0; i < plugins.length; i++) {
-          self.RunCommandBind(plugins[i], commandObj);
-        }
-      }else{
-        self.Launch(pluginName,serverID).then(function(newInstance){
-          self.RunCommandBind(newInstance, commandObj);
+         }, 1000);
+       })
+
+     });
+    });
+  }
+
+  RemoveServerPlugin(pluginId){
+    var self = this;
+    self.MakeServerFolder();
+    for (var i = 0; i < self.plugins.length; i++) {
+     if(self.plugins[i].isServer == false){
+
+       return;
+     }
+
+     if(self.plugins[i].id == pluginId){
+       var newPath =self.plugins[i].path.replace("plugins/", "servers/"+this.server);
+
+
+       fs.remove(self.plugins[i].path, err => {
+       	if (err) return console.error(err)
+        this.LoadAllPlugins();
+       	console.log('success!')
+       })
+     }
+
+    }
+  }
+
+  MakeServerFolder(){
+    var dir = "./servers/"+this.server;
+    if (!fs.existsSync(dir)){
+      fs.mkdirSync(dir);
+    }
+
+  }
+
+  GetPluginByID(pluginID){
+    for (var i = 0; i < this.plugins.length; i++) {
+      if(this.plugins[i].id == pluginID){return this.plugins[i]}
+    }
+  }
+
+  GetInstanceByID(pluginID){
+    for (var i = 0; i < this.instances.length; i++) {
+
+      if(this.instances[i].id == pluginID){return this.instances[i]}
+    }
+  }
+
+  GetPluginFiles(path, isServer){
+
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      var Plugins = [];
+      var folders= ""
+      try {
+        folders = fs.readdirSync(path);
+      } catch (e) {
+        resolve();
+      }
+
+
+      async.each(folders, function(_folder, cb){
+
+        jsonfile.readFile(path + "/" + _folder + "/plugin.json", function(err,obj){
+          if(!err){
+            obj.path = path + "/" + _folder;
+            obj.isServer = isServer;
+
+            Plugins.push(obj);
+            cb();
+            return;
+          }else{
+            Logger.Warning("PluginManager-"+self.server, "GetPluginFolders", "Error Finding plugin.json file: " + _folder)
+            cb();
+            return;
+          }
+          cb();
+        })
+
+      }, function(err, res){
+
+        resolve(Plugins)
+      })
+    });
+
+  }
+
+
+  GetCommandPrefixes(){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+      var prefix = [];
+
+      async.each(self.plugins, function(plugin,cb){
+
+        self.GetConfigFile(plugin).then(function(config){
+
+          prefix.push({plugin: plugin.id, prefix: config.prefix});
+          cb();
+        }).catch(function(err){
+
+          cb(err);
         });
+      }, function(err, res){
+        if (err) reject(err);
+
+        resolve(prefix);
+      })
+
+    });
+  }
+  GetCommandObject(plugin, commandString){
+    var _cmds = plugin.commands || [];
+    var _found;
+    for (var i = 0; i < _cmds.length; i++) {
+      if(_cmds[i].cmd == commandString){
+        _found = _cmds[i];
       }
     }
-    RunCommandBind(plugin, command){
-      if(!plugin[command.command.run]){
-        Logging.Warning("PluginManager", "RunCommandBind", "No Function Found for: " + command.command.run);
+
+    if(_found){
+      return _found;
+    }else{
+      return {cmd: commandString, run: "default"}
+    }
+  }
+  GetConfigFile(plugin){
+    return new Promise(function(resolve, reject) {
+      if(!plugin.configFile){
+        reject("No Config Set");
         return;
       }
-      plugin[command.command.run](command);
 
-    }
-    GetPluginFromLoaded(name) {
-        var self = this;
-        for (var i = 0; i < self.loaded.length; i++) {
-            if (self.loaded[i].name == name) {
-                return self.loaded[i];
-            }
+      jsonfile.readFile(plugin.path + "/"+plugin.configFile, function(err, obj){
+        if(err){
+          reject(err);
+          return
         }
-    }
-    GetPluginsFromLaunched(name, server) {
-        var self = this;
-        var found = [];
-        for (var i = 0; i < self.launched.length; i++) {
-            if (self.launched[i].class.name == name ) {
-              if(self.launched[i].server == server || self.launched[i].class.config.static){
-                  found.push(self.launched[i]);
+        resolve(obj);
+      });
+    });
+  }
+
+  GetCommandFile(plugin){
+    return new Promise(function(resolve, reject) {
+      if(!plugin.commandsFile){
+        reject("No Command Set");
+        return;
+      }
+
+      jsonfile.readFile(plugin.path + "/"+plugin.commandsFile, function(err, obj){
+        if(err){
+          console.log(err);
+          reject(err);
+          return
+        }
+
+        resolve(obj.commands);
+      });
+    });
+  }
+
+  SetConfigFile(plugin, config){
+    return new Promise(function(resolve, reject) {
+      if(!plugin.configFile){
+        reject("No Config Set");
+        return;
+      }
+
+      jsonfile.writeFile(plugin.path + "/"+plugin.configFile, config, function(err){
+        if(err){
+          reject(err);
+          return
+        }
+        resolve();
+      });
+    });
+  }
+
+  SetCommandFile(plugin, commands){
+    return new Promise(function(resolve, reject) {
+      if(!plugin.commandsFile){
+        reject("No Command Set");
+        return;
+      }
+
+      jsonfile.writeFile(plugin.path + "/"+plugin.commandsFile, commands, function(err){
+        if(err){
+          console.log(err);
+          reject(err);
+          return
+        }
+
+        resolve();
+      });
+    });
+  }
+
+  GetScriptRequire(plugin){
+    return new Promise(function(resolve, reject) {
+      if(!plugin.script){
+        reject("No Script Set");
+        return;
+      }
+
+      var className = plugin.script;
+      var path = plugin.path + "/" + className;
+      async.waterfall([
+          // Check if class exists
+          function(callback) {
+              Logger.Info("PluginManager", "Load-"+plugin.name, "Checking for class");
+              fs.stat(path, function(err, stats) {
+                  if (err) {
+                      Logger.Error("PluginManager", "Load-"+plugin.name, "Failed to find Class (" + path + ")");
+                      callback(err);
+                      return;
+                  } else {
+                      Logger.Success("PluginManager", "Load-"+plugin.name, "Found Class");
+                      callback();
+                  }
+              });
+          },
+          // Attempt to import the class
+          function(callback) {
+            Logger.Info("PluginManager", "Load-"+plugin.name, "Trying to import class");
+              try {
+                  var NpmRequire = require("../" + path);
+
+                  Logger.Success("PluginManager", "Load-"+plugin.name, "Imported");
+
+                  callback(null,NpmRequire);
+              } catch (e) {
+                Logger.Error("PluginManager", "Load-"+plugin.name, "Failed to Import: " + className + " - '" + e  + "'");
+                callback(e, null);
               }
-            }
-        }
-        return found;
-    }
+          },
+      ], function(err, result) {
+          if(err){
+            console.log(err);
+            reject(err);
+            return;
+          }
 
-    ClosePlugin(plugin){
-      var self = this;
+          resolve(result);
 
-      var i = self.launched.indexOf(plugin);
-      Logging.Info("PluginManager", "ClosePlugin", "Plugin: " + plugin.class.name + " closed! ID: " + i + " Server: " + plugin.server);
-      self.launched.splice(i, 1);
+      });
 
-    }
+    });
+  }
+
 }
 
 module.exports = PluginManager;

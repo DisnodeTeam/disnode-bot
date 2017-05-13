@@ -1,4 +1,43 @@
-var net = require('net');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>bot.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Bot.html">Bot</a><ul class='methods'><li data-type='method'><a href="Bot.html#Connect">Connect</a></li><li data-type='method'><a href="Bot.html#Disconnect">Disconnect</a></li><li data-type='method'><a href="Bot.html#Restart">Restart</a></li></ul></li><li><a href="Disnode.html">Disnode</a><ul class='methods'><li data-type='method'><a href="Disnode.html#LoadBotConfig">LoadBotConfig</a></li><li data-type='method'><a href="Disnode.html#OnMessage">OnMessage</a></li><li data-type='method'><a href="Disnode.html#Restart">Restart</a></li><li data-type='method'><a href="Disnode.html#Start">Start</a></li><li data-type='method'><a href="Disnode.html#Stop">Stop</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">bot.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var net = require('net');
 
 var shortid = require('shortid');
 var Discord = require('discord.io');
@@ -68,7 +107,7 @@ class Bot {
 
     /**
      * Disconnect Bot to Discord
-     * @return {Promise<string|err>} A promise to the token.
+     * @return {Promise&lt;string|err>} A promise to the token.
      */
     Disconnect() {
         var self = this;
@@ -93,7 +132,7 @@ class Bot {
     SetUpLocalBinds() {
         var self = this;
         self.client.on('message', function(user, userID, channelID, message, event) {
-            if (self.bind_onMessage && self.disnode.ready) {
+            if (self.bind_onMessage) {
                 var _server = "DM";
                 if (self.client.channels[channelID]) {
                     _server = self.client.channels[channelID].guild_id;
@@ -103,8 +142,7 @@ class Bot {
                     userID: userID,
                     channel: channelID,
                     message: message,
-                    server: _server,
-                    obj: event.d // modify however you want it, added to get message ID and others
+                    server: _server
                 }
                 self.bind_onMessage(msgObject);
             }
@@ -116,13 +154,7 @@ class Bot {
     }
 
 
-    /**
-    * Send a normal message
-    * @param {string} channel - ChannelID of where to send the message
-    * @param {string} msg - The message to send
-    * @param {bool} typing - (Optional)Set typing to true or false when sending the message (default false)
-    * @param {bool} tts - (Optional)Set tts to true or false when sending the message (default false)
-    */
+
     SendMessage(channel, msg, typing = false, tts = false) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -140,14 +172,7 @@ class Bot {
             });
         });
     }
-    /**
-    * Edit a Message
-    * @param {string} channel - ChannelID of where to send the message
-    * @param {string} msgID - Message ID of the message you want to edit
-    * @param {string} msg - The message to send
-    * @param {bool} typing - (Optional)Set typing to true or false when sending the message (default false)
-    * @param {bool} tts - (Optional)Set tts to true or false when sending the message (default false)
-    */
+
     EditMessage(channel, msgID, msg, typing = false, tts = false) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -170,11 +195,6 @@ class Bot {
         });
 
     }
-    /**
-    * send a message as a embed
-    * @param {string} channel - ChannelID of where to send the message
-    * @param {object} embed - the Embed Object to send
-    */
     SendEmbed(channel, embed) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -191,13 +211,6 @@ class Bot {
         });
 
     }
-    /**
-    * send an embed as a compact one, less lines defining a embed object
-    * @param {string} channel - ChannelID of where to send the message
-    * @param {string} title - The title of the embed
-    * @param {string} body - The body of the embed
-    * @param {int|RGBint} color - (Optional)RGB Int of what color the embed should be (default 3447003)
-    */
     SendCompactEmbed(channel, title, body, color = 3447003) {
         var self = this;
         self.client.sendMessage({
@@ -214,12 +227,12 @@ class Bot {
             }
         });
     }
-    /**
-    * Edit an embed
-    * @param {string} channel - ChannelID of where to send the message
-    * @param {string} msgID - Message ID of the message you want to edit
-    * @param {object} embed - the Embed Object to send
-    */
+
+
+    SendReactionEmbed(channel, user, embed, reactions){
+      var self = this;
+
+    }
     EditEmbed(channel, msgID, embed) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -236,10 +249,6 @@ class Bot {
             });
         });
     }
-    /**
-    * Set the bots playing game
-    * @param {string} status - What you want your bot to be playing
-    */
     SetStatus(status) {
         var self = this;
         self.client.setPresence({
@@ -248,21 +257,14 @@ class Bot {
             }
         });
     }
-    /**
-    * Set the bots username
-    * @param {string} name - What you want your bot's username to be
-    */
+
     SetUsername(name) {
         var self = this;
         self.client.editUserInfo({
             username: name
         });
     }
-    /**
-    * Allows you to change a server's name (need proper permissions to do)
-    * @param {string} serverID - Server ID of the server you want to change
-    * @param {string} servername - What you wantto set the servername to be
-    */
+
     SetServerName(serverId, servername) {
         var self = this;
         self.client.editServer({
@@ -271,31 +273,6 @@ class Bot {
         });
     }
 
-    Kick(sID, uID) {
-        var self = this;
-        self.client.kick({serverID: sID, userID: uID});
-    }
-
-    Ban(sID, uID, Days) {
-        var self = this;
-        self.client.ban({serverID: sID, userID: uID, lastDays: Days});
-    }
-
-    Unban(sID, uID) {
-        var self = this;
-        self.client.unban({serverID: sID, userID: uID});
-    }
-
-    Mute(sID, uID) {
-        var self = this;
-        self.client.mute({serverID: sID, userID: uID});
-    }
-
-    Unmute(sID, uID) {
-        var self = this;
-        self.client.unmute({serverID: sID, userID: uID});
-    }
-    
     JoinVoiceChannel(voiceID) {
         var self = this;
         this.client.joinVoiceChannel(voiceID, function(err) {
@@ -338,9 +315,6 @@ class Bot {
         }
         return server.members[userId];
     }
-    GetServerMemberByID(userID,serverID){
-      return this.client.servers[serverID].members[userID];
-    }
     GetUserRoles(serverId, userId) {
         var user = this.GetUserByID(serverId, userId);
         if (!user) {
@@ -368,107 +342,27 @@ class Bot {
     }
     GetUserInfo(UserID) {
         var self = this;
-        return self.client.users[UserID];
-    }
-    GetSnowflakeDate(resourceID) {
-        return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
-    }
-    GetMessage(channelID, MessageID){
-      var self = this;
-      return new Promise(function(resolve, reject) {
-        self.client.getMessage({
-          channelID: channelID,
-          MessageID: MessageID
-        }, function (err, res) {
-          if(err){
-            reject(err);
-          }else {
-            resolve(res);
-          }
-        })
-      });
-    }
-    AddReaction(channelID, messageID, reaction){
-      var self = this;
-      return new Promise(function(resolve, reject) {
-        self.client.addReaction({
-          channelID: channelID,
-          messageID: messageID,
-          reaction: reaction
-        }, function(err, res) {
-          if(err){
-            reject(err);
-          }else {
-            resolve(res);
-          }
-        });
-      });
-    }
-    GetReaction(channelID, messageID, reaction){
-      var self = this;
-      return new Promise(function(resolve, reject) {
-        self.client.getReaction({
-          channelID: channelID,
-          messageID: messageID,
-          reaction: reaction
-        }, function(err, res) {
-          if(err){
-            reject(err);
-          }else {
-            resolve(res);
-          }
-        });
-      });
-    }
-    RemoveReaction(channelID, messageID, reaction){
-      var self = this;
-      return new Promise(function(resolve, reject) {
-        self.client.removeReaction({
-          channelID: channelID,
-          messageID: messageID,
-          reaction: reaction
-        }, function(err, res) {
-          if(err){
-            reject(err);
-          }else {
-            resolve(res);
-          }
-        });
-      });
-    }
-    RemoveAllReactions(channelID, messageID){
-      var self = this;
-      return new Promise(function(resolve, reject) {
-        self.client.AddReaction({
-          channelID: channelID,
-          messageID: messageID
-        }, function(err, res) {
-          if(err){
-            reject(err);
-          }else {
-            resolve(res);
-          }
-        });
-      });
-    }
-    pageResults(arr, page, perPage=10){
-      var returnArr = [];
-      var maxindex;
-      var startindex;
-      if (page == 1) {
-        page = 1;
-        startindex = 0
-        maxindex = perPage;
-      }else {
-        maxindex = (page * perPage);
-        startindex = maxindex - perPage;
-      }
-      for (var i = startindex; i < arr.length; i++) {
-        if(i == maxindex)break;
-        returnArr.push(arr[i]);
-      }
-      return returnArr;
+        return self.client.users[userID];
     }
 }
 
 module.exports = Bot;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat May 13 2017 12:47:27 GMT-0700 (Pacific Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
