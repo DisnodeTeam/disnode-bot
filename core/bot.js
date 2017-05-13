@@ -55,7 +55,6 @@ class Bot {
                 self.client = new Discord.Client(clientSettings);
                 self.client.on('ready', function(event) {
                     self.SetUpLocalBinds();
-
                     resolve();
                 });
             }, self.shardID * 5500);
@@ -93,6 +92,7 @@ class Bot {
     SetUpLocalBinds() {
         var self = this;
         self.client.on('message', function(user, userID, channelID, message, event) {
+        
             if (self.bind_onMessage && self.disnode.ready) {
                 var _server = "DM";
                 if (self.client.channels[channelID]) {
@@ -295,7 +295,7 @@ class Bot {
         var self = this;
         self.client.unmute({serverID: sID, userID: uID});
     }
-    
+
     JoinVoiceChannel(voiceID) {
         var self = this;
         this.client.joinVoiceChannel(voiceID, function(err) {

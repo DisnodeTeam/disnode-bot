@@ -35,7 +35,7 @@ class PluginManager{
             if(!plugins){cb();return}
             for (var i = 0; i < plugins.length; i++) {
               self.plugins.push(plugins[i]);
-              console.log("ADDING: " + plugins[i].name);
+
             }
             cb();
           })
@@ -174,7 +174,7 @@ class PluginManager{
        fs.remove(self.plugins[i].path, err => {
        	if (err) return console.error(err)
         this.LoadAllPlugins();
-       	console.log('success!')
+
        })
      }
 
