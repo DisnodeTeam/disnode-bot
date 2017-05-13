@@ -18,7 +18,7 @@ class CasinoUtils {
       self.disnode.db.InitPromise({}).then(function(dbo) {
         self.DB = dbo;
         self.DB.Find("casinoObj", {}).then(function(res) {
-          self.state.data.casinoObj = res[0];
+          if(self.plugin.stateAuth)self.state.data.casinoObj = res[0];
           self.updateCoroutine();
           resolve();
         });

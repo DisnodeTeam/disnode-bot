@@ -74,6 +74,16 @@
       "cmd": "21",
       "desc": "*Play blackjack*",
       "run": "commandBlackjack"
+    },
+    {
+      "cmd": "dev",
+      "desc": "*ADMIN COMMAND YOU CANT RUN THIS*",
+      "run": "commandAdmin"
+    },
+    {
+      "cmd": "dev",
+      "desc": "*MOD COMMAND YOU CANT RUN THIS*",
+      "run": "commandAdmin"
     }
   ]
 }
