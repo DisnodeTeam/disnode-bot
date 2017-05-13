@@ -131,7 +131,9 @@ class PluginManager{
         return self.GetCommandFile(_newPlugin);
       }).then(function(commands){
         _newPlugin.commands =commands;
-
+        _newPlugin.Destory = function(){
+          self.DestoryPlugin(_newPlugin.id);
+        }
         if(_newPlugin.Init){
           _newPlugin.Init(function(){
             resolve(_newPlugin);
@@ -146,6 +148,14 @@ class PluginManager{
 
     });
   }
+
+
+  DestoryPlugin(pluginID){
+    var self = this;
+    var i = self.instances.indexOf(pluginID);
+    Logger.Success("PluginManager-" + this.server, "DestoryPlugin", "Destroyed Plugin Instance: " + pluginID);
+    self.instances.splice(i, 1);
+  }
   /**
    * Runs a function in a plugin (bind)
    * @param {string} pluginID - Plugin to Run it
@@ -159,7 +169,7 @@ class PluginManager{
       Logger.Warning("PluginManager-" + this.server, "RunCommandBind", "No Function Found for: " + commandObj.run);
       return;
     }
-    pluginID[commandObj.run](messageObject);
+    pluginID[commandObj.run](commandObject);
 
   }
   /**

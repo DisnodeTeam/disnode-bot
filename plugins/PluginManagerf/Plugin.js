@@ -1,9 +1,7 @@
 
 const axios = require('axios');
 class PluginManager {
-  Init(cb){
-    
-  }
+
   default(command){ // This is the default command that is ran when you do your bot prefix and your plugin prefix example   !ping
 
 
@@ -62,7 +60,7 @@ class PluginManager {
         footer: {}
     });
 
-
+    self.Destory();
 
   }
   commandInfo(command){
