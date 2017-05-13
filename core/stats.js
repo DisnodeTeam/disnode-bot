@@ -1,5 +1,5 @@
 const Logging = require('disnode-logger');
-
+const pmx = require('pmx');
 class Stats {
   constructor(disnode) {
     var self = this;
@@ -11,8 +11,39 @@ class Stats {
     this.memberCount = 0;
     this.channelCount = 0;
     this.directMessageCount = 0;
-    this.serverManagers = 0;
-    
+
+    this.pluginManagers = 0;
+    this.commandManagers = 0;
+    this.pluginInstances = 0;
+
+    var metric1 = probe.metric({
+      name    : 'Plugin Managers',
+      value   : function() {
+        return this.pluginManagers
+      }
+    });
+
+    var metric2 = probe.metric({
+      name    : 'Command Managers',
+      value   : function() {
+        return this.commandManagers
+      }
+    });
+
+    var metric3 = probe.metric({
+      name    : 'Plugin Instances',
+      value   : function() {
+        return this.pluginInstances
+      }
+    });
+
+    var metric4 = probe.metric({
+      name    : 'messagesParsed',
+      value   : function() {
+        return this.messagesParsed
+      }
+    });
+
   }
   getUptime(){
     var self = this;

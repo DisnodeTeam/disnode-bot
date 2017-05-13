@@ -124,7 +124,7 @@ class PluginManager{
         pluginFile.server = self.server;
         _newPlugin = merge(new requireClass(), pluginFile);
 
-
+          self.disnode.stats.pluginInstances++;
         return self.GetConfigFile(_newPlugin)
       }).then(function(config){
         _newPlugin.config = config;
@@ -136,6 +136,7 @@ class PluginManager{
         }
         if(_newPlugin.Init){
           _newPlugin.Init(function(){
+
             resolve(_newPlugin);
           })
         }else{
@@ -155,6 +156,7 @@ class PluginManager{
     var i = self.instances.indexOf(pluginID);
     Logger.Success("PluginManager-" + this.server, "DestoryPlugin", "Destroyed Plugin Instance: " + pluginID);
     self.instances.splice(i, 1);
+    self.disnode.stats.pluginInstances--;
   }
   /**
    * Runs a function in a plugin (bind)

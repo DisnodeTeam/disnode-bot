@@ -36,7 +36,22 @@ class DisnodePlugin {
                 name: 'Total Messages',
                 inline: true,
                 value: self.disnode.stats.messages,
-            }, {
+            },
+            {
+               name: 'Plugin Instances',
+               inline: true,
+               value: self.disnode.stats.pluginInstances,
+           },
+           {
+              name: 'Plugin Managers',
+              inline: true,
+              value: self.disnode.stats.pluginManagers,
+          },
+          {
+             name: 'Command Managers',
+             inline: true,
+             value: self.disnode.stats.commandManagers,
+         }, {
                 name: 'Shard #',
                 inline: true,
                 value: self.disnode.bot.shardID + ' of ' + self.disnode.botConfig.shardCount,

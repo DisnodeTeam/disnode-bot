@@ -23,6 +23,7 @@ class ServerManager{
 
     var _newInstance = new CommandManager(self.disnode,server);
     self.commandManagers.push(_newInstance);
+    self.disnode.stats.commandManagers++;
 
     logger.Success("ServerManager", "GetCommandInstance", "CommandManager Created: " + server)
 
@@ -43,7 +44,7 @@ class ServerManager{
 
       var _newInstance = new CommandManager(self.disnode,server,function(){
         self.commandManagers.push(_newInstance);
-
+          self.disnode.stats.commandManagers++;
         logger.Success("ServerManager", "GetCommandInstance", "CommandManager Created: " + server)
 
         resolve(_newInstance);
@@ -64,7 +65,7 @@ class ServerManager{
 
     var _newInstance = new PluginManager(self.disnode,server);
     self.pluginManagers.push(_newInstance);
-
+      self.disnode.stats.pluginManagers++;
     logger.Success("ServerManager", "GetCommandInstance", "PluginManager Created: " + server)
 
     return _newInstance;
