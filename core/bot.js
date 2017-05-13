@@ -377,7 +377,7 @@ class Bot {
     * @param {string} serverID - ID of the server
     * @param {string} userID - Id of the user
     */
-    GetUserByID(userID,serverID){
+    GetUserByID(serverID,userID){
       return this.client.servers[serverID].members[userID];
     }
     /**
