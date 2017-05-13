@@ -62,6 +62,8 @@ class PluginManager{
                 self.plugins.push(plugins[i]);
               }
             }
+
+
             cb();
           }).catch(cb);
         }
@@ -138,11 +140,11 @@ class PluginManager{
   AddServerPlugin(pluginId, cb){
     var self = this;
     return new Promise(function(resolve, reject) {
-      self.command   = self.disnode.server.GetCommandInstance(self.server);
+
       self.MakeServerFolder();
       var newPath ="servers/"+self.server;
 
-      var request = http.get("http://localhost:8000/api/plugins/download/"+pluginId, function(response) {
+      var request = http.get("http://www.disnodeteam.com/api/plugins/download/"+pluginId, function(response) {
         response.pipe(unzip.Extract({ path: newPath }));
         response.on("end", function(){
         setTimeout(function () {
@@ -313,6 +315,42 @@ class PluginManager{
         }
 
         resolve(obj.commands);
+      });
+    });
+  }
+
+  SetConfigFile(plugin, config){
+    return new Promise(function(resolve, reject) {
+      if(!plugin.configFile){
+        reject("No Config Set");
+        return;
+      }
+
+      jsonfile.writeFile(plugin.path + "/"+plugin.configFile, config, function(err){
+        if(err){
+          reject(err);
+          return
+        }
+        resolve();
+      });
+    });
+  }
+
+  SetCommandFile(plugin, commands){
+    return new Promise(function(resolve, reject) {
+      if(!plugin.commandsFile){
+        reject("No Command Set");
+        return;
+      }
+
+      jsonfile.writeFile(plugin.path + "/"+plugin.commandsFile, commands, function(err){
+        if(err){
+          console.log(err);
+          reject(err);
+          return
+        }
+
+        resolve();
       });
     });
   }

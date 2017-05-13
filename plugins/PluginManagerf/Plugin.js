@@ -74,7 +74,7 @@ class PluginManager {
     }
     self.disnode.bot.SendMessage(command.msg.channel,"**Getting Plugin:** `" + command.params[0] + "`")
 
-    axios.get(" http://localhost:8000/api/plugins/"+command.params[0]).then(function(res){
+    axios.get("http://www.disnodeteam.com/api/plugins/"+command.params[0]).then(function(res){
       var suc = res.data.type;
       switch(suc){
         case "SUC":
@@ -117,7 +117,7 @@ class PluginManager {
   commandBrowse(command){
     var self = this;
 
-    axios.get(" http://localhost:8000/api/plugins/").then(function(res){
+    axios.get("http://www.disnodeteam.com/api/plugins/").then(function(res){
       var suc = res.data.type;
       switch(suc){
         case "SUC":
@@ -164,6 +164,53 @@ class PluginManager {
     }
 
     self.pluginManager.RemoveServerPlugin(command.params[0]);
+  }
+
+
+  commandSet(command){
+    var self = this;
+    var plugin = command.params[0];
+    var file = command.params[1];
+    var key = command.params[2];
+    var value = command.params[3];
+
+    if(!plugin){
+        this.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", "Please Enter a Plugin ID!" );
+        return;
+    }
+    if(!file){
+        this.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", "Please Enter a file (config, command)!" );
+        return;
+    }
+    if(!key){
+        this.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", "Please Enter a key!" );
+        return;
+    }
+    if(!value){
+        this.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", "Please Enter a value!" );
+        return;
+    }
+
+    var pluginManager = self.disnode.server.GetPluginInstance(self.server);
+
+    switch(file){
+      case "config":
+
+        var pluginClass = pluginManager.GetPluginByID(plugin);
+        pluginManager.GetConfigFile(pluginClass).then(function(obj){
+          var newConfig = obj;
+          newConfig[key] = value;
+          pluginManager.SetConfigFile(pluginClass,newConfig).then(function(){
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Config Set!", "Plugin Config Updated! Reloading Plugins..." );
+              pluginManager.LoadAllPlugins().then(function(){
+                var command   = self.disnode.server.GetCommandInstance(self.server);
+                command.UpdateAllPrefixes();
+              });
+          })
+        });
+      break;
+    }
+
   }
 
 

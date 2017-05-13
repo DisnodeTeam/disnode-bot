@@ -1,7 +1,0 @@
-{
-  "name":"Time Conversion",
-  "id": "time-conversion",
-  "script": "TimeConversion.js",
-  "commandsFile": "Commands.json",
-  "configFile" : "Config.json"
-}
