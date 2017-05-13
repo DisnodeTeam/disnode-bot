@@ -4,7 +4,8 @@
   "description": "A Discord.js Wrapper for providing basic functions to Discord Bots.",
   "main": "dist/Disnode.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gen-docs": "jsdoc -c jsdoc.json"
   },
   "repository": {
     "type": "git",

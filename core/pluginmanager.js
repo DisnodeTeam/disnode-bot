@@ -62,8 +62,6 @@ class PluginManager{
                 self.plugins.push(plugins[i]);
               }
             }
-
-
             cb();
           }).catch(cb);
         }
@@ -140,7 +138,7 @@ class PluginManager{
   AddServerPlugin(pluginId, cb){
     var self = this;
     return new Promise(function(resolve, reject) {
-
+      self.command   = self.disnode.server.GetCommandInstance(self.server);
       self.MakeServerFolder();
       var newPath ="servers/"+self.server;
 

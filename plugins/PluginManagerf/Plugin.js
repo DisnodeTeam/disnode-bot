@@ -17,7 +17,7 @@ class PluginManager {
     }
     self.disnode.bot.SendMessage(command.msg.channel,"**Downloading Plugin:** `" + command.params[0] + "`")
     self.pluginManager.AddServerPlugin(command.params[0]).then(function(){
-      this.disnode.bot.SendCompactEmbed(command.msg.channel, "Success :white_check: ", "**Added Plugin! This plugin can now be used and configured for this server!:** `" + command.params[0] + "`");
+      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Success :white_check_mark: ", "**Added Plugin! This plugin can now be used and configured for this server!:** `" + command.params[0] + "`");
 
     });
   }
