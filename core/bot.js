@@ -213,6 +213,31 @@ class Bot {
         });
     }
 
+    Kick(sID, uID) {
+        var self = this;
+        self.client.kick({serverID: sID, userID: uID});
+    }
+
+    Ban(sID, uID, Days) {
+        var self = this;
+        self.client.ban({serverID: sID, userID: uID, lastDays: Days});
+    }
+
+    Unban(sID, uID) {
+        var self = this;
+        self.client.unban({serverID: sID, userID: uID});
+    }
+
+    Mute(sID, uID) {
+        var self = this;
+        self.client.mute({serverID: sID, userID: uID});
+    }
+
+    Unmute(sID, uID) {
+        var self = this;
+        self.client.unmute({serverID: sID, userID: uID});
+    }
+    
     JoinVoiceChannel(voiceID) {
         var self = this;
         this.client.joinVoiceChannel(voiceID, function(err) {
