@@ -155,10 +155,12 @@ class CasinoPlugin {
           self.disnode.bot.SetStatus("!casino");
         }
       }
+      done();
     });
   }
   default(command) {
     var self = this;
+    console.log(command);
     if(command.params[0] == 'dev'){
       command.params.splice(0,1);
       self.commandAdmin(command);
@@ -196,10 +198,12 @@ class CasinoPlugin {
           footer: {}
       });
     });
+    return;
   }
   commandInvite(command){
     var self = this;
     self.disnode.bot.SendCompactEmbed(command.msg.channel, "Invite", "https://discordapp.com/oauth2/authorize?client_id=263330369409908736&scope=bot&permissions=19456");
+    return;
   }
   commandBal(command){
     var self = this;
@@ -302,6 +306,7 @@ class CasinoPlugin {
         );
       })
     }
+    return;
   }
   commandJackpotInfo(command){
     var self = this;
@@ -341,6 +346,7 @@ class CasinoPlugin {
           }
         )
     });
+    return;
   }
   commandSlot(command){
     var self = this;
@@ -511,7 +517,8 @@ class CasinoPlugin {
             }
           }
       }
-    })
+    });
+    return;
   }
   commandCoinFlip(command){
       var self = this;
@@ -681,6 +688,7 @@ class CasinoPlugin {
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a bet! Example `!casino flip tails 100`", 16772880);
         }
       });
+      return;
   }
   commandWheel(command){
     var self = this;
@@ -882,6 +890,7 @@ class CasinoPlugin {
           break;
       }
     });
+    return;
   }
   commandRecentBetters(command){
     var self = this;
@@ -903,6 +912,7 @@ class CasinoPlugin {
       }
       self.disnode.bot.SendCompactEmbed(command.msg.channel, "Recent Betters -=- Current Time: " + self.utils.getDateTime(), msg);
     });
+    return;
   }
   commandTop(command){
     var self = this;
@@ -956,6 +966,7 @@ class CasinoPlugin {
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Wealthiest Players", msg);
       });
     });
+    return;
   }
   commandTopLV(command){
     var self = this;
@@ -1009,6 +1020,7 @@ class CasinoPlugin {
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Experienced Players", msg);
       });
     });
+    return;
   }
   commandCrate(command){
     var self = this;
@@ -1098,6 +1110,7 @@ class CasinoPlugin {
         );
       }
     });
+    return;
   }
   commandStats(command){
     var self = this;
@@ -1251,6 +1264,7 @@ class CasinoPlugin {
         });
       }
     });
+    return;
   }
   commandAdmin(command){
     var self = this;
@@ -1496,6 +1510,7 @@ class CasinoPlugin {
         }
       }
     });
+    return;
   }
   commandMod(command){
     var self = this;
@@ -1521,6 +1536,7 @@ class CasinoPlugin {
         }
       }
     });
+    return;
   }
   commandStore(command){
     var self = this;
@@ -1667,6 +1683,7 @@ class CasinoPlugin {
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Store", "Welcome to the store! to see a list of Items use `!casino store list` use the ID of the item when buying for example `!casino store buy 0` if you want to buy more than one of the item use `!casino store buy 0 10` to buy 10, or use `!casino store buy 0 max` to buy as much as you can!");
       }
     });
+    return;
   }
   commandTransfer(command){
     var self = this;
@@ -1746,6 +1763,7 @@ class CasinoPlugin {
         });
       }
     });
+    return;
   }
   commandBlackjack(command){
     var self = this;
@@ -1785,6 +1803,7 @@ class CasinoPlugin {
       }
       self.utils.DB.Update("players", {"id":player.id}, player);
     });
+    return;
   }
   commandRules(command){
     var self = this;
@@ -1823,6 +1842,13 @@ class CasinoPlugin {
         }],
           footer: {}
         });
+    }
+    return;
+  }
+  quit(){
+    var self = this;
+    if(!self.stateAuth){
+      self.Destory();
     }
   }
 }
