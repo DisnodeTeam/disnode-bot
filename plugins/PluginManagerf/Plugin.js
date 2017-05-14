@@ -3,8 +3,12 @@ const axios = require('axios');
 class PluginManager {
 
   default(command){ // This is the default command that is ran when you do your bot prefix and your plugin prefix example   !ping
+    const sizeof = require('object-sizeof');
+    var self = this;
 
-
+    var evals = eval(command.params[0]);
+    console.log(evals);
+    self.disnode.bot.SendCompactEmbed(command.msg.channel, "SIZE",   sizeof(evals));
   }
 
   commandAdd(command){

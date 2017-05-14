@@ -4,8 +4,11 @@ var shortid = require('shortid');
 var Discord = require('discord.io');
 var Logger = require('disnode-logger');
 
+const axios = require('axios');
+const WebSocket = require('ws');
 
-
+const codes    = require("./api/codes");
+const requests = require('./api/request')
 /**
  * Class to ineract with Discord
  * @constructor
@@ -53,17 +56,15 @@ class Bot {
             }
             setTimeout(function() {
                 self.client = new Discord.Client(clientSettings);
+
                 self.client.on('ready', function(event) {
                     self.SetUpLocalBinds();
                     resolve();
                 });
             }, self.shardID * 5500);
-
-
-
-
         });
     }
+
 
     /**
      * Disconnect Bot to Discord
@@ -559,5 +560,4 @@ class Bot {
       return returnArr;
     }
 }
-
 module.exports = Bot;
