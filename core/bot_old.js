@@ -9,26 +9,21 @@ const WebSocket = require('ws');
 
 const codes    = require("./api/codes");
 const requests = require('./api/request')
-const async    = require('async');
-var EventEmitter = require('events').EventEmitter;
-
 /**
  * Class to ineract with Discord
  * @constructor
  * @param {string} key - Discord Bot Key
  * @param {DisnodeObj} disnode - Refrence to Disnode Class (disnode.js)
  */
-class Bot extends EventEmitter{
+class Bot {
     constructor(key, disnode) {
-        super();
-        this.key            = key;
-        this.client         = {};
-        this.disnode        = disnode;
+        this.key = key;
+        this.client = {};
+        this.disnode = disnode;
         this.bind_onMessage = null;
-        this.isRemote       = false;
-        this.remoteID       = "";
-        this.shardID        = 0;
-
+        this.isRemote = false;
+        this.remoteID = "";
+        this.shardID = 0;
     }
     /**
      * Connect bot to Discord
@@ -36,91 +31,41 @@ class Bot extends EventEmitter{
     Connect() {
         var self = this;
         return new Promise(function(resolve, reject) {
-          self.GetGatewayURL().then(function(url){
-            return self.ConnectToGateway(url)
-          }).then(function(){
-            self.on("READY",function(){
-              resolve();
-            })
-          }).catch(function(err){
-            Logger.Error("Bot", "Connect", "Connection Error: " + err);
-          })
+
+            var clientSettings = {
+                autorun: true,
+                token: self.key
+            };
+
+
+            if (self.disnode.botConfig.shardCount) {
+                var method = self.disnode.botConfig.shardMode || "com";
+
+                switch (method) {
+                    case "pm2":
+                        self.shardID = Number(process.env.pm_id) || 0;
+                        break;
+                    case "arg":
+                        self.shardID = Number(process.argv[2]) || 0;
+                        break;
+                }
+
+                Logger.Info("BotJS", "Connect", "Sharding: " + self.shardID + "/" + self.disnode.botConfig.shardCount)
+                clientSettings.shard = [self.shardID, self.disnode.botConfig.shardCount]
+
+            }
+            setTimeout(function() {
+                self.client = new Discord.Client(clientSettings);
+
+                self.client.on('ready', function(event) {
+                    self.SetUpLocalBinds();
+                    resolve();
+                });
+            }, self.shardID * 5500);
         });
     }
 
-    GetGatewayURL(){
-      var self = this;
-      return new Promise(function(resolve, reject) {
-        Logger.Info("Bot", "GetGatewayURL", "Aquiring Gatway URL...");
-        axios.get('https://discordapp.com/api/gateway/bot', {
-          headers: {
-            'Authorization': "Bot " + self.key
-          }
-        }).then(function (response) {
-          Logger.Success("Bot", "GetGatewayURL", "Aquired Gatway URL!");
-            var url = response.data.url + "/?encoding=json&v=5";
-          resolve(url)
-        }).catch(function(err){
-          Logger.Error("Bot", "GetGatewayURL", "Error Aquiring Gatway URL: " + err);
-          reject(err);
-        });
-      });
-    }
 
-    ConnectToGateway(url){
-      var self = this;
-      return new Promise(function(resolve, reject) {
-        Logger.Info("Bot", "ConnectToGateway", "Connecting to gateway");
-        self.ws = new WebSocket(url);
-
-        self.BindSocketEvents();
-
-        self.ws.on('open', function(){
-          Logger.Success("Bot", "ConnectToGateway", "Connected to gateway!");
-          resolve();
-        });
-
-      });
-    }
-
-
-    BindSocketEvents(){
-      var self = this;
-      self.ws.on("message",function(data,flags){self.OnWSMessage(data, flags);});
-    }
-    OnWSMessage(data,flags){
-      data = JSON.parse(data);
-      var operation = data.op;
-      var self = this;
-      switch(operation){
-        case codes.OPCode.HELLO:
-          self.wsIdentify();
-        break;
-
-        case codes.OPCode.DISPATCH:
-          self.handleDispatch(data);
-        break;
-      }
-    }
-
-    wsIdentify(){
-      var self = this;
-      Logger.Info("Bot", "wsIdentify", "Sending ID to Gateway");
-      var packet = requests.identify(this.key);
-      self.ws.send(JSON.stringify(packet));
-    }
-
-    handleDispatch(data){
-      var type = data.t;
-      var self = this;
-
-      switch(type){
-        case "READY":
-          self.emit("READY");
-          x
-        break;
-      }
-    }
     /**
      * Disconnect Bot to Discord
      * @return {Promise<string|err>} A promise to the token.
