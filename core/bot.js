@@ -29,6 +29,9 @@ class Bot extends EventEmitter{
         this.remoteID       = "";
         this.shardID        = 0;
 
+        this.servers        = {count: 0};
+        this.members        = {count: 0};
+        this.channels       = {count: 0};
     }
     /**
      * Connect bot to Discord
@@ -113,13 +116,38 @@ class Bot extends EventEmitter{
     handleDispatch(data){
       var type = data.t;
       var self = this;
-
+      console.log(type);
       switch(type){
-        case "READY":
+        case codes.dispatch.READY:
           self.emit("READY");
-          x
+        break;
+
+        case codes.dispatch.MESSAGE_CREATE:
+          self.emit("message", data.d);
+        break;
+
+        case codes.dispatch.GUILD_CREATE:
+          self.emit('guild_create', data.d);
+          self.handleGuildCreate(data.d);
         break;
       }
+    }
+
+    handleGuildCreate(data){
+      this.servers[data.id] = data;
+
+      for(var i=0;i<data.channels.length;i++){
+        data.channels[i].guild_id = data.id;
+
+        this.channels[data.channels[i].id] = data.channels[i];
+        this.channels.count += 1;
+
+      }
+      for(var i=0;i<data.members.length;i++){
+        this.members[data.members[i].id] == data.members[i];
+        this.members.count+= 1 ;
+      }
+      console.log("ADDED NEW SERVER: " + this.channels.count + " CHANNELS, " + this.members.count);
     }
     /**
      * Disconnect Bot to Discord
@@ -147,28 +175,35 @@ class Bot extends EventEmitter{
 
     SetUpLocalBinds() {
         var self = this;
-        self.client.on('message', function(user, userID, channelID, message, event) {
-            var firstLetter = message.substring(0, self.disnode.botConfig.prefix.length);
-            if (self.bind_onMessage && self.disnode.ready && firstLetter == self.disnode.botConfig.prefix) {
+        self.on('message', function(data) {
+            var firstLetter = data.content.substring(0, self.disnode.botConfig.prefix.length);
+            if (self.disnode.ready && firstLetter == self.disnode.botConfig.prefix) {
                 var _server = "DM";
-                if (self.client.channels[channelID]) {
-                    _server = self.client.channels[channelID].guild_id;
+                if (self.channels[data.channel_id]) {
+                    _server = self.channels[data.channel_id].guild_id;
+                    console.log(_server);
                 }
                 var msgObject = {
-                    user: user,
-                    userID: userID,
-                    channel: channelID,
-                    message: message,
+                    user: data.author.username,
+                    userID: data.author.id,
+                    channel: data.channel_id,
+                    message: data.content,
                     server: _server,
-                    obj: event.d // modify however you want it, added to get message ID and others
-                }
-                self.bind_onMessage(msgObject);
-            }
-        });
-    }
+                    obj: data
+                };
 
-    bindOnMessage(msgFunction) {
-        this.bind_onMessage = msgFunction;
+                this.disnode.server.GetCommandInstancePromise(msgObject.server).then(function(inst){
+
+                  if(inst){
+                    inst.RunMessage(msgObject);
+                  }else{
+                    Logging.Warning("Bot", "Message", "No Command Handler!");
+                  }
+                });
+
+            }
+
+        });
     }
 
 
@@ -182,18 +217,23 @@ class Bot extends EventEmitter{
     SendMessage(channel, msg, typing = false, tts = false) {
         var self = this;
         return new Promise(function(resolve, reject) {
-            self.client.sendMessage({
-                to: channel,
-                message: msg,
-                typing: typing,
-                tts: tts
-            }, function(err, resp) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(resp);
-                }
-            });
+
+          var msgObject = {
+              content: msg,
+              typing: typing,
+              tts: tts
+          };
+          console.log(channel);
+          axios.post('https://discordapp.com/api/channels/'+channel+'/messages', msgObject,
+            {headers: {'Authorization': "Bot " + self.key}})
+          .then(function (response) {
+            resolve(resp.data);
+          })
+          .catch(function(err){
+            console.log(err);
+            reject(err);
+          });
+
         });
     }
     /**
@@ -256,8 +296,7 @@ class Bot extends EventEmitter{
     */
     SendCompactEmbed(channel, title, body, color = 3447003) {
         var self = this;
-        self.client.sendMessage({
-            to: channel,
+        var msgObject = {
             embed: {
                 color: color,
                 author: {},
@@ -268,6 +307,15 @@ class Bot extends EventEmitter{
                 }],
                 footer: {}
             }
+        };
+
+        axios.post('https://discordapp.com/api/channels/'+channel+'/messages', msgObject,
+          {headers: {'Authorization': "Bot " + self.key}})
+        .then(function (response) {
+          resolve(resp.data);
+        })
+        .catch(function(err){
+          reject(err);
         });
     }
     /**
@@ -434,7 +482,7 @@ class Bot extends EventEmitter{
     * @param {string} userID - Id of the user
     */
     GetUserByID(serverID, userID){
-      return this.client.servers[serverID].members[userID];
+      return this.servers[serverID].members[userID];
     }
     /**
     * Gets the roles that the specified user in the server has

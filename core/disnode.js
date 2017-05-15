@@ -46,7 +46,7 @@ class Disnode {
         },
         function(callback) {
           Logging.Info("Disnode", "Start", "Binding Events");
-          self.bot.bindOnMessage((data) => self.OnMessage(data));
+          self.bot.SetUpLocalBinds();
           Logging.Success("Disnode", "Start", "Binded Events");
           callback();
         },

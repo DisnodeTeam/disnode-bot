@@ -93,7 +93,7 @@ class CommandManager {
     }
 
     GetCommandData(msgObj, ignoreFirst, callback) {
-
+      
         var self = this;
         var msg = msgObj.message;
         var firstLetter = msg.substring(0, 1);
