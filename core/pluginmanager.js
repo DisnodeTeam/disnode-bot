@@ -280,7 +280,11 @@ class PluginManager{
           if(!err){
             obj.path = path + "/" + _folder;
             obj.isServer = isServer;
-
+            if(!obj.load){
+                Logger.Warning("PluginManager-"+self.server, "GetPluginFolders", "Not loading: " + _folder)
+              cb();
+              return
+            }
             Plugins.push(obj);
             cb();
             return;
