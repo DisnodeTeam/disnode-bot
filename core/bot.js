@@ -370,8 +370,18 @@ class Bot extends EventEmitter{
     * @param {string} userID - ID of the user going to be kicked
     */
     Kick(sID, uID) {
+      var self = this;
+      return new Promise(function(resolve, reject) {
         var self = this;
-        self.client.kick({serverID: sID, userID: uID});
+        axios.delete('https://discordapp.com/api/guilds/'+serverId+'/members/'+userID,
+          {headers: {'Authorization': "Bot " + self.key}})
+        .then(function (response) {
+          resolve(resp.data);
+        })
+        .catch(function(err){
+          reject(err);
+        });
+      });
     }
     /**
     * Bans the specified user id from the server
@@ -379,9 +389,20 @@ class Bot extends EventEmitter{
     * @param {string} userID - ID of the user going to be banned
     * @param {number} Days - (Optional)The number of days worth of messages to delete
     */
-    Ban(sID, uID, Days) {
+    Ban(serverID, userID, Days) {
         var self = this;
-        self.client.ban({serverID: sID, userID: uID, lastDays: Days});
+        return new Promise(function(resolve, reject) {
+          var self = this;
+
+          axios.put('https://discordapp.com/api/guilds/'+serverId+'/bans/'+userID, {delete-message-days: Days},
+            {headers: {'Authorization': "Bot " + self.key}})
+          .then(function (response) {
+            resolve(resp.data);
+          })
+          .catch(function(err){
+            reject(err);
+          });
+        });
     }
     /**
     * Unabn the specified user id from the server
@@ -390,7 +411,18 @@ class Bot extends EventEmitter{
     */
     Unban(sID, uID) {
         var self = this;
-        self.client.unban({serverID: sID, userID: uID});
+        return new Promise(function(resolve, reject) {
+          var self = this;
+
+          axios.delete('https://discordapp.com/api/guilds/'+serverId+'/bans/'+userID, {delete-message-days: Days},
+            {headers: {'Authorization': "Bot " + self.key}})
+          .then(function (response) {
+            resolve(resp.data);
+          })
+          .catch(function(err){
+            reject(err);
+          });
+        });
     }
     /**
     * Mutes the specified user id from the server
