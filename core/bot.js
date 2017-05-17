@@ -347,10 +347,18 @@ class Bot extends EventEmitter{
     * @param {string} name - What you want your bot's username to be
     */
     SetUsername(name) {
+      var self = this;
+      return new Promise(function(resolve, reject) {
         var self = this;
-        self.client.editUserInfo({
-            username: name
+        axios.patch('https://discordapp.com/api/users/@me', {name: name},
+          {headers: {'Authorization': "Bot " + self.key}})
+        .then(function (response) {
+          resolve(resp.data);
+        })
+        .catch(function(err){
+          reject(err);
         });
+      });
     }
     /**
     * Allows you to change a server's name (need proper permissions to do)
@@ -358,11 +366,18 @@ class Bot extends EventEmitter{
     * @param {string} servername - What you wantto set the servername to be
     */
     SetServerName(serverId, servername) {
+      var self = this;
+      return new Promise(function(resolve, reject) {
         var self = this;
-        self.client.editServer({
-            serverID: serverId,
-            name: servername
+        axios.patch('https://discordapp.com/api/guilds/'+serverId, {name: servername},
+          {headers: {'Authorization': "Bot " + self.key}})
+        .then(function (response) {
+          resolve(resp.data);
+        })
+        .catch(function(err){
+          reject(err);
         });
+      });
     }
     /**
     * Kicks the specified user id from the server
