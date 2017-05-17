@@ -116,7 +116,7 @@ class Bot extends EventEmitter{
     handleDispatch(data){
       var type = data.t;
       var self = this;
-      console.log(type);
+      //console.log(type);
       switch(type){
         case codes.dispatch.READY:
           self.emit("READY");
@@ -135,19 +135,6 @@ class Bot extends EventEmitter{
 
     handleGuildCreate(data){
       this.servers[data.id] = data;
-
-      for(var i=0;i<data.channels.length;i++){
-        data.channels[i].guild_id = data.id;
-
-        this.channels[data.channels[i].id] = data.channels[i];
-        this.channels.count += 1;
-
-      }
-      for(var i=0;i<data.members.length;i++){
-        this.members[data.members[i].id] == data.members[i];
-        this.members.count+= 1 ;
-      }
-      console.log("ADDED NEW SERVER: " + this.channels.count + " CHANNELS, " + this.members.count);
     }
     /**
      * Disconnect Bot to Discord
@@ -272,20 +259,21 @@ class Bot extends EventEmitter{
     * @param {object} embed - the Embed Object to send
     */
     SendEmbed(channel, embed) {
+      var self = this;
+      return new Promise(function(resolve, reject) {
         var self = this;
-        return new Promise(function(resolve, reject) {
-          self.client.sendMessage({
-              to: channel,
-              embed: embed
-          }, function(err, resp) {
-              if (err) {
-                  reject(err);
-              } else {
-                  resolve(resp);
-              }
-          });
+        var msgObject = {
+            embed: embed
+        };
+        axios.post('https://discordapp.com/api/channels/'+channel+'/messages', msgObject,
+          {headers: {'Authorization': "Bot " + self.key}})
+        .then(function (response) {
+          resolve(resp.data);
+        })
+        .catch(function(err){
+          reject(err);
         });
-
+      });
     }
     /**
     * send an embed as a compact one, less lines defining a embed object
@@ -295,7 +283,8 @@ class Bot extends EventEmitter{
     * @param {int|RGBint} color - (Optional)RGB Int of what color the embed should be (default 3447003)
     */
     SendCompactEmbed(channel, title, body, color = 3447003) {
-        var self = this;
+      var self = this;
+      return new Promise(function(resolve, reject) {
         var msgObject = {
             embed: {
                 color: color,
@@ -308,7 +297,6 @@ class Bot extends EventEmitter{
                 footer: {}
             }
         };
-
         axios.post('https://discordapp.com/api/channels/'+channel+'/messages', msgObject,
           {headers: {'Authorization': "Bot " + self.key}})
         .then(function (response) {
@@ -317,6 +305,8 @@ class Bot extends EventEmitter{
         .catch(function(err){
           reject(err);
         });
+      });
+
     }
     /**
     * Edit an embed
@@ -473,8 +463,7 @@ class Bot extends EventEmitter{
     * @param {string} serverID - ID of the server
     */
     GetServerByID(id) {
-        var servers = this.client.servers;
-        return servers[id];
+        return this.servers[id];
     }
     /**
     * Gets information about that user in the server
