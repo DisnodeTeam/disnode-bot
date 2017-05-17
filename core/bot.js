@@ -202,26 +202,25 @@ class Bot extends EventEmitter{
     * @param {bool} tts - (Optional)Set tts to true or false when sending the message (default false)
     */
     SendMessage(channel, msg, typing = false, tts = false) {
-        var self = this;
-        return new Promise(function(resolve, reject) {
-
-          var msgObject = {
-              content: msg,
-              typing: typing,
-              tts: tts
-          };
-          console.log(channel);
-          axios.post('https://discordapp.com/api/channels/'+channel+'/messages', msgObject,
-            {headers: {'Authorization': "Bot " + self.key}})
-          .then(function (response) {
-            resolve(resp.data);
-          })
-          .catch(function(err){
-            console.log(err);
-            reject(err);
-          });
-
+      var self = this;
+      return new Promise(function(resolve, reject) {
+        var msgObject = {
+            content: msg,
+            typing: typing,
+            tts: tts
+        };
+        console.log(channel);
+        axios.post('https://discordapp.com/api/channels/'+channel+'/messages', msgObject,
+          {headers: {'Authorization': "Bot " + self.key}})
+        .then(function (response) {
+          resolve(resp.data);
+        })
+        .catch(function(err){
+          console.log(err);
+          reject(err);
         });
+
+      });
     }
     /**
     * Edit a Message
@@ -234,24 +233,23 @@ class Bot extends EventEmitter{
     EditMessage(channel, msgID, msg, typing = false, tts = false) {
         var self = this;
         return new Promise(function(resolve, reject) {
-            self.client.editMessage({
-              channelID: channel,
-              messageID: msgID,
-              message: {
-                to: channel,
-                message: msg,
-                typing: typing,
-                tts: tts
-              }
-            }, function(err, resp) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(resp);
-                }
-            });
-        });
+          var msgObject = {
+              content: msg,
+              typing: typing,
+              tts: tts
+          };
+          console.log(channel);
+          axios.patch('https://discordapp.com/api/channels/'+channel+'/messages/'+msgID, msgObject,
+            {headers: {'Authorization': "Bot " + self.key}})
+          .then(function (response) {
+            resolve(resp.data);
+          })
+          .catch(function(err){
+            console.log(err);
+            reject(err);
+          });
 
+        });
     }
     /**
     * send a message as a embed
@@ -316,18 +314,20 @@ class Bot extends EventEmitter{
     */
     EditEmbed(channel, msgID, embed) {
         var self = this;
+
         return new Promise(function(resolve, reject) {
-            self.client.editMessage({
-              channelID: channel,
-              messageID: msgID,
+          var self = this;
+          var msgObject = {
               embed: embed
-            }, function(err, resp) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(resp);
-                }
-            });
+          };
+          axios.patch('https://discordapp.com/api/channels/'+channel+'/messages/'+msgID, msgObject,
+            {headers: {'Authorization': "Bot " + self.key}})
+          .then(function (response) {
+            resolve(resp.data);
+          })
+          .catch(function(err){
+            reject(err);
+          });
         });
     }
     /**
