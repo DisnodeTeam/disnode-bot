@@ -1,0 +1,7 @@
+{
+  "name":"RPG Plugin",
+  "id": "rpg-plugin",
+  "script": "Plugin.js",
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}
