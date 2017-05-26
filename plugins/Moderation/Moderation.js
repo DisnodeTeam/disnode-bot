@@ -164,7 +164,7 @@ class ModerationPlugin {
         var role;
         var found = false;
         for (var key in server.roles) {
-          if ("Zira-Muted" == server.roles[key].name) {
+          if (self.disnode.bot.GetBotInfo().username + "-Muted" == server.roles[key].name) {
             role = server.roles[key];
             found = true;
             break;
