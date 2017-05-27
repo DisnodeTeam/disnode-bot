@@ -171,9 +171,15 @@ class PluginManager {
       Logger.Warning("PluginManager-" + this.server, "RunCommandBind", "No Function Found for: " + commandObj.run);
       return;
     }
+    if(commandObj.run == "default"){
+
+      commandObject.params.unshift(commandObject.command);
+    }
+
     pluginID[commandObj.run](commandObject);
 
   }
+
   /**
    * Adds/Downloads a Plugin to a server Folder
    * @param {string} pluginID - Plugin to Download and Add
