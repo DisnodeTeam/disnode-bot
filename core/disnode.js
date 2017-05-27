@@ -2,6 +2,7 @@ const DiscordBot = require('./bot');
 const ServerManager = require ('./servermanager');
 
 const StateManager  = require ('./statemanager');
+const Platform = require("./platform")
 const Stats = require('./stats');
 const jsonfile = require('jsonfile');
 const Logging = require("disnode-logger");
@@ -31,6 +32,7 @@ class Disnode {
           self.LoadBotConfig().then(function(){
             self.bot = new DiscordBot(self.botConfig.key, self);
             self.stats = new Stats(self);
+            self.platform = new Platform(self);
             Logging.Success("Disnode", "Start", "Loaded Config");
             callback();
           }).catch(callback);
