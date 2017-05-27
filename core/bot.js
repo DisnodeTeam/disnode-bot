@@ -130,11 +130,24 @@ class Bot extends EventEmitter{
           self.emit('guild_create', data.d);
           self.handleGuildCreate(data.d);
         break;
+
+        
       }
     }
 
     handleGuildCreate(data){
       this.servers[data.id] = data;
+      for(var i=0;i<data.channels.length;i++){
+        data.channels[i].guild_id = data.id;
+
+        this.channels[data.channels[i].id] = data.channels[i];
+        this.channels.count += 1;
+
+      }
+      for(var i=0;i<data.members.length;i++){
+        this.members[data.members[i].id] == data.members[i];
+        this.members.count+= 1 ;
+      }
     }
     /**
      * Disconnect Bot to Discord
@@ -163,6 +176,7 @@ class Bot extends EventEmitter{
     SetUpLocalBinds() {
         var self = this;
         self.on('message', function(data) {
+          console.log(data);
             var firstLetter = data.content.substring(0, self.disnode.botConfig.prefix.length);
             if (self.disnode.ready && firstLetter == self.disnode.botConfig.prefix) {
                 var _server = "DM";
@@ -258,8 +272,9 @@ class Bot extends EventEmitter{
     */
     SendEmbed(channel, embed) {
       var self = this;
+      
       return new Promise(function(resolve, reject) {
-        var self = this;
+
         var msgObject = {
             embed: embed
         };
@@ -282,6 +297,7 @@ class Bot extends EventEmitter{
     */
     SendCompactEmbed(channel, title, body, color = 3447003) {
       var self = this;
+      
       return new Promise(function(resolve, reject) {
         var msgObject = {
             embed: {
@@ -409,7 +425,7 @@ class Bot extends EventEmitter{
         return new Promise(function(resolve, reject) {
           var self = this;
 
-          axios.put('https://discordapp.com/api/guilds/'+serverId+'/bans/'+userID, {delete-message-days: Days},
+          axios.put('https://discordapp.com/api/guilds/'+serverId+'/bans/'+userID, {'delete-message-days': Days},
             {headers: {'Authorization': "Bot " + self.key}})
           .then(function (response) {
             resolve(resp.data);
@@ -429,7 +445,7 @@ class Bot extends EventEmitter{
         return new Promise(function(resolve, reject) {
           var self = this;
 
-          axios.delete('https://discordapp.com/api/guilds/'+serverId+'/bans/'+userID, {delete-message-days: Days},
+          axios.delete('https://discordapp.com/api/guilds/'+serverId+'/bans/'+userID, {},
             {headers: {'Authorization': "Bot " + self.key}})
           .then(function (response) {
             resolve(resp.data);
