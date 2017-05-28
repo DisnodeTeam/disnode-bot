@@ -171,15 +171,80 @@ class PluginManager {
       Logger.Warning("PluginManager-" + this.server, "RunCommandBind", "No Function Found for: " + commandObj.run);
       return;
     }
-    if(commandObj.run == "default"){
+    if (commandObj.run == "default") {
 
       commandObject.params.unshift(commandObject.command);
     }
 
+
     pluginID[commandObj.run](commandObject);
 
   }
+  ChangePluginConfig(plugin, key, val) {
+    var self = this;
+    return new Promise(function (resolve, reject) {
 
+      //Plugin to edit
+
+      var pluginClass = pluginManager.GetPluginByID(plugin);
+
+      //Check if plugin is in Core or already added to server
+      if (!pluginClass.isServer) {
+
+        self.AddServerPluginLocal(plugin)
+        .then(function () {
+          pluginClass = pluginManager.GetPluginByID(plugin);
+          return self.GetConfigFile(pluginClass);
+        })
+
+        .then(function (obj) {
+          var newConfig = obj;
+
+          newConfig[key] = val;
+
+          return self.SetConfigFile(pluginClass, newConfig);
+        })
+
+        .then(function () {
+          return self.LoadAllPlugins();
+        })
+
+        .then(function () {
+          var command = self.disnode.server.GetCommandInstance(self.server);
+          command.UpdateAllPrefixes();
+          resolve();
+        }).catch(reject);
+
+
+      } else {
+        
+        self.GetConfigFile(plugin)
+        .then(function (obj) {
+          var newConfig = obj;
+
+          newConfig[key] = val;
+
+          return self.SetConfigFile(pluginClass, newConfig);
+        })
+
+        .then(function () {
+          return self.LoadAllPlugins();
+        })
+
+        .then(function () {
+          var command = self.disnode.server.GetCommandInstance(self.server);
+          command.UpdateAllPrefixes();
+          resolve();
+        }).catch(reject);
+
+      }
+    });
+
+
+
+
+
+  }
   /**
    * Adds/Downloads a Plugin to a server Folder
    * @param {string} pluginID - Plugin to Download and Add
@@ -214,7 +279,7 @@ class PluginManager {
    */
   AddServerPluginLocal(pluginId) {
     var self = this;
-    console.log("Adding Local Plugin: "+pluginId)
+    console.log("Adding Local Plugin: " + pluginId)
     return new Promise(function (resolve, rejecy) {
       self.command = self.disnode.server.GetCommandInstance(self.server);
       self.MakeServerFolder();
@@ -241,7 +306,7 @@ class PluginManager {
       }
     });
   }
- 
+
   /**
    * Removes a Plugin frome a server Folder
    * @param {string} pluginID - Plugin to Download and Add

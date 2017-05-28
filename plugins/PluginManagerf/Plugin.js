@@ -198,38 +198,7 @@ class PluginManager {
     switch (file) {
       case "config":
 
-        var pluginClass = pluginManager.GetPluginByID(plugin);
-        console.log(pluginClass);
-        if (!pluginClass.isServer) {
-          pluginManager.AddServerPluginLocal(plugin).then(function () {
-            pluginClass = pluginManager.GetPluginByID(plugin);
-            pluginManager.GetConfigFile(pluginClass).then(function (obj) {
-              var newConfig = obj;
-              newConfig[key] = value;
-              pluginManager.SetConfigFile(pluginClass, newConfig).then(function () {
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Config Set!", "Plugin Config Updated! Reloading Plugins...");
-                pluginManager.LoadAllPlugins().then(function () {
-                  var command = self.disnode.server.GetCommandInstance(self.server);
-                  command.UpdateAllPrefixes();
-                });
-              })
-            });
-          })
-        } else {
-          pluginManager.GetConfigFile(pluginClass).then(function (obj) {
-            var newConfig = obj;
-            newConfig[key] = value;
-            pluginManager.SetConfigFile(pluginClass, newConfig).then(function () {
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Config Set!", "Plugin Config Updated! Reloading Plugins...");
-              pluginManager.LoadAllPlugins().then(function () {
-                var command = self.disnode.server.GetCommandInstance(self.server);
-                command.UpdateAllPrefixes();
-              });
-            })
-          });
-        }
-
-
+        
         break;
     }
 
