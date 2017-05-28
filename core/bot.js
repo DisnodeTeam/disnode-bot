@@ -122,16 +122,73 @@ class Bot extends EventEmitter{
           self.emit("READY");
         break;
 
-        case codes.dispatch.MESSAGE_CREATE:
-          self.emit("message", data.d);
+        case codes.dispatch.CHANNEL_CREATE:
+          self.emit("channel_create", data.d);
         break;
-
+        case codes.dispatch.CHANNEL_DELETE:
+          self.emit("channel_delete", data.d);
+        break;
+        case codes.dispatch.CHANNEL_UPDATE:
+          self.emit("channel_update", data.d);
+        break;
+        case codes.dispatch.GUILD_BAN_ADD:
+          self.emit("guild_ban_add", data.d);
+        break;
+        case codes.dispatch.GUILD_BAN_REMOVE:
+          self.emit("guild_ban_remove", data.d);
+        break;
         case codes.dispatch.GUILD_CREATE:
           self.emit('guild_create', data.d);
           self.handleGuildCreate(data.d);
         break;
+        case codes.dispatch.GUILD_DELETE:
+          self.emit("guild_delete", data.d);
+        break;
+        case codes.dispatch.GUILD_INTEGRATIONS_UPDATE:
+          self.emit("guild_intergrations", data.d);
+        break;
+        case codes.dispatch.GUILD_MEMBER_ADD:
+          self.emit("guild_memeber_add", data.d);
+        break;
+        case codes.dispatch.GUILD_MEMBER_REMOVE:
+          self.emit("guild_memeber_removed", data.d);
+        break;
+        case codes.dispatch.GUILD_ROLE_CREATE:
+          self.emit("guild_role_created", data.d);
+        break;
+        case codes.dispatch.GUILD_ROLE_DELETE:
+          self.emit("guild_role_delete", data.d);
+        break;
+        case codes.dispatch.GUILD_ROLE_UPDATE:
+          self.emit("guild_role_update", data.d);
+        break;
+        case codes.dispatch.GUILD_UPDATE:
+          self.emit("guild_update", data.d);
+        break;
+        case codes.dispatch.MESSAGE_CREATE:
+          self.emit("message", data.d);
+        break;
+        case codes.dispatch.MESSAGE_DELETE:
+          self.emit("message_delete", data.d);
+        break;
+        case codes.dispatch.MESSAGE_UPDATE:
+          self.emit("message_update", data.d);
+        break;
+        case codes.dispatch.PRESENCE_UPDATE:
+          self.emit("message_presence", data.d);
+        break;
+        case codes.dispatch.TYPING_START:
+          self.emit("typing", data.d);
+        break;
+        case codes.dispatch.USER_SETTINGS_UPDATE:
+          self.emit("setting_update", data.d);
+        break;
+        case codes.dispatch.VOICE_STATE_UPDATE:
+          self.emit("voice_update", data.d);
+        break;
 
-        
+
+
       }
     }
 
@@ -176,13 +233,13 @@ class Bot extends EventEmitter{
     SetUpLocalBinds() {
         var self = this;
         self.on('message', function(data) {
-          console.log(data);
+
             var firstLetter = data.content.substring(0, self.disnode.botConfig.prefix.length);
             if (self.disnode.ready && firstLetter == self.disnode.botConfig.prefix) {
                 var _server = "DM";
                 if (self.channels[data.channel_id]) {
                     _server = self.channels[data.channel_id].guild_id;
-                    console.log(_server);
+
                 }
                 var msgObject = {
                     user: data.author.username,
@@ -227,7 +284,7 @@ class Bot extends EventEmitter{
         axios.post('https://discordapp.com/api/channels/'+channel+'/messages', msgObject,
           {headers: {'Authorization': "Bot " + self.key}})
         .then(function (response) {
-          resolve(resp.data);
+          resolve(response.data);
         })
         .catch(function(err){
           console.log(err);
@@ -256,7 +313,7 @@ class Bot extends EventEmitter{
           axios.patch('https://discordapp.com/api/channels/'+channel+'/messages/'+msgID, msgObject,
             {headers: {'Authorization': "Bot " + self.key}})
           .then(function (response) {
-            resolve(resp.data);
+            resolve(response.data);
           })
           .catch(function(err){
             console.log(err);
@@ -272,7 +329,7 @@ class Bot extends EventEmitter{
     */
     SendEmbed(channel, embed) {
       var self = this;
-      
+
       return new Promise(function(resolve, reject) {
 
         var msgObject = {
@@ -281,7 +338,7 @@ class Bot extends EventEmitter{
         axios.post('https://discordapp.com/api/channels/'+channel+'/messages', msgObject,
           {headers: {'Authorization': "Bot " + self.key}})
         .then(function (response) {
-          resolve(resp.data);
+          resolve(response.data);
         })
         .catch(function(err){
           reject(err);
@@ -297,7 +354,7 @@ class Bot extends EventEmitter{
     */
     SendCompactEmbed(channel, title, body, color = 3447003) {
       var self = this;
-      
+
       return new Promise(function(resolve, reject) {
         var msgObject = {
             embed: {
@@ -314,7 +371,7 @@ class Bot extends EventEmitter{
         axios.post('https://discordapp.com/api/channels/'+channel+'/messages', msgObject,
           {headers: {'Authorization': "Bot " + self.key}})
         .then(function (response) {
-          resolve(resp.data);
+          resolve(response.data);
         })
         .catch(function(err){
           reject(err);
@@ -339,7 +396,7 @@ class Bot extends EventEmitter{
           axios.patch('https://discordapp.com/api/channels/'+channel+'/messages/'+msgID, msgObject,
             {headers: {'Authorization': "Bot " + self.key}})
           .then(function (response) {
-            resolve(resp.data);
+            resolve(response.data);
           })
           .catch(function(err){
             reject(err);
@@ -369,7 +426,7 @@ class Bot extends EventEmitter{
         axios.patch('https://discordapp.com/api/users/@me', {name: name},
           {headers: {'Authorization': "Bot " + self.key}})
         .then(function (response) {
-          resolve(resp.data);
+          resolve(response.data);
         })
         .catch(function(err){
           reject(err);
@@ -388,7 +445,7 @@ class Bot extends EventEmitter{
         axios.patch('https://discordapp.com/api/guilds/'+serverId, {name: servername},
           {headers: {'Authorization': "Bot " + self.key}})
         .then(function (response) {
-          resolve(resp.data);
+          resolve(response.data);
         })
         .catch(function(err){
           reject(err);
@@ -407,7 +464,7 @@ class Bot extends EventEmitter{
         axios.delete('https://discordapp.com/api/guilds/'+serverId+'/members/'+userID,
           {headers: {'Authorization': "Bot " + self.key}})
         .then(function (response) {
-          resolve(resp.data);
+          resolve(response.data);
         })
         .catch(function(err){
           reject(err);

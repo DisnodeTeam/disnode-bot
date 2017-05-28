@@ -41,6 +41,7 @@ class PluginManager {
 
             if (!plugins) { cb(); return }
             for (var i = 0; i < plugins.length; i++) {
+              self.SetupEvents(plugins[i]);
               self.plugins.push(plugins[i]);
 
             }
@@ -66,6 +67,7 @@ class PluginManager {
               }
 
               if (!alreadyAdded) {
+                self.SetupEvents(plugins[i]);
                 self.plugins.push(plugins[i]);
               }
             }
@@ -180,6 +182,78 @@ class PluginManager {
     pluginID[commandObj.run](commandObject);
 
   }
+  RunPluginFunction(pluginId, toRun, commandObject){
+    var self = this;
+    var plugin = self.GetInstanceByID(pluginId);
+    if (!plugin) {
+      self.LaunchPlugin(pluginId, commandObject).then(function(inst){
+        if (!inst[toRun]) {
+          Logger.Warning("PluginManager-" + self.server, "RunPluginFunction", "No Function Found for: " + toRun);
+          return;
+        }
+
+
+        inst[toRun](commandObject);
+      });
+      return;
+    }
+    if (!plugin[toRun]) {
+      Logger.Warning("PluginManager-" + this.server, "RunPluginFunction", "No Function Found for: " + toRun);
+      return;
+    }
+
+
+    plugin[toRun](commandObject);
+  }
+  SetupEvents(plugin){
+    var self = this;
+    var bot = self.disnode.bot;
+
+    if(plugin.message_update){
+      Logger.Success("PluginManager-" + self.server, "SetupEvents:"+plugin.id, "Listening for message_update");
+
+      bot.on("message_update", function(data){
+
+        var _server = "DM";
+        if (bot.channels[data.channel_id]) {
+            _server = bot.channels[data.channel_id].guild_id;
+        }
+        data = {
+          id: data.id,
+          user: data.author.username,
+          userID: data.author.id,
+          channel: data.channel_id,
+          message: data.content,
+          server: _server,
+          obj: data
+        }
+
+        self.RunPluginFunction(plugin.id, plugin.message_update,  {msg: data})
+      });
+    }
+
+    if(plugin.message_delete){
+      Logger.Success("PluginManager-" + self.server, "SetupEvents:"+plugin.id, "Listening for message_delete");
+
+      bot.on("message_delete", function(data){
+
+        var _server = "DM";
+        if (bot.channels[data.channel_id]) {
+            _server = bot.channels[data.channel_id].guild_id;
+        }
+        data = {
+          id: data.id,
+          channel: data.channel_id,
+          server: _server,
+          obj: data
+        }
+
+        self.RunPluginFunction(plugin.id, plugin.message_delete,  {msg: data})
+      });
+    }
+
+  }
+
   ChangePluginConfig(plugin, key, val) {
     var self = this;
     return new Promise(function (resolve, reject) {
@@ -217,7 +291,7 @@ class PluginManager {
 
 
       } else {
-        
+
         self.GetConfigFile(plugin)
         .then(function (obj) {
           var newConfig = obj;
