@@ -1,4 +1,43 @@
-var net = require('net');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>bot_old.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Bot.html">Bot</a><ul class='methods'><li data-type='method'><a href="Bot.html#AddReaction">AddReaction</a></li><li data-type='method'><a href="Bot.html#AddReaction">AddReaction</a></li><li data-type='method'><a href="Bot.html#Ban">Ban</a></li><li data-type='method'><a href="Bot.html#Ban">Ban</a></li><li data-type='method'><a href="Bot.html#Connect">Connect</a></li><li data-type='method'><a href="Bot.html#Connect">Connect</a></li><li data-type='method'><a href="Bot.html#Disconnect">Disconnect</a></li><li data-type='method'><a href="Bot.html#Disconnect">Disconnect</a></li><li data-type='method'><a href="Bot.html#EditEmbed">EditEmbed</a></li><li data-type='method'><a href="Bot.html#EditEmbed">EditEmbed</a></li><li data-type='method'><a href="Bot.html#EditMessage">EditMessage</a></li><li data-type='method'><a href="Bot.html#EditMessage">EditMessage</a></li><li data-type='method'><a href="Bot.html#GetBotInfo">GetBotInfo</a></li><li data-type='method'><a href="Bot.html#GetBotInfo">GetBotInfo</a></li><li data-type='method'><a href="Bot.html#GetMessage">GetMessage</a></li><li data-type='method'><a href="Bot.html#GetMessage">GetMessage</a></li><li data-type='method'><a href="Bot.html#GetReaction">GetReaction</a></li><li data-type='method'><a href="Bot.html#GetReaction">GetReaction</a></li><li data-type='method'><a href="Bot.html#GetRoleById">GetRoleById</a></li><li data-type='method'><a href="Bot.html#GetRoleById">GetRoleById</a></li><li data-type='method'><a href="Bot.html#GetServerByID">GetServerByID</a></li><li data-type='method'><a href="Bot.html#GetServerByID">GetServerByID</a></li><li data-type='method'><a href="Bot.html#GetUserByID">GetUserByID</a></li><li data-type='method'><a href="Bot.html#GetUserByID">GetUserByID</a></li><li data-type='method'><a href="Bot.html#GetUserInfo">GetUserInfo</a></li><li data-type='method'><a href="Bot.html#GetUserInfo">GetUserInfo</a></li><li data-type='method'><a href="Bot.html#GetUserRoles">GetUserRoles</a></li><li data-type='method'><a href="Bot.html#GetUserRoles">GetUserRoles</a></li><li data-type='method'><a href="Bot.html#JoinUsersVoiceChannel">JoinUsersVoiceChannel</a></li><li data-type='method'><a href="Bot.html#JoinUsersVoiceChannel">JoinUsersVoiceChannel</a></li><li data-type='method'><a href="Bot.html#JoinVoiceChannel">JoinVoiceChannel</a></li><li data-type='method'><a href="Bot.html#JoinVoiceChannel">JoinVoiceChannel</a></li><li data-type='method'><a href="Bot.html#Kick">Kick</a></li><li data-type='method'><a href="Bot.html#Kick">Kick</a></li><li data-type='method'><a href="Bot.html#LeaveUsersVoiceChannel">LeaveUsersVoiceChannel</a></li><li data-type='method'><a href="Bot.html#LeaveUsersVoiceChannel">LeaveUsersVoiceChannel</a></li><li data-type='method'><a href="Bot.html#LeaveVoiceChannel">LeaveVoiceChannel</a></li><li data-type='method'><a href="Bot.html#LeaveVoiceChannel">LeaveVoiceChannel</a></li><li data-type='method'><a href="Bot.html#Mute">Mute</a></li><li data-type='method'><a href="Bot.html#Mute">Mute</a></li><li data-type='method'><a href="Bot.html#pageResults">pageResults</a></li><li data-type='method'><a href="Bot.html#pageResults">pageResults</a></li><li data-type='method'><a href="Bot.html#RemoveAllReactions">RemoveAllReactions</a></li><li data-type='method'><a href="Bot.html#RemoveAllReactions">RemoveAllReactions</a></li><li data-type='method'><a href="Bot.html#RemoveReaction">RemoveReaction</a></li><li data-type='method'><a href="Bot.html#RemoveReaction">RemoveReaction</a></li><li data-type='method'><a href="Bot.html#Restart">Restart</a></li><li data-type='method'><a href="Bot.html#Restart">Restart</a></li><li data-type='method'><a href="Bot.html#SendCompactEmbed">SendCompactEmbed</a></li><li data-type='method'><a href="Bot.html#SendCompactEmbed">SendCompactEmbed</a></li><li data-type='method'><a href="Bot.html#SendEmbed">SendEmbed</a></li><li data-type='method'><a href="Bot.html#SendEmbed">SendEmbed</a></li><li data-type='method'><a href="Bot.html#SendMessage">SendMessage</a></li><li data-type='method'><a href="Bot.html#SendMessage">SendMessage</a></li><li data-type='method'><a href="Bot.html#SetServerName">SetServerName</a></li><li data-type='method'><a href="Bot.html#SetServerName">SetServerName</a></li><li data-type='method'><a href="Bot.html#SetStatus">SetStatus</a></li><li data-type='method'><a href="Bot.html#SetStatus">SetStatus</a></li><li data-type='method'><a href="Bot.html#SetUsername">SetUsername</a></li><li data-type='method'><a href="Bot.html#SetUsername">SetUsername</a></li><li data-type='method'><a href="Bot.html#Unban">Unban</a></li><li data-type='method'><a href="Bot.html#Unban">Unban</a></li><li data-type='method'><a href="Bot.html#Unmute">Unmute</a></li><li data-type='method'><a href="Bot.html#Unmute">Unmute</a></li></ul></li><li><a href="Disnode.html">Disnode</a><ul class='methods'><li data-type='method'><a href="Disnode.html#LoadBotConfig">LoadBotConfig</a></li><li data-type='method'><a href="Disnode.html#OnMessage">OnMessage</a></li><li data-type='method'><a href="Disnode.html#Restart">Restart</a></li><li data-type='method'><a href="Disnode.html#Start">Start</a></li><li data-type='method'><a href="Disnode.html#Stop">Stop</a></li></ul></li><li><a href="PluginManager.html">PluginManager</a><ul class='methods'><li data-type='method'><a href="PluginManager.html#AddServerPluginLocal">AddServerPluginLocal</a></li><li data-type='method'><a href="PluginManager.html#AddServerPluginRemote">AddServerPluginRemote</a></li><li data-type='method'><a href="PluginManager.html#GetCommandFile">GetCommandFile</a></li><li data-type='method'><a href="PluginManager.html#GetCommandObject">GetCommandObject</a></li><li data-type='method'><a href="PluginManager.html#GetCommandPrefixes">GetCommandPrefixes</a></li><li data-type='method'><a href="PluginManager.html#GetConfigFile">GetConfigFile</a></li><li data-type='method'><a href="PluginManager.html#GetInstanceByID">GetInstanceByID</a></li><li data-type='method'><a href="PluginManager.html#GetPluginByID">GetPluginByID</a></li><li data-type='method'><a href="PluginManager.html#GetPluginFiles">GetPluginFiles</a></li><li data-type='method'><a href="PluginManager.html#GetScriptRequire">GetScriptRequire</a></li><li data-type='method'><a href="PluginManager.html#LaunchPlugin">LaunchPlugin</a></li><li data-type='method'><a href="PluginManager.html#LoadAllPlugins">LoadAllPlugins</a></li><li data-type='method'><a href="PluginManager.html#MakeServerFolder">MakeServerFolder</a></li><li data-type='method'><a href="PluginManager.html#RemoveServerPlugin">RemoveServerPlugin</a></li><li data-type='method'><a href="PluginManager.html#RunCommandBind">RunCommandBind</a></li><li data-type='method'><a href="PluginManager.html#RunPluginMessage">RunPluginMessage</a></li><li data-type='method'><a href="PluginManager.html#SetCommandFile">SetCommandFile</a></li><li data-type='method'><a href="PluginManager.html#SetConfigFile">SetConfigFile</a></li></ul></li></ul><h3>Events</h3><ul><li><a href="Bot.html#event:message_delete">message_delete</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">bot_old.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var net = require('net');
 
 var shortid = require('shortid');
 var Discord = require('discord.io');
@@ -68,7 +107,7 @@ class Bot {
 
     /**
      * Disconnect Bot to Discord
-     * @return {Promise<string|err>} A promise to the token.
+     * @return {Promise&lt;string|err>} A promise to the token.
      */
     Disconnect() {
         var self = this;
@@ -94,7 +133,7 @@ class Bot {
         var self = this;
         self.client.on('message', function(user, userID, channelID, message, event) {
             var firstLetter = message.substring(0, self.disnode.botConfig.prefix.length);
-            if (self.bind_onMessage && self.disnode.ready && firstLetter == self.disnode.botConfig.prefix) {
+            if (self.bind_onMessage &amp;&amp; self.disnode.ready &amp;&amp; firstLetter == self.disnode.botConfig.prefix) {
                 var _server = "DM";
                 if (self.client.channels[channelID]) {
                     _server = self.client.channels[channelID].guild_id;
@@ -553,7 +592,7 @@ class Bot {
         maxindex = (page * perPage);
         startindex = maxindex - perPage;
       }
-      for (var i = startindex; i < arr.length; i++) {
+      for (var i = startindex; i &lt; arr.length; i++) {
         if(i == maxindex)break;
         returnArr.push(arr[i]);
       }
@@ -561,3 +600,22 @@ class Bot {
     }
 }
 module.exports = Bot;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat May 27 2017 22:30:15 GMT-0700 (Pacific Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

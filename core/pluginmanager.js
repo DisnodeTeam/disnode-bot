@@ -211,43 +211,14 @@ class PluginManager {
 
     if(plugin.message_update){
       Logger.Success("PluginManager-" + self.server, "SetupEvents:"+plugin.id, "Listening for message_update");
-
       bot.on("message_update", function(data){
-
-        var _server = "DM";
-        if (bot.channels[data.channel_id]) {
-            _server = bot.channels[data.channel_id].guild_id;
-        }
-        data = {
-          id: data.id,
-          user: data.author.username,
-          userID: data.author.id,
-          channel: data.channel_id,
-          message: data.content,
-          server: _server,
-          obj: data
-        }
-
         self.RunPluginFunction(plugin.id, plugin.message_update,  {msg: data})
       });
     }
 
     if(plugin.message_delete){
       Logger.Success("PluginManager-" + self.server, "SetupEvents:"+plugin.id, "Listening for message_delete");
-
       bot.on("message_delete", function(data){
-
-        var _server = "DM";
-        if (bot.channels[data.channel_id]) {
-            _server = bot.channels[data.channel_id].guild_id;
-        }
-        data = {
-          id: data.id,
-          channel: data.channel_id,
-          server: _server,
-          obj: data
-        }
-
         self.RunPluginFunction(plugin.id, plugin.message_delete,  {msg: data})
       });
     }
