@@ -161,7 +161,7 @@ class CasinoPlugin {
   }
   default(command) {
     var self = this;
-    console.log(command);
+
     if(command.params[0] == 'dev'){
       command.params.splice(0,1);
       self.commandAdmin(command);
@@ -171,11 +171,14 @@ class CasinoPlugin {
       self.commandMod(command);
       return;
     }
+
     self.utils.getPlayer(command).then(function(player){
+      
       var msg = "";
       for (var i = 0; i < self.commands.length; i++) {
         msg += self.disnode.botConfig.prefix + self.config.prefix + " " + self.commands[i].cmd + " - " + self.commands[i].desc + "\n";
       }
+      
       self.disnode.bot.SendEmbed(command.msg.channel, {
         color: 3447003,
         author: {},

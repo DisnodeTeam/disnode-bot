@@ -99,6 +99,11 @@ class Bot extends EventEmitter {
     var self = this;
     self.ws.on("message", function (data, flags) {
       self.OnWSMessage(data, flags);
+
+    });
+
+    self.ws.on('error', function(data){
+      console.log(data);
     });
   }
 
@@ -594,9 +599,10 @@ class Bot extends EventEmitter {
    * @param {string} status - What you want your bot to be playing
    */
   SetStatus(status) {
-    var self = this;
-     var packet = requests.presence(status);
-      //self.ws.send(JSON.stringify(packet));
+      var self = this;
+      var packet = requests.presence(status);
+
+      self.ws.send(JSON.stringify(packet));
   }
   /**
    * Set the bots username

@@ -23,14 +23,14 @@ exports.heartbeat = function () {
   }
 };
 
-exports.presence = function (name, type, url) {
+exports.presence = function (name) {
   return{
     op:3,
     d:{
-      idle_sence: null,
-      game:{
-        name: "TEST"
-        
+
+      "idle_since": null,
+      "game":{
+        "name": name,
       }
     }
   }
