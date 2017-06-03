@@ -1,8 +1,0 @@
-{
-  "commands":[
-    {
-      "cmd": "roles",
-      "run": "commandRoles"
-    }
-  ]
-}

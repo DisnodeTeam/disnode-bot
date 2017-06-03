@@ -4,8 +4,10 @@ const fs = require('fs-extra')
 const jsonfile = require('jsonfile');
 const Stopwatch = require('timer-stopwatch');
 const merge = require('merge');
-const http = require('http');
-const unzip = require('unzip');
+const http = require('https');
+const unzip = require('unzip2');
+var npmi = require('npmi');
+var path = require('path');
 
 var timer = new Stopwatch();
 /**
@@ -39,7 +41,10 @@ class PluginManager {
         function (cb) {
           self.GetPluginFiles("./servers/" + self.server, true).then(function (plugins) {
 
-            if (!plugins) { cb(); return }
+            if (!plugins) {
+              cb();
+              return
+            }
             for (var i = 0; i < plugins.length; i++) {
               self.SetupEvents(plugins[i]);
               self.plugins.push(plugins[i]);
@@ -53,7 +58,10 @@ class PluginManager {
 
           self.GetPluginFiles("./plugins/", false).then(function (plugins) {
 
-            if (!plugins) { cb(); return }
+            if (!plugins) {
+              cb();
+              return
+            }
 
             for (var i = 0; i < plugins.length; i++) {
 
@@ -182,11 +190,11 @@ class PluginManager {
     pluginID[commandObj.run](commandObject);
 
   }
-  RunPluginFunction(pluginId, toRun, commandObject){
+  RunPluginFunction(pluginId, toRun, commandObject) {
     var self = this;
     var plugin = self.GetInstanceByID(pluginId);
     if (!plugin) {
-      self.LaunchPlugin(pluginId, commandObject).then(function(inst){
+      self.LaunchPlugin(pluginId, commandObject).then(function (inst) {
         if (!inst[toRun]) {
           Logger.Warning("PluginManager-" + self.server, "RunPluginFunction", "No Function Found for: " + toRun);
           return;
@@ -205,21 +213,25 @@ class PluginManager {
 
     plugin[toRun](commandObject);
   }
-  SetupEvents(plugin){
+  SetupEvents(plugin) {
     var self = this;
     var bot = self.disnode.bot;
 
-    if(plugin.message_update){
-      Logger.Success("PluginManager-" + self.server, "SetupEvents:"+plugin.id, "Listening for message_update");
-      bot.on("message_update", function(data){
-        self.RunPluginFunction(plugin.id, plugin.message_update,  {msg: data})
+    if (plugin.message_update) {
+      Logger.Success("PluginManager-" + self.server, "SetupEvents:" + plugin.id, "Listening for message_update");
+      bot.on("message_update", function (data) {
+        self.RunPluginFunction(plugin.id, plugin.message_update, {
+          msg: data
+        })
       });
     }
 
-    if(plugin.message_delete){
-      Logger.Success("PluginManager-" + self.server, "SetupEvents:"+plugin.id, "Listening for message_delete");
-      bot.on("message_delete", function(data){
-        self.RunPluginFunction(plugin.id, plugin.message_delete,  {msg: data})
+    if (plugin.message_delete) {
+      Logger.Success("PluginManager-" + self.server, "SetupEvents:" + plugin.id, "Listening for message_delete");
+      bot.on("message_delete", function (data) {
+        self.RunPluginFunction(plugin.id, plugin.message_delete, {
+          msg: data
+        })
       });
     }
 
@@ -237,50 +249,50 @@ class PluginManager {
       if (!pluginClass.isServer) {
 
         self.AddServerPluginLocal(plugin)
-        .then(function () {
-          pluginClass = pluginManager.GetPluginByID(plugin);
-          return self.GetConfigFile(pluginClass);
-        })
+          .then(function () {
+            pluginClass = pluginManager.GetPluginByID(plugin);
+            return self.GetConfigFile(pluginClass);
+          })
 
-        .then(function (obj) {
-          var newConfig = obj;
+          .then(function (obj) {
+            var newConfig = obj;
 
-          newConfig[key] = val;
+            newConfig[key] = val;
 
-          return self.SetConfigFile(pluginClass, newConfig);
-        })
+            return self.SetConfigFile(pluginClass, newConfig);
+          })
 
-        .then(function () {
-          return self.LoadAllPlugins();
-        })
+          .then(function () {
+            return self.LoadAllPlugins();
+          })
 
-        .then(function () {
-          var command = self.disnode.server.GetCommandInstance(self.server);
-          command.UpdateAllPrefixes();
-          resolve();
-        }).catch(reject);
+          .then(function () {
+            var command = self.disnode.server.GetCommandInstance(self.server);
+            command.UpdateAllPrefixes();
+            resolve();
+          }).catch(reject);
 
 
       } else {
 
         self.GetConfigFile(plugin)
-        .then(function (obj) {
-          var newConfig = obj;
+          .then(function (obj) {
+            var newConfig = obj;
 
-          newConfig[key] = val;
+            newConfig[key] = val;
 
-          return self.SetConfigFile(pluginClass, newConfig);
-        })
+            return self.SetConfigFile(pluginClass, newConfig);
+          })
 
-        .then(function () {
-          return self.LoadAllPlugins();
-        })
+          .then(function () {
+            return self.LoadAllPlugins();
+          })
 
-        .then(function () {
-          var command = self.disnode.server.GetCommandInstance(self.server);
-          command.UpdateAllPrefixes();
-          resolve();
-        }).catch(reject);
+          .then(function () {
+            var command = self.disnode.server.GetCommandInstance(self.server);
+            command.UpdateAllPrefixes();
+            resolve();
+          }).catch(reject);
 
       }
     });
@@ -303,13 +315,19 @@ class PluginManager {
       var newPath = "servers/" + self.server;
 
       var request = http.get("https://www.disnodeteam.com/api/plugins/download/" + pluginId, function (response) {
-        response.pipe(unzip.Extract({ path: newPath }));
+        response.pipe(unzip.Extract({
+          path: newPath
+        }));
         response.on("end", function () {
           setTimeout(function () {
             self.LoadAllPlugins().then(function () {
-              self.command.UpdateAllPrefixes();
-              resolve();
+              self.InstallPluginRequirements(pluginId).then(function () {
+                self.command.UpdateAllPrefixes();
+                 resolve();
+              })
+             
             });
+
 
           }, 1000);
         })
@@ -378,6 +396,44 @@ class PluginManager {
 
     }
   }
+
+  InstallPluginRequirements(pluginId) {
+    var self = this;
+    return new Promise(function (resolve, reject) {
+      var pluginObj = self.GetPluginByID(pluginId);
+
+      if (pluginObj.requirements) {
+        Logger.Info("PluginManager-" + self.server, "InstallPluginRequirements:" + pluginObj.id, "Installing Requirements: " + pluginObj.requirements);
+        async.each(pluginObj.requirements, self.InstallPackage, function (err) {
+          
+          resolve();
+        });  
+        
+      } else {
+        resolve();
+      }
+    });
+  }
+
+  InstallPackage(pack, callback) {
+    var self = this;
+    var options = {
+      name: pack,
+      forceInstall: false, // force install if set to true (even if already installed, it will do a reinstall) [default: false]
+      npmLoad: { // npm.load(options, callback): this is the "options" given to npm.load()
+        loglevel: 'warn' // [default: {loglevel: 'silent'}]
+      }
+    };
+    npmi(options, function (err, result) {
+      if (err) {
+        callback();
+        return;
+      }
+
+      // installed
+      callback();
+    });
+  }
   /**
    * Creates a server specific folder for plugins
    * @param {string} pluginID - Plugin to Download and Add
@@ -395,7 +451,9 @@ class PluginManager {
    */
   GetPluginByID(pluginID) {
     for (var i = 0; i < this.plugins.length; i++) {
-      if (this.plugins[i].id == pluginID) { return this.plugins[i] }
+      if (this.plugins[i].id == pluginID) {
+        return this.plugins[i]
+      }
     }
   }
   /**
@@ -405,7 +463,9 @@ class PluginManager {
   GetInstanceByID(pluginID) {
     for (var i = 0; i < this.instances.length; i++) {
 
-      if (this.instances[i].id == pluginID) { return this.instances[i] }
+      if (this.instances[i].id == pluginID) {
+        return this.instances[i]
+      }
     }
   }
   /**
@@ -469,7 +529,10 @@ class PluginManager {
 
         self.GetConfigFile(plugin).then(function (config) {
 
-          prefix.push({ plugin: plugin.id, prefix: config.prefix });
+          prefix.push({
+            plugin: plugin.id,
+            prefix: config.prefix
+          });
           cb();
         }).catch(function (err) {
 
@@ -501,7 +564,10 @@ class PluginManager {
     if (_found) {
       return _found;
     } else {
-      return { cmd: commandString, run: "default" }
+      return {
+        cmd: commandString,
+        run: "default"
+      }
     }
   }
 
