@@ -29,7 +29,7 @@ class Bot extends EventEmitter {
     this.isRemote = false;
     this.remoteID = "";
     this.shardID = 0;
-
+    this.s = null;
     this.servers = {
       count: 0
     };
@@ -110,8 +110,11 @@ class Bot extends EventEmitter {
   StartHeartbeat(interval) {
     var self = this;
     Logger.Info("Bot", "StartHeartbeat", "Starting Heatbeat with Interval: " + interval);
+    var packet = requests.heartbeat(self.s);
+    self.ws.send(JSON.stringify(packet));
+    console.log(packet)
     setInterval(function () {
-        var packet = requests.heartbeat();
+        var packet = requests.heartbeat(self.s);
         self.ws.send(JSON.stringify(packet));
     }, interval)
   }
@@ -120,6 +123,9 @@ class Bot extends EventEmitter {
     data = JSON.parse(data);
     var operation = data.op;
     var self = this;
+    if(data.s){
+      self.s = data.s;
+    }
     switch (operation) {
       case codes.OPCode.HELLO:
 
@@ -129,6 +135,9 @@ class Bot extends EventEmitter {
 
       case codes.OPCode.DISPATCH:
         self.handleDispatch(data);
+        break;
+      case codes.OPCode.HEARTBEAT_ACK:
+
         break;
     }
   }

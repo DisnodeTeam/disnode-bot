@@ -17,9 +17,11 @@ exports.identify = function (token, shardID = 0, shardCount = 1) {
 };
 
 
-exports.heartbeat = function () {
+exports.heartbeat = function (s) {
+
   return{
-    op:11,
+    "op":1,
+    "d": parseInt(s) || null
   }
 };
 
