@@ -111,10 +111,8 @@ class Bot extends EventEmitter {
     var self = this;
     Logger.Info("Bot", "StartHeartbeat", "Starting Heatbeat with Interval: " + interval);
     setInterval(function () {
-      if (!self.ws) {
         var packet = requests.heartbeat();
         self.ws.send(JSON.stringify(packet));
-      }
     }, interval)
   }
 
