@@ -307,7 +307,7 @@ class Bot extends EventEmitter {
         var data = {
           id: data.d.id,
           channel: data.d.channel_id,
-          server: data.d.GetServerFromChanel(data.d.channel_id),
+          server: self.GetServerFromChanel(data.d.channel_id),
           raw: data.d
         };
         self.emit("message_delete", data);
@@ -319,7 +319,6 @@ class Bot extends EventEmitter {
          * @property {MessageObject} Data - Indicates whether the snowball is tightly packed.
          */
       case codes.dispatch.MESSAGE_UPDATE:
-        console.log(data.d);
         var data = {
           id: data.d.id,
           channel: data.d.channel_id,
@@ -454,7 +453,6 @@ class Bot extends EventEmitter {
         typing: typing,
         tts: tts
       };
-      console.log(channel);
       axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject, {
           headers: {
             'Authorization': "Bot " + self.key
@@ -486,7 +484,6 @@ class Bot extends EventEmitter {
         typing: typing,
         tts: tts
       };
-      console.log(channel);
       axios.patch('https://discordapp.com/api/channels/' + channel + '/messages/' + msgID, msgObject, {
           headers: {
             'Authorization': "Bot " + self.key
@@ -598,11 +595,8 @@ class Bot extends EventEmitter {
    */
   SetStatus(status) {
     var self = this;
-    self.client.setPresence({
-      game: {
-        name: status
-      }
-    });
+     var packet = requests.presence(status);
+      //self.ws.send(JSON.stringify(packet));
   }
   /**
    * Set the bots username

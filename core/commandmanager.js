@@ -39,7 +39,6 @@ class CommandManager {
       var self = this;
       self.plugin.GetCommandPrefixes().then(function(prefixes){
         self.prefixes = prefixes;
-        console.log("UPDATE PREFIXES: ", self.prefixes);
       });
     }
 

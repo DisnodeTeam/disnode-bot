@@ -6,15 +6,14 @@ class Platform {
         this.disnode = disnode;
     }
 
-    GetUserRole(userID) {
+    GetUserUltra(userID) {
         var self = this;
-        console.log("RUNNING CHECK!");
 
         return new Promise(function (resolve, reject) {
             Axios.get("https://www.disnodeteam.com/api/user/" + userID + "/ultra")
             .then(function (res) {
                 if (res.data.type == "ERR") {
-                    console.log(res.data)
+                    
                     reject(res.data.data);
                      return;
                  }

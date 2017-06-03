@@ -22,3 +22,16 @@ exports.heartbeat = function () {
     op:11,
   }
 };
+
+exports.presence = function (name, type, url) {
+  return{
+    op:3,
+    d:{
+      idle_sence: null,
+      game:{
+        name: "TEST"
+        
+      }
+    }
+  }
+};

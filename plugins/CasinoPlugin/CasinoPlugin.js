@@ -155,6 +155,7 @@ class CasinoPlugin {
           self.disnode.bot.SetStatus("!casino");
         }
       }
+      console.log("INIT!")
       done();
     });
   }
