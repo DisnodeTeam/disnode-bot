@@ -1,10 +1,9 @@
 {
   "name":"Test Plugin",
   "id": "Test-plugin",
-  "load": true,
+  "load": false,
   "script": "Plugin.js",
   "commandsFile": "Commands.json",
   "configFile" : "Config.json",
-  "message_update": "OnMessageUpdate",
-  "message_delete": "OnMessageDelete"
+
 }

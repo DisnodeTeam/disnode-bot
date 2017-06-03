@@ -76,7 +76,7 @@ class PluginManager {
     }
     self.disnode.bot.SendMessage(command.msg.channel, "**Getting Plugin:** `" + command.params[0] + "`")
 
-    axios.get("http://www.disnodeteam.com/api/plugins/" + command.params[0]).then(function (res) {
+    axios.get("https://www.disnodeteam.com/api/plugins/" + command.params[0]).then(function (res) {
       var suc = res.data.type;
       switch (suc) {
         case "SUC":
@@ -91,7 +91,7 @@ class PluginManager {
             {
               name: "Desc",
               inline: true,
-              value: "**Desc:** `" + res.data.data.desc + '`'
+              value: "**Desc:** `" + res.data.data.description + '`'
             },
             {
               name: "Verified",
@@ -142,7 +142,7 @@ class PluginManager {
           var msg = "**Page:** " + page + "\n";
           for (var i = startindex; i < plugins.length; i++) {
             if (i == maxindex) break;
-            if (plugins[i].verified) { msg += "-`" + plugins[i].id + "` - **" + plugins[i].name + "** - *" + plugins[i].desc + "*\n"; }
+            if (plugins[i].verified) { msg += "-`" + plugins[i].id + "` - **" + plugins[i].name + "** - *" + plugins[i].description + "*\n"; }
 
 
 

@@ -30,9 +30,15 @@ class Bot extends EventEmitter {
     this.remoteID = "";
     this.shardID = 0;
 
-    this.servers = { count: 0 };
-    this.members = { count: 0 };
-    this.channels = { count: 0 };
+    this.servers = {
+      count: 0
+    };
+    this.members = {
+      count: 0
+    };
+    this.channels = {
+      count: 0
+    };
   }
   /**
    * Connect bot to Discord
@@ -61,6 +67,7 @@ class Bot extends EventEmitter {
           'Authorization': "Bot " + self.key
         }
       }).then(function (response) {
+
         Logger.Success("Bot", "GetGatewayURL", "Aquired Gatway URL!");
         var url = response.data.url + "/?encoding=json&v=5";
         resolve(url)
@@ -90,15 +97,31 @@ class Bot extends EventEmitter {
 
   BindSocketEvents() {
     var self = this;
-    self.ws.on("message", function (data, flags) { self.OnWSMessage(data, flags); });
+    self.ws.on("message", function (data, flags) {
+      self.OnWSMessage(data, flags);
+    });
   }
+
+  StartHeartbeat(interval) {
+    var self = this;
+    Logger.Info("Bot", "StartHeartbeat", "Starting Heatbeat with Interval: " + interval);
+    setInterval(function () {
+      if (!self.ws) {
+        var packet = requests.heartbeat();
+        self.ws.send(JSON.stringify(packet));
+      }
+    }, interval)
+  }
+
   OnWSMessage(data, flags) {
     data = JSON.parse(data);
     var operation = data.op;
     var self = this;
     switch (operation) {
       case codes.OPCode.HELLO:
+
         self.wsIdentify();
+        self.StartHeartbeat(data.d['heartbeat_interval'])
         break;
 
       case codes.OPCode.DISPATCH:
@@ -268,18 +291,18 @@ class Bot extends EventEmitter {
           userID: data.d.author.id,
           channel: data.d.channel_id,
           message: data.d.content,
-          server: data.d.GetServerFromChanel(data.d.channel_id),
+          server: self.GetServerFromChanel(data.d.channel_id),
           raw: data.d
         };
         self.emit("message", data);
         break;
 
-    /**
-     * Message Delete event.
-     * @event Bot#message_delete
-     * @type {object}
-     * @property {MessageDeleteObject} Data - Indicates whether the snowball is tightly packed.
-     */
+        /**
+         * Message Delete event.
+         * @event Bot#message_delete
+         * @type {object}
+         * @property {MessageDeleteObject} Data - Indicates whether the snowball is tightly packed.
+         */
       case codes.dispatch.MESSAGE_DELETE:
         var data = {
           id: data.d.id,
@@ -296,13 +319,12 @@ class Bot extends EventEmitter {
          * @property {MessageObject} Data - Indicates whether the snowball is tightly packed.
          */
       case codes.dispatch.MESSAGE_UPDATE:
+        console.log(data.d);
         var data = {
           id: data.d.id,
-          user: data.d.author.username,
-          userID: data.d.author.id,
           channel: data.d.channel_id,
           message: data.d.content,
-          server: data.d.GetServerFromChanel(data.d.channel_id),
+          server: self.GetServerFromChanel(data.d.channel_id),
           raw: data.d
         };
         self.emit("message_update", data);
@@ -391,9 +413,9 @@ class Bot extends EventEmitter {
     var self = this;
     self.on('message', function (data) {
 
-      var firstLetter = data.content.substring(0, self.disnode.botConfig.prefix.length);
+      var firstLetter = data.message.substring(0, self.disnode.botConfig.prefix.length);
       if (self.disnode.ready && firstLetter == self.disnode.botConfig.prefix) {
-        this.disnode.server.GetCommandInstancePromise(msgObject.server).then(function (inst) {
+        this.disnode.server.GetCommandInstancePromise(data.server).then(function (inst) {
 
           if (inst) {
             inst.RunMessage(data);
@@ -418,12 +440,12 @@ class Bot extends EventEmitter {
     return _server;
   }
   /**
-  * Send a normal message
-  * @param {string} channel - ChannelID of where to send the message
-  * @param {string} msg - The message to send
-  * @param {bool} typing - (Optional)Set typing to true or false when sending the message (default false)
-  * @param {bool} tts - (Optional)Set tts to true or false when sending the message (default false)
-  */
+   * Send a normal message
+   * @param {string} channel - ChannelID of where to send the message
+   * @param {string} msg - The message to send
+   * @param {bool} typing - (Optional)Set typing to true or false when sending the message (default false)
+   * @param {bool} tts - (Optional)Set tts to true or false when sending the message (default false)
+   */
   SendMessage(channel, msg, typing = false, tts = false) {
     var self = this;
     return new Promise(function (resolve, reject) {
@@ -433,8 +455,11 @@ class Bot extends EventEmitter {
         tts: tts
       };
       console.log(channel);
-      axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject,
-        { headers: { 'Authorization': "Bot " + self.key } })
+      axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject, {
+          headers: {
+            'Authorization': "Bot " + self.key
+          }
+        })
         .then(function (response) {
           resolve(response.data);
         })
@@ -446,13 +471,13 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * Edit a Message
-  * @param {string} channel - ChannelID of where to send the message
-  * @param {string} msgID - Message ID of the message you want to edit
-  * @param {string} msg - The message to send
-  * @param {bool} typing - (Optional)Set typing to true or false when sending the message (default false)
-  * @param {bool} tts - (Optional)Set tts to true or false when sending the message (default false)
-  */
+   * Edit a Message
+   * @param {string} channel - ChannelID of where to send the message
+   * @param {string} msgID - Message ID of the message you want to edit
+   * @param {string} msg - The message to send
+   * @param {bool} typing - (Optional)Set typing to true or false when sending the message (default false)
+   * @param {bool} tts - (Optional)Set tts to true or false when sending the message (default false)
+   */
   EditMessage(channel, msgID, msg, typing = false, tts = false) {
     var self = this;
     return new Promise(function (resolve, reject) {
@@ -462,8 +487,11 @@ class Bot extends EventEmitter {
         tts: tts
       };
       console.log(channel);
-      axios.patch('https://discordapp.com/api/channels/' + channel + '/messages/' + msgID, msgObject,
-        { headers: { 'Authorization': "Bot " + self.key } })
+      axios.patch('https://discordapp.com/api/channels/' + channel + '/messages/' + msgID, msgObject, {
+          headers: {
+            'Authorization': "Bot " + self.key
+          }
+        })
         .then(function (response) {
           resolve(response.data);
         })
@@ -475,10 +503,10 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * send a message as a embed
-  * @param {string} channel - ChannelID of where to send the message
-  * @param {object} embed - the Embed Object to send
-  */
+   * send a message as a embed
+   * @param {string} channel - ChannelID of where to send the message
+   * @param {object} embed - the Embed Object to send
+   */
   SendEmbed(channel, embed) {
     var self = this;
 
@@ -487,8 +515,11 @@ class Bot extends EventEmitter {
       var msgObject = {
         embed: embed
       };
-      axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject,
-        { headers: { 'Authorization': "Bot " + self.key } })
+      axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject, {
+          headers: {
+            'Authorization': "Bot " + self.key
+          }
+        })
         .then(function (response) {
           resolve(response.data);
         })
@@ -498,12 +529,12 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * send an embed as a compact one, less lines defining a embed object
-  * @param {string} channel - ChannelID of where to send the message
-  * @param {string} title - The title of the embed
-  * @param {string} body - The body of the embed
-  * @param {int|RGBint} color - (Optional)RGB Int of what color the embed should be (default 3447003)
-  */
+   * send an embed as a compact one, less lines defining a embed object
+   * @param {string} channel - ChannelID of where to send the message
+   * @param {string} title - The title of the embed
+   * @param {string} body - The body of the embed
+   * @param {int|RGBint} color - (Optional)RGB Int of what color the embed should be (default 3447003)
+   */
   SendCompactEmbed(channel, title, body, color = 3447003) {
     var self = this;
 
@@ -520,8 +551,11 @@ class Bot extends EventEmitter {
           footer: {}
         }
       };
-      axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject,
-        { headers: { 'Authorization': "Bot " + self.key } })
+      axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject, {
+          headers: {
+            'Authorization': "Bot " + self.key
+          }
+        })
         .then(function (response) {
           resolve(response.data);
         })
@@ -532,11 +566,11 @@ class Bot extends EventEmitter {
 
   }
   /**
-  * Edit an embed
-  * @param {string} channel - ChannelID of where to send the message
-  * @param {string} msgID - Message ID of the message you want to edit
-  * @param {object} embed - the Embed Object to send
-  */
+   * Edit an embed
+   * @param {string} channel - ChannelID of where to send the message
+   * @param {string} msgID - Message ID of the message you want to edit
+   * @param {object} embed - the Embed Object to send
+   */
   EditEmbed(channel, msgID, embed) {
     var self = this;
 
@@ -545,8 +579,11 @@ class Bot extends EventEmitter {
       var msgObject = {
         embed: embed
       };
-      axios.patch('https://discordapp.com/api/channels/' + channel + '/messages/' + msgID, msgObject,
-        { headers: { 'Authorization': "Bot " + self.key } })
+      axios.patch('https://discordapp.com/api/channels/' + channel + '/messages/' + msgID, msgObject, {
+          headers: {
+            'Authorization': "Bot " + self.key
+          }
+        })
         .then(function (response) {
           resolve(response.data);
         })
@@ -556,9 +593,9 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * Set the bots playing game
-  * @param {string} status - What you want your bot to be playing
-  */
+   * Set the bots playing game
+   * @param {string} status - What you want your bot to be playing
+   */
   SetStatus(status) {
     var self = this;
     self.client.setPresence({
@@ -568,15 +605,20 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * Set the bots username
-  * @param {string} name - What you want your bot's username to be
-  */
+   * Set the bots username
+   * @param {string} name - What you want your bot's username to be
+   */
   SetUsername(name) {
     var self = this;
     return new Promise(function (resolve, reject) {
       var self = this;
-      axios.patch('https://discordapp.com/api/users/@me', { name: name },
-        { headers: { 'Authorization': "Bot " + self.key } })
+      axios.patch('https://discordapp.com/api/users/@me', {
+          name: name
+        }, {
+          headers: {
+            'Authorization': "Bot " + self.key
+          }
+        })
         .then(function (response) {
           resolve(response.data);
         })
@@ -586,16 +628,21 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * Allows you to change a server's name (need proper permissions to do)
-  * @param {string} serverID - Server ID of the server you want to change
-  * @param {string} servername - What you wantto set the servername to be
-  */
+   * Allows you to change a server's name (need proper permissions to do)
+   * @param {string} serverID - Server ID of the server you want to change
+   * @param {string} servername - What you wantto set the servername to be
+   */
   SetServerName(serverId, servername) {
     var self = this;
     return new Promise(function (resolve, reject) {
       var self = this;
-      axios.patch('https://discordapp.com/api/guilds/' + serverId, { name: servername },
-        { headers: { 'Authorization': "Bot " + self.key } })
+      axios.patch('https://discordapp.com/api/guilds/' + serverId, {
+          name: servername
+        }, {
+          headers: {
+            'Authorization': "Bot " + self.key
+          }
+        })
         .then(function (response) {
           resolve(response.data);
         })
@@ -605,16 +652,19 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * Kicks the specified user id from the server
-  * @param {string} serverID - ID of the server
-  * @param {string} userID - ID of the user going to be kicked
-  */
+   * Kicks the specified user id from the server
+   * @param {string} serverID - ID of the server
+   * @param {string} userID - ID of the user going to be kicked
+   */
   Kick(sID, uID) {
     var self = this;
     return new Promise(function (resolve, reject) {
       var self = this;
-      axios.delete('https://discordapp.com/api/guilds/' + serverId + '/members/' + userID,
-        { headers: { 'Authorization': "Bot " + self.key } })
+      axios.delete('https://discordapp.com/api/guilds/' + serverId + '/members/' + userID, {
+          headers: {
+            'Authorization': "Bot " + self.key
+          }
+        })
         .then(function (response) {
           resolve(response.data);
         })
@@ -624,18 +674,23 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * Bans the specified user id from the server
-  * @param {string} serverID - ID of the server
-  * @param {string} userID - ID of the user going to be banned
-  * @param {number} Days - (Optional)The number of days worth of messages to delete
-  */
+   * Bans the specified user id from the server
+   * @param {string} serverID - ID of the server
+   * @param {string} userID - ID of the user going to be banned
+   * @param {number} Days - (Optional)The number of days worth of messages to delete
+   */
   Ban(serverID, userID, Days) {
     var self = this;
     return new Promise(function (resolve, reject) {
       var self = this;
 
-      axios.put('https://discordapp.com/api/guilds/' + serverId + '/bans/' + userID, { 'delete-message-days': Days },
-        { headers: { 'Authorization': "Bot " + self.key } })
+      axios.put('https://discordapp.com/api/guilds/' + serverId + '/bans/' + userID, {
+          'delete-message-days': Days
+        }, {
+          headers: {
+            'Authorization': "Bot " + self.key
+          }
+        })
         .then(function (response) {
           resolve(resp.data);
         })
@@ -645,17 +700,20 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * Unabn the specified user id from the server
-  * @param {string} serverID - ID of the server
-  * @param {string} userID - ID of the user going to be unbanned
-  */
+   * Unabn the specified user id from the server
+   * @param {string} serverID - ID of the server
+   * @param {string} userID - ID of the user going to be unbanned
+   */
   Unban(sID, uID) {
     var self = this;
     return new Promise(function (resolve, reject) {
       var self = this;
 
-      axios.delete('https://discordapp.com/api/guilds/' + serverId + '/bans/' + userID, {},
-        { headers: { 'Authorization': "Bot " + self.key } })
+      axios.delete('https://discordapp.com/api/guilds/' + serverId + '/bans/' + userID, {}, {
+          headers: {
+            'Authorization': "Bot " + self.key
+          }
+        })
         .then(function (response) {
           resolve(resp.data);
         })
@@ -665,52 +723,58 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * Mutes the specified user id from the server
-  * @param {string} serverID - ID of the server
-  * @param {string} userID - ID of the user going to be muted
-  */
+   * Mutes the specified user id from the server
+   * @param {string} serverID - ID of the server
+   * @param {string} userID - ID of the user going to be muted
+   */
   Mute(sID, uID) {
     var self = this;
-    self.client.mute({ serverID: sID, userID: uID });
+    self.client.mute({
+      serverID: sID,
+      userID: uID
+    });
   }
   /**
-  * Unmutes the specified user id from the server
-  * @param {string} serverID - ID of the server
-  * @param {string} userID - ID of the user going to be unmuted
-  */
+   * Unmutes the specified user id from the server
+   * @param {string} serverID - ID of the server
+   * @param {string} userID - ID of the user going to be unmuted
+   */
   Unmute(sID, uID) {
     var self = this;
-    self.client.unmute({ serverID: sID, userID: uID });
+    self.client.unmute({
+      serverID: sID,
+      userID: uID
+    });
   }
   /**
-  * Joins the channel that the user is in
-  * @param {string} voiceID - ID of the voice channel
-  */
+   * Joins the channel that the user is in
+   * @param {string} voiceID - ID of the voice channel
+   */
   JoinVoiceChannel(voiceID) {
     var self = this;
     this.client.joinVoiceChannel(voiceID, function (err) {
       if (err) {
         console.log(err);
-      } else { }
+      } else {}
     })
   }
   /**
-  * Leaves the channel that the user is in
-  * @param {string} voiceID - ID of the voice channel
-  */
+   * Leaves the channel that the user is in
+   * @param {string} voiceID - ID of the voice channel
+   */
   LeaveVoiceChannel(voiceID) {
     var self = this;
     this.client.leaveVoiceChannel(voiceID, function (err) {
       if (err) {
         console.log(err);
-      } else { }
+      } else {}
     })
   }
   /**
-  * Joins the channel that the user is in
-  * @param {string} serverID - ID of the server
-  * @param {string} userID - ID of the user its joining
-  */
+   * Joins the channel that the user is in
+   * @param {string} serverID - ID of the server
+   * @param {string} userID - ID of the user its joining
+   */
   JoinUsersVoiceChannel(serverID, userID) {
     var user = this.GetUserByID(serverID, userID);
     if (!user) {
@@ -719,10 +783,10 @@ class Bot extends EventEmitter {
     this.JoinVoiceChannel(user.voice_channel_id);
   }
   /**
-  * Leaves the channel that the user is in
-  * @param {string} serverID - ID of the server
-  * @param {string} userID - ID of the user its leaving
-  */
+   * Leaves the channel that the user is in
+   * @param {string} serverID - ID of the server
+   * @param {string} userID - ID of the user its leaving
+   */
   LeaveUsersVoiceChannel(serverID, userID) {
     var user = this.GetUserByID(serverID, userID);
     if (!user) {
@@ -731,25 +795,25 @@ class Bot extends EventEmitter {
     this.LeaveVoiceChannel(user.voice_channel_id);
   }
   /**
-  * Get a lot of information about the server
-  * @param {string} serverID - ID of the server
-  */
+   * Get a lot of information about the server
+   * @param {string} serverID - ID of the server
+   */
   GetServerByID(id) {
     return this.servers[id];
   }
   /**
-  * Gets information about that user in the server
-  * @param {string} serverID - ID of the server
-  * @param {string} userID - Id of the user
-  */
+   * Gets information about that user in the server
+   * @param {string} serverID - ID of the server
+   * @param {string} userID - Id of the user
+   */
   GetUserByID(serverID, userID) {
     return this.servers[serverID].members[userID];
   }
   /**
-  * Gets the roles that the specified user in the server has
-  * @param {string} serverID - ID of the server
-  * @param {string} userID - Id of the user
-  */
+   * Gets the roles that the specified user in the server has
+   * @param {string} serverID - ID of the server
+   * @param {string} userID - Id of the user
+   */
   GetUserRoles(serverId, userId) {
     var user = this.GetUserByID(serverId, userId);
     if (!user) {
@@ -758,10 +822,10 @@ class Bot extends EventEmitter {
     return user.roles;
   }
   /**
-  * Gets information about the specified role
-  * @param {string} serverID - ID of the server
-  * @param {string} roleID - Id of the role
-  */
+   * Gets information about the specified role
+   * @param {string} serverID - ID of the server
+   * @param {string} roleID - Id of the role
+   */
   GetRoleById(serverId, roleId) {
     var server = this.GetServerByID(serverId);
     if (!server) {
@@ -770,8 +834,8 @@ class Bot extends EventEmitter {
     return server.roles[roleId];
   }
   /**
-  * Gets information about the bot
-  */
+   * Gets information about the bot
+   */
   GetBotInfo() {
     var self = this;
     return {
@@ -783,9 +847,9 @@ class Bot extends EventEmitter {
     }
   }
   /**
-  * Gets minimal information about the specified user
-  * @param {string} userID - ID of the user
-  */
+   * Gets minimal information about the specified user
+   * @param {string} userID - ID of the user
+   */
   GetUserInfo(UserID) {
     var self = this;
     return self.client.users[UserID];
@@ -794,10 +858,10 @@ class Bot extends EventEmitter {
     return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
   }
   /**
-  * Gets message info of a message
-  * @param {string} channelID - ID of the channel
-  * @param {string} messageID - ID of the message
-  */
+   * Gets message info of a message
+   * @param {string} channelID - ID of the channel
+   * @param {string} messageID - ID of the message
+   */
   GetMessage(channelID, MessageID) {
     var self = this;
     return new Promise(function (resolve, reject) {
@@ -814,11 +878,11 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * Adds reaction to a message
-  * @param {string} channelID - ID of the channel
-  * @param {string} messageID - ID of the message
-  * @param {string} reactionID - ID or unicode of a reactionID
-  */
+   * Adds reaction to a message
+   * @param {string} channelID - ID of the channel
+   * @param {string} messageID - ID of the message
+   * @param {string} reactionID - ID or unicode of a reactionID
+   */
   AddReaction(channelID, messageID, reaction) {
     var self = this;
     return new Promise(function (resolve, reject) {
@@ -836,11 +900,11 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * Gets reaction of a message
-  * @param {string} channelID - ID of the channel
-  * @param {string} messageID - ID of the message
-  * @param {string} reactionID - ID or unicode of a reactionID
-  */
+   * Gets reaction of a message
+   * @param {string} channelID - ID of the channel
+   * @param {string} messageID - ID of the message
+   * @param {string} reactionID - ID or unicode of a reactionID
+   */
   GetReaction(channelID, messageID, reaction) {
     var self = this;
     return new Promise(function (resolve, reject) {
@@ -858,11 +922,11 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * Removes reaction from a message
-  * @param {string} channelID - ID of the channel
-  * @param {string} messageID - ID of the message
-  * @param {string} reactionID - ID or unicode of a reactionID
-  */
+   * Removes reaction from a message
+   * @param {string} channelID - ID of the channel
+   * @param {string} messageID - ID of the message
+   * @param {string} reactionID - ID or unicode of a reactionID
+   */
   RemoveReaction(channelID, messageID, reaction) {
     var self = this;
     return new Promise(function (resolve, reject) {
@@ -880,10 +944,10 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * Removes all reactions from a message
-  * @param {string} channelID - ID of the channel
-  * @param {string} messageID - ID of the message
-  */
+   * Removes all reactions from a message
+   * @param {string} channelID - ID of the channel
+   * @param {string} messageID - ID of the message
+   */
   RemoveAllReactions(channelID, messageID) {
     var self = this;
     return new Promise(function (resolve, reject) {
@@ -900,11 +964,11 @@ class Bot extends EventEmitter {
     });
   }
   /**
-  * Pagify results
-  * @param {array} arr - Array to be paged
-  * @param {integer} page - Page number
-  * @param {integer} perPage - Results per page
-  */
+   * Pagify results
+   * @param {array} arr - Array to be paged
+   * @param {integer} page - Page number
+   * @param {integer} perPage - Results per page
+   */
   pageResults(arr, page, perPage = 10) {
     var returnArr = [];
     var maxindex;

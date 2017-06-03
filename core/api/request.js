@@ -15,3 +15,10 @@ exports.identify = function (token, shardID = 0, shardCount = 1) {
       "shard": [shardID, shardCount]}
   }
 };
+
+
+exports.heartbeat = function () {
+  return{
+    op:11,
+  }
+};
