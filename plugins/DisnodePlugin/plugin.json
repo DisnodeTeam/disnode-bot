@@ -1,7 +1,0 @@
-{
-  "name":"Disnode Plugin",
-  "id": "disnode-plugin",
-  "script": "DisnodePlugin.js",
-  "commandsFile": "Commands.json",
-  "configFile" : "Config.json"
-}

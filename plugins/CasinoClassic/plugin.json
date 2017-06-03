@@ -1,7 +1,0 @@
-{
-  "name":"Casino Classic",
-  "id": "casino-classic",
-  "script": "CasinoClassic.js",
-  "commandsFile": "Commands.json",
-  "configFile" : "Config.json"
-}

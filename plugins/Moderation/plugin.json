@@ -1,7 +1,0 @@
-{
-  "name":"Moderation",
-  "id": "moderation",
-  "script": "Moderation.js",
-  "commandsFile": "Commands.json",
-  "configFile" : "Config.json"
-}
