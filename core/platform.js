@@ -20,7 +20,7 @@ class Platform {
               reject(err.message)
           })
       });
-    } 
+    }   
     GetUserUltra(userID) {
         var self = this;
 
