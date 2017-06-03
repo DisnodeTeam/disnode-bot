@@ -1,9 +1,9 @@
 {
   "commands":[
     {
-      "cmd": "",
-      "desc": "",
-      "run": ""
+      "cmd": "stats",
+      "run": "statsUser",
+      "desc": "*lol*"
     }
   ]
 }
