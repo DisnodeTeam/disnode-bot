@@ -1,4 +1,4 @@
-class Template {
+class RPGPlugin {
   constructor() {}
   default(command){
     var self = this;
@@ -27,4 +27,4 @@ class Template {
   }
 
 }
-module.exports = Template;
+module.exports = RPGPlugin;

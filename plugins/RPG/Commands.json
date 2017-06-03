@@ -2,6 +2,7 @@
   "commands":[
     {
       "cmd": "",
+      "desc": "",
       "run": ""
     }
   ]
