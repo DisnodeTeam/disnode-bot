@@ -1,0 +1,7 @@
+{
+  "name":"Ping Plugin",
+  "id": "ping-plugin",
+  "script": "PingPlugin.js",
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}

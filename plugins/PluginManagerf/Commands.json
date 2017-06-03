@@ -1,0 +1,29 @@
+{
+  "commands":[
+    {
+      "cmd": "add",
+      "run": "commandAdd"
+    },
+    {
+      "cmd": "remove",
+      "run": "commandRemove"
+    },
+    {
+      "cmd": "list",
+      "run": "commandList"
+    },
+    {
+      "cmd": "info",
+      "run": "commandInfo"
+    },
+    {
+      "cmd": "browse",
+      "run": "commandBrowse"
+    },
+    {
+      "cmd": "set",
+      "run": "commandSet"
+    }
+
+  ]
+}

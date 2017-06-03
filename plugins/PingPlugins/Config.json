@@ -1,0 +1,5 @@
+{
+  "prefix":"ping",
+  "static": true,
+  "run":false
+}

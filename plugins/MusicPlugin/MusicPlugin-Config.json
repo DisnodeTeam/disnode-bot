@@ -1,0 +1,7 @@
+{
+  "prefix":"music",
+  "requirePrefix":true,
+  "autoStatus": true,
+  "static": true,
+  "run":true
+}

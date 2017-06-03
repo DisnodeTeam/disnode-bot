@@ -1,0 +1,19 @@
+{
+  "commands":[
+    {
+      "cmd": "jv",
+      "desc": "*Join your voice channel*",
+      "run": "commandJoin"
+    },
+    {
+      "cmd": "lv",
+      "desc": "*Join your voice channel*",
+      "run": "commandLeave"
+    },
+    {
+      "cmd": "play",
+      "desc": "*Play a youtube videa by doing !music play (video url)*",
+      "run": "commandPlay"
+    }
+  ]
+}
