@@ -8,7 +8,6 @@ class CasinoUtils {
     this.disnode = disnode;
     this.state = state;
     this.plugin = plugin;
-    this.state.data.casinoObj = {};
     this.recentBetters = [];
     self.DB;
   }
@@ -20,6 +19,7 @@ class CasinoUtils {
         self.DB.Find("casinoObj", {}).then(function(res) {
           if(self.plugin.stateAuth)self.state.data.casinoObj = res[0];
           self.updateCoroutine();
+          console.log(self.state.data);
           resolve();
         });
       });
