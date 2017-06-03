@@ -1,0 +1,3 @@
+[submodule "plugins"]
+	path = plugins
+	url = https://github.com/DisnodeTeam/disnode-plugins.git
