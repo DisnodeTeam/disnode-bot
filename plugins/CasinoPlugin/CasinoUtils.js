@@ -182,7 +182,7 @@ class CasinoUtils {
     var self = this;
     var players = [];
     return new Promise(function(resolve, reject) {
-      self.DB.Find("players", {}).then(function(found) {
+      self.DB.Find("players", {"id": data.msg.userID}).then(function(found) {
         players = found;
         for (var i = 0; i < players.length; i++) {
           if(data.msg.userID == players[i].id){
