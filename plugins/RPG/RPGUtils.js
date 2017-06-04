@@ -12,6 +12,7 @@ class RPGUtils {
         for (var i = 0; i < players.length; i++) {
           if (command.msg.userID == players[i].id) {
             resolve(players[i]);
+            console.dir(players);
             return;
           }
         }
@@ -21,15 +22,18 @@ class RPGUtils {
           chealth: 50,
           thealth: 50,
           gold: 100,
+          xp: 0,
+          lv: 1,
+          nextlv: 100,
           inv: [{
-              item: "Shortsword",
-              id: 1,
-              amount: 1
+              "item": "Shortsword",
+              "id": 1,
+              "amount": 1
             },
             {
-              item: "Health Potion",
-              id: 2,
-              amount: 2
+              "item": "Health Potion",
+              "id": 2,
+              "amount": 2
             }
           ]
         }
@@ -83,17 +87,72 @@ class RPGUtils {
       });
     });
   }
+  weaponList(command){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.plugin.DB.Find("weapons", {}).then(function(weapons) {
+        for (var i = 0; i < weapons.length; i++) {
+          if(weapons[i].id == "weapons"){
+            resolve({found: true, p: weapons[i]});
+            return;
+          }
+        }
+      });
+    });
+  }
+  healList(command){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.plugin.DB.Find("health", {}).then(function(health) {
+        for (var i = 0; i < health.length; i++) {
+          if(health[i].id == "health"){
+            resolve({found: true, p: health[i]});
+            return;
+          }
+        }
+      });
+    });
+  }
+  armorList(command){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.plugin.DB.Find("armor", {}).then(function(armor) {
+        for (var i = 0; i < armor.length; i++) {
+          if(armor[i].id == "armor"){
+            resolve({found: true, p: armor[i]});
+            return;
+          }
+        }
+      });
+    });
+  }
+  mobList(command){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.plugin.DB.Find("mobs", {}).then(function(mobs) {
+        for (var i = 0; i < mobs.length; i++) {
+          if(mobs[i].id == "mobs"){
+            resolve({found: true, p: mobs[i]});
+            return;
+          }
+        }
+      });
+    });
+  }
+  checkLV(player, channel){
+    var self = this;
+    var lvup = false;
+    while(player.xp >= (player.nextlv)){
+      player.lv++;
+      player.thealth += player.thealth + 50;
+      player.nextlv += (100 * player.lv);
+      lvup = true;
+    }
+    if(lvup)self.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lv + "\n**Your health has been healed and increased to:** " + player.thealth + "HP", 1433628);
+  }
   pMention(uid) {
     var id = uid.replace(/\D/g, '');
     return id;
-  }
-  getItem(type, id){
-    var self = this;
-    self.plugin.DB.Find("items", {"id":"items"}).then(function(items) {
-      console.log(type);
-      console.log(items);
-      console.dir(items[type.toString()][id.toString()]);
-    });
   }
   avatarCommandUser(command) {
     var self = this;

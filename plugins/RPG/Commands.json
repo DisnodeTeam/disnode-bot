@@ -8,7 +8,17 @@
     {
       "cmd": "inv",
       "run": "invUser",
-      "desc": "*Gets yo inv"
+      "desc": "*Gets your inv*"
+    },
+    {
+      "cmd" : "list",
+      "run" : "storelist",
+      "desc" : "*Shows a list of items*"
+    },
+    {
+      "cmd" :"info",
+      "run" : "itemInfo",
+      "desc" : "*Gets info of an item*"
     }
   ]
 }
