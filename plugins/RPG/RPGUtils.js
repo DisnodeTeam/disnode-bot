@@ -12,7 +12,6 @@ class RPGUtils {
         for (var i = 0; i < players.length; i++) {
           if (command.msg.userID == players[i].id) {
             resolve(players[i]);
-            console.dir(players);
             return;
           }
         }
@@ -21,21 +20,35 @@ class RPGUtils {
           id: command.msg.userID,
           chealth: 50,
           thealth: 50,
-          gold: 100,
+          gold: 50,
           xp: 0,
           lv: 1,
           nextlv: 100,
           inv: [{
-              "item": "Shortsword",
-              "id": 1,
+              "defaultName": "Bronze Shortsword",
               "amount": 1
             },
             {
-              "item": "Health Potion",
-              "id": 2,
+              "defaultName" : "Apple",
+              "amount": 5
+            },
+            {
+              "defaultName": "Health Potion",
               "amount": 2
             }
-          ]
+          ],
+          adventure: [{
+            name: "",
+            minDamage: 0,
+            maxDamage: 0,
+            minHealth: 0,
+            maxHealth: 0,
+            currentHealth: 0,
+            minDefense: 0,
+            maxDefense: 0,
+            minXP: 0,
+            maxXP: 0
+          }]
         }
         for (var i = 0; i < players.length; i++) {
           if (newPlayer.name == players[i].name) {
@@ -156,11 +169,11 @@ class RPGUtils {
   }
   avatarCommandUser(command) {
     var self = this;
-    if (command.msg.obj.author.avatar != null) {
-      if (command.msg.obj.author.avatar.indexOf('_') > -1) {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.obj.author.avatar + ".gif";
+    if (command.msg.raw.author.avatar != null) {
+      if (command.msg.raw.author.avatar.indexOf('_') > -1) {
+        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".gif";
       } else {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.obj.author.avatar + ".png";
+        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".png";
       }
     }
   }

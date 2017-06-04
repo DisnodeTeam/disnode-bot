@@ -49,7 +49,6 @@ class RPGPlugin {
       if (command.params[0]) {
         self.utils.fplayer(command.params[0]).then(function(res) {
           if (res.found) {
-            console.dir(res.p);
             self.disnode.bot.SendEmbed(command.msg.channel, {
               color: 1752220,
               author: {},
@@ -63,6 +62,10 @@ class RPGPlugin {
                 name: 'Gold',
                 inline: true,
                 value: (res.p.gold),
+              },{
+                name: 'Level',
+                inline: true,
+                value: res.p.lv + ' (' + res.p.xp + '/' + res.p.nextlv + ')',
               }],
               footer: {
                 text: command.msg.user,
@@ -88,6 +91,10 @@ class RPGPlugin {
             name: 'Gold',
             inline: true,
             value: (player.gold),
+          },{
+            name: 'Level',
+            inline: true,
+            value: player.lv + ' (' + player.xp + '/' + player.nextlv + ')',
           }],
           footer: {
             text: command.msg.user,
@@ -107,7 +114,7 @@ class RPGPlugin {
       }
       var uit = "";
       for (var i = 0; i < player.inv.length; i++) {
-        uit += "" + player.inv[i].item + "\n";
+        uit += "" + player.inv[i].defaultName + "\n";
       }
       self.disnode.bot.SendEmbed(command.msg.channel, {
         color: 1752220,
