@@ -1,13 +1,16 @@
+const RPGUtils = require('./RPGUtils.js');
 class RPGPlugin {
   constructor() {
     var self = this;
     self.DB = {};
+    self.utils = {};
   }
   Init(onComplete) {
     var self = this;
     setTimeout(function() {
       self.disnode.db.InitPromise({}).then(function(dbo) {
         self.DB = dbo;
+        self.utils = new RPGUtils(self);
         onComplete();
       });
     }, 100);
@@ -41,32 +44,61 @@ class RPGPlugin {
     var self = this;
     var bprefix = self.disnode.botConfig.prefix;
     var pprefix = self.config.prefix;
-    self.gUser(command).then(function(player) {
-      self.disnode.bot.SendEmbed(command.msg.channel, {
-        color: 1752220,
-        author: {},
-        title: player.name + "\'s stats",
-        description: "To see your inventory type ``" + bprefix + "" + pprefix + " inv``.",
-        fields: [{
-          name: 'Health',
-          inline: true,
-          value: (player.chealth) + "/" + (player.thealth) + " HP",
-        }, {
-          name: 'Gold',
-          inline: true,
-          value: (player.gold),
-        }],
-        footer: {
-          text: command.msg.user,
-          icon_url: self.avatarCommandUser(command),
-        },
-        timestamp: new Date(),
-      });
+    self.utils.gUser(command).then(function(player) {
+      if(command.params[0]){
+        self.utils.fplayer(command.params[0]).then(function(res) {
+          if(res.found){
+            self.disnode.bot.SendEmbed(command.msg.channel, {
+              color: 1752220,
+              author: {},
+              title: res.p.name + "\'s stats",
+              description: "To see your inventory type ``" + bprefix + "" + pprefix + " inv``.",
+              fields: [{
+                name: 'Health',
+                inline: true,
+                value: (res.p.chealth) + "/" + (res.p.thealth) + " HP",
+              }, {
+                name: 'Gold',
+                inline: true,
+                value: (res.p.gold),
+              }],
+              footer: {
+                text: command.msg.user,
+                icon_url: self.utils.avatarCommandUser(command),
+              },
+              timestamp: new Date(),
+            });
+          }else {
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg);
+          }
+        });
+      }else {
+        self.disnode.bot.SendEmbed(command.msg.channel, {
+          color: 1752220,
+          author: {},
+          title: player.name + "\'s stats",
+          description: "To see your inventory type ``" + bprefix + "" + pprefix + " inv``.",
+          fields: [{
+            name: 'Health',
+            inline: true,
+            value: (player.chealth) + "/" + (player.thealth) + " HP",
+          }, {
+            name: 'Gold',
+            inline: true,
+            value: (player.gold),
+          }],
+          footer: {
+            text: command.msg.user,
+            icon_url: self.utils.avatarCommandUser(command),
+          },
+          timestamp: new Date(),
+        });
+      }
     });
   }
   invUser(command) {
     var self = this;
-    self.gUser(command).then(function(player) {
+    self.utils.gUser(command).then(function(player) {
       var uamo = "";
       for (var i = 0; i < player.inv.length; i++) {
         uamo += "x" + player.inv[i].amount + "\n";
@@ -91,68 +123,11 @@ class RPGPlugin {
         }],
         footer: {
           text: command.msg.user,
-          icon_url: self.avatarCommandUser(command),
+          icon_url: self.utils.avatarCommandUser(command),
         },
         timestamp: new Date(),
       });
     });
-  }
-  gUser(command) {
-    var self = this;
-    var players = [];
-    return new Promise(function(resolve, reject) {
-      self.DB.Find("players", {}).then(function(found) {
-        players = found;
-        for (var i = 0; i < players.length; i++) {
-          if (command.msg.userID == players[i].id) {
-            resolve(players[i]);
-            return;
-          }
-        }
-        var newPlayer = {
-          name: command.msg.user,
-          id: command.msg.userID,
-          chealth: 50,
-          thealth: 50,
-          gold: 100,
-          inv: [{
-              "item": "Shortsword",
-              "id": 1,
-              "amount": 1
-            },
-            {
-              "item": "Health Potion",
-              "id": 2,
-              "amount": 2
-            }
-          ]
-        }
-        for (var i = 0; i < players.length; i++) {
-          if (newPlayer.name == players[i].name) {
-            newPlayer.name += "1";
-            break;
-          }
-        }
-        self.DB.Insert("players", newPlayer);
-        resolve(newPlayer);
-        return;
-      });
-    });
-  }
-  pMention(command) {
-    var id = command.params[0];
-    id = uid.replace(/\D/g, '');
-    return id;
-  }
-  avatarCommandUser(command) {
-    var self = this;
-    if (command.msg.obj.author.avatar != null) {
-      if (command.msg.obj.author.avatar.indexOf('_') > -1) {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.obj.author.avatar + ".gif";
-      } else {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.obj.author.avatar + ".png";
-      }
-    }
   }
 }
 module.exports = RPGPlugin;
