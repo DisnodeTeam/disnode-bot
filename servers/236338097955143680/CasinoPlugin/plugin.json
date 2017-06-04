@@ -1,9 +1,0 @@
-{
-  "name":"Casino Plugin",
-  "id": "casino-plugin",
-  "script": "CasinoPlugin.js",
-  "commandsFile": "Commands.json",
-  "configFile" : "Config.json",
-  "load": true,
-  "requirements": ["countdownjs" ,"numeral","dateformat"]
-}
