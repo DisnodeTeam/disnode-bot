@@ -96,15 +96,15 @@ class PluginManager {
             {
               name: "Verified",
               inline: true,
-              value: res.data.data.verified
+              value: self.parseBool(res.data.data.verified, "<:plugin_verified:320783752265596928> (Verified)")
             }, {
               name: "Offical",
               inline: true,
-              value: res.data.data.official
+              value: self.parseBool(res.data.data.official, "<:plugin_official:320783752110276618> (Made by Disnode)")
             }, {
               name: "Ultra Rewards",
               inline: true,
-              value: res.data.data.ultraReward
+              value:self.parseBool(res.data.data.ultraReward, "<:plugin_ultra_rewards:320783752026390528> (Rewards for Ultra Users)")
             }],
             footer: {}
           });
@@ -115,6 +115,9 @@ class PluginManager {
           break;
       }
     });
+  }
+  parseBool(val, render){
+    if(val){return render;}
   }
   commandBrowse(command) {
     var self = this;

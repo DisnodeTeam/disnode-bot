@@ -3,6 +3,10 @@
     {
       "cmd": "roles",
       "run": "commandRoles"
+    },
+    {
+      "cmd": "emojis",
+      "run": "commandEmojis"
     }
   ]
 }

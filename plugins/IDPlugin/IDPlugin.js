@@ -21,6 +21,16 @@ class IDPlugin {
     }
     this.disnode.bot.SendCompactEmbed(command.msg.channel, "Roles", final);
   }
+
+  commandEmojis(command){
+    var server = this.disnode.bot.servers[this.server];
+    var final = "";
+
+    for (var i=0;i<server.emojis.length; i++) {
+      final += "`" +  server.emojis[i].name + '` --- `' +  server.emojis[i].id  + "`\n";
+    }
+    this.disnode.bot.SendCompactEmbed(command.msg.channel, "Roles", final);
+  }
 }
 
 module.exports = IDPlugin;
