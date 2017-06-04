@@ -1,5 +1,1 @@
-{
-  "prefix":"plugins",
-  "static": "false",
-  "run": true
-}
+{"prefix":"plugin","static":"false","run":true}

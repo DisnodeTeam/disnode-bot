@@ -1,6 +1,7 @@
 {
   "name":"Time Conversion",
   "id": "time-conversion",
+  "load": true,
   "script": "TimeConversion.js",
   "commandsFile": "Commands.json",
   "configFile" : "Config.json"

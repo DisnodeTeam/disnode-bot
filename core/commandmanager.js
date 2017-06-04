@@ -39,7 +39,6 @@ class CommandManager {
       var self = this;
       self.plugin.GetCommandPrefixes().then(function(prefixes){
         self.prefixes = prefixes;
-        console.log("UPDATE PREFIXES: ", self.prefixes);
       });
     }
 
@@ -93,7 +92,7 @@ class CommandManager {
     }
 
     GetCommandData(msgObj, ignoreFirst, callback) {
-
+      
         var self = this;
         var msg = msgObj.message;
         var firstLetter = msg.substring(0, 1);
