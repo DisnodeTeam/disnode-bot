@@ -1,0 +1,12 @@
+{
+  "commands":[
+    {
+      "cmd": "server",
+      "run": "commandServer"
+    },
+    {
+      "cmd" : "user",
+      "run" : "commandUser"
+    }
+  ]
+}
