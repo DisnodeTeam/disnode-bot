@@ -93,43 +93,6 @@ class RPGPlugin {
           },
           timestamp: new Date(),
         });
-    });
-  }
-  gUser(command) {
-    var self = this;
-    var players = [];
-    return new Promise(function(resolve, reject) {
-      self.DB.Find("players", {}).then(function(found) {
-        players = found;
-        for (var i = 0; i < players.length; i++) {
-          if(command.msg.userID == players[i].id){
-              resolve(players[i]);
-              return;
-            }
-        }
-        var newPlayer = {
-          name: command.msg.user,
-          id: command.msg.userID,
-          gold: 0
-        }
-        for (var i = 0; i < players.length; i++) {
-          if(newPlayer.name == players[i].name){
-            newPlayer.name += "1";
-            break;
-          }
-        }
-        self.DB.Insert("players", newPlayer);
-        resolve(newPlayer);
-        return;
-      });
-    });
-  }
-    pMention(command) {
-    var id = command.params[0];
-    id = uid.replace(/\D/g, '');
-    return id;
-  }
-          
       }
     });
   }
