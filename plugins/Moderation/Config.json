@@ -1,0 +1,6 @@
+{
+  "prefix":"mod",
+  "requirePrefix":false,
+  "static": false,
+  "run":true
+}

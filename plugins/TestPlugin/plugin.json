@@ -1,0 +1,8 @@
+{
+  "name":"Test Plugin",
+  "id": "Test-plugin",
+  "load": true,
+  "script": "Plugin.js",
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}

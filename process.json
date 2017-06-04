@@ -1,0 +1,7 @@
+{
+  "apps" : [{
+    "script"    : "Run.js",
+    "instances" : 2,
+    "exec_mode" : "cluster"
+  }]
+}

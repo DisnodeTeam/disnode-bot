@@ -1,0 +1,14 @@
+{
+  "commands":[
+    {
+      "cmd": "stats",
+      "run": "statsUser",
+      "desc": "*Gets user stats*"
+    },
+    {
+      "cmd": "inv",
+      "run": "invUser",
+      "desc": "*Gets yo inv"
+    }
+  ]
+}

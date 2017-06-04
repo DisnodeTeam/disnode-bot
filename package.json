@@ -4,7 +4,8 @@
   "description": "A Discord.js Wrapper for providing basic functions to Discord Bots.",
   "main": "dist/Disnode.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gen-docs": "jsdoc -c jsdoc.json"
   },
   "repository": {
     "type": "git",
@@ -17,18 +18,30 @@
   },
   "homepage": "https://github.com/AtecStudios/Disnode#readme",
   "dependencies": {
-    "cleverbot-node": "^0.2.2",
+    "async": "^2.1.4",
+    "axios": "^0.16.1",
     "colors": "^1.1.2",
-    "discord.js": "^9.2.0",
+    "countdownjs": "^2.0.0",
+    "discord.io": "^2.5.0",
+    "disnode-logger": "0.0.1",
+    "fetch": "^1.1.0",
+    "fs-extra": "^2.1.2",
     "jsonfile": "^2.3.1",
-    "tmi.js": "^1.1.1",
+    "merge": "^1.2.0",
+    "mongodb": "^2.2.24",
+    "node-uuid": "^1.4.7",
+    "npmi": "^2.0.1",
+    "numeral": "^2.0.4",
+    "object-sizeof": "^1.2.0",
+    "opusscript": "0.0.1",
+    "pmx": "^1.0.1",
+    "shortid": "^2.2.8",
+    "system-sleep": "^1.3.0",
+    "timer-stopwatch": "^0.2.0",
+    "twitch-api": "^0.4.6",
+    "unzip": "^0.1.11",
+    "unzip2": "^0.2.5",
     "walk": "^2.3.9",
-    "wolfram-alpha": "^0.5.0",
-    "ytdl-core": "^0.7.17"
-  },
-  "devDependencies": {
-    "babel-preset-es2015": "^6.13.2",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2"
+    "ytdl-core": "^0.14.0"
   }
 }

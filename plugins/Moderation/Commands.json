@@ -1,0 +1,34 @@
+{
+  "commands":[
+    {
+      "cmd": "kick",
+      "desc": "*Kicks a user from the guild*",
+      "run": "commandKick"
+    },
+    {
+      "cmd" : "ban",
+      "desc": "*Bans a user from the guild, add 1-7 after the username to delete x amount of days*",
+      "run" : "commandBan"
+    },
+    {
+      "cmd" : "softban",
+      "desc": "*Bans then unbans a user deleting 1 days worth of messages sent from the user*",
+      "run" : "commandSoftban"
+    },
+    {
+      "cmd" : "unban",
+      "desc": "*Unbans a user (Needs User ID)*",
+      "run" : "commandUnban"
+    },
+    {
+      "cmd" : "mute",
+      "desc": "*Mutes a user from talking in voice channels*",
+      "run" : "commandMute"
+    },
+    {
+      "cmd" : "unmute",
+      "desc": "*Unmutes a user*",
+      "run" : "commandUnmute"
+    }
+  ]
+}

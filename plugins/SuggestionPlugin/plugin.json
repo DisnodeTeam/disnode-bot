@@ -1,0 +1,7 @@
+{
+  "name":"Suggestion Plugin",
+  "id": "suggestion-plugin",
+  "script": "SuggestionPlugin.js",
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}
