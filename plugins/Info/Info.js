@@ -25,7 +25,7 @@ class InfoPlugin {
   commandServer(command) {
     var self = this;
     var bot = this.disnode.bot.GetBotInfo();
-    var serv = self.disnode.bot.client.servers[command.msg.server];
+    var serv = self.disnode.bot.servers[command.msg.server];
     var own = this.disnode.bot.GetUserInfo(serv.owner_id);
     var now = self.disnode.bot.GetSnowflakeDate(command.msg.server);
     var roles = "";
@@ -108,11 +108,15 @@ class InfoPlugin {
       var own = this.disnode.bot.GetUserInfo(command.msg.userID);
       var now = self.disnode.bot.GetSnowflakeDate(command.msg.userID);
       var use = self.disnode.bot.GetUserByID(command.msg.server, command.msg.userID);
+      var mem = self.disnode.bot.GetMember(self.server, command.msg.userID);
+      console.log(use);
       var rm = ""
-      var roles = self.disnode.bot.client.servers[command.msg.server].members[command.msg.userID].roles;
+      var roles = mem.roles;
+      
+      var status = self.disnode.bot.GetUserStatus(self.server,command.msg.userID );
       for (var i = 0; i < roles.length; i++) {
-        var serverRoles = self.disnode.bot.client.servers[command.msg.server].roles;
-        var roleName = serverRoles[roles[i]].name;
+
+        var roleName = self.disnode.bot.GetRoleById(self.server, roles[i]).name;
         rm += roleName + "  **|**  ";
       }
       self.disnode.bot.SendEmbed(command.msg.channel, {
@@ -124,7 +128,7 @@ class InfoPlugin {
         fields: [{
             name: own.username + "#" + own.discriminator,
             inline: true,
-            value: (own.game == null) ? use.status + " | Not playing a game" : use.status + " | Playing **" + own.game.name + "**",
+            value: (status.game == null) ? status.status + " | Not playing a game" : status.status + " | Playing **" + status.game.name + "**",
           },
           {
             name: "ID",
@@ -139,7 +143,7 @@ class InfoPlugin {
           {
             name: "Joined on",
             inline: false,
-            value: dateFormat(use.joined_at, "mmmm dS, yyyy, h:MM:ss TT"),
+            value: dateFormat(mem.joined_at, "mmmm dS, yyyy, h:MM:ss TT"),
           },
           {
             name: "Roles",
@@ -225,17 +229,18 @@ class InfoPlugin {
   }
   avatarCommandUser(command) {
     var self = this;
-    if (command.msg.obj.author.avatar != null) {
-      if (command.msg.obj.author.avatar.indexOf('_') > -1) {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.obj.author.avatar + ".gif";
+
+    if (command.msg.raw.author.avatar != null) {
+      if (command.msg.raw.author.avatar.indexOf('_') > -1) {
+        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".gif";
       } else {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.obj.author.avatar + ".png";
+        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".png";
       }
     }
   }
   iconServer(command) {
     var self = this;
-    var serv = self.disnode.bot.client.servers[command.msg.server];
+    var serv = self.disnode.bot.servers[command.msg.server];
     return "https:\/\/cdn.discordapp.com\/icons\/" + serv.id + "\/" + serv.icon + ".png?size=1024";
   }
 

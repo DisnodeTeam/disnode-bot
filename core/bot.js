@@ -33,10 +33,11 @@ class Bot extends EventEmitter {
     this.servers = {
       count: 0
     };
-    this.members = {
+
+    this.channels = {
       count: 0
     };
-    this.channels = {
+    this.users = {
       count: 0
     };
   }
@@ -101,7 +102,7 @@ class Bot extends EventEmitter {
 
     });
 
-    self.ws.on('error', function(data){
+    self.ws.on('error', function (data) {
       console.log(data);
     });
   }
@@ -113,8 +114,8 @@ class Bot extends EventEmitter {
     self.ws.send(JSON.stringify(packet));
     console.log(packet)
     setInterval(function () {
-        var packet = requests.heartbeat(self.s);
-        self.ws.send(JSON.stringify(packet));
+      var packet = requests.heartbeat(self.s);
+      self.ws.send(JSON.stringify(packet));
     }, interval)
   }
 
@@ -122,7 +123,7 @@ class Bot extends EventEmitter {
     data = JSON.parse(data);
     var operation = data.op;
     var self = this;
-    if(data.s){
+    if (data.s) {
       self.s = data.s;
     }
     switch (operation) {
@@ -390,10 +391,45 @@ class Bot extends EventEmitter {
       this.channels.count += 1;
 
     }
-    for (var i = 0; i < data.members.length; i++) {
-      this.members[data.members[i].id] == data.members[i];
-      this.members.count += 1;
+    var mem = this.servers[data.id].members
+    
+    var rawUsers = [];
+    for(var i=0;mem.length;i++){
+      if(mem[i] == null){
+        return;
+      }
+      this.users[mem[i].user.id] = mem[i].user;
     }
+
+    
+
+  
+  }
+
+  arrayToOject(array, selector) {
+    var obj = {};
+    for (var i = 0; i < array.length; i++) {
+      
+      var key = this.ObjectbyString(array[i], selector);
+      obj[key] = array[i];
+      
+    }
+    return obj;
+  }
+  ObjectbyString (o, s) {
+    
+    s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+    s = s.replace(/^\./, ''); // strip a leading dot
+    var a = s.split('.');
+    for (var i = 0, n = a.length; i < n; ++i) {
+      var k = a[i];
+      if (k in o) {
+        o = o[k];
+      } else {
+        return;
+      }
+    }
+    return o;
   }
   /**
    * Disconnect Bot to Discord
@@ -602,10 +638,10 @@ class Bot extends EventEmitter {
    * @param {string} status - What you want your bot to be playing
    */
   SetStatus(status) {
-      var self = this;
-      var packet = requests.presence(status);
+    var self = this;
+    var packet = requests.presence(status);
 
-      self.ws.send(JSON.stringify(packet));
+    self.ws.send(JSON.stringify(packet));
   }
   /**
    * Set the bots username
@@ -637,43 +673,42 @@ class Bot extends EventEmitter {
    */
   SetServerName(serverId, servername) {
     var self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {});
+  }
+  /**
+   * Deletes an array of messages
+   * @param {string} channelID - ID of the channel
+   * @param {array} messageIDs - Array of message ids
+   */
+  DeleteMessages(cID, mID) {
+    var self = this;
+    self.client.deleteMessages({
+      channelID: cID,
+      messageIDs: mID
+    });
+  }
+  /**
+   * Adds reaction to a message
+   * @param {string} channelID - ID of the channel
+   * @param {string} messageID - ID of the message
+   * @param {string} reactionID - ID or unicode of a reactionID
+   */
+  AddReaction(channelID, messageID, reaction) {
+    var self = this;
+    axios.patch('https://discordapp.com/api/guilds/' + serverId, {
+        name: servername
+      }, {
+        headers: {
+          'Authorization': "Bot " + self.key
+        }
+      })
+      .then(function (response) {
+        resolve(response.data);
+      })
+      .catch(function (err) {
+        reject(err);
       });
-    }
-    /**
-    * Deletes an array of messages
-    * @param {string} channelID - ID of the channel
-    * @param {array} messageIDs - Array of message ids
-    */
-    DeleteMessages(cID, mID) {
-      var self = this;
-      self.client.deleteMessages({
-        channelID: cID,
-        messageIDs: mID
-      });
-    }
-    /**
-    * Adds reaction to a message
-    * @param {string} channelID - ID of the channel
-    * @param {string} messageID - ID of the message
-    * @param {string} reactionID - ID or unicode of a reactionID
-    */
-    AddReaction(channelID, messageID, reaction){
-      var self = this;
-      axios.patch('https://discordapp.com/api/guilds/' + serverId, {
-          name: servername
-        }, {
-          headers: {
-            'Authorization': "Bot " + self.key
-          }
-        })
-        .then(function (response) {
-          resolve(response.data);
-        })
-        .catch(function (err) {
-          reject(err);
-        });
-    
+
   }
   /**
    * Kicks the specified user id from the server
@@ -833,6 +868,11 @@ class Bot extends EventEmitter {
   GetUserByID(serverID, userID) {
     return this.servers[serverID].members[userID];
   }
+
+  GetMember(serverID, userID){
+      var members = this.arrayToOject(this.servers[serverID].members, "user.id");
+      return members[userID];
+  }
   /**
    * Gets the roles that the specified user in the server has
    * @param {string} serverID - ID of the server
@@ -851,11 +891,22 @@ class Bot extends EventEmitter {
    * @param {string} roleID - Id of the role
    */
   GetRoleById(serverId, roleId) {
-    var server = this.GetServerByID(serverId);
+    var server = this.servers[serverId];
     if (!server) {
       return;
     }
-    return server.roles[roleId];
+    var roles = this.arrayToOject(server.roles,"id");
+    return roles[roleId];
+  }
+  GetUserStatus(serverId, UserId){
+    var statuses = this.servers[serverId].presences;
+    
+    for(var i=0; i < statuses.length; i++){
+      if(statuses[i].user.id == UserId){
+        return statuses[i];
+      }
+    }
+    //return 
   }
   /**
    * Gets information about the bot
@@ -876,7 +927,7 @@ class Bot extends EventEmitter {
    */
   GetUserInfo(UserID) {
     var self = this;
-    return self.client.users[UserID];
+    return self.users[UserID];
   }
   GetSnowflakeDate(resourceID) {
     return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
