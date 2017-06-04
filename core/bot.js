@@ -94,7 +94,6 @@ class Bot extends EventEmitter {
     });
   }
 
-
   BindSocketEvents() {
     var self = this;
     self.ws.on("message", function (data, flags) {
@@ -417,9 +416,6 @@ class Bot extends EventEmitter {
     });
   }
 
-
-
-
   SetUpLocalBinds() {
     var self = this;
     self.on('message', function (data) {
@@ -677,7 +673,7 @@ class Bot extends EventEmitter {
         .catch(function (err) {
           reject(err);
         });
-    });
+    
   }
   /**
    * Kicks the specified user id from the server

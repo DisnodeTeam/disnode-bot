@@ -92,7 +92,7 @@ class OwnerPlugin {
   commandServers(command) {
     var self = this;
     if (command.msg.userID == this.owner) {
-      var serverids = Object.keys(self.disnode.bot.client.servers);
+      var serverids = Object.keys(self.disnode.bot.servers);
       var servers = '';
       //Pageable results
       var page = 1;
@@ -113,7 +113,7 @@ class OwnerPlugin {
       for (var i = startindex; i < serverids.length; i++) {
         if(i == maxindex)break;
         var amount = i + 1;
-        var server = self.disnode.bot.client.servers[serverids[i]]
+        var server = self.disnode.bot.servers[serverids[i]]
         if (servers == '') {
           servers += "**" + amount + ". " + server.name + "** - (" + server.id + ")\n";
         } else if (i == serverids.length) {
@@ -156,9 +156,9 @@ class OwnerPlugin {
     var self = this;
     if (command.msg.userID == this.owner) {
       if (command.params.length == 0) {
-        self.disnode.bot.client.leaveServer(command.msg.server);
+        self.disnode.bot.leaveServer(command.msg.server);
       } else {
-        self.disnode.bot.client.leaveServer(command.params[0]);
+        self.disnode.bot.leaveServer(command.params[0]);
         this.disnode.bot.SendMessage(command.msg.channel, "Left **" + self.disnode.bot.client.servers[command.params[0]].name + "** - (" + self.disnode.bot.client.servers[command.params[0]].id + ")");
       }
     } else self.AccessDenied(command);
