@@ -22,14 +22,14 @@ class RPGUtils {
           thealth: 50,
           gold: 100,
           inv: [{
-              "item": "Shortsword",
-              "id": 1,
-              "amount": 1
+              item: "Shortsword",
+              id: 1,
+              amount: 1
             },
             {
-              "item": "Health Potion",
-              "id": 2,
-              "amount": 2
+              item: "Health Potion",
+              id: 2,
+              amount: 2
             }
           ]
         }
@@ -86,6 +86,14 @@ class RPGUtils {
   pMention(uid) {
     var id = uid.replace(/\D/g, '');
     return id;
+  }
+  getItem(type, id){
+    var self = this;
+    self.plugin.DB.Find("items", {"id":"items"}).then(function(items) {
+      console.log(type);
+      console.log(items);
+      console.dir(items[type.toString()][id.toString()]);
+    });
   }
   avatarCommandUser(command) {
     var self = this;

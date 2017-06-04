@@ -106,6 +106,7 @@ class RPGPlugin {
       var uit = "";
       for (var i = 0; i < player.inv.length; i++) {
         uit += "" + player.inv[i].item + "\n";
+        self.utils.getItem(player.inv[i].type, player.inv[i].id);
       }
       self.disnode.bot.SendEmbed(command.msg.channel, {
         color: 1752220,
