@@ -8,7 +8,7 @@ const jsonfile = require('jsonfile');
 const Logging = require("disnode-logger");
 const async = require('async');
 const DBManager = require('./dbmanager')
-
+const Util = require('./util')
 /** Main Disnode Class. Holds all features and interaction with Disnode
 @constructor
 * @param {string} configPath - Path to Bot Config.
@@ -33,6 +33,7 @@ class Disnode {
             self.bot = new DiscordBot(self.botConfig.key, self);
             self.stats = new Stats(self);
             self.platform = new Platform(self);
+             self.util = new Util(self);
             Logging.Success("Disnode", "Start", "Loaded Config");
             callback();
           }).catch(callback);

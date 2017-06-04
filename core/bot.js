@@ -406,31 +406,7 @@ class Bot extends EventEmitter {
   
   }
 
-  arrayToOject(array, selector) {
-    var obj = {};
-    for (var i = 0; i < array.length; i++) {
-      
-      var key = this.ObjectbyString(array[i], selector);
-      obj[key] = array[i];
-      
-    }
-    return obj;
-  }
-  ObjectbyString (o, s) {
-    
-    s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
-    s = s.replace(/^\./, ''); // strip a leading dot
-    var a = s.split('.');
-    for (var i = 0, n = a.length; i < n; ++i) {
-      var k = a[i];
-      if (k in o) {
-        o = o[k];
-      } else {
-        return;
-      }
-    }
-    return o;
-  }
+ 
   /**
    * Disconnect Bot to Discord
    * @return {Promise<string|err>} A promise to the token.
@@ -861,16 +837,20 @@ class Bot extends EventEmitter {
     return this.servers[id];
   }
   /**
-   * Gets information about that user in the server
+   * Gets information about that user 
    * @param {string} serverID - ID of the server
    * @param {string} userID - Id of the user
    */
   GetUserByID(serverID, userID) {
     return this.servers[serverID].members[userID];
   }
-
+  /**
+   * Gets server member 
+   * @param {string} serverID - ID of the server
+   * @param {string} userID - Id of the user
+   */
   GetMember(serverID, userID){
-      var members = this.arrayToOject(this.servers[serverID].members, "user.id");
+      var members = self.disnode.util.arrayToOject(this.servers[serverID].members, "user.id");
       return members[userID];
   }
   /**
@@ -895,7 +875,7 @@ class Bot extends EventEmitter {
     if (!server) {
       return;
     }
-    var roles = this.arrayToOject(server.roles,"id");
+    var roles = self.disnode.util.arrayToOject(server.roles,"id");
     return roles[roleId];
   }
   GetUserStatus(serverId, UserId){
