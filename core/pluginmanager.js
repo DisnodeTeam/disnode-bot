@@ -323,9 +323,9 @@ class PluginManager {
             self.LoadAllPlugins().then(function () {
               self.InstallPluginRequirements(pluginId).then(function () {
                 self.command.UpdateAllPrefixes();
-                 resolve();
+                resolve();
               })
-             
+
             });
 
 
@@ -386,7 +386,6 @@ class PluginManager {
       if (self.plugins[i].id == pluginId) {
         var newPath = self.plugins[i].path.replace("plugins/", "servers/" + this.server);
 
-
         fs.remove(self.plugins[i].path, err => {
           if (err) return console.error(err)
           this.LoadAllPlugins();
@@ -405,10 +404,10 @@ class PluginManager {
       if (pluginObj.requirements) {
         Logger.Info("PluginManager-" + self.server, "InstallPluginRequirements:" + pluginObj.id, "Installing Requirements: " + pluginObj.requirements);
         async.each(pluginObj.requirements, self.InstallPackage, function (err) {
-          
+
           resolve();
-        });  
-        
+        });
+
       } else {
         resolve();
       }
