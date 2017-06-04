@@ -5,12 +5,17 @@ class Template {
   }
   default(command){ // This is the default command that is ran when you do your bot prefix and your plugin prefix example   !ping
     var self = this;
-    self.disnode.bot.SendMessage(command.msg.channel, "WORKING!: " );
-
+    self.disnode.bot.SendMessage(command.msg.channel, "WORKING!: " + command.params);
+    self.disnode.bot.SetStatus("TES");
 
   }
 
-
+  OnMessageUpdate(command){
+      this.disnode.bot.SendMessage(command.msg.channel, "UPDATED MSG: " + command.msg.id + " **->**`" + command.msg.message +"`");
+  }
+  OnMessageDelete(command){
+      this.disnode.bot.SendMessage(command.msg.channel, "DELETED MSG: " + command.msg.id );
+  }
   commandState(command){
 
     var functionCall = command.params[0] || "dump";
