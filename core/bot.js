@@ -642,6 +642,27 @@ class Bot extends EventEmitter {
   SetServerName(serverId, servername) {
     var self = this;
     return new Promise(function (resolve, reject) {
+      });
+    }
+    /**
+    * Deletes an array of messages
+    * @param {string} channelID - ID of the channel
+    * @param {array} messageIDs - Array of message ids
+    */
+    DeleteMessages(cID, mID) {
+      var self = this;
+      self.client.deleteMessages({
+        channelID: cID,
+        messageIDs: mID
+      });
+    }
+    /**
+    * Adds reaction to a message
+    * @param {string} channelID - ID of the channel
+    * @param {string} messageID - ID of the message
+    * @param {string} reactionID - ID or unicode of a reactionID
+    */
+    AddReaction(channelID, messageID, reaction){
       var self = this;
       axios.patch('https://discordapp.com/api/guilds/' + serverId, {
           name: servername

@@ -3,7 +3,12 @@
     {
       "cmd": "stats",
       "run": "statsUser",
-      "desc": "*lol*"
+      "desc": "*Gets user stats*"
+    },
+    {
+      "cmd": "inv",
+      "run": "invUser",
+      "desc": "*Gets yo inv"
     }
   ]
 }

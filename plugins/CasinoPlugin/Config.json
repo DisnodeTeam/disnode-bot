@@ -2,6 +2,6 @@
   "prefix":"casino",
   "autoStatus":true,
   "requirePrefix":true,
-  "run":true,
+  "run":false,
   "testing":false
 }

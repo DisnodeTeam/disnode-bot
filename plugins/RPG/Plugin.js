@@ -1,16 +1,19 @@
+
+const RPGUtils = require('./RPGUtils.js');
 class RPGPlugin {
   constructor() {
     var self = this;
     self.DB = {};
   }
-  Init(onComplete){
+  Init(onComplete) {
     var self = this;
     setTimeout(function() {
-    self.disnode.db.InitPromise({}).then(function(dbo) {
+      self.disnode.db.InitPromise({}).then(function(dbo) {
         self.DB = dbo;
+        self.utils = new RPGUtils(self);
         onComplete();
       });
-    }, 100 );
+    }, 100);
   }
   default (command) {
     var self = this;
@@ -37,19 +40,58 @@ class RPGPlugin {
       footer: {}
     });
   }
-  statsUser(command){
+  statsUser(command) {
     var self = this;
-    self.gUser(command).then(function(player) {
+    var bprefix = self.disnode.botConfig.prefix;
+    var pprefix = self.config.prefix;
+    self.utils.gUser(command).then(function(player) {
+      if(command.params[0]){
+        self.utils.fplayer(command.params[0]).then(function(res) {
+          if(res.found){
+            self.disnode.bot.SendEmbed(command.msg.channel, {
+              color: 1752220,
+              author: {},
+              title: res.p.name + "\'s stats",
+              description: "To see your inventory type ``" + bprefix + "" + pprefix + " inv``.",
+              fields: [{
+                name: 'Health',
+                inline: true,
+                value: (res.p.chealth) + "/" + (res.p.thealth) + " HP",
+              }, {
+                name: 'Gold',
+                inline: true,
+                value: (res.p.gold),
+              }],
+              footer: {
+                text: command.msg.user,
+                icon_url: self.utils.avatarCommandUser(command),
+              },
+              timestamp: new Date(),
+            });
+          }else {
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg);
+          }
+        });
+      }else {
         self.disnode.bot.SendEmbed(command.msg.channel, {
-          color: 3447003,
+          color: 1752220,
           author: {},
-          title: player.name + " stats",
-          fields: [ {
+          title: player.name + "\'s stats",
+          description: "To see your inventory type ``" + bprefix + "" + pprefix + " inv``.",
+          fields: [{
+            name: 'Health',
+            inline: true,
+            value: (player.chealth) + "/" + (player.thealth) + " HP",
+          }, {
             name: 'Gold',
             inline: true,
             value: (player.gold),
           }],
-            footer: {}
+          footer: {
+            text: command.msg.user,
+            icon_url: self.utils.avatarCommandUser(command),
+          },
+          timestamp: new Date(),
         });
     });
   }
@@ -86,6 +128,43 @@ class RPGPlugin {
     var id = command.params[0];
     id = uid.replace(/\D/g, '');
     return id;
+  }
+          
+      }
+    });
+  }
+  invUser(command) {
+    var self = this;
+    self.utils.gUser(command).then(function(player) {
+      var uamo = "";
+      for (var i = 0; i < player.inv.length; i++) {
+        uamo += "x" + player.inv[i].amount + "\n";
+      }
+      var uit = "";
+      for (var i = 0; i < player.inv.length; i++) {
+        uit += "" + player.inv[i].item + "\n";
+      }
+      self.disnode.bot.SendEmbed(command.msg.channel, {
+        color: 1752220,
+        author: {
+        },
+        title: player.name + "\'s Inventory",
+        fields: [{
+          name:  'Item Name',
+          inline: true,
+          value: uit,
+        },{
+          name:  'Amount',
+          inline: true,
+          value: uamo,
+        }],
+        footer: {
+          text: command.msg.user,
+          icon_url: self.utils.avatarCommandUser(command),
+        },
+        timestamp: new Date(),
+      });
+    });
   }
 }
 module.exports = RPGPlugin;
