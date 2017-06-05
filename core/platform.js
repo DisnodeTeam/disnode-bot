@@ -9,8 +9,9 @@ class Platform {
       var self = this;
 
       return new Promise(function (resolve, reject) {
-          Axios.get("https://www.disnodeteam.com/api/user/" + userID)
+          Axios.get("http://www.disnodeteam.com/api/user/" + userID)
           .then(function (res) {
+            console.log(res.data);
               if (res.data.type == "ERR") {
                   reject(res.data.data);
                    return;
@@ -20,12 +21,12 @@ class Platform {
               reject(err.message)
           })
       });
-    }   
+    }
     GetUserUltra(userID) {
         var self = this;
 
         return new Promise(function (resolve, reject) {
-            Axios.get("https://www.disnodeteam.com/api/user/" + userID + "/ultra")
+            Axios.get("www.disnodeteam.com/api/user/" + userID + "/ultra")
             .then(function (res) {
                 if (res.data.type == "ERR") {
 

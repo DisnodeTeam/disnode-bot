@@ -81,9 +81,14 @@
       "run": "commandAdmin"
     },
     {
-      "cmd": "dev",
+      "cmd": "mod",
       "desc": "*MOD COMMAND YOU CANT RUN THIS*",
       "run": "commandAdmin"
+    },
+    {
+      "cmd": "ultra",
+      "desc": "*Check your ultra stats*",
+      "run": "commandUltra"
     }
   ]
 }

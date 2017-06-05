@@ -173,12 +173,12 @@ class CasinoPlugin {
     }
 
     self.utils.getPlayer(command).then(function(player){
-      
+
       var msg = "";
       for (var i = 0; i < self.commands.length; i++) {
         msg += self.disnode.botConfig.prefix + self.config.prefix + " " + self.commands[i].cmd + " - " + self.commands[i].desc + "\n";
       }
-      
+
       self.disnode.bot.SendEmbed(command.msg.channel, {
         color: 3447003,
         author: {},
@@ -1777,7 +1777,7 @@ class CasinoPlugin {
         return;
       }
       if(!player.Premium){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Blackjack is currently in beta, therefore only Premium members may access this game mode right now. To learn more about Premium and its perks look at the bottom of `!casino` Thanks for your support of our bots!", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Blackjack is currently in beta, therefore only Ultra members may access this game mode right now. To learn more about Ultra and its perks look at the bottom of `!casino` Thanks for your support of our bots!", 16772880);
         return;
       }
       switch (command.params[0]) {
@@ -1848,6 +1848,43 @@ class CasinoPlugin {
         });
     }
     return;
+  }
+  commandUltra(command){
+    var self = this;
+    self.utils.getPlayer(command).then(function(player) {
+      self.utils.ultraCheck(player).then(function(res) {
+        if(data.isUltra){
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1433628,
+            author: {},
+            fields: [ {
+              name: 'ultra',
+              inline: false,
+              value: data.isUltra,
+            }, {
+              name: 'Expires On',
+              inline: true,
+              value: dateFormat(new Date(data.expiresOn), "dddd, mmmm dS, yyyy, h:MM:ss TT"),
+            }, {
+              name: 'Expire Text',
+              inline: true,
+              value: data.expireText,
+            }, {
+              name: 'Purchased On',
+              inline: true,
+              value: dateFormat(new Date(data.puchasedOn), "dddd, mmmm dS, yyyy, h:MM:ss TT"),
+            }],
+              footer: {}
+            });
+        }else {
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Ultra", "You Dont have Ultra!");
+        }
+        self.utils.DB.Update("players", {"id":player.id}, player);
+      }).catch(function(err) {
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Something went wrong! try again!\n" + err, 16772880);
+        return;
+      });
+    });
   }
   quit(){
     var self = this;

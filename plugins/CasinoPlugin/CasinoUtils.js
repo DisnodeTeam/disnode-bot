@@ -579,6 +579,23 @@ class CasinoUtils {
       return false;
     }
   }
+  ultraCheck(player){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.disnode.platform.GetUserData(player.id).then(function(data) {
+        if(data.isUltra){
+          if(!player.Premium)player.Premium = true;
+          resolve(data);
+        }else {
+          if(player.Premium)player.Premium = false;
+          resolve(data);
+        }
+      }).catch(function(err) {
+        console.log(err);
+        reject(err);
+      });
+    });
+  }
   updateCoroutine(){
     var self = this;
     if(self.plugin.config.testing)return;
