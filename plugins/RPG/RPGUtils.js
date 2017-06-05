@@ -100,6 +100,20 @@ class RPGUtils {
       });
     });
   }
+  getLongestString(arr){
+    var longest = -1;
+    for (var i = 0; i < arr.length; i++) {
+      if(arr[i].length > longest)longest = arr[i].length;
+    }
+    return longest;
+  }
+  addSpacesToString(string, spaces){
+    for (var i = string.length; i < spaces; i++) {
+      string += " ";
+    }
+    return string;
+  }
+  // weapons, health, armor, mobs
   weaponList(command){
     var self = this;
     return new Promise(function(resolve, reject) {

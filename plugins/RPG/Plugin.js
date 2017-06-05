@@ -107,27 +107,38 @@ class RPGPlugin {
   }
   invUser(command) {
     var self = this;
+    var headingStringA = "Name";
+    var headingStringB = "|Amount"
     self.utils.gUser(command).then(function(player) {
-      var uamo = "";
+      var itemsAmountArr = [];
+      var itemsNameArr = [];
+      var final = "";
       for (var i = 0; i < player.inv.length; i++) {
-        uamo += "x" + player.inv[i].amount + "\n";
+        itemsAmountArr.push("|x" + player.inv[i].amount);
+        itemsNameArr.push(player.inv[i].defaultName);
       }
-      var uit = "";
-      for (var i = 0; i < player.inv.length; i++) {
-        uit += "" + player.inv[i].defaultName + "\n";
+      var AmountL = self.utils.getLongestString(itemsAmountArr);
+      var NameL = self.utils.getLongestString(itemsNameArr);
+      headingStringA = self.utils.addSpacesToString(headingStringA, NameL);
+      headingStringB = self.utils.addSpacesToString(headingStringB, AmountL);
+      final += headingStringA + headingStringB + "\n\n";
+      for (var i = 0; i < itemsNameArr.length; i++) {
+        itemsNameArr[i] = self.utils.addSpacesToString(itemsNameArr[i], NameL);
       }
+      for (var i = 0; i < itemsAmountArr.length; i++) {
+        itemsAmountArr[i] = self.utils.addSpacesToString(itemsAmountArr[i], AmountL);
+      }
+      for (var i = 0; i < itemsNameArr.length; i++) {
+        final += itemsNameArr[i] + itemsAmountArr[i] + "\n";
+      }
+      console.log(final);
       self.disnode.bot.SendEmbed(command.msg.channel, {
         color: 1752220,
         author: {},
-        title: player.name + "\'s Inventory",
         fields: [{
-          name: 'Item Name',
+          name: player.name + "\'s Inventory",
           inline: true,
-          value: uit,
-        }, {
-          name: 'Amount',
-          inline: true,
-          value: uamo,
+          value: "```\n" + final + "```",
         }],
         footer: {
           text: command.msg.user,
