@@ -24,6 +24,7 @@ class Bot extends EventEmitter {
 		super();
 		this.key = key;
 		this.client = {};
+		this.botInfo = {};
 		this.disnode = disnode;
 		this.bind_onMessage = null;
 		this.isRemote = false;
@@ -51,6 +52,7 @@ class Bot extends EventEmitter {
 				return self.ConnectToGateway(url)
 			}).then(function () {
 				self.on("READY", function () {
+					self.GetCacheInfo();
 					resolve();
 				})
 			}).catch(function (err) {
@@ -448,6 +450,21 @@ class Bot extends EventEmitter {
 		});
 	}
 
+
+	GetCacheInfo(){
+		var self = this;
+		axios.get('https://discordapp.com/api/users/@me', {
+				headers: {
+					'Authorization': "Bot " + self.key
+				}
+			})
+			.then(function (response) {
+				self.botInfo = response.data;
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
+	}
 	GetServerFromChanel(channel) {
 		var self = this;
 		var _server = "DM";
@@ -893,20 +910,7 @@ class Bot extends EventEmitter {
 	 */
 	GetBotInfo() {
 		var self = this;
-		return new Promise(function(resolve, reject) {
-			axios.get('https://discordapp.com/api/users/@me', {
-					headers: {
-						'Authorization': "Bot " + self.key
-					}
-				})
-				.then(function (response) {
-					resolve(response.data);
-				})
-				.catch(function (err) {
-					
-					reject(err);
-				});
-		});
+		return self.botInfo;
 	}
 	/**
 	 * Gets minimal information about the specified user
