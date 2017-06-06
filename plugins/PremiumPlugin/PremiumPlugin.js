@@ -8,8 +8,8 @@ class PremiumPlugin {
     var self = this;
 
 
-    self.disnode.platform.GetUserRole(command.msg.userID).then(function (role) {
-      
+    self.disnode.platform.GetUserUltra(command.msg.userID).then(function (role) {
+
       if(role){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Ultra", ":white_check_mark: You Have Ultra!");
       }else{
@@ -21,6 +21,6 @@ class PremiumPlugin {
     });
 
   }
-  
+
 }
 module.exports = PremiumPlugin;
