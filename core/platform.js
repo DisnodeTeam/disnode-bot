@@ -11,7 +11,6 @@ class Platform {
       return new Promise(function (resolve, reject) {
           Axios.get("https://disnodeteam.com/api/user/" + userID)
           .then(function (res) {
-            console.log(res.data);
               if (res.data.type == "ERR") {
                   reject(res.data.data);
                    return;
