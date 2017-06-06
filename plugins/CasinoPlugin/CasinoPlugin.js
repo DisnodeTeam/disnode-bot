@@ -1503,6 +1503,9 @@ class CasinoPlugin {
               var msg = "";
               for (var i = 0; i < players.length; i++) {
                 if(players[i].Premium){
+                  self.utils.ultraCheck(players[i]).then(function(data) {
+
+                  });
                   msg += players[i].name + "\n";
                 }
               }
@@ -1852,35 +1855,36 @@ class CasinoPlugin {
   commandUltra(command){
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
-      self.utils.ultraCheck(player).then(function(res) {
+      self.utils.ultraCheck(player).then(function(data) {
         if(data.isUltra){
           self.disnode.bot.SendEmbed(command.msg.channel, {
             color: 1433628,
             author: {},
             fields: [ {
-              name: 'ultra',
+              name: 'Ultra',
               inline: false,
-              value: data.isUltra,
+              value: "" + data.isUltra,
             }, {
               name: 'Expires On',
               inline: true,
-              value: dateFormat(new Date(data.expiresOn), "dddd, mmmm dS, yyyy, h:MM:ss TT"),
-            }, {
-              name: 'Expire Text',
-              inline: true,
-              value: data.expireText,
+              value: "" + dateformat(new Date(data.expiresOn), "dddd, mmmm dS, yyyy, h:MM:ss TT"),
             }, {
               name: 'Purchased On',
               inline: true,
-              value: dateFormat(new Date(data.puchasedOn), "dddd, mmmm dS, yyyy, h:MM:ss TT"),
+              value: "" + dateformat(new Date(data.purchasedOn), "dddd, mmmm dS, yyyy, h:MM:ss TT"),
             }],
-              footer: {}
+            footer: {
+              text: command.msg.user,
+              icon_url: self.utils.avatarCommandUser(command),
+            },
+            timestamp: new Date(),
             });
         }else {
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Ultra", "You Dont have Ultra!");
         }
         self.utils.DB.Update("players", {"id":player.id}, player);
       }).catch(function(err) {
+        console.log(err);
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Something went wrong! try again!\n" + err, 16772880);
         return;
       });

@@ -585,16 +585,29 @@ class CasinoUtils {
       self.disnode.platform.GetUserData(player.id).then(function(data) {
         if(data.isUltra){
           if(!player.Premium)player.Premium = true;
-          resolve(data);
+          self.DB.Update("players", {"id":player.id}, player);
+          resolve(JSON.parse(JSON.stringify(data)));
         }else {
           if(player.Premium)player.Premium = false;
-          resolve(data);
+          self.DB.Update("players", {"id":player.id}, player);
+          resolve(JSON.parse(JSON.stringify(data)));
         }
       }).catch(function(err) {
-        console.log(err);
+        if(player.Premium)player.Premium = false;
+        self.DB.Update("players", {"id":player.id}, player);
         reject(err);
       });
     });
+  }
+  avatarCommandUser(command) {
+    var self = this;
+    if (command.msg.raw.author.avatar != null) {
+      if (command.msg.raw.author.avatar.indexOf('_') > -1) {
+        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".gif";
+      } else {
+        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".png";
+      }
+    }
   }
   updateCoroutine(){
     var self = this;
