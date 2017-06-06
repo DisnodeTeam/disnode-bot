@@ -893,13 +893,20 @@ class Bot extends EventEmitter {
 	 */
 	GetBotInfo() {
 		var self = this;
-		return {
-			username: self.client.username,
-			id: self.client.id,
-			avatar: self.client.avatar,
-			bot: self.client.bot,
-			discriminator: self.client.discriminator,
-		}
+		return new Promise(function(resolve, reject) {
+			axios.get('https://discordapp.com/api/users/@me', {
+					headers: {
+						'Authorization': "Bot " + self.key
+					}
+				})
+				.then(function (response) {
+					resolve(response.data);
+				})
+				.catch(function (err) {
+					
+					reject(err);
+				});
+		});
 	}
 	/**
 	 * Gets minimal information about the specified user
