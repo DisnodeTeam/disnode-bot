@@ -18,23 +18,34 @@ class RPGUtils {
         var newPlayer = {
           name: command.msg.user,
           id: command.msg.userID,
+          dev: false,
+          banned: false,
+          reason: "",
+          guild: "",
           chealth: 50,
           thealth: 50,
           gold: 50,
           xp: 0,
           lv: 1,
           nextlv: 100,
+          skills: {
+            strength: 1,
+            defense: 1,
+            luck: 1,
+            charisma: 1,
+            points: 0
+          },
           inv: [{
-              "defaultName": "Bronze Shortsword",
-              "amount": 1
+              defaultName: "Bronze Shortsword",
+              amount: 1
             },
             {
-              "defaultName" : "Apple",
-              "amount": 5
+              defaultName : "Apple",
+              amount: 5
             },
             {
-              "defaultName": "Health Potion",
-              "amount": 2
+              defaultName: "Health Potion",
+              amount: 2
             }
           ],
           adventure: [{
@@ -59,6 +70,51 @@ class RPGUtils {
         self.plugin.DB.Insert("players", newPlayer);
         resolve(newPlayer);
         return;
+      });
+    });
+  }
+  gGuild(guildID) {
+    var self = this;
+    var guilds = [];
+    return new Promise(function(resolve, reject) {
+      self.plugin.DB.Find("guilds", {"id": guildID}).then(function(found) {
+        guilds = found;
+        for (var i = 0; i < guilds.length; i++) {
+          if (guildID == guilds[i].id) {
+              resolve(guilds[i]);
+              return;
+          }
+        }
+        reject("Guild Not Found!");
+      });
+    });
+  }
+  newGuild(player, name){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      var newGuild = {
+        name: name,
+        desc: "",
+        id: player.id,
+        open: true,
+        owner_id: player.id,
+        owner_name: player.name,
+        gold: 0,
+        members: [{
+          name: player.name,
+          id: player.id
+        }],
+        invites: []
+      }
+      self.plugin.DB.Find("guilds", {"id": player.id}).then(function(found) {
+        for (var i = 0; i < found.length; i++) {
+          if (newGuild.name == found[i].name) {
+            reject("That guild name is already taken!")
+            break;
+          }
+        }
+        self.plugin.DB.Insert("guilds", newGuild);
+        resolve(newGuild);
       });
     });
   }
@@ -100,6 +156,19 @@ class RPGUtils {
       });
     });
   }
+  fGuild(info){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.plugin.DB.Find("guilds", {}).then(function(guilds) {
+        for (var i = 0; i < guilds.length; i++) {
+          if(guilds[i].name == info){
+            resolve(guilds[i]);
+            return;
+          }
+        }
+      });
+    });
+  }
   getLongestString(arr){
     var longest = -1;
     for (var i = 0; i < arr.length; i++) {
@@ -113,58 +182,23 @@ class RPGUtils {
     }
     return string;
   }
-  // weapons, health, armor, mobs
-  weaponList(command){
-    var self = this;
+  getItems(type){
     return new Promise(function(resolve, reject) {
-      self.plugin.DB.Find("weapons", {}).then(function(weapons) {
-        for (var i = 0; i < weapons.length; i++) {
-          if(weapons[i].id == "weapons"){
-            resolve({found: true, p: weapons[i]});
-            return;
-          }
-        }
-      });
+      if(isValidType(type)){
+        self.plugin.DB.Find(type, {}).then(function(items) {
+          resolve(items);
+        });
+      }else {
+        reject("Invalid Item Type!")
+      }
     });
   }
-  healList(command){
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      self.plugin.DB.Find("health", {}).then(function(health) {
-        for (var i = 0; i < health.length; i++) {
-          if(health[i].id == "health"){
-            resolve({found: true, p: health[i]});
-            return;
-          }
-        }
-      });
-    });
-  }
-  armorList(command){
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      self.plugin.DB.Find("armor", {}).then(function(armor) {
-        for (var i = 0; i < armor.length; i++) {
-          if(armor[i].id == "armor"){
-            resolve({found: true, p: armor[i]});
-            return;
-          }
-        }
-      });
-    });
-  }
-  mobList(command){
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      self.plugin.DB.Find("mobs", {}).then(function(mobs) {
-        for (var i = 0; i < mobs.length; i++) {
-          if(mobs[i].id == "mobs"){
-            resolve({found: true, p: mobs[i]});
-            return;
-          }
-        }
-      });
-    });
+  isValidType(type){
+    if(type == "weapons")return true;
+    if(type == "health")return true;
+    if(type == "armor")return true;
+    if(type == "mobs")return true;
+    return false;
   }
   checkLV(player, channel){
     var self = this;

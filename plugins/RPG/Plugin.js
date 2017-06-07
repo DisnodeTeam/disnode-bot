@@ -41,6 +41,160 @@ class RPGPlugin {
       footer: {}
     });
   }
+  guildCommand(command) {
+    var self = this;
+    var prefix = '``!rpg guild';
+    self.utils.gUser(command).then(function(player) {
+      if (command.params[0] == undefined) {
+        self.disnode.bot.SendMessage(command.msg.channel, "!rpg guild create - Creates a guild.\n!rpg guild info - Gets your guilds info.\n!rpg guild invite - Invites a user to your guild.\n!rpg guild join - Join a guild.\n!rpg guild members - Lists all members in a guild.");
+        return;
+      }
+      switch (command.params[0]) {
+        case "info":
+          if (player.guild != '') {
+            self.utils.gGuild(player.guild).then(function(guild) {
+              self.disnode.bot.SendEmbed(command.msg.channel, {
+                color: 1752220,
+                author: {},
+                title: guild.name + "\'s info",
+                description: "To see guild members type " + prefix + " members``.",
+                fields: [{
+                  name: 'Owner',
+                  inline: true,
+                  value: guild.owner_name,
+                }, {
+                  name: 'Gold',
+                  inline: true,
+                  value: (guild.gold),
+                }, {
+                  name: 'Members',
+                  inline: true,
+                  value: guild.members.length,
+                }, {
+                  name: 'Status',
+                  inline: true,
+                  value: (guild.open) ? "Guild is open!" : "Guild is closed.",
+                }],
+                footer: {
+                  text: command.msg.user,
+                  icon_url: self.utils.avatarCommandUser(command),
+                },
+                timestamp: new Date(),
+              });
+            });
+          } else self.embedoferror(command, "Guild Info Error", "You are not in a guild. Either Join a guild or create a new guild!")
+          break;
+        case "join":
+          if (player.guild == '') {
+            self.utils.fGuild(command.params[1]).then(function(guild) {
+              if (!guild.open) {
+                var invfound = false;
+                var invpos;
+                for (var i = 0; i < guild.invites.length; i++) {
+                  if(guild.invites[i].id == player.id){
+                    invfound = true;
+                    invpos = i;
+                    break;
+                  }
+                }
+                if(invfound){
+                  var newMember = {
+                    name: player.name,
+                    id: player.id
+                  }
+                  player.guild = guild.id;
+                  guild.members.push(newMember);
+                  guild.invites.splice(invpos,1);
+                  self.embedoferror(command, "Guild Join", "Joined " + guild.name + "!");
+                  self.utils.plugin.DB.Update("guilds", {"id": guild.id}, guild);
+                  self.utils.plugin.DB.Update("players", {"id": player.id}, player);
+                }else {
+                  self.embedoferror(command, "Guild Join Error", "You are not invited to this guild and an invite is required to join!");
+                }
+              } else {
+                var newMember = {
+                  name: player.name,
+                  id: player.id
+                }
+                player.guild = guild.id;
+                guild.members.push(newMember);
+                self.utils.plugin.DB.Update("guilds", {"id": guild.id}, guild);
+                self.utils.plugin.DB.Update("players", {"id": player.id}, player);
+              }
+            }).catch(function(err) {
+              self.embedoferror(command, "Guild Join Error", ""+err);
+            });
+          } else self.embedoferror(command, "Guild Join Error", "You are in a guild.");
+          break;
+        case "invite":
+          if (player.guild != '') {
+            self.utils.fplayer(command.params[1]).then(function(res) {
+              if(res.found){
+                var fplayer = res.p;
+                self.utils.gGuild(player.guild).then(function(guild) {
+                  if (guild.owner_id == player.id) {
+                    var newInvite = {
+                      name: fplayer.name,
+                      id: fplayer.id
+                    }
+                    guild.invites.push(newInvite);
+                    self.utils.plugin.DB.Update("guilds", {"id": guild.id}, guild);
+                    self.embedoferror(command, "Guild Invite", fplayer.name + " was invited to the guild.");
+                  } else self.embedoferror(command, "Guild Invite Error", "As of right now only guild owner can invite.");
+                });
+              }else {
+                self.embedoferror(command, "Guild Invite Error", res.msg);
+              }
+            });
+          } else self.embedoferror(command, "Guild Invite Error", "You are not in a guild.");
+          break;
+        case "members":
+          if (player.guild != '') {
+            self.utils.gGuild(player.guild).then(function(guild) {
+              var ms = "";
+              for (var ids in guild.members) {
+                if (guild.members.hasOwnProperty(ids)) {
+                  ms += guild.members[ids].name + '\n';
+                }
+              }
+              self.disnode.bot.SendEmbed(command.msg.channel, {
+                color: 1752220,
+                author: {},
+                title: guild.name + "\'s meber list",
+                fields: [{
+                  name: 'Members',
+                  inline: true,
+                  value: '\n\n' + ms,
+                }],
+                footer: {
+                  text: command.msg.user,
+                  icon_url: self.utils.avatarCommandUser(command),
+                },
+                timestamp: new Date(),
+              });
+            });
+          }
+          break;
+        case "new":
+          if(command.params[1]){
+            if(player.guild == ''){
+              self.utils.newGuild(player, command.params[1]).then(function(guild) {
+                self.embedoferror(command, "New Guild", "Guild: " + guild.name + " Created!");
+                player.guild = player.id;
+                self.utils.plugin.DB.Update("players", {"id": player.id}, player);
+              }).catch(function(err) {
+                self.embedoferror(command, "New Guild Error", err);
+              });
+            }else {
+              self.embedoferror(command, "New Guild Error", "You can't create a new guild when you are already in one!");
+            }
+          }else {
+            self.embedoferror(command, "New Guild Error", "Please provide a name! like `!rpg guild new MyGuildName`");
+          }
+          break;
+      }
+    });
+  }
   statsUser(command) {
     var self = this;
     var bprefix = self.disnode.botConfig.prefix;
@@ -62,7 +216,7 @@ class RPGPlugin {
                 name: 'Gold',
                 inline: true,
                 value: (res.p.gold),
-              },{
+              }, {
                 name: 'Level',
                 inline: true,
                 value: res.p.lv + ' (' + res.p.xp + '/' + res.p.nextlv + ')',
@@ -91,7 +245,7 @@ class RPGPlugin {
             name: 'Gold',
             inline: true,
             value: (player.gold),
-          },{
+          }, {
             name: 'Level',
             inline: true,
             value: player.lv + ' (' + player.xp + '/' + player.nextlv + ')',
@@ -305,11 +459,11 @@ class RPGPlugin {
             name: 'XP',
             inline: true,
             value: result.minXP + " - " + result.maxXP,
-          },{
+          }, {
             name: "Health",
             inline: true,
             value: result.defaultMinHealth + " - " + result.defaultMaxHealth,
-          },{
+          }, {
             name: "Defense",
             inline: true,
             value: result.defaultMinDefense + " - " + result.defaultMaxDefense,
@@ -473,6 +627,23 @@ class RPGPlugin {
         });
       });
     }
+  }
+  embedoferror(command, title, body) {
+    var self = this;
+    self.disnode.bot.SendEmbed(command.msg.channel, {
+      color: 1752220,
+      author: {},
+      fields: [{
+        name: title,
+        inline: true,
+        value: body,
+      }],
+      footer: {
+        text: command.msg.user,
+        icon_url: self.utils.avatarCommandUser(command),
+      },
+      timestamp: new Date(),
+    });
   }
 }
 module.exports = RPGPlugin;

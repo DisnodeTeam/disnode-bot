@@ -11,6 +11,16 @@
       "desc": "*Gets your inv*"
     },
     {
+      "cmd": "skills",
+      "run": "skills",
+      "desc": "*Gets your skills*"
+    },
+    {
+      "cmd" : "guild",
+      "run" : "guildCommand",
+      "desc" : "*Guild commands*"
+    },
+    {
       "cmd" : "list",
       "run" : "storelist",
       "desc" : "*Shows a list of items*"
@@ -19,6 +29,11 @@
       "cmd" :"info",
       "run" : "itemInfo",
       "desc" : "*Gets info of an item*"
+    },
+    {
+      "cmd" : "dev",
+      "run" : "adminCommand",
+      "desc" : "*Dev command*"
     }
   ]
 }

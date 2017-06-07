@@ -1,7 +1,7 @@
 {
-  "name":"Template Plugin",
-  "id": "template-plugin",
-  "description": "Basic Disnode Help",
+  "name":"Help Plugin",
+  "id": "help-plugin",
+  "description": "Disnode Help",
   "script": "Plugin.js",
   "load": true,
   "commandsFile": "Commands.json",

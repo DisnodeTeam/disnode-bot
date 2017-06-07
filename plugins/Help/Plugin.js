@@ -11,22 +11,31 @@ class Help {
     var plugins = "";
     async.each(pm.plugins, function (plugin,cb) {
       pm.GetConfigFile(plugin).then(function (config) {
-        plugins += "- " + plugin.name + " (" + plugin.id + ") **PREFIX:** `" + self.disnode.botConfig.prefix + config.prefix + "`\n"
+        plugins += '`' + self.disnode.botConfig.prefix + config.prefix + '` - ' + plugin.name + '\n'
         cb();
       });
 
     }, function () {
+      var bStuff = self.disnode.bot.GetBotInfo();
       self.disnode.bot.SendEmbed(command.msg.channel, {
         color: 3447003,
-        author: {},
+        author: {
+          name: bStuff.username + '\'s Help',
+          icon_url: "https:\/\/cdn.discordapp.com\/avatars\/" + bStuff.id + "\/" + bStuff.avatar + ".png"
+        },
         fields: [{
-          name: 'Plugins:',
+          name: '\nCommands',
           inline: false,
           value: plugins,
         }, {
-          name: 'Discord Server',
-          inline: false,
-          value: "**Join the Disnode Server for Support and More!:** https://discord.gg/AbZhCen",
+          name: 'Disnode Ultra',
+          inline: true,
+          value: "Want more benefits on your favorite plugins?\nSubscribe to [ultra!](https://disnodeteam.com/#/ultra)",
+        },
+        {
+          name: "‌‌ ",
+          inline: true,
+          value: "[Bot Invite](https://discordapp.com/oauth2/authorize?client_id=" + bStuff.id + "&scope=bot&permissions=410019886)\n[Support Server](https://discord.gg/AbZhCen)",
         }],
         footer: {}
       });
