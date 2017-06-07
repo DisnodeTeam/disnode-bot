@@ -5,14 +5,11 @@ class Template {
   }
   default(command){ // This is the default command that is ran when you do your bot prefix and your plugin prefix example   !ping
     var self = this;
-    var server = self.disnode.bot.GetServerByID(self.server);
-    var emojis = "";
-    for(var i=0;i<server.emojis.length;i++){
-      emojis += ":" +server.emojis[i].name +": "
-    }
 
-    self.disnode.bot.SendMessage(command.msg.channel,emojis);
-    
+    var params = self.disnode.util.JoinParams(command.params, 2);
+
+    self.disnode.bot.SendMessage(command.msg.channel,"Params: " + params);
+
 
   }
 
