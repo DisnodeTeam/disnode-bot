@@ -224,7 +224,7 @@ class RPGPlugin {
                 self.utils.gGuild(player.guild).then(function(guild) {
                   if (guild.owner_id == player.id) {
                     if (command.params[2] == true | command.params[2] = false) {
-                      guild.open = command.params[2];
+                      guild.open = command.params[2] == 'true';
                       self.utils.plugin.DB.Update("guilds", {
                         "id": guild.id
                       }, guild);
