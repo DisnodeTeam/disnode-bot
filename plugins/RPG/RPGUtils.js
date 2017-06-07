@@ -18,12 +18,23 @@ class RPGUtils {
         var newPlayer = {
           name: command.msg.user,
           id: command.msg.userID,
+          dev: false,
+          banned: false,
+          reason: "",
+          guild: "",
           chealth: 50,
           thealth: 50,
           gold: 50,
           xp: 0,
           lv: 1,
           nextlv: 100,
+          skills: {
+            strength: 1,
+            defense: 1,
+            luck: 1,
+            charisma: 1,
+            points: 0
+          },
           inv: [{
               "defaultName": "Bronze Shortsword",
               "amount": 1
@@ -62,6 +73,45 @@ class RPGUtils {
       });
     });
   }
+  gGuild(command) {
+    var self = this;
+    var guilds = [];
+    return new Promise(function(resolve, reject) {
+      self.plugin.DB.Find("guilds", {"name": command.params[1]}).then(function(found) {
+        guilds = found;
+        for (var i = 0; i < guilds.length; i++) {
+          if (command.params[1] == guilds[i].name) {
+              resolve({found: true});
+              return;
+          }
+        }
+        var newGuild = {
+          name: command.params[1],
+          desc: "",
+          open: true,
+          owner_id: command.msg.userID,
+          owner_name: command.msg.user,
+          gold: 0,
+          members: [{
+            name: command.msg.user
+          }],
+          invites: [{
+            name: ''
+          }]
+        }
+        for (var i = 0; i < guilds.length; i++) {
+          if (newGuild.name == guilds[i].name) {
+            resolve({p: "exists"});
+            break;
+          }
+        }
+
+        self.plugin.DB.Insert("guilds", newGuild);
+        resolve({found: false, p: newGuild});
+        return;
+      });
+  });
+}
   fplayer(info){
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -96,6 +146,19 @@ class RPGUtils {
         }else if (found.length == 0) {
           resolve({found: false, msg: "Could not find any player matching that description!"});
           return;
+        }
+      });
+    });
+  }
+  fGuild(info){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.plugin.DB.Find("guilds", {}).then(function(guilds) {
+        for (var i = 0; i < guilds.length; i++) {
+          if(guilds[i].name == info){
+            resolve({found: true, p: guilds[i]});
+            return;
+          }
         }
       });
     });
