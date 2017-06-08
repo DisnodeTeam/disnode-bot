@@ -22,6 +22,7 @@ class RPGUtils {
           banned: false,
           reason: "",
           guild: "",
+          guildrole: "",
           chealth: 50,
           thealth: 50,
           gold: 50,
@@ -102,7 +103,8 @@ class RPGUtils {
         gold: 0,
         members: [{
           name: player.name,
-          id: player.id
+          id: player.id,
+          role: "owner"
         }],
         invites: []
       }
