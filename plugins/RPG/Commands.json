@@ -32,7 +32,7 @@
     },
     {
       "cmd" : "dev",
-      "run" : "adminCommand",
+      "run" : "devCommand",
       "desc" : "*Dev command*"
     }
   ]
