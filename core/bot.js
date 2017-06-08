@@ -916,7 +916,7 @@ class Bot extends EventEmitter {
 		var self = this;
 		return new Promise(function (resolve, reject) {
 			Logging.Error("Bot", "GetMessage", "NOT IMPLEMENTED");
-			resolve():
+			resolve();
 		});
 	}
 	/**
@@ -929,7 +929,7 @@ class Bot extends EventEmitter {
 		var self = this;
 		return new Promise(function (resolve, reject) {
 			Logging.Error("Bot", "AddReaction", "NOT IMPLEMENTED");
-			resolve():
+			resolve();
 		});
 	}
 	/**
@@ -942,7 +942,7 @@ class Bot extends EventEmitter {
 		var self = this;
 		return new Promise(function (resolve, reject) {
 			Logging.Error("Bot", "GetReaction", "NOT IMPLEMENTED");
-			resolve():
+			resolve();
 		});
 	}
 	/**
@@ -955,7 +955,7 @@ class Bot extends EventEmitter {
 		var self = this;
 		return new Promise(function (resolve, reject) {
 			Logging.Error("Bot", "RemoveReaction", "NOT IMPLEMENTED");
-			resolve():
+			resolve();
 		});
 	}
 	/**
@@ -967,7 +967,7 @@ class Bot extends EventEmitter {
 		var self = this;
 		return new Promise(function (resolve, reject) {
 			Logging.Error("Bot", "RemoveAllReactions", "NOT IMPLEMENTED");
-			resolve():
+			resolve();
 		});
 	}
 	/**
