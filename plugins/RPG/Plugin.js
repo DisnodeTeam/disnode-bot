@@ -193,6 +193,7 @@ class RPGPlugin {
               self.utils.newGuild(player, command.params[1]).then(function(guild) {
                 self.embedoferror(command, "Guild Create", "Guild: " + guild.name + " Created!");
                 player.guild = player.id;
+                player.guildrole = "owner";
                 self.utils.plugin.DB.Update("players", {
                   "id": player.id
                 }, player);
@@ -209,7 +210,7 @@ class RPGPlugin {
         case "role":
           if (player.guild != '') {
             if (command.params[1] != '') {
-              if (self.utils.pMention(command.params[1] != player.id)) {
+              if (self.utils.pMention(command.params[1]) != player.id) {
                 self.utils.fplayer(command.params[1]).then(function(res) {
                   if (res.found) {
                     var fplayer = res.p;
@@ -217,37 +218,35 @@ class RPGPlugin {
                       for (var i = 0; i < guild.members.length; i++) {
                         if (guild.members[i].id == player.id) {
                           if (player.guildrole == 'owner') {
-                            for (var i = 0; i < guild.members.length; i++) {
-                              if (guild.members[i].id == fplayer.id) {
-                                var member = guild.members[i];
-                                if (command.params[2] == 'member') {
-                                  member.role = "member";
-                                  fplayer.guildrole = "member";
-                                  self.utils.plugin.DB.Update("guilds", {
-                                    "id": guild.id
-                                  }, guild);
-                                  self.utils.plugin.DB.Update("players", {
-                                    "id": fplayer.id
-                                  }, fplayer);
-                                } else if (command.params[2] == 'officer') {
-                                  member.role = "officer";
-                                  fplayer.guildrole = "officer";
-                                  self.utils.plugin.DB.Update("guilds", {
-                                    "id": guild.id
-                                  }, guild);
-                                  self.utils.plugin.DB.Update("players", {
-                                    "id": fplayer.id
-                                  }, fplayer);
-                                } else self.embedoferror(command, "Guild Member Role Error", "Guild roles are ``officer`` and ``member``.");
-                              }
+                            if (guild.members[i].id == fplayer.id) {
+                              var member = guild.members[i];
+                              if (command.params[2] == 'member') {
+                                member.role = "member";
+                                fplayer.guildrole = "member";
+                                self.utils.plugin.DB.Update("guilds", {
+                                  "id": guild.id
+                                }, guild);
+                                self.utils.plugin.DB.Update("players", {
+                                  "id": fplayer.id
+                                }, fplayer);
+                              } else if (command.params[2] == 'officer') {
+                                member.role = "officer";
+                                fplayer.guildrole = "officer";
+                                self.utils.plugin.DB.Update("guilds", {
+                                  "id": guild.id
+                                }, guild);
+                                self.utils.plugin.DB.Update("players", {
+                                  "id": fplayer.id
+                                }, fplayer);
+                              } else self.embedoferror(command, "Guild Member Role Error", "Guild roles are ``officer`` and ``member``.");
                             }
-                          } else self.embedoferror(command, "Guild Member Role Error", "Only guild owner can set roles.");
-                        }
+                          }
+                        } else self.embedoferror(command, "Guild Member Role Error", "Only guild owner can set roles.");
                       }
                     });
                   } else self.embedoferror(command, "Guild Member Role Error", res.msg);
                 });
-              } else self.embedoferror(command, "Guild Member Role Error", "Can't change your role because you\'re guild owner.");
+              } else self.embedoferror(command, "Guild Member Role Error", "Can't change your own role.");
             } else self.embedoferror(command, "Guild Member Role Error", "No guild member inputed.");
           } else self.embedoferror(command, "Guild Member Role Error", "You are not in a guild.");
         case "set":
