@@ -215,33 +215,38 @@ class RPGPlugin {
                   if (res.found) {
                     var fplayer = res.p;
                     self.utils.gGuild(player.guild).then(function(guild) {
+                      var foundOwner = false;
+                      var foundfPlayer = false;
+                      var editmember = -1;
                       for (var i = 0; i < guild.members.length; i++) {
-                        if (guild.members[i].id == player.id) {
-                          if (player.guildrole == 'owner') {
-                            if (guild.members[i].id == fplayer.id) {
-                              var member = guild.members[i];
-                              if (command.params[2] == 'member') {
-                                member.role = "member";
-                                fplayer.guildrole = "member";
-                                self.utils.plugin.DB.Update("guilds", {
-                                  "id": guild.id
-                                }, guild);
-                                self.utils.plugin.DB.Update("players", {
-                                  "id": fplayer.id
-                                }, fplayer);
-                              } else if (command.params[2] == 'officer') {
-                                member.role = "officer";
-                                fplayer.guildrole = "officer";
-                                self.utils.plugin.DB.Update("guilds", {
-                                  "id": guild.id
-                                }, guild);
-                                self.utils.plugin.DB.Update("players", {
-                                  "id": fplayer.id
-                                }, fplayer);
-                              } else self.embedoferror(command, "Guild Member Role Error", "Guild roles are ``officer`` and ``member``.");
-                            }
-                          }
-                        } else self.embedoferror(command, "Guild Member Role Error", "Only guild owner can set roles.");
+                        if(guild.members[i].id == player.id & guild.members[i].role == 'owner')foundOwner = true;
+                        if(guild.members[i].id == fplayer.id){
+                          foundfPlayer = true;
+                          editmember = i;
+                        }
+                        if(foundOwner && foundfPlayer)break;
+                      }
+                      if(foundOwner & foundfPlayer){
+                        switch (command.params[2].toLowerCase()) {
+                          case "member":
+                            guild.members[editmember].role = command.params[2].toLowerCase();
+                            fplayer.guildrole = command.params[2].toLowerCase();
+                            self.utils.plugin.DB.Update("guilds", {"id": guild.id}, guild);
+                            self.utils.plugin.DB.Update("players", {"id": fplayer.id}, fplayer);
+                            break;
+                          case "officer":
+                            guild.members[editmember].role = command.params[2].toLowerCase();
+                            fplayer.guildrole = command.params[2].toLowerCase();
+                            self.utils.plugin.DB.Update("guilds", {"id": guild.id}, guild);
+                            self.utils.plugin.DB.Update("players", {"id": fplayer.id}, fplayer);
+                            break;
+                          default:
+                            self.embedoferror(command, "Guild Member Role Error", "Guild roles are ``officer`` and ``member``.");
+                        }
+                      }else {
+                        if(!foundOwner){
+                          self.embedoferror(command, "Guild Member Role Error", "Only guild owner can set roles.");
+                        }
                       }
                     });
                   } else self.embedoferror(command, "Guild Member Role Error", res.msg);
