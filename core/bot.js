@@ -462,7 +462,7 @@ class Bot extends EventEmitter {
 				self.botInfo = response.data;
 			})
 			.catch(function (err) {
-				console.log(err);
+				Logging.Error("Bot", "GetCacheInfo", err);
 			});
 	}
 	GetServerFromChanel(channel) {
@@ -499,7 +499,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
-					console.log(err);
+					Logging.Error("Bot", "SendMessage", err);
 					reject(err);
 				});
 
@@ -530,7 +530,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
-					console.log(err);
+					Logging.Error("Bot", "EditMessage", err);
 					reject(err);
 				});
 
@@ -558,6 +558,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
+					Logging.Error("Bot", "SendEmbed", err);
 					reject(err);
 				});
 		});
@@ -594,6 +595,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
+					Logging.Error("Bot", "SendCompactEmbed", err);
 					reject(err);
 				});
 		});
@@ -622,6 +624,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
+					Logging.Error("Bot", "EditEmbed", err);
 					reject(err);
 				});
 		});
@@ -655,6 +658,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
+					Logging.Error("Bot", "SetUsername",err);
 					reject(err);
 				});
 		});
@@ -666,7 +670,8 @@ class Bot extends EventEmitter {
 	 */
 	SetServerName(serverId, servername) {
 		var self = this;
-		return new Promise(function (resolve, reject) {});
+		Logging.Error("Bot", "SetServerName","NOT IMPLEMENTED");
+		return;
 	}
 	/**
 	 * Deletes an array of messages
@@ -675,10 +680,8 @@ class Bot extends EventEmitter {
 	 */
 	DeleteMessages(cID, mID) {
 		var self = this;
-		self.client.deleteMessages({
-			channelID: cID,
-			messageIDs: mID
-		});
+		Logging.Error("Bot", "DeleteMessages","NOT IMPLEMENTED");
+		return;
 	}
 	/**
 	 * Adds reaction to a message
@@ -688,20 +691,8 @@ class Bot extends EventEmitter {
 	 */
 	AddReaction(channelID, messageID, reaction) {
 		var self = this;
-		axios.patch('https://discordapp.com/api/guilds/' + serverId, {
-				name: servername
-			}, {
-				headers: {
-					'Authorization': "Bot " + self.key
-				}
-			})
-			.then(function (response) {
-				resolve(response.data);
-			})
-			.catch(function (err) {
-				reject(err);
-			});
-
+		Logging.Error("Bot", "AddReaction","NOT IMPLEMENTED");
+		return;
 	}
 	/**
 	 * Kicks the specified user id from the server
@@ -721,6 +712,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
+					Logging.Error("Bot", "Kick",err);
 					reject(err);
 				});
 		});
@@ -747,6 +739,7 @@ class Bot extends EventEmitter {
 					resolve(resp.data);
 				})
 				.catch(function (err) {
+					Logging.Error("Bot", "Ban",err);
 					reject(err);
 				});
 		});
@@ -770,6 +763,7 @@ class Bot extends EventEmitter {
 					resolve(resp.data);
 				})
 				.catch(function (err) {
+					Logging.Error("Bot", "Unban",err);
 					reject(err);
 				});
 		});
@@ -781,10 +775,8 @@ class Bot extends EventEmitter {
 	 */
 	Mute(sID, uID) {
 		var self = this;
-		self.client.mute({
-			serverID: sID,
-			userID: uID
-		});
+		Logging.Error("Bot", "Mute", "NOT IMPLEMENTED");
+		return;
 	}
 	/**
 	 * Unmutes the specified user id from the server
@@ -793,10 +785,8 @@ class Bot extends EventEmitter {
 	 */
 	Unmute(sID, uID) {
 		var self = this;
-		self.client.unmute({
-			serverID: sID,
-			userID: uID
-		});
+		Logging.Error("Bot", "Unmute", "NOT IMPLEMENTED");
+		return;
 	}
 	/**
 	 * Joins the channel that the user is in
@@ -804,11 +794,8 @@ class Bot extends EventEmitter {
 	 */
 	JoinVoiceChannel(voiceID) {
 		var self = this;
-		this.client.joinVoiceChannel(voiceID, function (err) {
-			if (err) {
-				console.log(err);
-			} else {}
-		})
+		Logging.Error("Bot", "JoinVoiceChannel", "NOT IMPLEMENTED");
+		return;
 	}
 	/**
 	 * Leaves the channel that the user is in
@@ -816,11 +803,8 @@ class Bot extends EventEmitter {
 	 */
 	LeaveVoiceChannel(voiceID) {
 		var self = this;
-		this.client.leaveVoiceChannel(voiceID, function (err) {
-			if (err) {
-				console.log(err);
-			} else {}
-		})
+		Logging.Error("Bot", "LeaveVoiceChannel", "NOT IMPLEMENTED");
+		return;
 	}
 	/**
 	 * Joins the channel that the user is in
@@ -931,16 +915,8 @@ class Bot extends EventEmitter {
 	GetMessage(channelID, MessageID) {
 		var self = this;
 		return new Promise(function (resolve, reject) {
-			self.client.getMessage({
-				channelID: channelID,
-				MessageID: MessageID
-			}, function (err, res) {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(res);
-				}
-			})
+			Logging.Error("Bot", "GetMessage", "NOT IMPLEMENTED");
+			resolve():
 		});
 	}
 	/**
@@ -952,17 +928,8 @@ class Bot extends EventEmitter {
 	AddReaction(channelID, messageID, reaction) {
 		var self = this;
 		return new Promise(function (resolve, reject) {
-			self.client.addReaction({
-				channelID: channelID,
-				messageID: messageID,
-				reaction: reaction
-			}, function (err, res) {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(res);
-				}
-			});
+			Logging.Error("Bot", "AddReaction", "NOT IMPLEMENTED");
+			resolve():
 		});
 	}
 	/**
@@ -974,17 +941,8 @@ class Bot extends EventEmitter {
 	GetReaction(channelID, messageID, reaction) {
 		var self = this;
 		return new Promise(function (resolve, reject) {
-			self.client.getReaction({
-				channelID: channelID,
-				messageID: messageID,
-				reaction: reaction
-			}, function (err, res) {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(res);
-				}
-			});
+			Logging.Error("Bot", "GetReaction", "NOT IMPLEMENTED");
+			resolve():
 		});
 	}
 	/**
@@ -996,17 +954,8 @@ class Bot extends EventEmitter {
 	RemoveReaction(channelID, messageID, reaction) {
 		var self = this;
 		return new Promise(function (resolve, reject) {
-			self.client.removeReaction({
-				channelID: channelID,
-				messageID: messageID,
-				reaction: reaction
-			}, function (err, res) {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(res);
-				}
-			});
+			Logging.Error("Bot", "RemoveReaction", "NOT IMPLEMENTED");
+			resolve():
 		});
 	}
 	/**
@@ -1017,16 +966,8 @@ class Bot extends EventEmitter {
 	RemoveAllReactions(channelID, messageID) {
 		var self = this;
 		return new Promise(function (resolve, reject) {
-			self.client.AddReaction({
-				channelID: channelID,
-				messageID: messageID
-			}, function (err, res) {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(res);
-				}
-			});
+			Logging.Error("Bot", "RemoveAllReactions", "NOT IMPLEMENTED");
+			resolve():
 		});
 	}
 	/**
