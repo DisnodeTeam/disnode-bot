@@ -463,7 +463,7 @@ class Bot extends EventEmitter {
 				self.botInfo = response.data;
 			})
 			.catch(function (err) {
-				Logging.Error("Bot", "GetCacheInfo", err.message + " : " + response.statusText);
+				Logging.Error("Bot", "GetCacheInfo", err.message + " : " + err.response.statusText);
 			});
 	}
 	GetServerFromChanel(channel) {
@@ -500,7 +500,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
-					Logging.Error("Bot", "SendMessage", err.message + " : " + response.statusText);
+					Logging.Error("Bot", "SendMessage", err.message + " : " + err.response.statusText);
 					reject(err);
 				});
 
@@ -531,7 +531,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
-					Logging.Error("Bot", "EditMessage", err.message + " : " + response.statusText);
+					Logging.Error("Bot", "EditMessage", err.message + " : " + err.response.statusText);
 					reject(err);
 				});
 
@@ -559,7 +559,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
-					Logging.Error("Bot", "SendEmbed", err.message + " : " + response.statusText + " : " + response.statusText);
+					Logging.Error("Bot", "SendEmbed", err.message + " : " + err.response.statusText + " : " + err.response.statusText);
 					reject(err);
 				});
 		});
@@ -596,7 +596,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
-					Logging.Error("Bot", "SendCompactEmbed", err.message + " : " + response.statusText);
+					Logging.Error("Bot", "SendCompactEmbed", err.message + " : " + err.response.statusText);
 					reject(err);
 				});
 		});
@@ -625,7 +625,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
-					Logging.Error("Bot", "EditEmbed", err.message + " : " + response.statusText);
+					Logging.Error("Bot", "EditEmbed", err.message + " : " + err.response.statusText);
 					reject(err);
 				});
 		});
@@ -659,7 +659,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
-					Logging.Error("Bot", "SetUsername",err.message + " : " + response.statusText);
+					Logging.Error("Bot", "SetUsername",err.message + " : " + err.response.statusText);
 					reject(err);
 				});
 		});
@@ -713,7 +713,7 @@ class Bot extends EventEmitter {
 					resolve(response.data);
 				})
 				.catch(function (err) {
-					Logging.Error("Bot", "Kick",err.message + " : " + response.statusText);
+					Logging.Error("Bot", "Kick",err.message + " : " + err.response.statusText);
 					reject(err);
 				});
 		});
@@ -740,7 +740,7 @@ class Bot extends EventEmitter {
 					resolve(resp.data);
 				})
 				.catch(function (err) {
-					Logging.Error("Bot", "Ban",err.message + " : " + response.statusText);
+					Logging.Error("Bot", "Ban",err.message + " : " + err.response.statusText);
 					reject(err);
 				});
 		});
@@ -764,7 +764,7 @@ class Bot extends EventEmitter {
 					resolve(resp.data);
 				})
 				.catch(function (err) {
-					Logging.Error("Bot", "Unban",err.message + " : " + response.statusText);
+					Logging.Error("Bot", "Unban",err.message + " : " + err.response.statusText);
 					reject(err);
 				});
 		});
