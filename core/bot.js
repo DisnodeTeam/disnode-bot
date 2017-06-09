@@ -486,7 +486,7 @@ class Bot extends EventEmitter {
 		var self = this;
 		return new Promise(function (resolve, reject) {
 			var msgObject = {
-				content: msg,
+				content: JSON.stringify(msg),
 				typing: typing,
 				tts: tts
 			};
