@@ -28,11 +28,11 @@ class DisnodePlugin {
                 name: 'Members',
                 inline: true,
                 value: self.disnode.stats.memberCount,
-            }, {
+            }, /*{
                 name: 'Open DM\'s',
                 inline: true,
                 value: self.disnode.stats.directMessageCount,
-            }, {
+            }, */{
                 name: 'Total Messages',
                 inline: true,
                 value: self.disnode.stats.messages,

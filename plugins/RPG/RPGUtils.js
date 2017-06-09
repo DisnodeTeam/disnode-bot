@@ -96,6 +96,7 @@ class RPGUtils {
       var newGuild = {
         name: name,
         desc: "",
+        thumbnail: "",
         id: player.id,
         open: true,
         owner_id: player.id,
@@ -161,11 +162,11 @@ class RPGUtils {
   fGuild(info){
     var self = this;
     return new Promise(function(resolve, reject) {
-      self.plugin.DB.Find("guilds", {}).then(function(guilds) {
-        for (var i = 0; i < guilds.length; i++) {
-          if(guilds[i].name == info){
-            resolve(guilds[i]);
-            return;
+      self.plugin.DB.Find("guilds", {"id": player.id}).then(function(found) {
+        for (var i = 0; i < found.length; i++) {
+          if (info == found[i].name) {
+            reject("That guild name is taken!")
+            break;
           }
         }
       });

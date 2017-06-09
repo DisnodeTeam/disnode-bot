@@ -54,9 +54,24 @@ class RPGPlugin {
         case "info":
           if (player.guild != '') {
             self.utils.gGuild(player.guild).then(function(guild) {
+              var officer = 0;
+              var member = 0;
+              for (var ids in guild.members) {
+                if (guild.members.hasOwnProperty(ids)) {
+                  if (guild.members[ids].role == 'officer') {
+                    officer++;
+                  } else if (guild.members[ids].role == 'member') {
+                    member++;
+                  }
+                }
+              }
+
               self.disnode.bot.SendEmbed(command.msg.channel, {
                 color: 1752220,
                 author: {},
+                thumbnail: {
+                  url: (guild.thumbnail == '') ? "" : guild.thumbnail,
+                },
                 title: guild.name + "\'s info",
                 description: (guild.desc != '') ? guild.desc : "No description set!",
                 fields: [{
@@ -64,17 +79,17 @@ class RPGPlugin {
                   inline: true,
                   value: guild.owner_name,
                 }, {
+                  name: 'Status',
+                  inline: true,
+                  value: (guild.open) ? "Guild is open!" : "Guild is closed.",
+                }, {
                   name: 'Gold',
                   inline: true,
                   value: (guild.gold),
                 }, {
                   name: 'Members',
                   inline: true,
-                  value: guild.members.length,
-                }, {
-                  name: 'Status',
-                  inline: true,
-                  value: (guild.open) ? "Guild is open!" : "Guild is closed.",
+                  value: 'Officers: ``' + officer + '``\nMembers: ``' + member + '``\nTotal: ``' + guild.members.length + '``',
                 }],
                 footer: {
                   text: command.msg.user,
@@ -167,7 +182,7 @@ class RPGPlugin {
               var ms = "";
               for (var ids in guild.members) {
                 if (guild.members.hasOwnProperty(ids)) {
-                  ms += guild.members[ids].name + '\n';
+                  ms += guild.members[ids].name + '  **|**  ' + guild.members[ids].role + '\n';
                 }
               }
               self.disnode.bot.SendEmbed(command.msg.channel, {
@@ -190,7 +205,7 @@ class RPGPlugin {
         case "create":
           if (command.params[1]) {
             if (player.guild == '') {
-              self.utils.newGuild(player, command.params[1]).then(function(guild) {
+              self.utils.newGuild(player, command.params.splice(1).join(" ")).then(function(guild) {
                 self.embedoferror(command, "Guild Create", "Guild: " + guild.name + " Created!");
                 player.guild = player.id;
                 player.guildrole = "owner";
@@ -219,32 +234,42 @@ class RPGPlugin {
                       var foundfPlayer = false;
                       var editmember = -1;
                       for (var i = 0; i < guild.members.length; i++) {
-                        if(guild.members[i].id == player.id & guild.members[i].role == 'owner')foundOwner = true;
-                        if(guild.members[i].id == fplayer.id){
+                        if (guild.members[i].id == player.id & guild.members[i].role == 'owner') foundOwner = true;
+                        if (guild.members[i].id == fplayer.id) {
                           foundfPlayer = true;
                           editmember = i;
                         }
-                        if(foundOwner && foundfPlayer)break;
+                        if (foundOwner && foundfPlayer) break;
                       }
-                      if(foundOwner & foundfPlayer){
+                      if (foundOwner & foundfPlayer) {
                         switch (command.params[2].toLowerCase()) {
                           case "member":
                             guild.members[editmember].role = command.params[2].toLowerCase();
                             fplayer.guildrole = command.params[2].toLowerCase();
-                            self.utils.plugin.DB.Update("guilds", {"id": guild.id}, guild);
-                            self.utils.plugin.DB.Update("players", {"id": fplayer.id}, fplayer);
+                            self.utils.plugin.DB.Update("guilds", {
+                              "id": guild.id
+                            }, guild);
+                            self.utils.plugin.DB.Update("players", {
+                              "id": fplayer.id
+                            }, fplayer);
+                            self.embedoferror(command, "Guild Member Role Set", fplayer.name + ' now has the member role.');
                             break;
                           case "officer":
                             guild.members[editmember].role = command.params[2].toLowerCase();
                             fplayer.guildrole = command.params[2].toLowerCase();
-                            self.utils.plugin.DB.Update("guilds", {"id": guild.id}, guild);
-                            self.utils.plugin.DB.Update("players", {"id": fplayer.id}, fplayer);
+                            self.utils.plugin.DB.Update("guilds", {
+                              "id": guild.id
+                            }, guild);
+                            self.utils.plugin.DB.Update("players", {
+                              "id": fplayer.id
+                            }, fplayer);
+                            self.embedoferror(command, "Guild Member Role Set", fplayer.name + ' now has the officer role.');
                             break;
                           default:
                             self.embedoferror(command, "Guild Member Role Error", "Guild roles are ``officer`` and ``member``.");
                         }
-                      }else {
-                        if(!foundOwner){
+                      } else {
+                        if (!foundOwner) {
                           self.embedoferror(command, "Guild Member Role Error", "Only guild owner can set roles.");
                         }
                       }
@@ -257,7 +282,7 @@ class RPGPlugin {
         case "set":
           if (command.params[1] == undefined) {
             var prefix = '``!rpg guild set';
-            self.embedoferror(command, "Guild Set Commands", prefix + " desc`` - Sets the guild description.\n" + prefix + " open`` - Sets the guild joining status.");
+            self.embedoferror(command, "Guild Set Commands", prefix + " desc`` - Sets the guild description.\n" + prefix + " open`` - Sets the guild joining status.\n" + prefix + " thumbnail`` - Sets the guild thumbnail.");
             return;
           }
           switch (command.params[1]) {
@@ -296,7 +321,43 @@ class RPGPlugin {
                 });
               } else self.embedoferror(command, "Guild Open Error", "You are not in a guild.");
               break;
+            case "thumbnail":
+              if (player.guild != '') {
+                self.utils.gGuild(player.guild).then(function(guild) {
+                  if (guild.owner_id == player.id) {
+                    self.disnode.platform.GetUserUltra(command.msg.userID).then(function(role) {
+                      if (role) {
+                        guild.thumbnail = command.params[2];
+                        self.utils.plugin.DB.Update("guilds", {
+                          "id": guild.id
+                        }, guild);
+                        self.embedoferror(command, "Guild Thumbnail Set", 'The guilds thumbnail has been set.');
+                      } else self.embedoferror(command, "Guild Thumbnail Error", 'This is an [Ultra](https://disnodeteam.com/#/ultra) setting.');
+                    });
+                  } else self.embedoferror(command, "Guild Thumbnail Error", 'You are not the guild owner.');
+                });
+              } else self.embedoferror(command, "Guild Thumbnail Error", "You are not in a guild.");
+              break;
+            case "name":
+              if (player.guild != '') {
+                self.utils.gGuild(player.guild).then(function(guild) {
+                  var params = command.params.splice(2).join(" ");
+                  if (guild.owner_id == player.id) {
+                    self.utils.fGuild(params).then(function(fg) {
+                        guild.name = params;
+                        self.utils.plugin.DB.Update("guilds", {
+                          "id": guild.id
+                        }, guild);
+                        self.embedoferror(command, "Guild Name Set", 'New name: ``' + params + '``.');
+                    }).catch(function(err) {
+                      self.embedoferror(command, "Guild Name Set Error", err);
+                    });
+                  } else self.embedoferror(command, "Guild Thumbnail Error", 'You are not the guild owner.');
+                });
+              } else self.embedoferror(command, "Guild Thumbnail Error", "You are not in a guild.");
+
           }
+
       }
     });
   }
@@ -396,7 +457,7 @@ class RPGPlugin {
         fields: [{
           name: player.name + "\'s Inventory",
           inline: true,
-          value: "```\n" + final + "```",
+          value: "`\n" + final + "`",
         }],
         footer: {
           text: command.msg.user,
@@ -731,6 +792,31 @@ class RPGPlugin {
         });
       });
     }
+  }
+  devCommand(command) {
+    var self = this;
+    self.utils.gUser(command).then(function(player) {
+      if (player.dev == true) {
+        switch (command.params[0]) {
+          case "eval":
+            try {
+              var codes = command.msg.message.split("dev eval ")[1];
+              var results = eval("(() => { " + codes + " })();");
+              if (results === "[object Object]") {
+                results = JSON.stringify(results, null, 4);
+              }
+              if (typeof results !== 'string')
+                results = require('util').inspect(results);
+              self.disnode.bot.SendMessage(command.msg.channel, "```json\n" + results + "```")
+            } catch (errors) {
+              self.disnode.bot.SendMessage(command.msg.channel, errors)
+            }
+            break;
+
+        }
+
+      }
+    });
   }
   embedoferror(command, title, body) {
     var self = this;
