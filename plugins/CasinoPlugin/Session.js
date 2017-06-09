@@ -29,6 +29,7 @@ class Session {
     for (var i = 0; i < self.timeouts.length; i++) {
       clearTimeout(self.timeouts[i]);
     }
+    logger.Success("Session", "Session End", "Session ended with id: " + self.id);
   }
 }
 module.exports = Session;

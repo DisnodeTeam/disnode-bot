@@ -592,6 +592,7 @@ class CasinoUtils {
           self.DB.Update("players", {"id":player.id}, player);
           resolve(JSON.parse(JSON.stringify(data)));
         }
+        self.updateUltraUsers();
       }).catch(function(err) {
         if(player.Premium)player.Premium = false;
         self.DB.Update("players", {"id":player.id}, player);
@@ -608,6 +609,62 @@ class CasinoUtils {
         return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".png";
       }
     }
+  }
+  updateUltraUsers(){
+    var self = this;
+    var currentUltras = [];
+    var apiUltra = [];
+    var newUltra = [];
+    var notInApi = [];
+    self.DB.Find("players", {}).then(function(players) {
+      for (var i = 0; i < players.length; i++) {
+        if(players[i].Premium){
+          currentUltras.push(players[i]);
+        }
+      }
+      apiUltra = self.disnode.platform.GetUltraUsers();
+
+      for(var i = 0; i < currentUltras.length; i++){
+        var found = false;
+        for(var j = 0; j < apiUltra.length; j++){
+          if(currentUltras[i].id == apiUltra[j].id){
+            found = true;
+            break;
+          }
+        }
+        if(!found){
+          notInApi.push(currentUltras[i]);
+        }
+      }
+      for(var i = 0; i < apiUltra.length; i++){
+        var found = false;
+        for(var j = 0; j < currentUltras.length; j++){
+          if(currentUltras[j].id == apiUltra[i].id){
+            found = true;
+            break;
+          }
+        }
+        if(!found){
+          newUltra.push(currentUltras[i]);
+        }
+      }
+      for(var i = 0; i < newUltra.length; i++){
+        self.findPlayer(newUltra[i].id).then(function(f){
+          f.Premium = true;
+          self.DB.Update("players", {"id":f.id}, f);
+        }).catch(function(err){
+          
+        });
+      }
+      for(var i = 0; i < notInApi.length; i++){
+        self.findPlayer(notInApi[i].id).then(function(f){
+          f.Premium = false;
+          self.DB.Update("players", {"id":f.id}, f);
+        }).catch(function(err){
+          
+        });
+      }
+    });
   }
   updateCoroutine(){
     var self = this;
@@ -633,6 +690,7 @@ class CasinoUtils {
     });
     self.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
     if(self.timer)self.timer.stop();
+    self.updateUltraUsers();
     self.timer = new Countdown(1800000,function(){
       if(self.AutoStatus()) {
         var n = self.getRandomIntInclusive(0,4);

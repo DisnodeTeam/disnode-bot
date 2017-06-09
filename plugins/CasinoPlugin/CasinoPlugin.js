@@ -140,6 +140,7 @@ class CasinoPlugin {
     var self = this;
     self.state = self.disnode.state.Init(self);
     self.utils = new CasinoUtils(self.disnode, self.state, this);
+    self.Blackjack = new Blackjack(self.disnode);
     self.utils.init().then(function() {
       if(self.utils.AutoStatus() && self.stateAuth) {
         var n = self.utils.getRandomIntInclusive(0,4);
@@ -195,9 +196,9 @@ class CasinoPlugin {
           inline: false,
           value: "**Join the Disnode Server for Support and More!:** https://discord.gg/AbZhCen",
         }, {
-          name: 'Disnode Premium',
+          name: 'Disnode Ultra',
           inline: false,
-          value: "**Help us keep the bots running 24/7 and get great perks by doing so by giving us a pledge of $1 a month :** https://www.patreon.com/Disnode",
+          value: "**Help us keep the bots running 24/7 and get great perks by doing so by Purchasing Ultra :** https://www.disnodeteam.com/auth",
         }],
           footer: {}
       });
@@ -1786,9 +1787,14 @@ class CasinoPlugin {
       switch (command.params[0]) {
         case "start":
           if(command.params[1]){
-            var wager = numeral(command.params[1]).value();
+            var wager;
+            if(command.params[1].toLowerCase() == "allin"){
+              wager = numeral(player.money).value();
+            }else{
+              wager = numeral(command.params[1]).value();
+            }
             if(wager > 0){
-              if(player.money > wager){
+              if(player.money >= wager){
                 player.money -= wager;
                 self.Blackjack.newGame(player, wager, command.msg.channel);
               }else {
