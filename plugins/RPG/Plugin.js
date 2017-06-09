@@ -47,7 +47,7 @@ class RPGPlugin {
     self.utils.gUser(command).then(function(player) {
       if (command.params[0] == undefined) {
         var prefix = '``!rpg guild';
-        self.embedoferror(command, "Guild Commands", prefix + " create`` - Creates a guild.\n" + prefix + "info`` - Gets your guilds info.\n" + prefix + " invite`` - Invites a user to your guild.\n" + prefix + " join`` - Join a guild.\n" + prefix + " members`` - Lists all members in a guild.\n" + prefix + " set`` - Guild settings.");
+        self.embedoferror(command, "Guild Commands", prefix + " create`` - Creates a guild.\n" + prefix + "info`` - Gets your guilds info.\n" + prefix + " invite`` - Invites a user to your guild.\n" + prefix + " join`` - Join a guild.\n" + prefix + " members`` - Lists all members in a guild.\n" + prefix + " deposit`` - Deposit gold into your guild.\n" + prefix + " set`` - Guild settings.");
         return;
       }
       switch (command.params[0]) {
@@ -279,10 +279,30 @@ class RPGPlugin {
               } else self.embedoferror(command, "Guild Member Role Error", "Can't change your own role.");
             } else self.embedoferror(command, "Guild Member Role Error", "No guild member inputed.");
           } else self.embedoferror(command, "Guild Member Role Error", "You are not in a guild.");
+          break;
+        case "deposit":
+          if (player.guild != '') {
+            self.utils.gGuild(player.guild).then(function(guild) {
+              if (player.gold > parseInt(command.params[1])) {
+                var pgold = player.gold - parseInt(command.params[1]);
+                var ggold = guild.gold + parseInt(command.params[1]);
+                player.gold = pgold;
+                guild.gold = ggold;
+                self.utils.plugin.DB.Update("guilds", {
+                  "id": guild.id
+                }, guild);
+                self.utils.plugin.DB.Update("players", {
+                  "id": player.id
+                }, player);
+                self.embedoferror(command, "Guild Deposit", parseInt(command.params[1]) + ' gold deposited. You now have ' + pgold + ' gold.');
+              } else self.embedoferror(command, "Guild Deposit Error", "You dont have " + command.params[1] + " gold to deposit.");
+            });
+          } else self.embedoferror(command, "Guild Deposit Error", "You are not in a guild.");
+          break;
         case "set":
           if (command.params[1] == undefined) {
             var prefix = '``!rpg guild set';
-            self.embedoferror(command, "Guild Set Commands", prefix + " desc`` - Sets the guild description.\n" + prefix + " open`` - Sets the guild joining status.\n" + prefix + " thumbnail`` - Sets the guild thumbnail.");
+            self.embedoferror(command, "Guild Set Commands", prefix + " desc`` - Sets the guild description.\n" + prefix + " open`` - Sets the guild joining status.\n" + prefix + " thumbnail`` - Sets the guild thumbnail.\n" + prefix + " name`` - Sets the guilds name.");
             return;
           }
           switch (command.params[1]) {
@@ -344,17 +364,18 @@ class RPGPlugin {
                   var params = command.params.splice(2).join(" ");
                   if (guild.owner_id == player.id) {
                     self.utils.fGuild(params).then(function(fg) {
+                      if (fg == false) {
                         guild.name = params;
                         self.utils.plugin.DB.Update("guilds", {
                           "id": guild.id
                         }, guild);
                         self.embedoferror(command, "Guild Name Set", 'New name: ``' + params + '``.');
-                    }).catch(function(err) {
-                      self.embedoferror(command, "Guild Name Set Error", err);
+                      } else self.embedoferror(command, "Guild Name Set Error", 'That name is already taken.');
                     });
-                  } else self.embedoferror(command, "Guild Thumbnail Error", 'You are not the guild owner.');
+                  } else self.embedoferror(command, "Guild Name Set Error", 'You are not the guild owner.');
                 });
-              } else self.embedoferror(command, "Guild Thumbnail Error", "You are not in a guild.");
+              } else self.embedoferror(command, "Guild Name Set Error", "You are not in a guild.");
+              break;
 
           }
 

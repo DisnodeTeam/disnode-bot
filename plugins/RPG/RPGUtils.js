@@ -90,6 +90,7 @@ class RPGUtils {
       });
     });
   }
+
   newGuild(player, name){
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -159,16 +160,19 @@ class RPGUtils {
       });
     });
   }
-  fGuild(info){
+  fGuild(guildname) {
     var self = this;
+    var guilds = [];
     return new Promise(function(resolve, reject) {
-      self.plugin.DB.Find("guilds", {"id": player.id}).then(function(found) {
-        for (var i = 0; i < found.length; i++) {
-          if (info == found[i].name) {
-            reject("That guild name is taken!")
-            break;
+      self.plugin.DB.Find("guilds", {"name": guildname}).then(function(found) {
+        guilds = found;
+        for (var i = 0; i < guilds.length; i++) {
+          if (guildname == guilds[i].name) {
+              resolve(true);
+              return;
           }
         }
+        resolve(false);
       });
     });
   }
