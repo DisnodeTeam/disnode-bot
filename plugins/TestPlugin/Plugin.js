@@ -13,12 +13,7 @@ class Template {
 
   }
 
-  OnMessageUpdate(command){
-      this.disnode.bot.SendMessage(command.msg.channel, "UPDATED MSG: " + command.msg.id + " **->**`" + command.msg.message +"`");
-  }
-  OnMessageDelete(command){
-      this.disnode.bot.SendMessage(command.msg.channel, "DELETED MSG: " + command.msg.id );
-  }
+
   commandState(command){
 
     var functionCall = command.params[0] || "dump";

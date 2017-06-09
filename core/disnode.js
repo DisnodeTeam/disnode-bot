@@ -75,6 +75,7 @@ class Disnode {
           self.server = new ServerManager(self);
           Logging.Success("Disnode", "Start", "Loaded Server Manager");
           self.ready = true;
+          
           callback();
         },
 

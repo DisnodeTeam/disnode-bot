@@ -48,7 +48,7 @@ class PluginManager {
             for (var i = 0; i < plugins.length; i++) {
               self.SetupEvents(plugins[i]);
               self.plugins.push(plugins[i]);
-
+              self.LaunchPlugin(plugins[i].id, {})
             }
             cb();
           })
@@ -77,6 +77,9 @@ class PluginManager {
               if (!alreadyAdded) {
                 self.SetupEvents(plugins[i]);
                 self.plugins.push(plugins[i]);
+                if(plugins[i].launch){
+                  self.LaunchPlugin(plugins[i].id, {})
+                }
               }
             }
             cb();
@@ -216,24 +219,22 @@ class PluginManager {
   SetupEvents(plugin) {
     var self = this;
     var bot = self.disnode.bot;
+    var self = this;
+    var bot = self.disnode.bot;
 
-    if (plugin.message_update) {
-      Logger.Success("PluginManager-" + self.server, "SetupEvents:" + plugin.id, "Listening for message_update");
-      bot.on("message_update", function (data) {
-        self.RunPluginFunction(plugin.id, plugin.message_update, {
-          msg: data
+    if(plugin.events){
+      for(var i=0;i<plugin.events.length;i++){
+        var cur = plugin.events[i];
+        Logger.Success("PluginManager-" + self.server, "SetupEvents:" + plugin.id, "Listening for " + cur.event);
+        bot.on(cur.event, function(data){
+          self.RunPluginFunction(plugin.id, cur.run, {
+            msg: data
+          })
         })
-      });
+      }
     }
 
-    if (plugin.message_delete) {
-      Logger.Success("PluginManager-" + self.server, "SetupEvents:" + plugin.id, "Listening for message_delete");
-      bot.on("message_delete", function (data) {
-        self.RunPluginFunction(plugin.id, plugin.message_delete, {
-          msg: data
-        })
-      });
-    }
+
 
   }
 

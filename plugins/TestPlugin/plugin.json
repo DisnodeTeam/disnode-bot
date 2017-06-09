@@ -2,7 +2,12 @@
   "name":"Test Plugin",
   "id": "Test-plugin",
   "load": true,
+  "launch": true,
   "script": "Plugin.js",
   "commandsFile": "Commands.json",
-  "configFile" : "Config.json"
+  "configFile" : "Config.json",
+  "events": [
+    {"event" : "message_update", "run": "EventFunction"},
+    {"event" : "guild_update"  , "run": "EventFunction"}
+  ]
 }
