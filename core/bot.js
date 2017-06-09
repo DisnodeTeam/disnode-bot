@@ -8,6 +8,7 @@ const axios = require('axios');
 const WebSocket = require('ws');
 
 const codes = require("./api/codes");
+const Logging = require('disnode-logger');
 const requests = require('./api/request')
 const async = require('async');
 var EventEmitter = require('events').EventEmitter;
