@@ -109,7 +109,7 @@ class Blackjack {
           },{
             name: 'Wager',
             inline: true,
-            value: "$" + numeral(session.game.wager).format('0,0.00'),
+            value: "$" + numeral(newSession.game.wager).format('0,0.00'),
           },{
             name: 'Winnings',
             inline: true,
@@ -117,7 +117,7 @@ class Blackjack {
           },{
             name: 'Net Gain',
             inline: true,
-            value: "$" + numeral(Winnings - session.game.wager).format('0,0.00'),
+            value: "$" + numeral(Winnings - newSession.game.wager).format('0,0.00'),
           },{
             name: 'Balance',
             inline: true,

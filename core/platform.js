@@ -4,7 +4,7 @@ var Axios = require('axios');
 class Platform {
     constructor(disnode) {
         this.disnode = disnode;
-    }https://disnodeteam.com/api/user/ultra
+    }
     GetUserData(userID){
       var self = this;
 
