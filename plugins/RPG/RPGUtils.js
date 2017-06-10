@@ -90,6 +90,22 @@ class RPGUtils {
       });
     });
   }
+  gNameGuild(guildName) {
+    var self = this;
+    var guilds = [];
+    return new Promise(function(resolve, reject) {
+      self.plugin.DB.Find("guilds", {"name": guildName}).then(function(found) {
+        guilds = found;
+        for (var i = 0; i < guilds.length; i++) {
+          if (guildName == guilds[i].name) {
+              resolve(guilds[i]);
+              return;
+          }
+        }
+        reject("Guild Not Found!");
+      });
+    });
+  }
 
   newGuild(player, name){
     var self = this;

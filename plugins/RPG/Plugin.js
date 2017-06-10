@@ -65,7 +65,6 @@ class RPGPlugin {
                   }
                 }
               }
-
               self.disnode.bot.SendEmbed(command.msg.channel, {
                 color: 1752220,
                 author: {},
@@ -102,7 +101,7 @@ class RPGPlugin {
           break;
         case "join":
           if (player.guild == '') {
-            self.utils.fGuild(command.params[1]).then(function(guild) {
+            self.utils.gNameGuild(command.params.splice(1).join(" ")).then(function(guild) {
               if (!guild.open) {
                 var invfound = false;
                 var invpos;
@@ -120,6 +119,7 @@ class RPGPlugin {
                     role: "member"
                   }
                   player.guild = guild.id;
+                  player.guildrole = "member";
                   guild.members.push(newMember);
                   guild.invites.splice(invpos, 1);
                   self.embedoferror(command, "Guild Join", "Joined " + guild.name + "!");
@@ -139,6 +139,7 @@ class RPGPlugin {
                   role: "member"
                 }
                 player.guild = guild.id;
+                player.guildrole = "member";
                 guild.members.push(newMember);
                 self.utils.plugin.DB.Update("guilds", {
                   "id": guild.id
@@ -146,6 +147,7 @@ class RPGPlugin {
                 self.utils.plugin.DB.Update("players", {
                   "id": player.id
                 }, player);
+                self.embedoferror(command, "Guild Join", "Joined " + guild.name + "!");
               }
             }).catch(function(err) {
               self.embedoferror(command, "Guild Join Error", "" + err);
@@ -298,6 +300,48 @@ class RPGPlugin {
               } else self.embedoferror(command, "Guild Deposit Error", "You dont have " + command.params[1] + " gold to deposit.");
             });
           } else self.embedoferror(command, "Guild Deposit Error", "You are not in a guild.");
+          break;
+        case "leave":
+          if (player.guild != '') {
+            self.utils.gGuild(player.guild).then(function(guild) {
+              if (guild.owner_id != player.id) {
+                var index;
+                var mems = guild.members;
+                for (var i = 0; i < guild.members.length; i++) {
+                  if (guild.members[i].id == player.id) {
+                    index = i;
+                    break;
+                  }
+                }
+                player.guild = "";
+                guild.members.splice(index, 1);
+                self.utils.plugin.DB.Update("guilds", {
+                  "id": guild.id
+                }, guild);
+                self.utils.plugin.DB.Update("players", {
+                  "id": player.id
+                }, player);
+                self.embedoferror(command, "Guild Leave", "You have left " + guild.name + ".");
+              } else {
+                if (command.params[1] == undefined) {
+                  self.embedoferror(command, "Guild Leave Error", "You are the guild owner. Leaving will result in the guild being disbanded. To continue with leaving type ``!rpg guild leave yes``.");
+                } else if (command.params[1].toLowerCase() == 'yes') {
+                  self.embedoferror(command, "Guild Disband", guild.name + " has been disbanded.");
+                  for (var i = 0; i < guild.members.length; i++) {
+                    self.utils.fplayer(guild.members[i].id).then(function(fp) {
+                      fp.p.guild = "";
+                      self.utils.plugin.DB.Update("players", {
+                        "id": fp.p.id
+                      }, fp.p);
+                    });
+                  }
+                  self.utils.plugin.DB.Delete("guilds", {
+                    "id": player.guild
+                  });
+                }
+              }
+            });
+          } else self.embedoferror(command, "Guild Disband", "You are not in a guild.");
           break;
         case "set":
           if (command.params[1] == undefined) {
