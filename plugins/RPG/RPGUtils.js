@@ -105,7 +105,23 @@ class RPGUtils {
         reject("Guild Not Found!");
       });
     });
-  }
+  }/*
+  gMob(lvlmin) {
+    var self = this;
+    var guilds = [];
+    return new Promise(function(resolve, reject) {
+      self.plugin.DB.Find("mobs", {"encounterlvlmin": >= lvlmin}).then(function(found) {
+        guilds = found;
+        for (var i = 0; i < guilds.length; i++) {
+          if (guildName == guilds[i].name) {
+              resolve(guilds[i]);
+              return;
+          }
+        }
+        reject("Guild Not Found!");
+      });
+    });
+  }*/
 
   newGuild(player, name){
     var self = this;
@@ -124,6 +140,7 @@ class RPGUtils {
           id: player.id,
           role: "owner"
         }],
+        inv: [],
         invites: []
       }
       self.plugin.DB.Find("guilds", {"id": player.id}).then(function(found) {
@@ -228,7 +245,7 @@ class RPGUtils {
     var lvup = false;
     while(player.xp >= (player.nextlv)){
       player.lv++;
-      player.thealth += player.thealth + 50;
+      player.thealth = player.thealth + 50;
       player.nextlv += (100 * player.lv);
       lvup = true;
     }
@@ -247,6 +264,11 @@ class RPGUtils {
         return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".png";
       }
     }
+  }
+  ChangeLog(){
+    return `Test
+ChangeLog
+Embed`
   }
 }
 module.exports = RPGUtils;

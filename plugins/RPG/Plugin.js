@@ -283,23 +283,195 @@ class RPGPlugin {
           } else self.embedoferror(command, "Guild Member Role Error", "You are not in a guild.");
           break;
         case "deposit":
-          if (player.guild != '') {
-            self.utils.gGuild(player.guild).then(function(guild) {
-              if (player.gold > parseInt(command.params[1])) {
-                var pgold = player.gold - parseInt(command.params[1]);
-                var ggold = guild.gold + parseInt(command.params[1]);
-                player.gold = pgold;
-                guild.gold = ggold;
-                self.utils.plugin.DB.Update("guilds", {
-                  "id": guild.id
-                }, guild);
-                self.utils.plugin.DB.Update("players", {
-                  "id": player.id
-                }, player);
-                self.embedoferror(command, "Guild Deposit", parseInt(command.params[1]) + ' gold deposited. You now have ' + pgold + ' gold.');
-              } else self.embedoferror(command, "Guild Deposit Error", "You dont have " + command.params[1] + " gold to deposit.");
-            });
-          } else self.embedoferror(command, "Guild Deposit Error", "You are not in a guild.");
+          switch (command.params[1]) {
+            case "gold":
+              if (player.guild != '') {
+                self.utils.gGuild(player.guild).then(function(guild) {
+                  if (player.gold > parseInt(command.params[2])) {
+                    var pgold = player.gold - parseInt(command.params[2]);
+                    var ggold = guild.gold + parseInt(command.params[2]);
+                    player.gold = pgold;
+                    guild.gold = ggold;
+                    self.utils.plugin.DB.Update("guilds", {
+                      "id": guild.id
+                    }, guild);
+                    self.utils.plugin.DB.Update("players", {
+                      "id": player.id
+                    }, player);
+                    self.embedoferror(command, "Guild Deposit", parseInt(command.params[2]) + ' gold deposited. You now have ' + pgold + ' gold.');
+                  } else self.embedoferror(command, "Guild Deposit Error", "You dont have " + command.params[2] + " gold to deposit.");
+                });
+              } else self.embedoferror(command, "Guild Deposit Error", "You are not in a guild.");
+              break;
+            case "item":
+              if (player.guild != '') {
+                self.utils.gGuild(player.guild).then(function(guild) {
+                  if (isNaN(parseInt(command.params[2])) == true) {
+                    var params = command.params.splice(2).join(" ").replace(/(^|\s)[a-z]/g, function(f) {
+                      return f.toUpperCase();
+                    });
+                    var itemfound = false;
+                    var gitemfound = false;
+                    var amt;
+                    var gamt;
+                    var pos;
+                    var gpos;
+                    for (var i = 0; i < player.inv.length; i++) {
+                      if (player.inv[i].defaultName == params) {
+                        itemfound = true;
+                        amt = player.inv[i].amount;
+                        pos = i;
+                        break;
+                      }
+                    }
+                    for (var i = 0; i < guild.inv.length; i++) {
+                      if (guild.inv[i].defaultName == params) {
+                        gitemfound = true;
+                        gamt = guild.inv[i].amount;
+                        gpos = i;
+                        break;
+                      }
+                    }
+                    if (amt == 1) {
+                      if (gitemfound == true) {
+                        player.inv.splice(pos, 1);
+                        guild.inv[gpos].amount = gamt + 1;
+                        self.utils.plugin.DB.Update("guilds", {
+                          "id": guild.id
+                        }, guild);
+                        self.utils.plugin.DB.Update("players", {
+                          "id": player.id
+                        }, player);
+                        self.embedoferror(command, "Guild Deposit Item", 'You have deposited your last ' + params + ' for a total of ' + (gamt + 1));
+                      } else {
+                        var itemObj = {
+                          defaultName: params,
+                          amount: 1
+                        }
+                        player.inv.splice(pos, 1);
+                        guild.inv.push(itemObj);
+                        self.utils.plugin.DB.Update("guilds", {
+                          "id": guild.id
+                        }, guild);
+                        self.utils.plugin.DB.Update("players", {
+                          "id": player.id
+                        }, player);
+                        self.embedoferror(command, "Guild Deposit Item", 'You have deposited your last ' + params);
+                      }
+                    } else if (amt > 1) {
+                      if (gitemfound == true) {
+                        player.inv[pos].amount = amt - 1;
+                        guild.inv[gpos].amount = gamt + 1;
+                        self.utils.plugin.DB.Update("guilds", {
+                          "id": guild.id
+                        }, guild);
+                        self.utils.plugin.DB.Update("players", {
+                          "id": player.id
+                        }, player);
+                        self.embedoferror(command, "Guild Deposit Item", params + ' deposited for a total of ' + (gamt + 1) + '\n\nYou now have x' + (amt - 1) + ' of ' + params);
+                      } else {
+                        var itemObj = {
+                          defaultName: params,
+                          amount: 1
+                        }
+                        player.inv[pos].amount = amt - 1;
+                        guild.inv.push(itemObj);
+                        self.utils.plugin.DB.Update("guilds", {
+                          "id": guild.id
+                        }, guild);
+                        self.utils.plugin.DB.Update("players", {
+                          "id": player.id
+                        }, player);
+                        self.embedoferror(command, "Guild Deposit Item", params + ' deposited.\n\nYou now have x' + (amt - 1) + ' of ' + params);
+                      }
+                    }
+                  } else {
+                    var params = command.params.splice(3).join(" ").replace(/(^|\s)[a-z]/g, function(f) {
+                      return f.toUpperCase();
+                    });
+                    var itemfound = false;
+                    var gitemfound = false;
+                    var amt;
+                    var gamt;
+                    var pos;
+                    var gpos;
+                    var num = parseInt(command.params[2]);
+                    for (var i = 0; i < player.inv.length; i++) {
+                      if (player.inv[i].defaultName == params) {
+                        itemfound = true;
+                        amt = player.inv[i].amount;
+                        pos = i;
+                        break;
+                      }
+                    }
+                    for (var i = 0; i < guild.inv.length; i++) {
+                      if (guild.inv[i].defaultName == params) {
+                        gitemfound = true;
+                        gamt = guild.inv[i].amount;
+                        gpos = i;
+                        break;
+                      }
+                    }
+                    if (amt < num) {
+                      self.embedoferror(command, "Guild Deposit Error", "You don\'t have x" + num + ' of ' + params);
+                    } else if (amt == num) {
+                      if (gitemfound == true) {
+                        player.inv.splice(pos, 1);
+                        guild.inv[gpos].amount = gamt + num;
+                        self.utils.plugin.DB.Update("guilds", {
+                          "id": guild.id
+                        }, guild);
+                        self.utils.plugin.DB.Update("players", {
+                          "id": player.id
+                        }, player);
+                        self.embedoferror(command, "Guild Deposit Item", params + ' deposited for a total of ' + (gamt + num) + '\n\nYou have deposited all of your ' + params + '\'s');
+                      } else {
+                        var itemObj = {
+                          defaultName: params,
+                          amount: num
+                        }
+                        player.inv[pos].amount = amt - num;
+                        guild.inv.push(itemObj);
+                        self.utils.plugin.DB.Update("guilds", {
+                          "id": guild.id
+                        }, guild);
+                        self.utils.plugin.DB.Update("players", {
+                          "id": player.id
+                        }, player);
+                        self.embedoferror(command, "Guild Deposit Item", params + ' deposited for a total of ' + num + '\n\nYou have deposited all of your ' + params + '\'s');
+                      }
+                    } else if (amt > num) {
+                      if (gitemfound == true) {
+                        player.inv[pos].amount = amt - num;
+                        guild.inv[gpos].amount = gamt + num;
+                        self.utils.plugin.DB.Update("guilds", {
+                          "id": guild.id
+                        }, guild);
+                        self.utils.plugin.DB.Update("players", {
+                          "id": player.id
+                        }, player);
+                        self.embedoferror(command, "Guild Deposit Item", params + ' deposited for a total of ' + (gamt + num) + '\n\nYou now have x' + (amt - num) + ' of ' + params);
+                      } else {
+                        var itemObj = {
+                          defaultName: params,
+                          amount: num
+                        }
+                        player.inv[pos].amount = amt - num;
+                        guild.inv.push(itemObj);
+                        self.utils.plugin.DB.Update("guilds", {
+                          "id": guild.id
+                        }, guild);
+                        self.utils.plugin.DB.Update("players", {
+                          "id": player.id
+                        }, player);
+                        self.embedoferror(command, "Guild Deposit Item", params + ' deposited for a total of ' + (gamt + num) + '\n\nYou now have x' + (amt - num) + ' of ' + params);
+                      }
+                    }
+                  }
+                });
+              }
+              break;
+          }
           break;
         case "leave":
           if (player.guild != '') {
@@ -340,6 +512,49 @@ class RPGPlugin {
                   });
                 }
               }
+            });
+          } else self.embedoferror(command, "Guild Disband", "You are not in a guild.");
+          break;
+        case "inv":
+          if (player.guild != '') {
+            self.utils.gGuild(player.guild).then(function(guild) {
+              var headingStringA = "Name";
+              var headingStringB = "|Amount"
+              var itemsAmountArr = [];
+              var itemsNameArr = [];
+              var final = "";
+              for (var i = 0; i < guild.inv.length; i++) {
+                itemsAmountArr.push("|x" + guild.inv[i].amount);
+                itemsNameArr.push(guild.inv[i].defaultName);
+              }
+              var AmountL = self.utils.getLongestString(itemsAmountArr);
+              var NameL = self.utils.getLongestString(itemsNameArr);
+              headingStringA = self.utils.addSpacesToString(headingStringA, NameL);
+              headingStringB = self.utils.addSpacesToString(headingStringB, AmountL);
+              final += headingStringA + headingStringB + "\n\n";
+              for (var i = 0; i < itemsNameArr.length; i++) {
+                itemsNameArr[i] = self.utils.addSpacesToString(itemsNameArr[i], NameL);
+              }
+              for (var i = 0; i < itemsAmountArr.length; i++) {
+                itemsAmountArr[i] = self.utils.addSpacesToString(itemsAmountArr[i], AmountL);
+              }
+              for (var i = 0; i < itemsNameArr.length; i++) {
+                final += itemsNameArr[i] + itemsAmountArr[i] + "\n";
+              }
+              self.disnode.bot.SendEmbed(command.msg.channel, {
+                color: 1752220,
+                author: {},
+                fields: [{
+                  name: guild.name + "\'s Inventory",
+                  inline: true,
+                  value: "`\n" + final + "`",
+                }],
+                footer: {
+                  text: command.msg.user,
+                  icon_url: self.utils.avatarCommandUser(command),
+                },
+                timestamp: new Date(),
+              });
             });
           } else self.embedoferror(command, "Guild Disband", "You are not in a guild.");
           break;
@@ -425,6 +640,10 @@ class RPGPlugin {
 
       }
     });
+  }
+  advCommand(command) {
+    var self = this;
+    self.utils.gUser(command).then(function(player) {});
   }
   statsUser(command) {
     var self = this;
@@ -532,6 +751,7 @@ class RPGPlugin {
       });
     });
   }
+  /*
   itemInfo(command) {
     var self = this;
     var prefix = self.disnode.botConfig.prefix + self.config.prefix;
@@ -857,7 +1077,7 @@ class RPGPlugin {
         });
       });
     }
-  }
+  }*/
   devCommand(command) {
     var self = this;
     self.utils.gUser(command).then(function(player) {
@@ -877,9 +1097,34 @@ class RPGPlugin {
               self.disnode.bot.SendMessage(command.msg.channel, errors)
             }
             break;
+          case "player":
+            switch (command.params[1]) {
+              case "get":
+                self.utils.fplayer(command.params[2]).then(function(res) {
+                  if (res.found) {
+                    self.disnode.bot.SendMessage(command.msg.channel, "```json\n" + JSON.stringify(res.p, false, 2) + "```");
+                  } else {
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                  }
+                });
+                break;
 
+            }
+            break;
+          case "changelog":
+          self.disnode.bot.SendEmbed('323358134993289216', {
+            color: 1752220,
+            author: {},
+            fields: [{
+              name: 'Changelog ' + self.disnode.botConfig.version,
+              inline: true,
+              value: '```fix\n' + self.utils.ChangeLog() + '\n```',
+            }],
+            footer: {},
+            timestamp: new Date(),
+          });
+          break;
         }
-
       }
     });
   }
