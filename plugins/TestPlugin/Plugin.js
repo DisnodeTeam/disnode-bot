@@ -8,7 +8,7 @@ class Template {
 
     var params = self.disnode.util.JoinParams(command.params, 2);
 
-    self.disnode.bot.SendMessage(command.msg.channel,"Params: " + params);
+    self.disnode.bot.SendDM(command.msg.userID,"Params: " + params);
 
 
   }

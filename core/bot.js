@@ -973,6 +973,50 @@ class Bot extends EventEmitter {
       resolve();
     });
   }
+  SendDM(userID, msg){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.GetOrCreateDM(userID).then(function(channel){
+        var msgObject = {
+          content: msg || "undefined",
+
+        };
+        axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject, {
+            headers: {
+              'Authorization': "Bot " + self.key
+            }
+          })
+          .then(function(response) {
+            resolve(response.data);
+          })
+          .catch(function(err) {
+            Logging.Error("Bot", "SendDM", err.message + " : " + err.response.statusText);
+            reject(err);
+          });
+      });
+    });
+  }
+  // ===== //
+  GetOrCreateDM(userID){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      axios.post('https://discordapp.com/api/users/@me/channels',  {recipient_id: userID}, {
+          headers: {
+            'Authorization': "Bot " + self.key
+          }
+        })
+        .then(function(response) {
+
+          resolve(response.data.id);
+        })
+        .catch(function(err) {
+          Logging.Error("Bot", "GetOrCreateDM",err);
+          reject(err);
+        });
+    });
+
+  }
+
   /**
    * Pagify results
    * @param {array} arr - Array to be paged
