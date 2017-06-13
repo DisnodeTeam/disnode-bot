@@ -90,6 +90,39 @@ class RPGUtils {
       });
     });
   }
+  gNameGuild(guildName) {
+    var self = this;
+    var guilds = [];
+    return new Promise(function(resolve, reject) {
+      self.plugin.DB.Find("guilds", {"name": guildName}).then(function(found) {
+        guilds = found;
+        for (var i = 0; i < guilds.length; i++) {
+          if (guildName == guilds[i].name) {
+              resolve(guilds[i]);
+              return;
+          }
+        }
+        reject("Guild Not Found!");
+      });
+    });
+  }/*
+  gMob(lvlmin) {
+    var self = this;
+    var guilds = [];
+    return new Promise(function(resolve, reject) {
+      self.plugin.DB.Find("mobs", {"encounterlvlmin": >= lvlmin}).then(function(found) {
+        guilds = found;
+        for (var i = 0; i < guilds.length; i++) {
+          if (guildName == guilds[i].name) {
+              resolve(guilds[i]);
+              return;
+          }
+        }
+        reject("Guild Not Found!");
+      });
+    });
+  }*/
+
   newGuild(player, name){
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -107,6 +140,7 @@ class RPGUtils {
           id: player.id,
           role: "owner"
         }],
+        inv: [],
         invites: []
       }
       self.plugin.DB.Find("guilds", {"id": player.id}).then(function(found) {
@@ -159,16 +193,19 @@ class RPGUtils {
       });
     });
   }
-  fGuild(info){
+  fGuild(guildname) {
     var self = this;
+    var guilds = [];
     return new Promise(function(resolve, reject) {
-      self.plugin.DB.Find("guilds", {"id": player.id}).then(function(found) {
-        for (var i = 0; i < found.length; i++) {
-          if (info == found[i].name) {
-            reject("That guild name is taken!")
-            break;
+      self.plugin.DB.Find("guilds", {"name": guildname}).then(function(found) {
+        guilds = found;
+        for (var i = 0; i < guilds.length; i++) {
+          if (guildname == guilds[i].name) {
+              resolve(true);
+              return;
           }
         }
+        resolve(false);
       });
     });
   }
@@ -208,7 +245,7 @@ class RPGUtils {
     var lvup = false;
     while(player.xp >= (player.nextlv)){
       player.lv++;
-      player.thealth += player.thealth + 50;
+      player.thealth = player.thealth + 50;
       player.nextlv += (100 * player.lv);
       lvup = true;
     }
@@ -227,6 +264,11 @@ class RPGUtils {
         return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".png";
       }
     }
+  }
+  ChangeLog(){
+    return `Test
+ChangeLog
+Embed`
   }
 }
 module.exports = RPGUtils;
