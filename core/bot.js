@@ -996,6 +996,28 @@ class Bot extends EventEmitter {
       });
     });
   }
+  SendDMEmbed(userID, embed){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.GetOrCreateDM(userID).then(function(channel){
+        var msgObject = {
+          embed: embed
+        };
+        axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject, {
+            headers: {
+              'Authorization': "Bot " + self.key
+            }
+          })
+          .then(function(response) {
+            resolve(response.data);
+          })
+          .catch(function(err) {
+            Logging.Error("Bot", "SendDMEmbed", err.message + " : " + err.response.statusText);
+            reject(err);
+          });
+      });
+    });
+  }
   // ===== //
   GetOrCreateDM(userID){
     var self = this;
