@@ -3,13 +3,12 @@ var net = require('net');
 var shortid = require('shortid');
 var Discord = require('discord.io');
 var Logger = require('disnode-logger');
-
 const axios = require('axios');
 const WebSocket = require('ws');
-
 const codes = require("./api/codes");
 const Logging = require('disnode-logger');
 const requests = require('./api/request')
+const APIUtil = require("./api/apiutils");
 const async = require('async');
 var EventEmitter = require('events').EventEmitter;
 
@@ -19,20 +18,25 @@ var EventEmitter = require('events').EventEmitter;
  * @constructor
  * @param {string} key - Discord Bot Key
  * @param {DisnodeObj} disnode - Refrence to Disnode Class (disnode.js)
+ * @property {string} key - The Bot's Discord Key
+ * @property {BotInfoObject} botInfo - Information about the bot
+ * @property {Disnode} disnode - Disnode Refrence
+ * @property {string} shardID - Bot's Shard ID
+ * @property {string} lastS - Last 's' sent in a WS Packet (internal use mostly)
+ * @property {Object<GuildObject>} guilds - The Guilds the bot belonds to. Object so access via `this.disnode.bot.guilds[guildID]`
+ * @property {Object<ChannelObject>} channels - All the channels. Object so access via `this.disnode.bot.channels[channelID]`
+ * @property {Object<UserObject>} users - All the users. Object so access via `this.disnode.bot.users[userID]`
  */
 class Bot extends EventEmitter {
   constructor(key, disnode) {
     super();
     this.key = key;
-    this.client = {};
     this.botInfo = {};
     this.disnode = disnode;
-    this.bind_onMessage = null;
-    this.isRemote = false;
-    this.remoteID = "";
     this.shardID = 0;
-    this.s = null;
-    this.servers = {
+
+    this.lastS = null;
+    this.guilds = {
       count: 0
     };
 
@@ -68,17 +72,15 @@ class Bot extends EventEmitter {
     var self = this;
     return new Promise(function(resolve, reject) {
       Logger.Info("Bot", "GetGatewayURL", "Aquiring Gatway URL...");
-      axios.get('https://discordapp.com/api/gateway/bot', {
-        headers: {
-          'Authorization': "Bot " + self.key
-        }
-      }).then(function(response) {
 
+      APIUtil.APIGet("gateway/bot", self.key)
+      .then(function(data){
         Logger.Success("Bot", "GetGatewayURL", "Aquired Gatway URL!");
-        var url = response.data.url + "/?encoding=json&v=5";
+        var url = data.url + "/?encoding=json&v=5";
         resolve(url)
-      }).catch(function(err) {
-        Logger.Error("Bot", "GetGatewayURL", "Error Aquiring Gatway URL: " + err);
+      })
+      .catch(function(err){
+        Logger.Error("Bot", "GetGatewayURL", "Error Aquiring Gatway URL: " + err.display);
         reject(err);
       });
     });
@@ -117,7 +119,7 @@ class Bot extends EventEmitter {
     Logger.Info("Bot", "StartHeartbeat", "Starting Heatbeat with Interval: " + interval);
     var packet = requests.heartbeat(self.s);
     self.ws.send(JSON.stringify(packet));
-    console.log(packet)
+
     setInterval(function() {
       var packet = requests.heartbeat(self.s);
       self.ws.send(JSON.stringify(packet));
@@ -388,7 +390,7 @@ class Bot extends EventEmitter {
   }
 
   handleGuildCreate(data) {
-    this.servers[data.id] = data;
+    this.guilds[data.id] = data;
     for (var i = 0; i < data.channels.length; i++) {
       data.channels[i].guild_id = data.id;
 
@@ -396,7 +398,7 @@ class Bot extends EventEmitter {
       this.channels.count += 1;
 
     }
-    var mem = this.servers[data.id].members
+    var mem = this.guilds[data.id].members
 
     var rawUsers = [];
     for (var i = 0; mem.length; i++) {
@@ -838,7 +840,7 @@ class Bot extends EventEmitter {
    * @param {string} serverID - ID of the server
    */
   GetServerByID(id) {
-    return this.servers[id];
+    return this.guilds[id];
   }
   /**
    * Gets information about that user
@@ -854,7 +856,7 @@ class Bot extends EventEmitter {
    * @param {string} userID - Id of the user
    */
   GetMember(serverID, userID) {
-    var members = self.disnode.util.arrayToOject(this.servers[serverID].members, "user.id");
+    var members = self.disnode.util.arrayToOject(this.guilds[serverID].members, "user.id");
     return members[userID];
   }
   /**
@@ -875,7 +877,7 @@ class Bot extends EventEmitter {
    * @param {string} roleID - Id of the role
    */
   GetRoleById(serverId, roleId) {
-    var server = this.servers[serverId];
+    var server = this.guilds[serverId];
     if (!server) {
       return;
     }
@@ -883,7 +885,7 @@ class Bot extends EventEmitter {
     return roles[roleId];
   }
   GetUserStatus(serverId, UserId) {
-    var statuses = this.servers[serverId].presences;
+    var statuses = this.guilds[serverId].presences;
 
     for (var i = 0; i < statuses.length; i++) {
       if (statuses[i].user.id == UserId) {
