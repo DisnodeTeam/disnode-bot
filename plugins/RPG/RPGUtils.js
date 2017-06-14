@@ -15,11 +15,13 @@ class RPGUtils {
             return;
           }
         }
+        self.plugin.disnode.platform.GetUserData(command.msg.userID).then(function(data) {
         var newPlayer = {
           name: command.msg.user,
           id: command.msg.userID,
-          dev: false,
+          dev: (data.isAdmin == null) ? false : data.isAdmin,
           banned: false,
+          pvp: false,
           reason: "",
           guild: "",
           guildrole: "",
@@ -36,11 +38,58 @@ class RPGUtils {
             charisma: 1,
             points: 0
           },
+          equipped: [{
+            type: 'weapon',
+            weapontype: 'shortsword',
+            name: 'Copper Shortsword',
+            nick: null,
+            minDamage: 3,
+            maxDamage: 7,
+            lvl: 1,
+            buy: 0,
+            sell: 0
+          },
+          {
+            type: 'breastplate',
+            name: 'Copper Breastplate',
+            nick: null,
+            minDefense: 8,
+            maxDefense: 12,
+            lvl: 1,
+            buy: 0,
+            sell: 0
+          },
+          {
+            type: 'greaves',
+            name: 'Copper Greaves',
+            nick: null,
+            minDefense: 3,
+            maxDefense: 7,
+            lvl: 1,
+            buy: 0,
+            sell: 0
+          },
+          {
+            type: 'helmet',
+            name: 'Copper Helmet',
+            nick: null,
+            minDefense: 3,
+            maxDefense: 7,
+            lvl: 1,
+            buy: 0,
+            sell: 0
+          },
+          {
+            type: 'shield',
+            name: 'Copper Shield',
+            nick: null,
+            minDefense: 3,
+            maxDefense: 7,
+            lvl: 1,
+            buy: 0,
+            sell: 0
+          }],
           inv: [{
-              defaultName: "Bronze Shortsword",
-              amount: 1
-            },
-            {
               defaultName : "Apple",
               amount: 5
             },
@@ -53,14 +102,14 @@ class RPGUtils {
             name: "",
             minDamage: 0,
             maxDamage: 0,
-            minHealth: 0,
             maxHealth: 0,
             currentHealth: 0,
             minDefense: 0,
             maxDefense: 0,
             minXP: 0,
             maxXP: 0
-          }]
+          }],
+          lastMessage: null
         }
         for (var i = 0; i < players.length; i++) {
           if (newPlayer.name == players[i].name) {
@@ -72,6 +121,7 @@ class RPGUtils {
         resolve(newPlayer);
         return;
       });
+    });
     });
   }
   gGuild(guildID) {
@@ -105,8 +155,7 @@ class RPGUtils {
         reject("Guild Not Found!");
       });
     });
-  }
-  /*
+  }/*
   gMob(lvlmin) {
     var self = this;
     var guilds = [];
@@ -123,6 +172,7 @@ class RPGUtils {
       });
     });
   }*/
+
   newGuild(player, name){
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -146,7 +196,7 @@ class RPGUtils {
       self.plugin.DB.Find("guilds", {"id": player.id}).then(function(found) {
         for (var i = 0; i < found.length; i++) {
           if (newGuild.name == found[i].name) {
-            reject("That guild name is already taken!")
+            resolve("That guild name is already taken!")
             break;
           }
         }
@@ -209,6 +259,75 @@ class RPGUtils {
       });
     });
   }
+  gGather(type, id) {
+    var self = this;
+  return new Promise(function(resolve, reject) {
+    switch (type) {
+      case "mine":
+      self.plugin.DB.Find("mine", {"id": id}).then(function(type) {
+        for (var i = 0; i < type.length; i++) {
+          if (id == type[i].id) {
+              resolve(type[i]);
+              return;
+          }
+        }
+      });
+      break;
+    }
+    });
+  }
+  theMaths(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  updatePlayerLastMessage(player){
+    var currentDate = new Date().getTime();
+    player.lastMessage = parseInt(currentDate);
+  }
+  checkTimeout(player, seconds){
+    var self = this;
+    var currentDate = new Date().getTime();
+    if(player.lastMessage == null){
+      return {pass: true};
+    }
+    var targetMS = player.lastMessage + (seconds * 1000);
+    var remainingMS = currentDate - targetMS;
+    if(remainingMS >= 0){
+      var elapsedObj = self.getElapsedTime(remainingMS);
+      return {pass: true, remain: elapsedObj.days + " Days" + elapsedObj.hours + " Hours " + elapsedObj.minutes + " Minutes " + elapsedObj.seconds + " Seconds " + elapsedObj.miliseconds + " Miliseconds"};
+    }else {
+      remainingMS = -remainingMS;
+      var elapsedObj = self.getElapsedTime(remainingMS);
+      return {pass: false, remain: elapsedObj.minutes + " Minutes " + elapsedObj.seconds + " Seconds"};
+    }
+  }
+  getElapsedTime(ms){
+    var days = 0;
+    var hours = 0;
+    var minutes = 0;
+    var seconds = parseInt(ms / 1000);
+    var miliseconds = ms % 1000;
+    while (seconds > 60) {
+      minutes++;
+      seconds -= 60;
+      if (minutes == 60) {
+        hours++;
+        minutes = 0;
+      }
+      if(hours == 24){
+        days++
+        hours = 0;
+      }
+    }
+    return {
+      days: days,
+      hours: hours,
+      minutes: minutes,
+      seconds: seconds,
+      miliseconds: miliseconds
+    }
+  }
   getLongestString(arr){
     var longest = -1;
     for (var i = 0; i < arr.length; i++) {
@@ -223,9 +342,8 @@ class RPGUtils {
     return string;
   }
   getItems(type){
-    var self = this;
     return new Promise(function(resolve, reject) {
-      if(self.isValidType(type)){
+      if(isValidType(type)){
         self.plugin.DB.Find(type, {}).then(function(items) {
           resolve(items);
         });
@@ -234,31 +352,11 @@ class RPGUtils {
       }
     });
   }
-  getItem(type, name){
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      if(self.isValidType(type)){
-        self.plugin.DB.Find(type, {"name":name}).then(function(items) {
-          for (var i = 0; i < items.length; i++) {
-            if(items[i].name.toLowerCase() == name.toLowerCase()){
-              resolve(items[i]);
-              break;
-            }
-          }
-          reject("Item Not Found!");
-        });
-      }else {
-        reject("Invalid Item Type!");
-      }
-    });
-  }
   isValidType(type){
-    if(type.toLowerCase() == "breastplate")return true;
-    if(type.toLowerCase() == "greatsword")return true;
-    if(type.toLowerCase() == "greaves")return true;
-    if(type.toLowerCase() == "helmet")return true;
-    if(type.toLowerCase() == "shortsword")return true;
-    if(type.toLowerCase() == "health")return true;
+    if(type == "weapons")return true;
+    if(type == "health")return true;
+    if(type == "armor")return true;
+    if(type == "mobs")return true;
     return false;
   }
   checkLV(player, channel){
@@ -266,11 +364,14 @@ class RPGUtils {
     var lvup = false;
     while(player.xp >= (player.nextlv)){
       player.lv++;
-      player.thealth = player.thealth + 50;
+      player.gold += player.lv + 1 * 100 * 1.2;
+      player.skills.points += 2;
+      player.chealth = player.thealth + 50;
+      player.thealth += 50;
       player.nextlv += (100 * player.lv);
       lvup = true;
     }
-    if(lvup)self.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lv + "\n**Your health has been healed and increased to:** " + player.thealth + "HP", 1433628);
+    if(lvup) self.plugin.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lv + "\n**Your health has been healed and increased to:** " + player.thealth + "HP", 1433628);
   }
   pMention(uid) {
     var id = uid.replace(/\D/g, '');
@@ -287,7 +388,9 @@ class RPGUtils {
     }
   }
   ChangeLog(){
-    return '`Test ChangeLog Embed`'
+    return `Test
+ChangeLog
+Embed`
   }
 }
 module.exports = RPGUtils;

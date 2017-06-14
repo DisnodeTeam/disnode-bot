@@ -22,11 +22,12 @@ class RPGPlugin {
     for (var i = 0; i < self.commands.length; i++) {
       msg += self.disnode.botConfig.prefix + self.config.prefix + " " + self.commands[i].cmd + " - " + self.commands[i].desc + "\n";
     }
+    msg = msg.replace("!rpg dev - *Dev command*\n", "");
     self.disnode.bot.SendEmbed(command.msg.channel, {
       color: 3447003,
       author: {},
       fields: [{
-        name: 'RPG',
+        name: 'Disnode RPG',
         inline: true,
         value: "Hello, " + command.msg.user + "!",
       }, {
@@ -36,7 +37,7 @@ class RPGPlugin {
       }, {
         name: 'Discord Server',
         inline: false,
-        value: "**Join the Disnode Server for Support and More!:** https://discord.gg/AbZhCen",
+        value: "**Join the RPG Server for Support and More!:** https://discord.gg/2dzZSgk",
       }],
       footer: {}
     });
@@ -45,6 +46,7 @@ class RPGPlugin {
     var self = this;
     var prefix = '``!rpg guild';
     self.utils.gUser(command).then(function(player) {
+      var usr = self.disnode.bot.GetUserInfo(player.id);
       if (command.params[0] == undefined) {
         var prefix = '``!rpg guild';
         self.embedoferror(command, "Guild Commands", prefix + " create`` - Creates a guild.\n" + prefix + "info`` - Gets your guilds info.\n" + prefix + " invite`` - Invites a user to your guild.\n" + prefix + " join`` - Join a guild.\n" + prefix + " members`` - Lists all members in a guild.\n" + prefix + " deposit`` - Deposit gold into your guild.\n" + prefix + " set`` - Guild settings.");
@@ -123,6 +125,7 @@ class RPGPlugin {
                   guild.members.push(newMember);
                   guild.invites.splice(invpos, 1);
                   self.embedoferror(command, "Guild Join", "Joined " + guild.name + "!");
+                  self.disnode.bot.SendDM(guild.id, "Member Join", usr.username + '#' + usr.discriminator + ' has joined your guild.');
                   self.utils.plugin.DB.Update("guilds", {
                     "id": guild.id
                   }, guild);
@@ -148,6 +151,7 @@ class RPGPlugin {
                   "id": player.id
                 }, player);
                 self.embedoferror(command, "Guild Join", "Joined " + guild.name + "!");
+                self.disnode.bot.SendCompactEmbed(guild.id, "Member Join", usr.username + '#' + usr.discriminator + ' has joined your guild.');
               }
             }).catch(function(err) {
               self.embedoferror(command, "Guild Join Error", "" + err);
@@ -207,15 +211,18 @@ class RPGPlugin {
         case "create":
           if (command.params[1]) {
             if (player.guild == '') {
-              self.utils.newGuild(player, command.params.splice(1).join(" ")).then(function(guild) {
-                self.embedoferror(command, "Guild Create", "Guild: " + guild.name + " Created!");
-                player.guild = player.id;
-                player.guildrole = "owner";
-                self.utils.plugin.DB.Update("players", {
-                  "id": player.id
-                }, player);
-              }).catch(function(err) {
-                self.embedoferror(command, "Guild Create Error", err);
+              var params = command.params.splice(1).join(" ");
+              self.utils.fGuild(params).then(function(fg) {
+                if (fg == false) {
+                  self.utils.newGuild(player, params).then(function(guild) {
+                    self.embedoferror(command, "Guild Create", "Guild: " + guild.name + " Created!");
+                    player.guild = player.id;
+                    player.guildrole = "owner";
+                    self.utils.plugin.DB.Update("players", {
+                      "id": player.id
+                    }, player);
+                  });
+                } else self.embedoferror(command, "Guild Create Error", 'That guild name is taken.');
               });
             } else {
               self.embedoferror(command, "Guild Create Error", "You can't create a new guild when you are already in one!");
@@ -486,6 +493,7 @@ class RPGPlugin {
                   }
                 }
                 player.guild = "";
+                player.guildrole = "";
                 guild.members.splice(index, 1);
                 self.utils.plugin.DB.Update("guilds", {
                   "id": guild.id
@@ -493,6 +501,7 @@ class RPGPlugin {
                 self.utils.plugin.DB.Update("players", {
                   "id": player.id
                 }, player);
+                self.disnode.bot.SendCompactEmbed(guild.id, "Member Leave", usr.username + '#' + usr.discriminator + ' has left your guild.');
                 self.embedoferror(command, "Guild Leave", "You have left " + guild.name + ".");
               } else {
                 if (command.params[1] == undefined) {
@@ -502,6 +511,7 @@ class RPGPlugin {
                   for (var i = 0; i < guild.members.length; i++) {
                     self.utils.fplayer(guild.members[i].id).then(function(fp) {
                       fp.p.guild = "";
+                      fp.p.guildrole = "";
                       self.utils.plugin.DB.Update("players", {
                         "id": fp.p.id
                       }, fp.p);
@@ -629,47 +639,165 @@ class RPGPlugin {
                           "id": guild.id
                         }, guild);
                         self.embedoferror(command, "Guild Name Set", 'New name: ``' + params + '``.');
-                      } else self.embedoferror(command, "Guild Name Set Error", 'That name is already taken.');
+                      } else self.embedoferror(command, "Guild Name Set Error", 'That guild name is taken.');
                     });
                   } else self.embedoferror(command, "Guild Name Set Error", 'You are not the guild owner.');
                 });
               } else self.embedoferror(command, "Guild Name Set Error", "You are not in a guild.");
-              break;
-
+              break
           }
 
       }
     });
   }
-  advCommand(command) {
+  gather(command) {
     var self = this;
-    self.utils.gUser(command).then(function(player) {});
-  }
-  statsUser(command) {
-    var self = this;
-    var bprefix = self.disnode.botConfig.prefix;
-    var pprefix = self.config.prefix;
     self.utils.gUser(command).then(function(player) {
-      if (command.params[0]) {
-        self.utils.fplayer(command.params[0]).then(function(res) {
-          if (res.found) {
+      switch (command.params[0]) {
+        case "mine":
+          var timeoutInfo = self.utils.checkTimeout(player, 5);
+          if (player.dev) timeoutInfo = self.utils.checkTimeout(player, 0);
+          if (!timeoutInfo.pass) {
+            self.embedoferror(command, "Cooldown", "You have to wait ``" + timeoutInfo.remain + "`` before mining again.");
+            return;
+          }
+          self.utils.gGather("mine", self.utils.theMaths(0, 2)).then(function(res) {
+            var itemfound = false;
+            var amt;
+            var pos;
+            for (var i = 0; i < player.inv.length; i++) {
+              if (player.inv[i].defaultName == res.Name) {
+                itemfound = true;
+                amt = player.inv[i].amount;
+                pos = i;
+                break;
+              }
+            }
+            var drop = self.utils.theMaths(res.minDrop, res.maxDrop);
+            var xp = self.utils.theMaths(res.minXP, res.maxXP);
+            if (itemfound == false) {
+              var newItem = {
+                defaultName: res.Name,
+                amount: drop
+              }
+              player.inv.push(newItem);
+              player.xp += xp;
+              self.utils.checkLV(player, command.msg.channel);
+              self.utils.plugin.DB.Update("players", {
+                "id": player.id
+              }, player);
+              self.embedoferror(command, "Mine Result", "You got " + drop + " " + res.Name + " and " + xp + " XP");
+            } else {
+              player.inv[pos].amount += drop;
+              player.xp += xp;
+              self.utils.checkLV(player, command.msg.channel);
+              self.utils.plugin.DB.Update("players", {
+                "id": player.id
+              }, player);
+              self.embedoferror(command, "Mine Result", "You got " + drop + " " + res.Name + " and " + xp + " XP");
+            }
+          });
+          self.utils.updatePlayerLastMessage(player);
+          break;
+
+      }
+    });
+  }
+  player(command) {
+    var self = this;
+    self.utils.gUser(command).then(function(player) {
+      switch (command.params[0]) {
+        case 'inv':
+          var headingStringA = "Name";
+          var headingStringB = "|Amount"
+          var itemsAmountArr = [];
+          var itemsNameArr = [];
+          var final = "";
+          for (var i = 0; i < player.inv.length; i++) {
+            itemsAmountArr.push("|x" + player.inv[i].amount);
+            itemsNameArr.push(player.inv[i].name);
+          }
+          var AmountL = self.utils.getLongestString(itemsAmountArr);
+          var NameL = self.utils.getLongestString(itemsNameArr);
+          headingStringA = self.utils.addSpacesToString(headingStringA, NameL);
+          headingStringB = self.utils.addSpacesToString(headingStringB, AmountL);
+          final += headingStringA + headingStringB + "\n\n";
+          for (var i = 0; i < itemsNameArr.length; i++) {
+            itemsNameArr[i] = self.utils.addSpacesToString(itemsNameArr[i], NameL);
+          }
+          for (var i = 0; i < itemsAmountArr.length; i++) {
+            itemsAmountArr[i] = self.utils.addSpacesToString(itemsAmountArr[i], AmountL);
+          }
+          for (var i = 0; i < itemsNameArr.length; i++) {
+            final += itemsNameArr[i] + itemsAmountArr[i] + "\n";
+          }
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1752220,
+            author: {},
+            fields: [{
+              name: player.name + "\'s Inventory",
+              inline: true,
+              value: "`\n" + final + "`",
+            }],
+            footer: {
+              text: command.msg.user,
+              icon_url: self.utils.avatarCommandUser(command),
+            },
+            timestamp: new Date(),
+          });
+          break;
+        case 'stats':
+          var bprefix = self.disnode.botConfig.prefix;
+          var pprefix = self.config.prefix;
+          if (command.params[1]) {
+            self.utils.fplayer(command.params[1]).then(function(res) {
+              if (res.found) {
+                self.disnode.bot.SendEmbed(command.msg.channel, {
+                  color: 1752220,
+                  author: {},
+                  title: res.p.name + "\'s stats",
+                  description: "To see your inventory type ``" + bprefix + "" + pprefix + " inv``.",
+                  fields: [{
+                    name: 'Health',
+                    inline: true,
+                    value: (res.p.chealth) + "/" + (res.p.thealth) + " HP",
+                  }, {
+                    name: 'Gold',
+                    inline: true,
+                    value: (res.p.gold),
+                  }, {
+                    name: 'Level ' + res.p.lv,
+                    inline: true,
+                    value: res.p.xp + '/' + res.p.nextlv + ' XP',
+                  }],
+                  footer: {
+                    text: command.msg.user,
+                    icon_url: self.utils.avatarCommandUser(command),
+                  },
+                  timestamp: new Date(),
+                });
+              } else {
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg);
+              }
+            });
+          } else {
             self.disnode.bot.SendEmbed(command.msg.channel, {
               color: 1752220,
               author: {},
-              title: res.p.name + "\'s stats",
+              title: player.name + "\'s stats",
               description: "To see your inventory type ``" + bprefix + "" + pprefix + " inv``.",
               fields: [{
                 name: 'Health',
                 inline: true,
-                value: (res.p.chealth) + "/" + (res.p.thealth) + " HP",
+                value: (player.chealth) + "/" + (player.thealth) + " HP",
               }, {
                 name: 'Gold',
                 inline: true,
-                value: (res.p.gold),
+                value: (player.gold),
               }, {
-                name: 'Level',
+                name: 'Level ' + player.lv,
                 inline: true,
-                value: res.p.lv + ' (' + res.p.xp + '/' + res.p.nextlv + ')',
+                value: player.xp + '/' + player.nextlv + ' XP',
               }],
               footer: {
                 text: command.msg.user,
@@ -677,28 +805,138 @@ class RPGPlugin {
               },
               timestamp: new Date(),
             });
-          } else {
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg);
           }
-        });
-      } else {
+          break;
+        case 'skills':
+          switch (command.params[1]) {
+            case "assign":
+
+              break;
+            default:
+              self.disnode.bot.SendEmbed(command.msg.channel, {
+                color: 1752220,
+                author: {},
+                fields: [{
+                  name: player.name + "\'s skills",
+                  inline: true,
+                  value: 'Strength: ``' + player.skills.strength + '``\nDefense: ``' + player.skills.defense + '``\nLuck: ``' + player.skills.luck + '``\nCharisma: ``' + player.skills.charisma + '``\nUnassigned: ``' + player.skills.points + '``',
+                }],
+                footer: {
+                  text: command.msg.user,
+                  icon_url: self.utils.avatarCommandUser(command),
+                },
+                timestamp: new Date(),
+              });
+              break;
+          }
+          break;
+        case 'equipped':
+          var wpos;
+          var hpos;
+          var bpos;
+          var gpos;
+          var spos;
+          for (var i = 0; i < player.equipped.length; i++) {
+            if (player.equipped[i].type == 'weapon') {
+              wpos = i;
+            }
+            if (player.equipped[i].type == 'breastplate') {
+              bpos = i;
+            }
+            if (player.equipped[i].type == 'helmet') {
+              hpos = i;
+            }
+            if (player.equipped[i].type == 'greaves') {
+              gpos = i;
+            }
+            if (player.equipped[i].type == 'shield') {
+              spos = i;
+            }
+          }
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1752220,
+            author: {},
+            title: player.name + "\'s Equipped Items",
+            thumbnail: {
+              url: 'https://cdn.discordapp.com/attachments/324059500556320774/324393831602716672/inventory.png'
+            },
+            fields: [{
+              name: 'Helmet',
+              inline: true,
+              value: player.equipped[hpos].name,
+            }, {
+              name: 'Breastplate',
+              inline: true,
+              value: player.equipped[bpos].name,
+            }, {
+              name: 'Greaves',
+              inline: true,
+              value: player.equipped[gpos].name,
+            }, {
+              name: 'Shield',
+              inline: true,
+              value: player.equipped[spos].name,
+            }, {
+              name: 'Weapon',
+              inline: true,
+              value: player.equipped[wpos].name,
+            }],
+            footer: {
+              text: command.msg.user,
+              icon_url: self.utils.avatarCommandUser(command),
+            },
+            timestamp: new Date(),
+          });
+          break;
+        case 'equip':
+          var ipos;
+          var invfound = false;
+          var params = command.params.splice(1).join(" ").replace(/(^|\s)[a-z]/g, function(f) {
+            return f.toUpperCase();
+          });
+          for (var i = 0; i < player.inv.length; i++) {
+            if (player.inv[i].name == params) {
+              ipos = i;
+              invfound = true;
+            }
+          }
+          if (invfound) {
+            var epos;
+            var item = player.inv[ipos].type;
+            for (var i = 0; i < player.equipped.length; i++) {
+              if (player.equipped[i].type == item) {
+                epos = i;
+              }
+            }
+            var equipobj = player.equipped[epos];
+            var invobj = player.inv[ipos];
+            player.inv.push(equipobj);
+            player.equipped.push(invobj);
+            player.inv.splice(ipos, 1);
+            player.equipped.splice(epos, 1);
+            self.utils.plugin.DB.Update("players", {
+              "id": player.id
+            }, player);
+          }
+          break;
+        default:
+          var prefix = '``!rpg player';
+          self.embedoferror(command, "Player Commands", prefix + " stats`` - Stats of you or a user.\n" + prefix + " inv`` - Gets your inventory.\n" + prefix + " skills`` - Skill related commands.\n" + prefix + " equipped`` - Shows what gear you have equipped.");
+      }
+    });
+  }
+  /*
+    itemInfo(command) {
+      var self = this;
+      var prefix = self.disnode.botConfig.prefix + self.config.prefix;
+      if (command.params[0] == undefined) {
         self.disnode.bot.SendEmbed(command.msg.channel, {
           color: 1752220,
           author: {},
-          title: player.name + "\'s stats",
-          description: "To see your inventory type ``" + bprefix + "" + pprefix + " inv``.",
           fields: [{
-            name: 'Health',
+            name: 'Info',
             inline: true,
-            value: (player.chealth) + "/" + (player.thealth) + " HP",
-          }, {
-            name: 'Gold',
-            inline: true,
-            value: (player.gold),
-          }, {
-            name: 'Level',
-            inline: true,
-            value: player.lv + ' (' + player.xp + '/' + player.nextlv + ')',
+            value: "``" + prefix + " info [armor/weapon/healing/mob] [name]`` - i dont know what to put here",
           }],
           footer: {
             text: command.msg.user,
@@ -706,185 +944,178 @@ class RPGPlugin {
           },
           timestamp: new Date(),
         });
-      }
-    });
-  }
-  invUser(command) {
-    var self = this;
-    var headingStringA = "Name";
-    var headingStringB = "|Amount"
-    self.utils.gUser(command).then(function(player) {
-      var itemsAmountArr = [];
-      var itemsNameArr = [];
-      var final = "";
-      for (var i = 0; i < player.inv.length; i++) {
-        itemsAmountArr.push("|x" + player.inv[i].amount);
-        itemsNameArr.push(player.inv[i].defaultName);
-      }
-      var AmountL = self.utils.getLongestString(itemsAmountArr);
-      var NameL = self.utils.getLongestString(itemsNameArr);
-      headingStringA = self.utils.addSpacesToString(headingStringA, NameL);
-      headingStringB = self.utils.addSpacesToString(headingStringB, AmountL);
-      final += headingStringA + headingStringB + "\n\n";
-      for (var i = 0; i < itemsNameArr.length; i++) {
-        itemsNameArr[i] = self.utils.addSpacesToString(itemsNameArr[i], NameL);
-      }
-      for (var i = 0; i < itemsAmountArr.length; i++) {
-        itemsAmountArr[i] = self.utils.addSpacesToString(itemsAmountArr[i], AmountL);
-      }
-      for (var i = 0; i < itemsNameArr.length; i++) {
-        final += itemsNameArr[i] + itemsAmountArr[i] + "\n";
-      }
-      self.disnode.bot.SendEmbed(command.msg.channel, {
-        color: 1752220,
-        author: {},
-        fields: [{
-          name: player.name + "\'s Inventory",
-          inline: true,
-          value: "`\n" + final + "`",
-        }],
-        footer: {
-          text: command.msg.user,
-          icon_url: self.utils.avatarCommandUser(command),
-        },
-        timestamp: new Date(),
-      });
-    });
-  }
-  itemInfo(command){
-    var self = this;
-    var prefix = self.disnode.botConfig.prefix + self.config.prefix;
-    if (command.params[0] == undefined) {
-      self.disnode.bot.SendEmbed(command.msg.channel, {
-        color: 1752220,
-        author: {},
-        fields: [{
-          name: 'Info',
-          inline: true,
-          value: "``" + prefix + " info [breastplate/greatsword/greaves/helmet/shortsword/health] [name]`` - Get Item Info",
-        }],
-        footer: {
-          text: command.msg.user,
-          icon_url: self.utils.avatarCommandUser(command),
-        },
-        timestamp: new Date(),
-      });
-    }else {
-      console.log(command.params);
-      var type = command.params[0];
-      command.params.splice(0,1);
-      var itemL = command.params.join(" ");
-      console.log(type + " : " + itemL);
-      self.utils.getItem(type, itemL).then(function(item) {
-        var embedFields = [];
-        embedFields.push({
-          name: 'Item Name',
-          inline: true,
-          value: item.name,
+      } else if (command.params[0] == "weapon") {
+        var cp = command.msg.message.split("weapon ")[1].replace(/(^|\s)[a-z]/g, function(f) {
+          return f.toUpperCase();
         });
-        embedFields.push({
-          name: 'Item Level',
-          inline: true,
-          value: item.lvl,
+        self.utils.weaponList(cp).then(function(res) {
+          var result = res.p.items.find(items => items.defaultName === cp);
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1752220,
+            author: {},
+            title: "Weapon Info",
+            fields: [{
+              name: 'Item Name',
+              inline: true,
+              value: result.defaultName,
+            }, {
+              name: "DMG",
+              inline: true,
+              value: result.defaultMinDamage + " - " + result.defaultMaxDamage,
+            }, {
+              name: 'Level',
+              inline: true,
+              value: result.lvl,
+            }, {
+              name: 'Cost',
+              inline: true,
+              value: (result.buy == null) ? "Can\'t buy" : result.buy + " Gold",
+            }, {
+              name: 'Worth',
+              inline: true,
+              value: result.sell + " Gold",
+            }],
+            footer: {
+              text: command.msg.user,
+              icon_url: self.utils.avatarCommandUser(command),
+            },
+            timestamp: new Date(),
+          });
+        })
+      } else if (command.params[0] == "healing") {
+        var cp = command.msg.message.split("healing ")[1].replace(/(^|\s)[a-z]/g, function(f) {
+          return f.toUpperCase();
         });
-        embedFields.push({
-          name: 'Item Worth (Buy/Sell)',
-          inline: true,
-          value: item.buy + "/" + item.sell,
+        self.utils.healList(cp).then(function(res) {
+          var result = res.p.items.find(items => items.defaultName === cp);
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1752220,
+            author: {},
+            title: "Healing Item Info",
+            description: "For a list of healing items type ``" + prefix + " list health``",
+            fields: [{
+              name: 'Item Name',
+              inline: true,
+              value: result.defaultName,
+            }, {
+              name: "Heal Amount",
+              inline: true,
+              value: result.defaultHeal,
+            }, {
+              name: 'Level',
+              inline: true,
+              value: result.lvl,
+            }, {
+              name: 'Cost',
+              inline: true,
+              value: (result.buy == null) ? "Can\'t buy" : result.buy + " Gold",
+            }, {
+              name: 'Worth',
+              inline: true,
+              value: result.sell + " Gold",
+            }],
+            footer: {
+              text: command.msg.user,
+              icon_url: self.utils.avatarCommandUser(command),
+            },
+            timestamp: new Date(),
+          });
         });
-        switch (item.type) {
-          case "weapon":
-            embedFields.push({
-              name: 'Min Damage/Max Damage',
-              inline: true,
-              value: item.minDamage + "/" + item.maxDamage,
-            });
-            break;
-          case "greaves":
-            embedFields.push({
-              name: 'Min Defense/Max Defense',
-              inline: true,
-              value: item.minDefense + "/" + item.maxDefense,
-            });
-            break;
-          case "helmet":
-            embedFields.push({
-              name: 'Min Defense/Max Defense',
-              inline: true,
-              value: item.minDefense + "/" + item.maxDefense,
-            });
-            break;
-          case "breastplate":
-            embedFields.push({
-              name: 'Min Defense/Max Defense',
-              inline: true,
-              value: item.minDefense + "/" + item.maxDefense,
-            });
-            break;
-          case "health":
-            embedFields.push({
-              name: 'Healing Power',
-              inline: true,
-              value: item.heal,
-            });
-            break;
-        }
-        self.disnode.bot.SendEmbed(command.msg.channel, {
-          color: 1752220,
-          author: {},
-          title: "Item Info",
-          fields: embedFields,
-          footer: {
-            text: command.msg.user,
-            icon_url: self.utils.avatarCommandUser(command),
-          },
-          timestamp: new Date(),
+      } else if (command.params[0] == "armor") {
+        var cp = command.msg.message.split("armor ")[1].replace(/(^|\s)[a-z]/g, function(f) {
+          return f.toUpperCase();
         });
-      }).catch(function(err) {
-        self.embedoferror(command, "Error", "" + err);
-      })
+        self.utils.armorList(cp).then(function(res) {
+          var result = res.p.items.find(items => items.defaultName === cp);
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1752220,
+            author: {},
+            title: "Armor Info",
+            description: "For a list of armor type ``" + prefix + " list armor``",
+            fields: [{
+              name: 'Item Name',
+              inline: true,
+              value: result.defaultName,
+            }, {
+              name: "Defense",
+              inline: true,
+              value: result.defaultMinDefense + " - " + result.defaultMaxDefense,
+            }, {
+              name: 'Level',
+              inline: true,
+              value: result.lvl,
+            }, {
+              name: 'Cost',
+              inline: true,
+              value: (result.buy == null) ? "Can\'t buy" : result.buy + " Gold",
+            }, {
+              name: 'Worth',
+              inline: true,
+              value: result.sell + " Gold",
+            }],
+            footer: {
+              text: command.msg.user,
+              icon_url: self.utils.avatarCommandUser(command),
+            },
+            timestamp: new Date(),
+          });
+        });
+      } else if (command.params[0] == "mob") {
+        var cp = command.msg.message.split("mob ")[1].replace(/(^|\s)[a-z]/g, function(f) {
+          return f.toUpperCase();
+        });
+        self.utils.mobList(cp).then(function(res) {
+          var result = res.p.items.find(items => items.defaultName === cp);
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1752220,
+            author: {},
+            title: "Mob Info",
+            description: "For a list of mobs type ``" + prefix + " list mobs``",
+            fields: [{
+              name: 'Name',
+              inline: true,
+              value: result.defaultName,
+            }, {
+              name: 'Encounter Level',
+              inline: true,
+              value: result.encounterlvlmin + " - " + result.encounterlvlmax,
+            }, {
+              name: 'XP',
+              inline: true,
+              value: result.minXP + " - " + result.maxXP,
+            }, {
+              name: "Health",
+              inline: true,
+              value: result.defaultMinHealth + " - " + result.defaultMaxHealth,
+            }, {
+              name: "Defense",
+              inline: true,
+              value: result.defaultMinDefense + " - " + result.defaultMaxDefense,
+            }, {
+              name: "Damage",
+              inline: true,
+              value: result.defaultMinDamage + " - " + result.defaultMaxDamage,
+            }],
+            footer: {
+              text: command.msg.user,
+              icon_url: self.utils.avatarCommandUser(command),
+            },
+            timestamp: new Date(),
+          });
+        });
+      }
     }
-  }
-  storelist(command){
-    var self = this;
-    var prefix = self.disnode.botConfig.prefix + self.config.prefix;
-    if (command.params[0] == undefined) {
-      self.disnode.bot.SendEmbed(command.msg.channel, {
-        color: 1752220,
-        author: {},
-        fields: [{
-          name: 'Info',
-          inline: true,
-          value: "``" + prefix + " list [breastplate/greatsword/greaves/helmet/shortsword/health]`` - Get Items",
-        }],
-        footer: {
-          text: command.msg.user,
-          icon_url: self.utils.avatarCommandUser(command),
-        },
-        timestamp: new Date(),
-      });
-    }else {
-      self.utils.getItems(command.params[0]).then(function(items) {
-        var Name = "";
-        var cost = "";
-        for (var i = 0; i < items.length; i++) {
-          Name += items[i].name + "\n";
-          cost += items[i].buy + " Gold\n";
-        }
-        cost = cost.replace("0 Gold", "Free");
-        cost = cost.replace("null Gold", "Unavailable");
+    storelist(command) {
+      var self = this;
+      var prefix = self.disnode.botConfig.prefix + self.config.prefix;
+      if (command.params[0] == undefined) {
         self.disnode.bot.SendEmbed(command.msg.channel, {
           color: 1752220,
           author: {},
-          title: "Item List",
           fields: [{
-            name: 'Item Name',
+            name: 'Lists',
             inline: true,
-            value: Name,
-          }, {
-            name: 'Amount',
-            inline: true,
-            value: cost,
+            value: "``" + prefix + " list weapons`` - Lists all the weapons\n``" + prefix + " list health`` - Lists all the healing items\n``" + prefix + " list armor`` - Lists all the armor\n``" + prefix + " list mobs`` - Lists all the mobs",
           }],
           footer: {
             text: command.msg.user,
@@ -892,15 +1123,139 @@ class RPGPlugin {
           },
           timestamp: new Date(),
         });
-      }).catch(function(err) {
-        self.embedoferror(command, "Error", "" + err);
-      });
-    }
-  }
+      } else if (command.params[0] == "weapons") {
+        self.utils.weaponList(command).then(function(res) {
+          var Name = "";
+          for (var i = 0; i < res.p.items.length; i++) {
+            Name += res.p.items[i].defaultName + "\n";
+          }
+          var cost = "";
+          for (var i = 0; i < res.p.items.length; i++) {
+            cost += res.p.items[i].buy + " Gold\n";
+          }
+          cost = cost.replace("null Gold", "Unavailable");
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1752220,
+            author: {},
+            title: "Weapon List",
+            description: "For info of an item type ``" + prefix + " info weapon [item name]``",
+            fields: [{
+              name: 'Item Name',
+              inline: true,
+              value: Name,
+            }, {
+              name: 'Amount',
+              inline: true,
+              value: cost,
+            }],
+            footer: {
+              text: command.msg.user,
+              icon_url: self.utils.avatarCommandUser(command),
+            },
+            timestamp: new Date(),
+          });
+        });
+      } else if (command.params[0] == "health") {
+        self.utils.healList(command).then(function(res) {
+          var Name = "";
+          for (var i = 0; i < res.p.items.length; i++) {
+            Name += res.p.items[i].defaultName + "\n";
+          }
+          var cost = "";
+          for (var i = 0; i < res.p.items.length; i++) {
+            cost += res.p.items[i].buy + " Gold\n";
+          }
+          cost = cost.replace("null Gold", "Unavailable");
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1752220,
+            author: {},
+            title: "Healing Items List",
+            description: "For info of a healing item type ``" + prefix + " info healing [item name]``",
+            fields: [{
+              name: 'Item Name',
+              inline: true,
+              value: Name,
+            }, {
+              name: 'Amount',
+              inline: true,
+              value: cost,
+            }],
+            footer: {
+              text: command.msg.user,
+              icon_url: self.utils.avatarCommandUser(command),
+            },
+            timestamp: new Date(),
+          });
+        });
+      } else if (command.params[0] == "armor") {
+        self.utils.armorList(command).then(function(res) {
+          var Name = "";
+          for (var i = 0; i < res.p.items.length; i++) {
+            Name += res.p.items[i].defaultName + "\n";
+          }
+          var cost = "";
+          for (var i = 0; i < res.p.items.length; i++) {
+            cost += res.p.items[i].buy + " Gold\n";
+          }
+          cost = cost.replace("null Gold", "Unavailable");
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1752220,
+            author: {},
+            title: "Armor List",
+            description: "For info of an item type ``" + prefix + " info armor [item name]``",
+            fields: [{
+              name: 'Item Name',
+              inline: true,
+              value: Name,
+            }, {
+              name: 'Amount',
+              inline: true,
+              value: cost,
+            }],
+            footer: {
+              text: command.msg.user,
+              icon_url: self.utils.avatarCommandUser(command),
+            },
+            timestamp: new Date(),
+          });
+        });
+      } else if (command.params[0] == "mobs") {
+        self.utils.mobList(command).then(function(res) {
+          var Name = "";
+          for (var i = 0; i < res.p.items.length; i++) {
+            Name += res.p.items[i].defaultName + "\n";
+          }
+          var lvl = "";
+          for (var i = 0; i < res.p.items.length; i++) {
+            lvl += res.p.items[i].encounterlvlmin + " - " + res.p.items[i].encounterlvlmax + "\n";
+          }
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1752220,
+            author: {},
+            title: "Mob List",
+            description: "For info of a mob type ``" + prefix + " info mob [mob name]``",
+            fields: [{
+              name: 'Item Name',
+              inline: true,
+              value: Name,
+            }, {
+              name: 'Encounter Level',
+              inline: true,
+              value: lvl,
+            }],
+            footer: {
+              text: command.msg.user,
+              icon_url: self.utils.avatarCommandUser(command),
+            },
+            timestamp: new Date(),
+          });
+        });
+      }
+    }*/
   devCommand(command) {
     var self = this;
     self.utils.gUser(command).then(function(player) {
-      if (player.dev) {
+      if (player.dev == true) {
         switch (command.params[0]) {
           case "eval":
             try {
@@ -931,20 +1286,41 @@ class RPGPlugin {
             }
             break;
           case "changelog":
-          self.disnode.bot.SendEmbed('323358134993289216', {
-            color: 1752220,
-            author: {},
-            fields: [{
-              name: 'Changelog ' + self.disnode.botConfig.version,
-              inline: true,
-              value: '```fix\n' + self.utils.ChangeLog() + '\n```',
-            }],
-            footer: {},
-            timestamp: new Date(),
-          });
-          break;
+            self.disnode.bot.SendEmbed('323358134993289216', {
+              color: 1752220,
+              author: {},
+              fields: [{
+                name: 'Changelog ' + self.disnode.botConfig.version,
+                inline: true,
+                value: '```fix\n' + self.utils.ChangeLog() + '\n```',
+              }],
+              footer: {},
+              timestamp: new Date(),
+            });
+            break;
         }
       }
+    });
+  }
+  pluginInfo(command) {
+    var self = this;
+    self.disnode.bot.SendEmbed(command.msg.channel, {
+      color: 1752220,
+      author: {},
+      fields: [{
+        name: 'RPG Info',
+        inline: false,
+        value: 'RPG has been made for the enjoyment of you, the people.'
+      }, {
+        name: 'Contributions',
+        inline: true,
+        value: '**Hazed SPaCE✘#2574** -`Plugin Functionality and Format | Database`\n**FireGamer3#2163** - `Plugin Functionality and Format | Database`\n**Mooby#1612** - `Graphic Design`\n**Disnode Ultra** - `Testing`',
+      }],
+      footer: {
+        text: command.msg.user,
+        icon_url: self.utils.avatarCommandUser(command),
+      },
+      timestamp: new Date(),
     });
   }
   embedoferror(command, title, body) {

@@ -6,6 +6,11 @@
       "desc": "*Gets user stats*"
     },
     {
+      "cmd" : "gather",
+      "run" : "gather",
+      "desc" : "*Gather Stuff*"
+    },
+    {
       "cmd": "inv",
       "run": "invUser",
       "desc": "*Gets your inv*"
@@ -14,6 +19,11 @@
       "cmd": "skills",
       "run": "skills",
       "desc": "*Gets your skills*"
+    },
+    {
+      "cmd" : "player",
+      "run" : "player",
+      "desc" : "*All the player needs*"
     },
     {
       "cmd" : "guild",
@@ -34,6 +44,11 @@
       "cmd" : "dev",
       "run" : "devCommand",
       "desc" : "*Dev command*"
+    },
+    {
+      "cmd" : "cont",
+      "run" : "pluginInfo",
+      "desc" : "*Plugin info*"
     }
   ]
 }
