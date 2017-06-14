@@ -105,7 +105,8 @@ class RPGUtils {
         reject("Guild Not Found!");
       });
     });
-  }/*
+  }
+  /*
   gMob(lvlmin) {
     var self = this;
     var guilds = [];
@@ -122,7 +123,6 @@ class RPGUtils {
       });
     });
   }*/
-
   newGuild(player, name){
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -266,9 +266,7 @@ class RPGUtils {
     }
   }
   ChangeLog(){
-    return `Test
-ChangeLog
-Embed`
+    return '`Test ChangeLog Embed`'
   }
 }
 module.exports = RPGUtils;
