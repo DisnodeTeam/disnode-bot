@@ -996,7 +996,7 @@ class Bot extends EventEmitter {
       });
     });
   }
-  SendDMEmbed(userID, embed){
+  SendThatFancyMessageThingToThatOneDude(userID, embed){
     var self = this;
     return new Promise(function(resolve, reject) {
       self.GetOrCreateDM(userID).then(function(channel){
