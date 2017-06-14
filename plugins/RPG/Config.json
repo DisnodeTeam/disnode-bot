@@ -1,5 +1,3 @@
 {
-  "prefix":"rpg",
-  "static": "false",
-  "run": true
+  "prefix":"rpg"
 }

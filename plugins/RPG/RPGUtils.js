@@ -223,8 +223,9 @@ class RPGUtils {
     return string;
   }
   getItems(type){
+    var self = this;
     return new Promise(function(resolve, reject) {
-      if(isValidType(type)){
+      if(self.isValidType(type)){
         self.plugin.DB.Find(type, {}).then(function(items) {
           resolve(items);
         });
@@ -233,11 +234,31 @@ class RPGUtils {
       }
     });
   }
+  getItem(type, name){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      if(self.isValidType(type)){
+        self.plugin.DB.Find(type, {"name":name}).then(function(items) {
+          for (var i = 0; i < items.length; i++) {
+            if(items[i].name.toLowerCase() == name.toLowerCase()){
+              resolve(items[i]);
+              break;
+            }
+          }
+          reject("Item Not Found!");
+        });
+      }else {
+        reject("Invalid Item Type!");
+      }
+    });
+  }
   isValidType(type){
-    if(type == "weapons")return true;
-    if(type == "health")return true;
-    if(type == "armor")return true;
-    if(type == "mobs")return true;
+    if(type.toLowerCase() == "breastplate")return true;
+    if(type.toLowerCase() == "greatsword")return true;
+    if(type.toLowerCase() == "greaves")return true;
+    if(type.toLowerCase() == "helmet")return true;
+    if(type.toLowerCase() == "shortsword")return true;
+    if(type.toLowerCase() == "health")return true;
     return false;
   }
   checkLV(player, channel){

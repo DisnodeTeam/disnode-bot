@@ -5,6 +5,6 @@
   "script": "CasinoPlugin.js",
   "commandsFile": "Commands.json",
   "configFile" : "Config.json",
-  "load": true,
+  "load": false,
   "requirements": ["countdownjs" ,"numeral","dateformat"]
 }
