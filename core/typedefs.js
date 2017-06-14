@@ -39,9 +39,7 @@
 /*
 APIUtil.APIGet("gateway/bot", self.key)
 .then(function(data){
-  Logger.Success("Bot", "GetGatewayURL", "Aquired Gatway URL!");
-  var url = data.url + "/?encoding=json&v=5";
-  resolve(url)
+
 })
 .catch(function(err){
   Logger.Error("Bot", "GetGatewayURL", "Error Aquiring Gatway URL: " + err.display);
