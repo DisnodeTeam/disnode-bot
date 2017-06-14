@@ -18,8 +18,9 @@ class RPGUtils {
         var newPlayer = {
           name: command.msg.user,
           id: command.msg.userID,
-          dev: false,
+          dev: (data.isAdmin == null) ? false : data.isAdmin,
           banned: false,
+          pvp: false,
           reason: "",
           guild: "",
           guildrole: "",
@@ -36,11 +37,58 @@ class RPGUtils {
             charisma: 1,
             points: 0
           },
+          equipped: [{
+            type: 'weapon',
+            weapontype: 'shortsword',
+            name: 'Copper Shortsword',
+            nick: null,
+            minDamage: 3,
+            maxDamage: 7,
+            lvl: 1,
+            buy: 0,
+            sell: 0
+          },
+          {
+            type: 'breastplate',
+            name: 'Copper Breastplate',
+            nick: null,
+            minDefense: 8,
+            maxDefense: 12,
+            lvl: 1,
+            buy: 0,
+            sell: 0
+          },
+          {
+            type: 'greaves',
+            name: 'Copper Greaves',
+            nick: null,
+            minDefense: 3,
+            maxDefense: 7,
+            lvl: 1,
+            buy: 0,
+            sell: 0
+          },
+          {
+            type: 'helmet',
+            name: 'Copper Helmet',
+            nick: null,
+            minDefense: 3,
+            maxDefense: 7,
+            lvl: 1,
+            buy: 0,
+            sell: 0
+          },
+          {
+            type: 'shield',
+            name: 'Copper Shield',
+            nick: null,
+            minDefense: 3,
+            maxDefense: 7,
+            lvl: 1,
+            buy: 0,
+            sell: 0
+          }],
           inv: [{
-              defaultName: "Bronze Shortsword",
-              amount: 1
-            },
-            {
               defaultName : "Apple",
               amount: 5
             },
@@ -53,14 +101,14 @@ class RPGUtils {
             name: "",
             minDamage: 0,
             maxDamage: 0,
-            minHealth: 0,
             maxHealth: 0,
             currentHealth: 0,
             minDefense: 0,
             maxDefense: 0,
             minXP: 0,
             maxXP: 0
-          }]
+          }],
+          lastMessage: null
         }
         for (var i = 0; i < players.length; i++) {
           if (newPlayer.name == players[i].name) {
