@@ -58,8 +58,6 @@ class Bot extends EventEmitter {
       }).then(function() {
         self.on("ready", function() {
           self.GetCacheInfo();
-
-
           resolve();
         })
       }).catch(function(err) {
@@ -73,7 +71,7 @@ class Bot extends EventEmitter {
     return new Promise(function(resolve, reject) {
       Logger.Info("Bot", "GetGatewayURL", "Aquiring Gatway URL...");
 
-      APIUtil.APIGet("gateway/bot", self.key)
+      APIUtil.APIGet(self.key, "gateway/bot")
       .then(function(data){
         Logger.Success("Bot", "GetGatewayURL", "Aquired Gatway URL!");
         var url = data.url + "/?encoding=json&v=5";
@@ -109,15 +107,23 @@ class Bot extends EventEmitter {
 
     });
 
-    self.ws.on('error', function(data) {
-      console.log(data);
+    self.ws.on('error', function(error) {
+      console.log(error);
+      var ErrorObject = {
+        message: error.message,
+        status: "WS-000",
+        display: "WebSocket Error ["+error.response.status+"] " + error.message,
+        raw: error
+      }
+      Logger.Error("Bot", "WS-ERROR", ErrorObject.display);
+      self.emit("error", ErrorObject);
     });
   }
 
   StartHeartbeat(interval) {
     var self = this;
     Logger.Info("Bot", "StartHeartbeat", "Starting Heatbeat with Interval: " + interval);
-    var packet = requests.heartbeat(self.s);
+    var packet = requests.heartbeat(self.lastS);
     self.ws.send(JSON.stringify(packet));
 
     setInterval(function() {
@@ -149,14 +155,14 @@ class Bot extends EventEmitter {
     }
   }
 
-  wsIdentify() {
+  WSIdentify() {
     var self = this;
     Logger.Info("Bot", "wsIdentify", "Sending ID to Gateway");
     var packet = requests.identify(this.key);
     self.ws.send(JSON.stringify(packet));
   }
 
-  handleDispatch(data) {
+  HandleDispatch(data) {
     var type = data.t;
     var self = this;
     //console.log(type);
@@ -389,14 +395,13 @@ class Bot extends EventEmitter {
     }
   }
 
-  handleGuildCreate(data) {
+  CacheGuild(data) {
     this.guilds[data.id] = data;
     for (var i = 0; i < data.channels.length; i++) {
       data.channels[i].guild_id = data.id;
 
       this.channels[data.channels[i].id] = data.channels[i];
       this.channels.count += 1;
-
     }
     var mem = this.guilds[data.id].members
 
@@ -407,77 +412,49 @@ class Bot extends EventEmitter {
       }
       this.users[mem[i].user.id] = mem[i].user;
     }
-
-
-
-
-  }
-
-
-  /**
-   * Disconnect Bot to Discord
-   * @return {Promise<string|err>} A promise to the token.
-   */
-  Disconnect() {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      self.client.disconnect();
-      resolve();
-    });
-  }
-  /**
-   * Restarts Connetion to Discord (Disconnects then Connects)
-   */
-  Restart() {
-    var self = this;
-    self.Disconnect().then(function() {
-      self.client.connect()
-    });
   }
 
   SetUpLocalBinds() {
     var self = this;
     self.on('message', function(data) {
-
       var firstLetter = data.message.substring(0, self.disnode.botConfig.prefix.length);
       if (self.disnode.ready && firstLetter == self.disnode.botConfig.prefix) {
         this.disnode.server.GetCommandInstancePromise(data.server).then(function(inst) {
-
           if (inst) {
             inst.RunMessage(data);
           } else {
             Logging.Warning("Bot", "Message", "No Command Handler!");
           }
         });
-
       }
-
     });
   }
 
-
   GetCacheInfo() {
     var self = this;
-    axios.get('https://discordapp.com/api/users/@me', {
-        headers: {
-          'Authorization': "Bot " + self.key
-        }
+    Logger.Info("Bot", "GetCacheInfo", "Caching Bot Info.");
+
+    APIUtil.APIGet(self.key, "users/@me")
+      .then(function(data){
+        Logger.Success("Bot", "GetCacheInfo", "Cached Bot Info!")
+        self.botInfo = data;
       })
-      .then(function(response) {
-        self.botInfo = response.data;
-      })
-      .catch(function(err) {
-        Logging.Error("Bot", "GetCacheInfo", err.message + " : " + err.response.statusText);
+      .catch(function(err){
+        Logger.Error("Bot", "GetCacheInfo", "Error Caching Bot Info: " + err.display);
+        reject(err);
       });
   }
-  GetServerFromChanel(channel) {
+  /**
+   * Gets a guild ID from a ChannelID
+   * @param {string} channel - ChannelID of where to send the message
+   * @return {string} guildID
+   */
+  GetGuildIDFromChannel(channel) {
     var self = this;
     var _server = "DM";
     if (self.channels[channel]) {
       _server = self.channels[channel].guild_id;
-
     }
-
     return _server;
   }
   /**
@@ -490,24 +467,21 @@ class Bot extends EventEmitter {
   SendMessage(channel, msg, typing = false, tts = false) {
     var self = this;
     return new Promise(function(resolve, reject) {
+
       var msgObject = {
         content: msg || "undefined",
         typing: typing,
         tts: tts
       };
-      axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject, {
-          headers: {
-            'Authorization': "Bot " + self.key
-          }
+
+      APIUtil.APIPost(self.key, "channels/" + channel + "/messages", msgObject)
+        .then(function(data){
+          resolve(data);
         })
-        .then(function(response) {
-          resolve(response.data);
-        })
-        .catch(function(err) {
-          Logging.Error("Bot", "SendMessage", err.message + " : " + err.response.statusText);
+        .catch(function(err){
+          Logger.Error("Bot", "SendMessage", err.display);
           reject(err);
         });
-
     });
   }
   /**
