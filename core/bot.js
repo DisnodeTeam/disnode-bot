@@ -563,7 +563,7 @@ class Bot extends EventEmitter {
       if(!message || message == ""){
         msgObject.content = "`DisnodeAPIAutoError: Messaged was empty or null`"
       }
-      APIUtil.APIPost(self.key, "channels/" + channel + "/messages", msgObject)
+      APIUtil.APIPost(self.key, "channels/" + channelID + "/messages", msgObject)
         .then(function(data){
           resolve(data);
         })
@@ -591,7 +591,7 @@ class Bot extends EventEmitter {
         msgObject.content = "`DisnodeAPIAutoError: Embed Object was null;`"
       }
 
-      APIUtil.APIPost(self.key, "channels/" + channel + "/messages", msgObject)
+      APIUtil.APIPost(self.key, "channels/" + channelID + "/messages", msgObject)
         .then(function(data){
           resolve(data);
         })
@@ -625,12 +625,119 @@ class Bot extends EventEmitter {
           footer: {}
         }
       };
-      APIUtil.APIPost(self.key, "channels/" + channel + "/messages", msgObject)
+      APIUtil.APIPost(self.key, "channels/" + channelID + "/messages", msgObject)
         .then(function(data){
           resolve(data);
         })
         .catch(function(err){
-          Logger.Error("Bot", "SendEmbed", err.display);
+          Logger.Error("Bot", "SendCompactEmbed", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Adds a reaction to a message
+   * @param {string} channelID - ChannelID of where to send the message
+   * @param {string} messageID - Message to react to
+   * @param {string} emoji     - Emoji to react with
+  */
+  AddReaction(channelID, messageID,emoji) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+      APIUtil.APIPut(self.key,
+        "channels/" + channelID + "/messages/"+messageID+"/reactions/"+emoji+"/@me"
+      ).then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "AddReaction", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Deletes Own Reaction
+   * @param {string} channelID - ChannelID of where to send the message
+   * @param {string} messageID - Message to react to
+   * @param {string} emoji     - Emoji to delete
+  */
+  DeleteOwnReaction(channelID, messageID,emoji) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+      APIUtil.APIDelete(self.key,
+        "channels/" + channelID + "/messages/"+messageID+"/reactions/"+emoji+"/@me"
+      ).then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "DeleteOwnReaction", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Deletes Own Reaction
+   * @param {string} channelID - ChannelID of where to send the message
+   * @param {string} messageID - Message to react to
+   * @param {string} emoji     - Emoji to delete
+   * @param {string} userID     - UserID
+  */
+  DeleteUserReaction(channelID, messageID,emoji, userID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+      APIUtil.APIDelete(self.key,
+        "channels/" + channelID + "/messages/"+messageID+"/reactions/"+emoji+"/"+userID
+      ).then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "DeleteUserReaction", err.display);
+          reject(err);
+        });
+    });
+  }
+  /**
+   * Delete All Reactions
+   * @param {string} channelID - ChannelID of where to send the message
+   * @param {string} messageID - Message to react to
+  */
+  DeleteAllReaction(channelID, messageID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+      APIUtil.APIDelete(self.key,
+        "channels/" + channelID + "/messages/"+messageID+"/reactions"
+      ).then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "DeleteAllReaction", err.display);
+          reject(err);
+        });
+    })
+  /**
+   * Get a list of users that reacted with this emoji.
+   * @param {string} channelID - ChannelID of where to send the message
+   * @param {string} messageID - Message to react to
+   * @param {string} emoji     - Emoji to delete
+  */
+  GetReactions(channelID, messageID,emoji) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+      APIUtil.APIGet(self.key,
+        "channels/" + channelID + "/messages/"+messageID+"/reactions/"+emoji
+      ).then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "GetReactions", err.display);
           reject(err);
         });
     });
