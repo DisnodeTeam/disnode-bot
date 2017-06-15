@@ -45,17 +45,6 @@ SetServerName(serverId, servername) {
 }
 
 /**
- * Adds reaction to a message
- * @param {string} channelID - ID of the channel
- * @param {string} messageID - ID of the message
- * @param {string} reactionID - ID or unicode of a reactionID
- */
-AddReaction(channelID, messageID, reaction) {
-  var self = this;
-  Logging.Error("Bot", "AddReaction", "NOT IMPLEMENTED");
-  return;
-}
-/**
  * Kicks the specified user id from the server
  * @param {string} serverID - ID of the server
  * @param {string} userID - ID of the user going to be kicked
@@ -268,69 +257,7 @@ GetUserInfo(UserID) {
 GetSnowflakeDate(resourceID) {
   return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
 }
-/**
- * Gets message info of a message
- * @param {string} channelID - ID of the channel
- * @param {string} messageID - ID of the message
- */
-GetMessage(channelID, MessageID) {
-  var self = this;
-  return new Promise(function(resolve, reject) {
-    Logging.Error("Bot", "GetMessage", "NOT IMPLEMENTED");
-    resolve();
-  });
-}
-/**
- * Adds reaction to a message
- * @param {string} channelID - ID of the channel
- * @param {string} messageID - ID of the message
- * @param {string} reactionID - ID or unicode of a reactionID
- */
-AddReaction(channelID, messageID, reaction) {
-  var self = this;
-  return new Promise(function(resolve, reject) {
-    Logging.Error("Bot", "AddReaction", "NOT IMPLEMENTED");
-    resolve();
-  });
-}
-/**
- * Gets reaction of a message
- * @param {string} channelID - ID of the channel
- * @param {string} messageID - ID of the message
- * @param {string} reactionID - ID or unicode of a reactionID
- */
-GetReaction(channelID, messageID, reaction) {
-  var self = this;
-  return new Promise(function(resolve, reject) {
-    Logging.Error("Bot", "GetReaction", "NOT IMPLEMENTED");
-    resolve();
-  });
-}
-/**
- * Removes reaction from a message
- * @param {string} channelID - ID of the channel
- * @param {string} messageID - ID of the message
- * @param {string} reactionID - ID or unicode of a reactionID
- */
-RemoveReaction(channelID, messageID, reaction) {
-  var self = this;
-  return new Promise(function(resolve, reject) {
-    Logging.Error("Bot", "RemoveReaction", "NOT IMPLEMENTED");
-    resolve();
-  });
-}
-/**
- * Removes all reactions from a message
- * @param {string} channelID - ID of the channel
- * @param {string} messageID - ID of the message
- */
-RemoveAllReactions(channelID, messageID) {
-  var self = this;
-  return new Promise(function(resolve, reject) {
-    Logging.Error("Bot", "RemoveAllReactions", "NOT IMPLEMENTED");
-    resolve();
-  });
-}
+
 SendDM(userID, msg){
   var self = this;
   return new Promise(function(resolve, reject) {
@@ -376,28 +303,7 @@ SendDMEmbed(userID, embed){
     });
   });
 }
-SendThatFancyMessageThingToThatOneDude(userID, embed){
-  var self = this;
-  return new Promise(function(resolve, reject) {
-    self.GetOrCreateDM(userID).then(function(channel){
-      var msgObject = {
-        embed: embed
-      };
-      axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject, {
-          headers: {
-            'Authorization': "Bot " + self.key
-          }
-        })
-        .then(function(response) {
-          resolve(response.data);
-        })
-        .catch(function(err) {
-          Logging.Error("Bot", "SendDMEmbed", err.message + " : " + err.response.statusText);
-          reject(err);
-        });
-    });
-  });
-}
+
 // ===== //
 GetOrCreateDM(userID){
   var self = this;

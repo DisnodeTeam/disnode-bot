@@ -527,26 +527,6 @@ class Bot extends EventEmitter {
   }
 
   /**
-   * Sends a Message
-   * @param {string} channelID - ChannelID of where to send the message
-   * @param {string} messageID - Message ot get
-   * @return {Promise<MessageObject|ErrorObject>} Return Promise
-  */
-  GetMessage(channelID, messageID) {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      APIUtil.APIGet(self.key, "/channels/" + channelID + "/messages/" + messageID)
-        .then(function(data) {
-          resolve(data);
-        })
-        .catch(function(err) {
-          Logger.Error("Bot", "GetMessage", err.display);
-          reject(err);
-        });
-    });
-  }
-
-  /**
    * Send a normal message
    * @param {string} channelID - ChannelID of where to send the message
    * @param {string} message - The message to send
@@ -721,6 +701,7 @@ class Bot extends EventEmitter {
           reject(err);
         });
     })
+  }
   /**
    * Get a list of users that reacted with this emoji.
    * @param {string} channelID - ChannelID of where to send the message
@@ -776,7 +757,7 @@ class Bot extends EventEmitter {
    * @param {string} messageID - message to edit
    * @param {EmbedObject} embed - the Embed Object to send
   */
-  EditEmbed(channelID, messageID embed) {
+  EditEmbed(channelID, messageID ,embed) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
@@ -787,7 +768,7 @@ class Bot extends EventEmitter {
         msgObject.content = "`DisnodeAPIAutoError: Embed Object was null;`"
       }
 
-      APIUtil.APIPatch(self.key, "channels/" + channelID + "/messages/"+messageID msgObject)
+      APIUtil.APIPatch(self.key, "channels/" + channelID + "/messages/"+messageID, msgObject)
         .then(function(data){
           resolve(data);
         })
@@ -806,7 +787,7 @@ class Bot extends EventEmitter {
    * @param {string} body - The body of the embed
    * @param {int|RGBint} color - (Optional)RGB Int of what color the embed should be (default 3447003)
    */
-  SendCompactEmbed(channelID, messageID, title, body, color = 3447003) {
+  EditCompactEmbed(channelID, messageID, title, body, color = 3447003) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
@@ -827,7 +808,7 @@ class Bot extends EventEmitter {
           resolve(data);
         })
         .catch(function(err){
-          Logger.Error("Bot", "SendCompactEmbed", err.display);
+          Logger.Error("Bot", "EditCompactEmbed", err.display);
           reject(err);
         });
     });
@@ -972,7 +953,109 @@ class Bot extends EventEmitter {
     });
   }
 
+  /**
+   * Returns all pinned messages in the channel as an array of message objects.
+   * @param {string} channelID - ChannelID to start typing in
+  */
+  GetPinnedMessages(channelID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Get(self.key, "channels/" + channelID + "/pins")
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "GetPinnedMessages", err.display);
+          reject(err);
+        });
+    });
+  }
 
+  /**
+   * Pin a message in a channel.
+   * @param {string} channelID - ChannelID to start typing in
+   * @param {string} messageID - Messaged to pin
+  */
+  AddPinnedMessage(channelID, messageID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Put(self.key, "channels/" + channelID + "/pins/"+messageID)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "AddPinnedMessage", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Delete a pinned message in a channel.
+   * @param {string} channelID - ChannelID to start typing in
+   * @param {string} messageID - Messaged to unPIn
+  */
+  DeletePinnedMessage(channelID, messageID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Delete(self.key, "channels/" + channelID + "/pins/"+messageID)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "DeletePinnedMessage", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Adds a recipient to a Group DM using their access token
+   * @param {string} channelID - ChannelID to start typing in
+   * @param {string} userID - User to add
+   * @param {string} accessToken - access token of a user that has granted your app the gdm.join scope
+   * @param {string} nick - 	nickname of the user being added
+  */
+  AddUserToGroupDM(channelID, userID, accessToken, nick) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      var data = {
+        access_token: accessToken,
+        nick: nick
+      };
+      APIUtil.Put(self.key, "channels/" + channelID + "/recipients/"+userID, data)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "AddUserToGroupDM", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Removes a recipient from a Group DM
+   * @param {string} channelID - ChannelID to start typing in
+   * @param {string} userID - User to add
+  */
+  RemoveUserFromGroupDM(channelID, userID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      var data = {
+        access_token: accessToken,
+        nick: nick
+      };
+      APIUtil.Delete(self.key, "channels/" + channelID + "/recipients/"+userID)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "RemoveUserFromGroupDM", err.display);
+          reject(err);
+        });
+    });
+  }
 
   /**
    * Gets a guild ID from a ChannelID
