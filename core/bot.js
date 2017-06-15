@@ -1111,8 +1111,9 @@ class Bot extends EventEmitter {
         });
     });
   }
+
   /**
-   * Returns a list of guild channel objects.
+   * Create a new channel object for the guild.
    * @param {string} guildID - Guild to Edit
    * @param {ChannelSettings} settings - New Guild Info
   */
@@ -1129,6 +1130,29 @@ class Bot extends EventEmitter {
         });
     });
   }
+
+  /**
+   * Modify the positions of a set of channel objects for the guild.
+   * @param {string} guildID - Guild to Edit
+   * @param {string} channelID - Channel to Move
+   * @param {integer} postion - Position of Channel
+  */
+  EditChannelPosition(guildID, channelID, postion) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Patch(self.key, "guilds/"+guildID+"/channels", {id: channelID, postion: position})
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "CreateChannel", err.display);
+          reject(err);
+        });
+    });
+  }
+
+
+
   /**
    * Gets a guild ID from a ChannelID
    * @param {string} channelID - ChannelID of where to send the message
