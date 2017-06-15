@@ -744,6 +744,136 @@ class Bot extends EventEmitter {
   }
 
   /**
+   * Edit Message
+   * @param {string} channelID - ChannelID of where to send the message
+   * @param {string} messageID - message to edit
+   * @param {string} message - The new message
+  */
+  EditMessage(channelID, messageID, message) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+      var msgObject = {
+        content: msg
+      };
+      if(!message || message == ""){
+        msgObject.content = "`DisnodeAPIAutoError: Messaged was empty or null`"
+      }
+      APIUtil.APIPatch(self.key, "channels/" + channelID + "/messages/" +messageID, msgObject)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "EditMessage", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Edits a Embed
+   * @param {string} channelID - ChannelID of where to send the message
+   * @param {string} messageID - message to edit
+   * @param {EmbedObject} embed - the Embed Object to send
+  */
+  EditEmbed(channelID, messageID embed) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+      var msgObject = {
+        embed: embed
+      };
+      if(!embed || embed == {}){
+        msgObject.content = "`DisnodeAPIAutoError: Embed Object was null;`"
+      }
+
+      APIUtil.APIPatch(self.key, "channels/" + channelID + "/messages/"+messageID msgObject)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "EditEmbed", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * send an embed as a compact one, less lines defining a embed object
+   * @param {string} channelID - ChannelID of the message
+   * @param {string} messageID - message to edit
+   * @param {string} title - The title of the embed
+   * @param {string} body - The body of the embed
+   * @param {int|RGBint} color - (Optional)RGB Int of what color the embed should be (default 3447003)
+   */
+  SendCompactEmbed(channelID, messageID, title, body, color = 3447003) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+      var msgObject = {
+        embed: {
+          color: color,
+          author: {},
+          fields: [{
+            name: title,
+            inline: false,
+            value: body,
+          }],
+          footer: {}
+        }
+      };
+      APIUtil.APIPatch(self.key, "channels/" + channelID + "/messages/"+messageID, msgObject)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "SendCompactEmbed", err.display);
+          reject(err);
+        });
+    });
+  }
+  /**
+   * Delete a message
+   * @param {string} channelID - ChannelID of the message
+   * @param {string} messageID - message to delete
+  */
+  DeleteMessage(channelID, messageID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIDelete(self.key, "channels/" + channelID + "/messages/"+messageID)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "DeleteMessage", err.display);
+          reject(err);
+        });
+    });
+  }
+
+
+  /**
+   * Delete mulitple messages
+   * @param {string} channelID - ChannelID of the message
+   * @param {string} messageIDs - messages to delete (array)
+  */
+  DeleteMessages(channelID, messageIDs) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIPost(self.key, "channels/" + channelID + "/messages", {messages: messageIDs})
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "DeleteMessages", err.display);
+          reject(err);
+        });
+    });
+  }
+
+
+
+  /**
    * Gets a guild ID from a ChannelID
    * @param {string} channelID - ChannelID of where to send the message
    * @return {string} guildID
