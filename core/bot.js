@@ -1,8 +1,7 @@
-var net = require('net');
-
-var shortid = require('shortid');
-var Discord = require('discord.io');
-var Logger = require('disnode-logger');
+const net = require('net');
+const shortid = require('shortid');
+const Discord = require('discord.io');
+const Logger = require('disnode-logger');
 const axios = require('axios');
 const WebSocket = require('ws');
 const codes = require("./api/codes");
@@ -10,7 +9,7 @@ const Logging = require('disnode-logger');
 const requests = require('./api/request')
 const APIUtil = require("./api/apiutils");
 const async = require('async');
-var EventEmitter = require('events').EventEmitter;
+const EventEmitter = require('events').EventEmitter;
 
 
 /**
@@ -34,12 +33,10 @@ class Bot extends EventEmitter {
     this.botInfo = {};
     this.disnode = disnode;
     this.shardID = 0;
-
     this.lastS = null;
     this.guilds = {
       count: 0
     };
-
     this.channels = {
       count: 0
     };
@@ -47,6 +44,7 @@ class Bot extends EventEmitter {
       count: 0
     };
   }
+
   /**
    * Connect bot to Discord
    */
@@ -57,30 +55,12 @@ class Bot extends EventEmitter {
         return self.ConnectToGateway(url)
       }).then(function() {
         self.on("ready", function() {
-          self.GetCacheInfo();
+          self.CacheBotUser();
           resolve();
         })
       }).catch(function(err) {
         Logger.Error("Bot", "Connect", "Connection Error: " + err);
       })
-    });
-  }
-
-  GetGatewayURL() {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      Logger.Info("Bot", "GetGatewayURL", "Aquiring Gatway URL...");
-
-      APIUtil.APIGet(self.key, "gateway/bot")
-      .then(function(data){
-        Logger.Success("Bot", "GetGatewayURL", "Aquired Gatway URL!");
-        var url = data.url + "/?encoding=json&v=5";
-        resolve(url)
-      })
-      .catch(function(err){
-        Logger.Error("Bot", "GetGatewayURL", "Error Aquiring Gatway URL: " + err.display);
-        reject(err);
-      });
     });
   }
 
@@ -100,24 +80,11 @@ class Bot extends EventEmitter {
     });
   }
 
-  BindSocketEvents() {
+  WSIdentify() {
     var self = this;
-    self.ws.on("message", function(data, flags) {
-      self.OnWSMessage(data, flags);
-
-    });
-
-    self.ws.on('error', function(error) {
-      console.log(error);
-      var ErrorObject = {
-        message: error.message,
-        status: "WS-000",
-        display: "WebSocket Error ["+error.response.status+"] " + error.message,
-        raw: error
-      }
-      Logger.Error("Bot", "WS-ERROR", ErrorObject.display);
-      self.emit("error", ErrorObject);
-    });
+    Logger.Info("Bot", "wsIdentify", "Sending ID to Gateway");
+    var packet = requests.identify(this.key);
+    self.ws.send(JSON.stringify(packet));
   }
 
   StartHeartbeat(interval) {
@@ -132,6 +99,26 @@ class Bot extends EventEmitter {
     }, interval)
   }
 
+  BindSocketEvents() {
+    var self = this;
+    self.ws.on("message", function(data, flags) {
+      self.OnWSMessage(data, flags);
+
+    });
+
+    self.ws.on('error', function(error) {
+      console.log(error);
+      var ErrorObject = {
+        message: error.message,
+        status: "WS-000",
+        display: "WebSocket Error [" + error.response.status + "] " + error.message,
+        raw: error
+      }
+      Logger.Error("Bot", "WS-ERROR", ErrorObject.display);
+      self.emit("error", ErrorObject);
+    });
+  }
+
   OnWSMessage(data, flags) {
     data = JSON.parse(data);
     var operation = data.op;
@@ -142,24 +129,17 @@ class Bot extends EventEmitter {
     switch (operation) {
       case codes.OPCode.HELLO:
 
-        self.wsIdentify();
+        self.WSIdentify();
         self.StartHeartbeat(data.d['heartbeat_interval'])
         break;
 
       case codes.OPCode.DISPATCH:
-        self.handleDispatch(data);
+        self.HandleDispatch(data);
         break;
       case codes.OPCode.HEARTBEAT_ACK:
 
         break;
     }
-  }
-
-  WSIdentify() {
-    var self = this;
-    Logger.Info("Bot", "wsIdentify", "Sending ID to Gateway");
-    var packet = requests.identify(this.key);
-    self.ws.send(JSON.stringify(packet));
   }
 
   HandleDispatch(data) {
@@ -229,7 +209,7 @@ class Bot extends EventEmitter {
          */
       case codes.dispatch.GUILD_CREATE:
         self.emit('guild_create', data.d);
-        self.handleGuildCreate(data.d);
+        self.CacheGuild(data.d);
         break;
         /**
          * Message Delete event.
@@ -310,15 +290,8 @@ class Bot extends EventEmitter {
          * @property {MessageObject} Data - Indicates whether the snowball is tightly packed.
          */
       case codes.dispatch.MESSAGE_CREATE:
-        var data = {
-          id: data.d.id,
-          user: data.d.author.username,
-          userID: data.d.author.id,
-          channel: data.d.channel_id,
-          message: data.d.content,
-          server: self.GetServerFromChanel(data.d.channel_id),
-          raw: data.d
-        };
+        var data = data.d;
+        data.guildID = self.GetGuildIDFromChannel(data.channel_id);
         self.emit("message", data);
         break;
 
@@ -344,13 +317,8 @@ class Bot extends EventEmitter {
          * @property {MessageObject} Data - Indicates whether the snowball is tightly packed.
          */
       case codes.dispatch.MESSAGE_UPDATE:
-        var data = {
-          id: data.d.id,
-          channel: data.d.channel_id,
-          message: data.d.content,
-          server: self.GetServerFromChanel(data.d.channel_id),
-          raw: data.d
-        };
+        var data = data.d;
+        data.guildID = self.GetGuildIDFromChannel(data.channel_id);
         self.emit("message_update", data);
         break;
         /**
@@ -389,9 +357,6 @@ class Bot extends EventEmitter {
       case codes.dispatch.VOICE_STATE_UPDATE:
         self.emit("voice_update", data.d);
         break;
-
-
-
     }
   }
 
@@ -414,12 +379,27 @@ class Bot extends EventEmitter {
     }
   }
 
+  CacheBotUser() {
+    var self = this;
+    Logger.Info("Bot", "GetCacheInfo", "Caching Bot Info.");
+
+    APIUtil.APIGet(self.key, "users/@me")
+      .then(function(data) {
+        Logger.Success("Bot", "GetCacheInfo", "Cached Bot Info!")
+        self.botInfo = data;
+      })
+      .catch(function(err) {
+        Logger.Error("Bot", "GetCacheInfo", "Error Caching Bot Info: " + err.display);
+        reject(err);
+      });
+  }
+
   SetUpLocalBinds() {
     var self = this;
     self.on('message', function(data) {
-      var firstLetter = data.message.substring(0, self.disnode.botConfig.prefix.length);
+      var firstLetter = data.content.substring(0, self.disnode.botConfig.prefix.length);
       if (self.disnode.ready && firstLetter == self.disnode.botConfig.prefix) {
-        this.disnode.server.GetCommandInstancePromise(data.server).then(function(inst) {
+        this.disnode.server.GetCommandInstancePromise(data.guildID).then(function(inst) {
           if (inst) {
             inst.RunMessage(data);
           } else {
@@ -430,50 +410,159 @@ class Bot extends EventEmitter {
     });
   }
 
-  GetCacheInfo() {
+  GetGatewayURL() {
     var self = this;
-    Logger.Info("Bot", "GetCacheInfo", "Caching Bot Info.");
+    return new Promise(function(resolve, reject) {
+      Logger.Info("Bot", "GetGatewayURL", "Aquiring Gatway URL...");
 
-    APIUtil.APIGet(self.key, "users/@me")
-      .then(function(data){
-        Logger.Success("Bot", "GetCacheInfo", "Cached Bot Info!")
-        self.botInfo = data;
-      })
-      .catch(function(err){
-        Logger.Error("Bot", "GetCacheInfo", "Error Caching Bot Info: " + err.display);
-        reject(err);
-      });
+      APIUtil.APIGet(self.key, "gateway/bot")
+        .then(function(data) {
+          Logger.Success("Bot", "GetGatewayURL", "Aquired Gatway URL!");
+          var url = data.url + "/?encoding=json&v=5";
+          resolve(url)
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "GetGatewayURL", "Error Aquiring Gatway URL: " + err.display);
+          reject(err);
+        });
+    });
   }
+
   /**
-   * Gets a guild ID from a ChannelID
-   * @param {string} channel - ChannelID of where to send the message
-   * @return {string} guildID
+   * Get a channel by an ID
+   * @param {string} channelID - ChannelID of where to send the message
+   * @return {Promise<ChannelObject|ErrorObject>} Return Channel Object
    */
-  GetGuildIDFromChannel(channel) {
+  GetChannel(channelID) {
     var self = this;
-    var _server = "DM";
-    if (self.channels[channel]) {
-      _server = self.channels[channel].guild_id;
-    }
-    return _server;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIGet(self.key, "/channels/" + channelID)
+        .then(function(data) {
+          resolve(data);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "GetChannel", err.display);
+          reject(err);
+        });
+    });
   }
+
+  /**
+   * Update a Channel
+   * @param {string} channelID - ChannelID of where to send the message
+   * @param {ChannelSettings} settings - Settings for channel
+   * @return {Promise<ChannelObject|ErrorObject>} Return Promise
+   */
+  UpdateChannel(channelID, settings) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIPatch(self.key, "/channels/" + channelID, settings)
+        .then(function(data) {
+          resolve(data);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "UpdateChannel", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Delete a Channel
+   * @param {string} channelID - ChannelID of where to send the message
+   * @return {Promise<ChannelObject|ErrorObject>} Return Promise
+  */
+  DeleteChannel(channelID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIDelete(self.key, "/channels/" + channelID)
+        .then(function(data) {
+          resolve(data);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "DeleteChannel", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Returns the messages for a channel.
+   * @param {string} channelID - ChannelID of where to send the message
+   * @param {GetMessageSettings} settings - Settings for retriving messages (ALL OPTIONAL)
+   * @return {Promise<Array<MessageObject>|ErrorObject>} Return Promise
+  */
+  GetMessages(channelID, settings = {}) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIGet(self.key, "/channels/" + channelID + "/messages",data)
+        .then(function(data) {
+          resolve(data);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "GetChannelMessages", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Returns a message
+   * @param {string} channelID - ChannelID of where to send the message
+   * @param {string} messageID - Message ot get
+   * @return {Promise<MessageObject|ErrorObject>} Return Promise
+  */
+  GetMessage(channelID, messageID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIGet(self.key, "/channels/" + channelID + "/messages/" + messageID)
+        .then(function(data) {
+          resolve(data);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "GetMessage", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Sends a Message
+   * @param {string} channelID - ChannelID of where to send the message
+   * @param {string} messageID - Message ot get
+   * @return {Promise<MessageObject|ErrorObject>} Return Promise
+  */
+  GetMessage(channelID, messageID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIGet(self.key, "/channels/" + channelID + "/messages/" + messageID)
+        .then(function(data) {
+          resolve(data);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "GetMessage", err.display);
+          reject(err);
+        });
+    });
+  }
+
   /**
    * Send a normal message
-   * @param {string} channel - ChannelID of where to send the message
-   * @param {string} msg - The message to send
-   * @param {bool} typing - (Optional)Set typing to true or false when sending the message (default false)
-   * @param {bool} tts - (Optional)Set tts to true or false when sending the message (default false)
-   */
-  SendMessage(channel, msg, typing = false, tts = false) {
+   * @param {string} channelID - ChannelID of where to send the message
+   * @param {string} message - The message to send
+   * @param {bool} tts - (Optional)Text-To-Speech Enabled?
+  */
+  SendMessage(channelID, message, tts=false) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
       var msgObject = {
-        content: msg || "undefined",
-        typing: typing,
+        content: msg ,
         tts: tts
       };
-
+      if(!message || message == ""){
+        msgObject.content = "`DisnodeAPIAutoError: Messaged was empty or null`"
+      }
       APIUtil.APIPost(self.key, "channels/" + channel + "/messages", msgObject)
         .then(function(data){
           resolve(data);
@@ -484,64 +573,35 @@ class Bot extends EventEmitter {
         });
     });
   }
+
   /**
-   * Edit a Message
-   * @param {string} channel - ChannelID of where to send the message
-   * @param {string} msgID - Message ID of the message you want to edit
-   * @param {string} msg - The message to send
-   * @param {bool} typing - (Optional)Set typing to true or false when sending the message (default false)
-   * @param {bool} tts - (Optional)Set tts to true or false when sending the message (default false)
-   */
-  EditMessage(channel, msgID, msg, typing = false, tts = false) {
+   * Sends a Embed
+   * @param {string} channelID - ChannelID of where to send the message
+   * @param {EmbedObject} embed - the Embed Object to send
+  */
+  SendEmbed(channelID, embed) {
     var self = this;
     return new Promise(function(resolve, reject) {
+
       var msgObject = {
-        content: msg || "undefined",
-        typing: typing,
+        embed: embed,
         tts: tts
       };
-      axios.patch('https://discordapp.com/api/channels/' + channel + '/messages/' + msgID, msgObject, {
-          headers: {
-            'Authorization': "Bot " + self.key
-          }
-        })
-        .then(function(response) {
-          resolve(response.data);
-        })
-        .catch(function(err) {
-          Logging.Error("Bot", "EditMessage", err.message + " : " + err.response.statusText);
-          reject(err);
-        });
+      if(!embed || embed == {}){
+        msgObject.content = "`DisnodeAPIAutoError: Embed Object was null;`"
+      }
 
-    });
-  }
-  /**
-   * send a message as a embed
-   * @param {string} channel - ChannelID of where to send the message
-   * @param {object} embed - the Embed Object to send
-   */
-  SendEmbed(channel, embed) {
-    var self = this;
-
-    return new Promise(function(resolve, reject) {
-
-      var msgObject = {
-        embed: embed
-      };
-      axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject, {
-          headers: {
-            'Authorization': "Bot " + self.key
-          }
+      APIUtil.APIPost(self.key, "channels/" + channel + "/messages", msgObject)
+        .then(function(data){
+          resolve(data);
         })
-        .then(function(response) {
-          resolve(response.data);
-        })
-        .catch(function(err) {
-          Logging.Error("Bot", "SendEmbed", err.message + " : " + err.response.statusText + " : " + err.response.statusText);
+        .catch(function(err){
+          Logger.Error("Bot", "SendEmbed", err.display);
           reject(err);
         });
     });
   }
+
   /**
    * send an embed as a compact one, less lines defining a embed object
    * @param {string} channel - ChannelID of where to send the message
@@ -549,10 +609,10 @@ class Bot extends EventEmitter {
    * @param {string} body - The body of the embed
    * @param {int|RGBint} color - (Optional)RGB Int of what color the embed should be (default 3447003)
    */
-  SendCompactEmbed(channel, title, body, color = 3447003) {
+  SendCompactEmbed(channelID, title, body, color = 3447003) {
     var self = this;
-
     return new Promise(function(resolve, reject) {
+
       var msgObject = {
         embed: {
           color: color,
@@ -565,501 +625,30 @@ class Bot extends EventEmitter {
           footer: {}
         }
       };
-      axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject, {
-          headers: {
-            'Authorization': "Bot " + self.key
-          }
+      APIUtil.APIPost(self.key, "channels/" + channel + "/messages", msgObject)
+        .then(function(data){
+          resolve(data);
         })
-        .then(function(response) {
-          resolve(response.data);
-        })
-        .catch(function(err) {
-          Logging.Error("Bot", "SendCompactEmbed", err.message + " : " + err.response.statusText);
-          reject(err);
-        });
-    });
-
-  }
-  /**
-   * Edit an embed
-   * @param {string} channel - ChannelID of where to send the message
-   * @param {string} msgID - Message ID of the message you want to edit
-   * @param {object} embed - the Embed Object to send
-   */
-  EditEmbed(channel, msgID, embed) {
-    var self = this;
-
-    return new Promise(function(resolve, reject) {
-      var self = this;
-      var msgObject = {
-        embed: embed
-      };
-      axios.patch('https://discordapp.com/api/channels/' + channel + '/messages/' + msgID, msgObject, {
-          headers: {
-            'Authorization': "Bot " + self.key
-          }
-        })
-        .then(function(response) {
-          resolve(response.data);
-        })
-        .catch(function(err) {
-          Logging.Error("Bot", "EditEmbed", err.message + " : " + err.response.statusText);
+        .catch(function(err){
+          Logger.Error("Bot", "SendEmbed", err.display);
           reject(err);
         });
     });
   }
-  /**
-   * Set the bots playing game
-   * @param {string} status - What you want your bot to be playing
-   */
-  SetStatus(status) {
-    var self = this;
-    var packet = requests.presence(status);
 
-    self.ws.send(JSON.stringify(packet));
-  }
   /**
-   * Set the bots username
-   * @param {string} name - What you want your bot's username to be
+   * Gets a guild ID from a ChannelID
+   * @param {string} channelID - ChannelID of where to send the message
+   * @return {string} guildID
    */
-  SetUsername(name) {
+  GetGuildIDFromChannel(channelID) {
     var self = this;
-    return new Promise(function(resolve, reject) {
-      var self = this;
-      axios.patch('https://discordapp.com/api/users/@me', {
-          name: name
-        }, {
-          headers: {
-            'Authorization': "Bot " + self.key
-          }
-        })
-        .then(function(response) {
-          resolve(response.data);
-        })
-        .catch(function(err) {
-          Logging.Error("Bot", "SetUsername", err.message + " : " + err.response.statusText);
-          reject(err);
-        });
-    });
-  }
-  /**
-   * Allows you to change a server's name (need proper permissions to do)
-   * @param {string} serverID - Server ID of the server you want to change
-   * @param {string} servername - What you wantto set the servername to be
-   */
-  SetServerName(serverId, servername) {
-    var self = this;
-    Logging.Error("Bot", "SetServerName", "NOT IMPLEMENTED");
-    return;
-  }
-  /**
-   * Deletes an array of messages
-   * @param {string} channelID - ID of the channel
-   * @param {array} messageIDs - Array of message ids
-   */
-  DeleteMessages(cID, mID) {
-    var self = this;
-    Logging.Error("Bot", "DeleteMessages", "NOT IMPLEMENTED");
-    return;
-  }
-  /**
-   * Adds reaction to a message
-   * @param {string} channelID - ID of the channel
-   * @param {string} messageID - ID of the message
-   * @param {string} reactionID - ID or unicode of a reactionID
-   */
-  AddReaction(channelID, messageID, reaction) {
-    var self = this;
-    Logging.Error("Bot", "AddReaction", "NOT IMPLEMENTED");
-    return;
-  }
-  /**
-   * Kicks the specified user id from the server
-   * @param {string} serverID - ID of the server
-   * @param {string} userID - ID of the user going to be kicked
-   */
-  Kick(sID, uID) {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      var self = this;
-      axios.delete('https://discordapp.com/api/guilds/' + serverId + '/members/' + userID, {
-          headers: {
-            'Authorization': "Bot " + self.key
-          }
-        })
-        .then(function(response) {
-          resolve(response.data);
-        })
-        .catch(function(err) {
-          Logging.Error("Bot", "Kick", err.message + " : " + err.response.statusText);
-          reject(err);
-        });
-    });
-  }
-  /**
-   * Bans the specified user id from the server
-   * @param {string} serverID - ID of the server
-   * @param {string} userID - ID of the user going to be banned
-   * @param {number} Days - (Optional)The number of days worth of messages to delete
-   */
-  Ban(serverID, userID, Days) {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      var self = this;
-
-      axios.put('https://discordapp.com/api/guilds/' + serverId + '/bans/' + userID, {
-          'delete-message-days': Days
-        }, {
-          headers: {
-            'Authorization': "Bot " + self.key
-          }
-        })
-        .then(function(response) {
-          resolve(resp.data);
-        })
-        .catch(function(err) {
-          Logging.Error("Bot", "Ban", err.message + " : " + err.response.statusText);
-          reject(err);
-        });
-    });
-  }
-  /**
-   * Unabn the specified user id from the server
-   * @param {string} serverID - ID of the server
-   * @param {string} userID - ID of the user going to be unbanned
-   */
-  Unban(sID, uID) {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      var self = this;
-
-      axios.delete('https://discordapp.com/api/guilds/' + serverId + '/bans/' + userID, {}, {
-          headers: {
-            'Authorization': "Bot " + self.key
-          }
-        })
-        .then(function(response) {
-          resolve(resp.data);
-        })
-        .catch(function(err) {
-          Logging.Error("Bot", "Unban", err.message + " : " + err.response.statusText);
-          reject(err);
-        });
-    });
-  }
-  /**
-   * Mutes the specified user id from the server
-   * @param {string} serverID - ID of the server
-   * @param {string} userID - ID of the user going to be muted
-   */
-  Mute(sID, uID) {
-    var self = this;
-    Logging.Error("Bot", "Mute", "NOT IMPLEMENTED");
-    return;
-  }
-  /**
-   * Unmutes the specified user id from the server
-   * @param {string} serverID - ID of the server
-   * @param {string} userID - ID of the user going to be unmuted
-   */
-  Unmute(sID, uID) {
-    var self = this;
-    Logging.Error("Bot", "Unmute", "NOT IMPLEMENTED");
-    return;
-  }
-  /**
-   * Joins the channel that the user is in
-   * @param {string} voiceID - ID of the voice channel
-   */
-  JoinVoiceChannel(voiceID) {
-    var self = this;
-    Logging.Error("Bot", "JoinVoiceChannel", "NOT IMPLEMENTED");
-    return;
-  }
-  /**
-   * Leaves the channel that the user is in
-   * @param {string} voiceID - ID of the voice channel
-   */
-  LeaveVoiceChannel(voiceID) {
-    var self = this;
-    Logging.Error("Bot", "LeaveVoiceChannel", "NOT IMPLEMENTED");
-    return;
-  }
-  /**
-   * Joins the channel that the user is in
-   * @param {string} serverID - ID of the server
-   * @param {string} userID - ID of the user its joining
-   */
-  JoinUsersVoiceChannel(serverID, userID) {
-    var user = this.GetUserByID(serverID, userID);
-    if (!user) {
-      return;
+    var _server = "DM";
+    if (self.channels[channelID]) {
+      _server = self.channels[channelID].guild_id;
     }
-    this.JoinVoiceChannel(user.voice_channel_id);
-  }
-  /**
-   * Leaves the channel that the user is in
-   * @param {string} serverID - ID of the server
-   * @param {string} userID - ID of the user its leaving
-   */
-  LeaveUsersVoiceChannel(serverID, userID) {
-    var user = this.GetUserByID(serverID, userID);
-    if (!user) {
-      return;
-    }
-    this.LeaveVoiceChannel(user.voice_channel_id);
-  }
-  /**
-   * Get a lot of information about the server
-   * @param {string} serverID - ID of the server
-   */
-  GetServerByID(id) {
-    return this.guilds[id];
-  }
-  /**
-   * Gets information about that user
-   * @param {string} serverID - ID of the server
-   * @param {string} userID - Id of the user
-   */
-  GetUserByID(serverID, userID) {
-    return this.users[userID];
-  }
-  /**
-   * Gets server member
-   * @param {string} serverID - ID of the server
-   * @param {string} userID - Id of the user
-   */
-  GetMember(serverID, userID) {
-    var members = self.disnode.util.arrayToOject(this.guilds[serverID].members, "user.id");
-    return members[userID];
-  }
-  /**
-   * Gets the roles that the specified user in the server has
-   * @param {string} serverID - ID of the server
-   * @param {string} userID - Id of the user
-   */
-  GetUserRoles(serverId, userId) {
-    var user = this.GetUserByID(serverId, userId);
-    if (!user) {
-      return;
-    }
-    return user.roles;
-  }
-  /**
-   * Gets information about the specified role
-   * @param {string} serverID - ID of the server
-   * @param {string} roleID - Id of the role
-   */
-  GetRoleById(serverId, roleId) {
-    var server = this.guilds[serverId];
-    if (!server) {
-      return;
-    }
-    var roles = self.disnode.util.arrayToOject(server.roles, "id");
-    return roles[roleId];
-  }
-  GetUserStatus(serverId, UserId) {
-    var statuses = this.guilds[serverId].presences;
-
-    for (var i = 0; i < statuses.length; i++) {
-      if (statuses[i].user.id == UserId) {
-        return statuses[i];
-      }
-    }
-    //return
-  }
-  /**
-   * Gets information about the bot
-   */
-  GetBotInfo() {
-    var self = this;
-    return self.botInfo;
-  }
-  /**
-   * Gets minimal information about the specified user
-   * @param {string} userID - ID of the user
-   */
-  GetUserInfo(UserID) {
-    var self = this;
-    return self.users[UserID];
-  }
-  GetSnowflakeDate(resourceID) {
-    return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
-  }
-  /**
-   * Gets message info of a message
-   * @param {string} channelID - ID of the channel
-   * @param {string} messageID - ID of the message
-   */
-  GetMessage(channelID, MessageID) {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      Logging.Error("Bot", "GetMessage", "NOT IMPLEMENTED");
-      resolve();
-    });
-  }
-  /**
-   * Adds reaction to a message
-   * @param {string} channelID - ID of the channel
-   * @param {string} messageID - ID of the message
-   * @param {string} reactionID - ID or unicode of a reactionID
-   */
-  AddReaction(channelID, messageID, reaction) {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      Logging.Error("Bot", "AddReaction", "NOT IMPLEMENTED");
-      resolve();
-    });
-  }
-  /**
-   * Gets reaction of a message
-   * @param {string} channelID - ID of the channel
-   * @param {string} messageID - ID of the message
-   * @param {string} reactionID - ID or unicode of a reactionID
-   */
-  GetReaction(channelID, messageID, reaction) {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      Logging.Error("Bot", "GetReaction", "NOT IMPLEMENTED");
-      resolve();
-    });
-  }
-  /**
-   * Removes reaction from a message
-   * @param {string} channelID - ID of the channel
-   * @param {string} messageID - ID of the message
-   * @param {string} reactionID - ID or unicode of a reactionID
-   */
-  RemoveReaction(channelID, messageID, reaction) {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      Logging.Error("Bot", "RemoveReaction", "NOT IMPLEMENTED");
-      resolve();
-    });
-  }
-  /**
-   * Removes all reactions from a message
-   * @param {string} channelID - ID of the channel
-   * @param {string} messageID - ID of the message
-   */
-  RemoveAllReactions(channelID, messageID) {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      Logging.Error("Bot", "RemoveAllReactions", "NOT IMPLEMENTED");
-      resolve();
-    });
-  }
-  SendDM(userID, msg){
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      self.GetOrCreateDM(userID).then(function(channel){
-        var msgObject = {
-          content: msg || "undefined",
-
-        };
-        axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject, {
-            headers: {
-              'Authorization': "Bot " + self.key
-            }
-          })
-          .then(function(response) {
-            resolve(response.data);
-          })
-          .catch(function(err) {
-            Logging.Error("Bot", "SendDM", err.message + " : " + err.response.statusText);
-            reject(err);
-          });
-      });
-    });
-  }
-  SendDMEmbed(userID, embed){
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      self.GetOrCreateDM(userID).then(function(channel){
-        var msgObject = {
-          embed: embed
-        };
-        axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject, {
-            headers: {
-              'Authorization': "Bot " + self.key
-            }
-          })
-          .then(function(response) {
-            resolve(response.data);
-          })
-          .catch(function(err) {
-            Logging.Error("Bot", "SendDMEmbed", err.message + " : " + err.response.statusText);
-            reject(err);
-          });
-      });
-    });
-  }
-  SendThatFancyMessageThingToThatOneDude(userID, embed){
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      self.GetOrCreateDM(userID).then(function(channel){
-        var msgObject = {
-          embed: embed
-        };
-        axios.post('https://discordapp.com/api/channels/' + channel + '/messages', msgObject, {
-            headers: {
-              'Authorization': "Bot " + self.key
-            }
-          })
-          .then(function(response) {
-            resolve(response.data);
-          })
-          .catch(function(err) {
-            Logging.Error("Bot", "SendDMEmbed", err.message + " : " + err.response.statusText);
-            reject(err);
-          });
-      });
-    });
-  }
-  // ===== //
-  GetOrCreateDM(userID){
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      axios.post('https://discordapp.com/api/users/@me/channels',  {recipient_id: userID}, {
-          headers: {
-            'Authorization': "Bot " + self.key
-          }
-        })
-        .then(function(response) {
-
-          resolve(response.data.id);
-        })
-        .catch(function(err) {
-          Logging.Error("Bot", "GetOrCreateDM",err);
-          reject(err);
-        });
-    });
-
+    return _server;
   }
 
-  /**
-   * Pagify results
-   * @param {array} arr - Array to be paged
-   * @param {integer} page - Page number
-   * @param {integer} perPage - Results per page
-   */
-  pageResults(arr, page, perPage = 10) {
-    var returnArr = [];
-    var maxindex;
-    var startindex;
-    if (page == 1) {
-      page = 1;
-      startindex = 0
-      maxindex = perPage;
-    } else {
-      maxindex = (page * perPage);
-      startindex = maxindex - perPage;
-    }
-    for (var i = startindex; i < arr.length; i++) {
-      if (i == maxindex) break;
-      returnArr.push(arr[i]);
-    }
-    return returnArr;
-  }
 }
 module.exports = Bot;

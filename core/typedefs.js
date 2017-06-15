@@ -10,6 +10,50 @@
  * @property {Object} raw - Full Error Object Returned
  */
 
+
+// CHANNEL OBJECTS
+
+/**
+ * Object used to describe a channel
+ * @typedef {Object} ChannelObject
+ * @property {snowflake} id -the id of this channel (will be equal to the guild if it's the "general" channel)
+ * @property {guild_id} guild_id - the id of the guild
+ * @property {string} type - "text" or "voice"
+ * @property {integer} position - sorting position of the channel
+ * @property {bool} is_private - should always be false for guild channels
+ * @property {array} permission_overwrites - an array of overwrite objects
+ * @property {string} topic - 0-1024 character channel topic
+ * @property {snowflake} last_message_id - 	the id of the last message sent in this channel
+ * @property {integer} bitrate - 	the bitrate (in bits) of the voice channel
+ * @property {integer} bitrate - 	the user limit of the voice channel
+ */
+
+/**
+ * Object used to update a channel
+ * @typedef {Object} ChannelSettings
+ * @property {string} name - 2-100 character channel name
+ * @property {int} position - the position of the channel in the left-hand listing
+ * @property {string} topic - 0-1024 character channel topic
+ * @property {int} bitrate - the bitrate (in bits) of the voice channel; 8000 to 96000 (128000 for VIP servers)
+ * @property {int} user_limit - the user limit of the voice channel; 0 refers to no limit, 1 to 99 refers to a user limit
+ */
+
+/**
+ * Object used to when retriving channel messages
+ * @typedef {Object} GetMessageSettings
+ * @property {snowflake} around -	get messages around this message ID
+ * @property {snowflake} before - get messages before this message ID
+ * @property {snowflake} after - get messages after this message ID
+ * @property {integer} limit - max number of messages to return (1-100)
+ */
+
+
+
+
+
+
+
+
 /**
  * The complete Triforce, or one or more components of the Triforce.
  * @typedef {Object} MessageDeleteObject
