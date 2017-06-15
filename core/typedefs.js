@@ -47,6 +47,18 @@
  * @property {integer} limit - max number of messages to return (1-100)
  */
 
+ /**
+  * Object used to when creating Invite
+  * @typedef {Object} CreateInviteSettings
+  * @property {integer} max_age -	duration of invite in seconds before expiry, or 0 for never
+  * @property {integer} max_uses - max number of uses or 0 for unlimited
+  * @property {bool} temporary - whether this invite only grants temporary membership
+  * @property {bool} unique	 - if true, don't try to reuse a similar invite (useful for creating many unique one time use invites)
+  */
+
+
+
+
 
 
 

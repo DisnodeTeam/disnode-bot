@@ -871,6 +871,107 @@ class Bot extends EventEmitter {
     });
   }
 
+  /**
+   * Edit the channel permission overwrites for a user or role in a channel.
+   * @param {string} channelID - ChannelID of the message
+   * @param {string} overwriteID - ?????
+   * @param {int} allowed -the bitwise value of all allowed permissions
+   * @param {int} deny -the bitwise value of all disallowed  permissions
+   * @param {string} type -	"member" for a user or "role" for a role
+  */
+  EditChannelPermissions(channelID, overwriteID, allowed, deny, type) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      var data = {
+        allow: allowed,
+        deny: deny,
+        type: type
+      }
+      APIUtil.APIPut(self.key, "channels/" + channelID + "/permissions/" + overwriteID, data)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "EditChannelPermissions", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Returns a list of invite objects (with invite metadata) for the channel. Only usable for guild channels.
+   * @param {string} channelID - ChannelID of the message
+  */
+  GetChannelInvites(channelID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIGet(self.key, "channels/" + channelID + "/invites")
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "GetChannelInvites", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Returns a list of invite objects (with invite metadata) for the channel. Only usable for guild channels.
+   * @param {string} channelID - ChannelID of the message
+   * @param {CreateInviteSettings} settings - Settings of new invite
+  */
+  CreateChannelInvite(channelID, settings) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIPost(self.key, "channels/" + channelID + "/invites", settings)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "CreateChannelInvite", err.display);
+          reject(err);
+        });
+    })
+  }
+
+  /**
+   * Delete a channel permission overwrite for a user or role in a channel. Only usable for guild channels.
+   * @param {string} channelID - ChannelID of the message
+   * @param {string} overwriteID - ?????
+  */
+  DeleteChannelPermission(channelID, overwriteID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIDelete(self.key, "channels/" + channelID + "/permissions/" + overwriteID)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "DeleteChannelPermission", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Triggers Typing Inidicator
+   * @param {string} channelID - ChannelID to start typing in
+  */
+  StartTyping(channelID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIPost(self.key, "channels/" + channelID + "/typing")
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "StartTyping", err.display);
+          reject(err);
+        });
+    });
+  }
+
 
 
   /**
