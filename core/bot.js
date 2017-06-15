@@ -1058,10 +1058,82 @@ class Bot extends EventEmitter {
   }
 
   /**
+   * Get Guild
+   * @param {string} guildID - Guild ID
+  */
+  GetGuild(guildID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Get(self.key, "guilds/"+guildID)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "GetGuild", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Edit Guild
+   * @param {string} guildID - Guild to Edit
+   * @param {GuildEditObject} settings - New Guild Settings
+  */
+  EditGuilds(guildID, settings = {}) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Patch(self.key, "guilds/"+guildID, settings)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "EditGuilds", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Returns a list of guild channel objects.
+   * @param {string} guildID - Guild to Edit
+  */
+  GetGuildChannels(guildID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Get(self.key, "guilds/"+guildID+"/channels")
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "GetGuildChannels", err.display);
+          reject(err);
+        });
+    });
+  }
+  /**
+   * Returns a list of guild channel objects.
+   * @param {string} guildID - Guild to Edit
+   * @param {ChannelSettings} settings - New Guild Info
+  */
+  CreateChannel(guildID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Post(self.key, "guilds/"+guildID+"/channels", settings)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "CreateChannel", err.display);
+          reject(err);
+        });
+    });
+  }
+  /**
    * Gets a guild ID from a ChannelID
    * @param {string} channelID - ChannelID of where to send the message
    * @return {string} guildID
-   */
+  */
   GetGuildIDFromChannel(channelID) {
     var self = this;
     var _server = "DM";
