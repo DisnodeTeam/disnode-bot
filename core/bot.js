@@ -1145,12 +1145,302 @@ class Bot extends EventEmitter {
           resolve(data);
         })
         .catch(function(err){
-          Logger.Error("Bot", "CreateChannel", err.display);
+          Logger.Error("Bot", "EditChannelPosition", err.display);
           reject(err);
         });
     });
   }
 
+  /**
+   * Returns a guild member object for the specified user.
+   * @param {string} guildID - Guild to Edit
+   * @param {string} userID - User to retrivie
+  */
+  GetGuildMemeber(guildID, userID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Get(self.key, "guilds/"+guildID+"/members/"+userID)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "GetGuildMemeber", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Returns a list of guild member objects that are members of the guild.
+   * @param {string} guildID - Guild to Edit
+   * @param {integer} limit - Optional, defaults to 100
+   * @param {snowflake} after - Optional - 	the highest user id in the previous page
+  */
+  ListGuildMemebers(guildID, userID, limit = 100, after) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Get(self.key, "guilds/"+guildID+"/members/"+userID, {limit: limit, after: after})
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "ListGuildMemebers", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Edit a guild member
+   * @param {string} guildID - Guild to Edit
+   * @param {string} userID - User to Edits
+   * @param {MemberEditObject} settings - Setttings for member
+  */
+  EditGuildMember(guildID, userID,setting) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Patch(self.key, "guilds/"+guildID+"/members/"+userID, settings)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "EditGuildMember", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Set username of bot
+   * @param {string} guildID - Guild to Edit
+   * @param {string} nickname - new nickname
+  */
+  SetNickname(guildID, nickname) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Patch(self.key, "guilds/"+guildID+"/members/@me/nick", {nick: nickname})
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "SetNickname", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Adds a role to a memeber
+   * @param {string} guildID - Guild to Edit
+   * @param {string} userID - user ID
+   * @param {string} roleID  - role ID
+  */
+  AddRole(guildID, userID,roleID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Put(self.key, "guilds/"+guildID+"/members/"+userID+"/roles/"+roleID)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "AddRole", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Remove a role to a memeber
+   * @param {string} guildID - Guild to Edit
+   * @param {string} userID - user ID
+   * @param {string} roleID  - role ID
+  */
+  RemoveRole(guildID, userID,roleID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Delete(self.key, "guilds/"+guildID+"/members/"+userID+"/roles/"+roleID)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "RemoveRole", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Remove a member from a guild.
+   * @param {string} guildID - Guild to Edit
+   * @param {string} userID - user ID
+  */
+  RemoveMember(guildID, userID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Delete(self.key, "guilds/"+guildID+"/members/"+userID)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "RemoveMember", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Gets ban for a guild
+   * @param {string} guildID - Guild to Edit
+  */
+  GetBans(guildID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Delete(self.key, "guilds/"+guildID+"/bans")
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "GetBans", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Ban a user
+   * @param {string} guildID - Guild to Edit
+   * @param {string} userID - User to ban
+   * @param {integer} days - number of days to delete messages for (0-7)
+  */
+  BanUser(guildID, userID, days = 0) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Put(self.key, "guilds/"+guildID+"/bans/"+userID, {'delete-message-days': days})
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "BanUser", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Ban a user
+   * @param {string} guildID - Guild to Edit
+   * @param {string} userID - User to ban
+  */
+  UnBanUser(guildID, userID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Delete(self.key, "guilds/"+guildID+"/bans/"+userID)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "UnBanUser", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Get Guild Roles
+   * @param {string} guildID - Guild to Edit
+  */
+  GetRoles(guildID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Get(self.key, "guilds/"+guildID+"/roles")
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "GetRoles", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Create Guild Role
+   * @param {string} guildID - Guild to Edit
+   * @param {RoleCreateObject} setting - New Role
+  */
+  CreateRole(guildID, setting) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Post(self.key, "guilds/"+guildID+"/roles")
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "CreateRole", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Edit Role Position
+   * @param {string} guildID - Guild to Edit
+   * @param {string} roleID - Role to edit
+   * @param {integer} position - New position
+  */
+  EditRolePosition(guildID,roleID, position) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Post(self.key, "guilds/"+guildID+"/roles", {id: roleID, position: position})
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "EditRolePosition", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Edit Role
+   * @param {string} guildID - Guild to Edit
+   * @param {string} roleID - Role to edit
+   * @param {RoleCreateObject} settings - Role Settings
+  */
+  EditRole(guildID,roleID, settings) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Patch(self.key, "guilds/"+guildID+"/roles/"+roleID, settings)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "EditRole", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Edit Role
+   * @param {string} guildID - Guild to Edit
+   * @param {string} roleID - Role to edit
+   * @param {RoleCreateObject} setting - Role Settings
+  */
+  DeleteRole(guildID,roleID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Delete(self.key, "guilds/"+guildID+"/roles/"+roleID)
+        .then(function(data){
+          resolve(data);
+        })
+        .catch(function(err){
+          Logger.Error("Bot", "DeleteRole", err.display);
+          reject(err);
+        });
+    });
+  }
 
 
   /**

@@ -98,19 +98,29 @@
  * @property {bool} managed	 - 	whether this emoji is managed
  */
 
-/**
+ /**
  * Object used to define Guild Roles
- * @typedef {Object} EmojiObject
+ * @typedef {Object} RoleObject
  * @property {snowflake} id - role id
  * @property {name} color -role name
- * @property {integer} roles - integer representation of hexadecimal color code
+ * @property {integer} color - integer representation of hexadecimal color code
  * @property {bool} hoist	 - 	if this role is pinned in the user listing
  * @property {integer} position	 - position of this role
  * @property {integer} permissions	 - permission bit set
  * @property {bool} managed	 - position of this role
- * @property {bool} managed	 - whether this role is mentionable
+ * @property {bool} mentionable	 - whether this role is mentionable
  */
 
+
+ /**
+ * Object used to define Guild Roles
+ * @typedef {Object} RoleCreateObject
+ * @property {name} color -role name
+ * @property {integer} color - integer representation of hexadecimal color code
+ * @property {bool} hoist	 - 	if this role is pinned in the user listinge
+ * @property {integer} permissions	 - permission bit set
+ * @property {bool} mentionable	 - whether this role is mentionable
+ */
  /**
   * The complete Triforce, or one or more components of the Triforce.
   * @typedef {Object} GuildEditObject
@@ -136,6 +146,15 @@
    * @property {bool} deaf - if the user is deafened
    * @property {bool} mute - 	if the user is muted
    */
+   /**
+    * Object used to edit a guild memeber
+    * @typedef {Object} MemberEditObject
+    * @property {string} nick - this users guild nickname (if one is set)
+    * @property {Array<snowflake>} roles - array of role object id's
+    * @property {bool} deaf - if the user is deafened
+    * @property {bool} mute - 	if the user is muted
+    * @property {snowflake} channel_id - 		id of channel to move user to (if they are connected to voice)
+    */
 
 
 /**
