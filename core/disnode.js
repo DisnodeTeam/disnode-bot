@@ -75,8 +75,30 @@ class Disnode {
           self.server = new ServerManager(self);
           Logging.Success("Disnode", "Start", "Loaded Server Manager");
           self.ready = true;
+          if(self.botConfig.preload){
+            Logger.Info("Disnode", "Start", "PRE-LAUNCHING INSTANCES FOR ALL SERVERS! Disabling Logs.");
+            setTimeout(function () {
+              var guilds = [];
 
-          callback();
+              async.eachSeries( self.bot.guilds, function(guild,callback){
+                if(!guild){
+                  callback();
+                  return;
+                }
+                var commandManager = self.server.GetCommandInstancePromise(guild.id).then(function(){
+                    //console.log("Loaded: " + guild.name);
+                    setTimeout(function () {
+                      callback();
+                    }, 10);
+                })
+              },function(err){
+                console.log(err);
+                console.log("LOADED ALL");
+                callback();
+              })
+            }, 3000);
+          }
+
         },
 
 

@@ -98,7 +98,7 @@
  * @property {bool} managed	 - 	whether this emoji is managed
  */
 
- /**
+/**
  * Object used to define Guild Roles
  * @typedef {Object} RoleObject
  * @property {snowflake} id - role id
@@ -112,7 +112,7 @@
  */
 
 
- /**
+/**
  * Object used to define Guild Roles
  * @typedef {Object} RoleCreateObject
  * @property {name} color -role name
@@ -121,40 +121,40 @@
  * @property {integer} permissions	 - permission bit set
  * @property {bool} mentionable	 - whether this role is mentionable
  */
- /**
-  * The complete Triforce, or one or more components of the Triforce.
-  * @typedef {Object} GuildEditObject
-  * @property {string} name - guild name
-  * @property {string} region - guild {voice_region.id}
-  * @property {integer} verification_level - Seguild verification level
-  * @property {integer} default_message_notifications - 	default message notifications setting
-  * @property {snowflake} afk_channel_id -	id for afk channel
-  * @property {integer} afk_timeout - 	afk timeout in seconds
-  * @property {string} icon -base64 128x128 jpeg image for the guild icon
-  * @property {snowflake} owner_id -	user id to transfer guild ownership to (must be owner)
-  * @property {string} splash - 	base64 128x128 jpeg image for the guild splash (VIP only)
-  */
+/**
+ * The complete Triforce, or one or more components of the Triforce.
+ * @typedef {Object} GuildEditObject
+ * @property {string} name - guild name
+ * @property {string} region - guild {voice_region.id}
+ * @property {integer} verification_level - Seguild verification level
+ * @property {integer} default_message_notifications - 	default message notifications setting
+ * @property {snowflake} afk_channel_id -	id for afk channel
+ * @property {integer} afk_timeout - 	afk timeout in seconds
+ * @property {string} icon -base64 128x128 jpeg image for the guild icon
+ * @property {snowflake} owner_id -	user id to transfer guild ownership to (must be owner)
+ * @property {string} splash - 	base64 128x128 jpeg image for the guild splash (VIP only)
+ */
 
 
-  /**
-   * Member of a guild
-   * @typedef {Object} MemberObject
-   * @property {UserObject} user - User
-   * @property {string} nick? - this users guild nickname (if one is set)
-   * @property {Array<snowflake>} roles - array of role object id's
-   * @property {datetime} joined_at - date the user joined the guild
-   * @property {bool} deaf - if the user is deafened
-   * @property {bool} mute - 	if the user is muted
-   */
-   /**
-    * Object used to edit a guild memeber
-    * @typedef {Object} MemberEditObject
-    * @property {string} nick - this users guild nickname (if one is set)
-    * @property {Array<snowflake>} roles - array of role object id's
-    * @property {bool} deaf - if the user is deafened
-    * @property {bool} mute - 	if the user is muted
-    * @property {snowflake} channel_id - 		id of channel to move user to (if they are connected to voice)
-    */
+/**
+ * Member of a guild
+ * @typedef {Object} MemberObject
+ * @property {UserObject} user - User
+ * @property {string} nick? - this users guild nickname (if one is set)
+ * @property {Array<snowflake>} roles - array of role object id's
+ * @property {datetime} joined_at - date the user joined the guild
+ * @property {bool} deaf - if the user is deafened
+ * @property {bool} mute - 	if the user is muted
+ */
+/**
+ * Object used to edit a guild memeber
+ * @typedef {Object} MemberEditObject
+ * @property {string} nick - this users guild nickname (if one is set)
+ * @property {Array<snowflake>} roles - array of role object id's
+ * @property {bool} deaf - if the user is deafened
+ * @property {bool} mute - 	if the user is muted
+ * @property {snowflake} channel_id - 		id of channel to move user to (if they are connected to voice)
+ */
 
 
 /**

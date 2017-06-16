@@ -305,7 +305,7 @@ class Bot extends EventEmitter {
         var data = {
           id: data.d.id,
           channel: data.d.channel_id,
-          server: self.GetServerFromChanel(data.d.channel_id),
+          server: self.GetGuildIDFromChannel(data.d.channel_id),
           raw: data.d
         };
         self.emit("message_delete", data);
@@ -537,7 +537,7 @@ class Bot extends EventEmitter {
     return new Promise(function(resolve, reject) {
 
       var msgObject = {
-        content: msg,
+        content: message,
         tts: tts
       };
       if (!message || message == "") {
