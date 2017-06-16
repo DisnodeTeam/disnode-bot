@@ -471,7 +471,7 @@ class Bot extends EventEmitter {
    * Delete a Channel
    * @param {string} channelID - ChannelID of where to send the message
    * @return {Promise<ChannelObject|ErrorObject>} Return Promise
-  */
+   */
   DeleteChannel(channelID) {
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -491,11 +491,11 @@ class Bot extends EventEmitter {
    * @param {string} channelID - ChannelID of where to send the message
    * @param {GetMessageSettings} settings - Settings for retriving messages (ALL OPTIONAL)
    * @return {Promise<Array<MessageObject>|ErrorObject>} Return Promise
-  */
+   */
   GetMessages(channelID, settings = {}) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.APIGet(self.key, "/channels/" + channelID + "/messages",data)
+      APIUtil.APIGet(self.key, "/channels/" + channelID + "/messages", data)
         .then(function(data) {
           resolve(data);
         })
@@ -511,7 +511,7 @@ class Bot extends EventEmitter {
    * @param {string} channelID - ChannelID of where to send the message
    * @param {string} messageID - Message ot get
    * @return {Promise<MessageObject|ErrorObject>} Return Promise
-  */
+   */
   GetMessage(channelID, messageID) {
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -531,23 +531,23 @@ class Bot extends EventEmitter {
    * @param {string} channelID - ChannelID of where to send the message
    * @param {string} message - The message to send
    * @param {bool} tts - (Optional)Text-To-Speech Enabled?
-  */
-  SendMessage(channelID, message, tts=false) {
+   */
+  SendMessage(channelID, message, tts = false) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
       var msgObject = {
-        content: msg ,
+        content: msg,
         tts: tts
       };
-      if(!message || message == ""){
+      if (!message || message == "") {
         msgObject.content = "`DisnodeAPIAutoError: Messaged was empty or null`"
       }
       APIUtil.APIPost(self.key, "channels/" + channelID + "/messages", msgObject)
-        .then(function(data){
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "SendMessage", err.display);
           reject(err);
         });
@@ -558,8 +558,8 @@ class Bot extends EventEmitter {
    * Sends a Embed
    * @param {string} channelID - ChannelID of where to send the message
    * @param {EmbedObject} embed - the Embed Object to send
-  */
-  SendEmbed(channelID, embed, tts=false) {
+   */
+  SendEmbed(channelID, embed, tts = false) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
@@ -567,15 +567,15 @@ class Bot extends EventEmitter {
         embed: embed,
         tts: tts
       };
-      if(!embed || embed == {}){
+      if (!embed || embed == {}) {
         msgObject.content = "`DisnodeAPIAutoError: Embed Object was null;`"
       }
 
       APIUtil.APIPost(self.key, "channels/" + channelID + "/messages", msgObject)
-        .then(function(data){
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "SendEmbed", err.display);
           console.dir(err);
           reject(err);
@@ -607,10 +607,10 @@ class Bot extends EventEmitter {
         }
       };
       APIUtil.APIPost(self.key, "channels/" + channelID + "/messages", msgObject)
-        .then(function(data){
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "SendCompactEmbed", err.display);
           reject(err);
         });
@@ -622,17 +622,17 @@ class Bot extends EventEmitter {
    * @param {string} channelID - ChannelID of where to send the message
    * @param {string} messageID - Message to react to
    * @param {string} emoji     - Emoji to react with
-  */
-  AddReaction(channelID, messageID,emoji) {
+   */
+  AddReaction(channelID, messageID, emoji) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
       APIUtil.APIPut(self.key,
-        "channels/" + channelID + "/messages/"+messageID+"/reactions/"+emoji+"/@me"
-      ).then(function(data){
+          "channels/" + channelID + "/messages/" + messageID + "/reactions/" + emoji + "/@me"
+        ).then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "AddReaction", err.display);
           reject(err);
         });
@@ -644,17 +644,17 @@ class Bot extends EventEmitter {
    * @param {string} channelID - ChannelID of where to send the message
    * @param {string} messageID - Message to react to
    * @param {string} emoji     - Emoji to delete
-  */
-  DeleteOwnReaction(channelID, messageID,emoji) {
+   */
+  DeleteOwnReaction(channelID, messageID, emoji) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
       APIUtil.APIDelete(self.key,
-        "channels/" + channelID + "/messages/"+messageID+"/reactions/"+emoji+"/@me"
-      ).then(function(data){
+          "channels/" + channelID + "/messages/" + messageID + "/reactions/" + emoji + "/@me"
+        ).then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "DeleteOwnReaction", err.display);
           reject(err);
         });
@@ -667,17 +667,17 @@ class Bot extends EventEmitter {
    * @param {string} messageID - Message to react to
    * @param {string} emoji     - Emoji to delete
    * @param {string} userID     - UserID
-  */
-  DeleteUserReaction(channelID, messageID,emoji, userID) {
+   */
+  DeleteUserReaction(channelID, messageID, emoji, userID) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
       APIUtil.APIDelete(self.key,
-        "channels/" + channelID + "/messages/"+messageID+"/reactions/"+emoji+"/"+userID
-      ).then(function(data){
+          "channels/" + channelID + "/messages/" + messageID + "/reactions/" + emoji + "/" + userID
+        ).then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "DeleteUserReaction", err.display);
           reject(err);
         });
@@ -687,17 +687,17 @@ class Bot extends EventEmitter {
    * Delete All Reactions
    * @param {string} channelID - ChannelID of where to send the message
    * @param {string} messageID - Message to react to
-  */
+   */
   DeleteAllReaction(channelID, messageID) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
       APIUtil.APIDelete(self.key,
-        "channels/" + channelID + "/messages/"+messageID+"/reactions"
-      ).then(function(data){
+          "channels/" + channelID + "/messages/" + messageID + "/reactions"
+        ).then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "DeleteAllReaction", err.display);
           reject(err);
         });
@@ -708,17 +708,17 @@ class Bot extends EventEmitter {
    * @param {string} channelID - ChannelID of where to send the message
    * @param {string} messageID - Message to react to
    * @param {string} emoji     - Emoji to delete
-  */
-  GetReactions(channelID, messageID,emoji) {
+   */
+  GetReactions(channelID, messageID, emoji) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
       APIUtil.APIGet(self.key,
-        "channels/" + channelID + "/messages/"+messageID+"/reactions/"+emoji
-      ).then(function(data){
+          "channels/" + channelID + "/messages/" + messageID + "/reactions/" + emoji
+        ).then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "GetReactions", err.display);
           reject(err);
         });
@@ -730,7 +730,7 @@ class Bot extends EventEmitter {
    * @param {string} channelID - ChannelID of where to send the message
    * @param {string} messageID - message to edit
    * @param {string} message - The new message
-  */
+   */
   EditMessage(channelID, messageID, message) {
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -738,14 +738,14 @@ class Bot extends EventEmitter {
       var msgObject = {
         content: msg
       };
-      if(!message || message == ""){
+      if (!message || message == "") {
         msgObject.content = "`DisnodeAPIAutoError: Messaged was empty or null`"
       }
-      APIUtil.APIPatch(self.key, "channels/" + channelID + "/messages/" +messageID, msgObject)
-        .then(function(data){
+      APIUtil.APIPatch(self.key, "channels/" + channelID + "/messages/" + messageID, msgObject)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "EditMessage", err.display);
           reject(err);
         });
@@ -757,23 +757,23 @@ class Bot extends EventEmitter {
    * @param {string} channelID - ChannelID of where to send the message
    * @param {string} messageID - message to edit
    * @param {EmbedObject} embed - the Embed Object to send
-  */
-  EditEmbed(channelID, messageID ,embed) {
+   */
+  EditEmbed(channelID, messageID, embed) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
       var msgObject = {
         embed: embed
       };
-      if(!embed || embed == {}){
+      if (!embed || embed == {}) {
         msgObject.content = "`DisnodeAPIAutoError: Embed Object was null;`"
       }
 
-      APIUtil.APIPatch(self.key, "channels/" + channelID + "/messages/"+messageID, msgObject)
-        .then(function(data){
+      APIUtil.APIPatch(self.key, "channels/" + channelID + "/messages/" + messageID, msgObject)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "EditEmbed", err.display);
           reject(err);
         });
@@ -804,11 +804,11 @@ class Bot extends EventEmitter {
           footer: {}
         }
       };
-      APIUtil.APIPatch(self.key, "channels/" + channelID + "/messages/"+messageID, msgObject)
-        .then(function(data){
+      APIUtil.APIPatch(self.key, "channels/" + channelID + "/messages/" + messageID, msgObject)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "EditCompactEmbed", err.display);
           reject(err);
         });
@@ -818,15 +818,15 @@ class Bot extends EventEmitter {
    * Delete a message
    * @param {string} channelID - ChannelID of the message
    * @param {string} messageID - message to delete
-  */
+   */
   DeleteMessage(channelID, messageID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.APIDelete(self.key, "channels/" + channelID + "/messages/"+messageID)
-        .then(function(data){
+      APIUtil.APIDelete(self.key, "channels/" + channelID + "/messages/" + messageID)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "DeleteMessage", err.display);
           reject(err);
         });
@@ -838,15 +838,17 @@ class Bot extends EventEmitter {
    * Delete mulitple messages
    * @param {string} channelID - ChannelID of the message
    * @param {string} messageIDs - messages to delete (array)
-  */
+   */
   DeleteMessages(channelID, messageIDs) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.APIPost(self.key, "channels/" + channelID + "/messages", {messages: messageIDs})
-        .then(function(data){
+      APIUtil.APIPost(self.key, "channels/" + channelID + "/messages", {
+          messages: messageIDs
+        })
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "DeleteMessages", err.display);
           reject(err);
         });
@@ -860,7 +862,7 @@ class Bot extends EventEmitter {
    * @param {int} allowed -the bitwise value of all allowed permissions
    * @param {int} deny -the bitwise value of all disallowed  permissions
    * @param {string} type -	"member" for a user or "role" for a role
-  */
+   */
   EditChannelPermissions(channelID, overwriteID, allowed, deny, type) {
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -870,10 +872,10 @@ class Bot extends EventEmitter {
         type: type
       }
       APIUtil.APIPut(self.key, "channels/" + channelID + "/permissions/" + overwriteID, data)
-        .then(function(data){
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "EditChannelPermissions", err.display);
           reject(err);
         });
@@ -883,15 +885,15 @@ class Bot extends EventEmitter {
   /**
    * Returns a list of invite objects (with invite metadata) for the channel. Only usable for guild channels.
    * @param {string} channelID - ChannelID of the message
-  */
+   */
   GetChannelInvites(channelID) {
     var self = this;
     return new Promise(function(resolve, reject) {
       APIUtil.APIGet(self.key, "channels/" + channelID + "/invites")
-        .then(function(data){
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "GetChannelInvites", err.display);
           reject(err);
         });
@@ -902,15 +904,15 @@ class Bot extends EventEmitter {
    * Returns a list of invite objects (with invite metadata) for the channel. Only usable for guild channels.
    * @param {string} channelID - ChannelID of the message
    * @param {CreateInviteSettings} settings - Settings of new invite
-  */
+   */
   CreateChannelInvite(channelID, settings) {
     var self = this;
     return new Promise(function(resolve, reject) {
       APIUtil.APIPost(self.key, "channels/" + channelID + "/invites", settings)
-        .then(function(data){
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "CreateChannelInvite", err.display);
           reject(err);
         });
@@ -921,15 +923,15 @@ class Bot extends EventEmitter {
    * Delete a channel permission overwrite for a user or role in a channel. Only usable for guild channels.
    * @param {string} channelID - ChannelID of the message
    * @param {string} overwriteID - ?????
-  */
+   */
   DeleteChannelPermission(channelID, overwriteID) {
     var self = this;
     return new Promise(function(resolve, reject) {
       APIUtil.APIDelete(self.key, "channels/" + channelID + "/permissions/" + overwriteID)
-        .then(function(data){
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "DeleteChannelPermission", err.display);
           reject(err);
         });
@@ -939,15 +941,15 @@ class Bot extends EventEmitter {
   /**
    * Triggers Typing Inidicator
    * @param {string} channelID - ChannelID to start typing in
-  */
+   */
   StartTyping(channelID) {
     var self = this;
     return new Promise(function(resolve, reject) {
       APIUtil.APIPost(self.key, "channels/" + channelID + "/typing")
-        .then(function(data){
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "StartTyping", err.display);
           reject(err);
         });
@@ -957,15 +959,15 @@ class Bot extends EventEmitter {
   /**
    * Returns all pinned messages in the channel as an array of message objects.
    * @param {string} channelID - ChannelID to start typing in
-  */
+   */
   GetPinnedMessages(channelID) {
     var self = this;
     return new Promise(function(resolve, reject) {
       APIUtil.Get(self.key, "channels/" + channelID + "/pins")
-        .then(function(data){
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "GetPinnedMessages", err.display);
           reject(err);
         });
@@ -976,15 +978,15 @@ class Bot extends EventEmitter {
    * Pin a message in a channel.
    * @param {string} channelID - ChannelID to start typing in
    * @param {string} messageID - Messaged to pin
-  */
+   */
   AddPinnedMessage(channelID, messageID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Put(self.key, "channels/" + channelID + "/pins/"+messageID)
-        .then(function(data){
+      APIUtil.Put(self.key, "channels/" + channelID + "/pins/" + messageID)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "AddPinnedMessage", err.display);
           reject(err);
         });
@@ -995,15 +997,15 @@ class Bot extends EventEmitter {
    * Delete a pinned message in a channel.
    * @param {string} channelID - ChannelID to start typing in
    * @param {string} messageID - Messaged to unPIn
-  */
+   */
   DeletePinnedMessage(channelID, messageID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Delete(self.key, "channels/" + channelID + "/pins/"+messageID)
-        .then(function(data){
+      APIUtil.Delete(self.key, "channels/" + channelID + "/pins/" + messageID)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "DeletePinnedMessage", err.display);
           reject(err);
         });
@@ -1016,7 +1018,7 @@ class Bot extends EventEmitter {
    * @param {string} userID - User to add
    * @param {string} accessToken - access token of a user that has granted your app the gdm.join scope
    * @param {string} nick - 	nickname of the user being added
-  */
+   */
   AddUserToGroupDM(channelID, userID, accessToken, nick) {
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -1024,11 +1026,11 @@ class Bot extends EventEmitter {
         access_token: accessToken,
         nick: nick
       };
-      APIUtil.Put(self.key, "channels/" + channelID + "/recipients/"+userID, data)
-        .then(function(data){
+      APIUtil.Put(self.key, "channels/" + channelID + "/recipients/" + userID, data)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "AddUserToGroupDM", err.display);
           reject(err);
         });
@@ -1039,7 +1041,7 @@ class Bot extends EventEmitter {
    * Removes a recipient from a Group DM
    * @param {string} channelID - ChannelID to start typing in
    * @param {string} userID - User to add
-  */
+   */
   RemoveUserFromGroupDM(channelID, userID) {
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -1047,11 +1049,11 @@ class Bot extends EventEmitter {
         access_token: accessToken,
         nick: nick
       };
-      APIUtil.Delete(self.key, "channels/" + channelID + "/recipients/"+userID)
-        .then(function(data){
+      APIUtil.Delete(self.key, "channels/" + channelID + "/recipients/" + userID)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "RemoveUserFromGroupDM", err.display);
           reject(err);
         });
@@ -1061,15 +1063,15 @@ class Bot extends EventEmitter {
   /**
    * Get Guild
    * @param {string} guildID - Guild ID
-  */
+   */
   GetGuild(guildID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Get(self.key, "guilds/"+guildID)
-        .then(function(data){
+      APIUtil.Get(self.key, "guilds/" + guildID)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "GetGuild", err.display);
           reject(err);
         });
@@ -1080,15 +1082,15 @@ class Bot extends EventEmitter {
    * Edit Guild
    * @param {string} guildID - Guild to Edit
    * @param {GuildEditObject} settings - New Guild Settings
-  */
+   */
   EditGuilds(guildID, settings = {}) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Patch(self.key, "guilds/"+guildID, settings)
-        .then(function(data){
+      APIUtil.Patch(self.key, "guilds/" + guildID, settings)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "EditGuilds", err.display);
           reject(err);
         });
@@ -1098,15 +1100,15 @@ class Bot extends EventEmitter {
   /**
    * Returns a list of guild channel objects.
    * @param {string} guildID - Guild to Edit
-  */
+   */
   GetGuildChannels(guildID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Get(self.key, "guilds/"+guildID+"/channels")
-        .then(function(data){
+      APIUtil.Get(self.key, "guilds/" + guildID + "/channels")
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "GetGuildChannels", err.display);
           reject(err);
         });
@@ -1117,15 +1119,15 @@ class Bot extends EventEmitter {
    * Create a new channel object for the guild.
    * @param {string} guildID - Guild to Edit
    * @param {ChannelSettings} settings - New Guild Info
-  */
+   */
   CreateChannel(guildID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Post(self.key, "guilds/"+guildID+"/channels", settings)
-        .then(function(data){
+      APIUtil.Post(self.key, "guilds/" + guildID + "/channels", settings)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "CreateChannel", err.display);
           reject(err);
         });
@@ -1137,15 +1139,18 @@ class Bot extends EventEmitter {
    * @param {string} guildID - Guild to Edit
    * @param {string} channelID - Channel to Move
    * @param {integer} postion - Position of Channel
-  */
+   */
   EditChannelPosition(guildID, channelID, postion) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Patch(self.key, "guilds/"+guildID+"/channels", {id: channelID, postion: position})
-        .then(function(data){
+      APIUtil.Patch(self.key, "guilds/" + guildID + "/channels", {
+          id: channelID,
+          postion: position
+        })
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "EditChannelPosition", err.display);
           reject(err);
         });
@@ -1156,15 +1161,15 @@ class Bot extends EventEmitter {
    * Returns a guild member object for the specified user.
    * @param {string} guildID - Guild to Edit
    * @param {string} userID - User to retrivie
-  */
+   */
   GetGuildMemeber(guildID, userID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Get(self.key, "guilds/"+guildID+"/members/"+userID)
-        .then(function(data){
+      APIUtil.Get(self.key, "guilds/" + guildID + "/members/" + userID)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "GetGuildMemeber", err.display);
           reject(err);
         });
@@ -1176,15 +1181,18 @@ class Bot extends EventEmitter {
    * @param {string} guildID - Guild to Edit
    * @param {integer} limit - Optional, defaults to 100
    * @param {snowflake} after - Optional - 	the highest user id in the previous page
-  */
+   */
   ListGuildMemebers(guildID, userID, limit = 100, after) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Get(self.key, "guilds/"+guildID+"/members/"+userID, {limit: limit, after: after})
-        .then(function(data){
+      APIUtil.Get(self.key, "guilds/" + guildID + "/members/" + userID, {
+          limit: limit,
+          after: after
+        })
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "ListGuildMemebers", err.display);
           reject(err);
         });
@@ -1196,15 +1204,15 @@ class Bot extends EventEmitter {
    * @param {string} guildID - Guild to Edit
    * @param {string} userID - User to Edits
    * @param {MemberEditObject} settings - Setttings for member
-  */
-  EditGuildMember(guildID, userID,setting) {
+   */
+  EditGuildMember(guildID, userID, setting) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Patch(self.key, "guilds/"+guildID+"/members/"+userID, settings)
-        .then(function(data){
+      APIUtil.Patch(self.key, "guilds/" + guildID + "/members/" + userID, settings)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "EditGuildMember", err.display);
           reject(err);
         });
@@ -1215,15 +1223,17 @@ class Bot extends EventEmitter {
    * Set username of bot
    * @param {string} guildID - Guild to Edit
    * @param {string} nickname - new nickname
-  */
+   */
   SetNickname(guildID, nickname) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Patch(self.key, "guilds/"+guildID+"/members/@me/nick", {nick: nickname})
-        .then(function(data){
+      APIUtil.Patch(self.key, "guilds/" + guildID + "/members/@me/nick", {
+          nick: nickname
+        })
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "SetNickname", err.display);
           reject(err);
         });
@@ -1235,15 +1245,15 @@ class Bot extends EventEmitter {
    * @param {string} guildID - Guild to Edit
    * @param {string} userID - user ID
    * @param {string} roleID  - role ID
-  */
-  AddRole(guildID, userID,roleID) {
+   */
+  AddRole(guildID, userID, roleID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Put(self.key, "guilds/"+guildID+"/members/"+userID+"/roles/"+roleID)
-        .then(function(data){
+      APIUtil.Put(self.key, "guilds/" + guildID + "/members/" + userID + "/roles/" + roleID)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "AddRole", err.display);
           reject(err);
         });
@@ -1255,15 +1265,15 @@ class Bot extends EventEmitter {
    * @param {string} guildID - Guild to Edit
    * @param {string} userID - user ID
    * @param {string} roleID  - role ID
-  */
-  RemoveRole(guildID, userID,roleID) {
+   */
+  RemoveRole(guildID, userID, roleID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Delete(self.key, "guilds/"+guildID+"/members/"+userID+"/roles/"+roleID)
-        .then(function(data){
+      APIUtil.Delete(self.key, "guilds/" + guildID + "/members/" + userID + "/roles/" + roleID)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "RemoveRole", err.display);
           reject(err);
         });
@@ -1274,15 +1284,15 @@ class Bot extends EventEmitter {
    * Remove a member from a guild.
    * @param {string} guildID - Guild to Edit
    * @param {string} userID - user ID
-  */
+   */
   RemoveMember(guildID, userID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Delete(self.key, "guilds/"+guildID+"/members/"+userID)
-        .then(function(data){
+      APIUtil.Delete(self.key, "guilds/" + guildID + "/members/" + userID)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "RemoveMember", err.display);
           reject(err);
         });
@@ -1292,15 +1302,15 @@ class Bot extends EventEmitter {
   /**
    * Gets ban for a guild
    * @param {string} guildID - Guild to Edit
-  */
+   */
   GetBans(guildID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Delete(self.key, "guilds/"+guildID+"/bans")
-        .then(function(data){
+      APIUtil.Delete(self.key, "guilds/" + guildID + "/bans")
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "GetBans", err.display);
           reject(err);
         });
@@ -1312,15 +1322,17 @@ class Bot extends EventEmitter {
    * @param {string} guildID - Guild to Edit
    * @param {string} userID - User to ban
    * @param {integer} days - number of days to delete messages for (0-7)
-  */
+   */
   BanUser(guildID, userID, days = 0) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Put(self.key, "guilds/"+guildID+"/bans/"+userID, {'delete-message-days': days})
-        .then(function(data){
+      APIUtil.Put(self.key, "guilds/" + guildID + "/bans/" + userID, {
+          'delete-message-days': days
+        })
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "BanUser", err.display);
           reject(err);
         });
@@ -1331,15 +1343,15 @@ class Bot extends EventEmitter {
    * Ban a user
    * @param {string} guildID - Guild to Edit
    * @param {string} userID - User to ban
-  */
+   */
   UnBanUser(guildID, userID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Delete(self.key, "guilds/"+guildID+"/bans/"+userID)
-        .then(function(data){
+      APIUtil.Delete(self.key, "guilds/" + guildID + "/bans/" + userID)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "UnBanUser", err.display);
           reject(err);
         });
@@ -1349,15 +1361,15 @@ class Bot extends EventEmitter {
   /**
    * Get Guild Roles
    * @param {string} guildID - Guild to Edit
-  */
+   */
   GetRoles(guildID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Get(self.key, "guilds/"+guildID+"/roles")
-        .then(function(data){
+      APIUtil.Get(self.key, "guilds/" + guildID + "/roles")
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "GetRoles", err.display);
           reject(err);
         });
@@ -1368,15 +1380,15 @@ class Bot extends EventEmitter {
    * Create Guild Role
    * @param {string} guildID - Guild to Edit
    * @param {RoleCreateObject} setting - New Role
-  */
+   */
   CreateRole(guildID, setting) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Post(self.key, "guilds/"+guildID+"/roles")
-        .then(function(data){
+      APIUtil.Post(self.key, "guilds/" + guildID + "/roles")
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "CreateRole", err.display);
           reject(err);
         });
@@ -1388,15 +1400,18 @@ class Bot extends EventEmitter {
    * @param {string} guildID - Guild to Edit
    * @param {string} roleID - Role to edit
    * @param {integer} position - New position
-  */
-  EditRolePosition(guildID,roleID, position) {
+   */
+  EditRolePosition(guildID, roleID, position) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Post(self.key, "guilds/"+guildID+"/roles", {id: roleID, position: position})
-        .then(function(data){
+      APIUtil.Post(self.key, "guilds/" + guildID + "/roles", {
+          id: roleID,
+          position: position
+        })
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "EditRolePosition", err.display);
           reject(err);
         });
@@ -1408,15 +1423,15 @@ class Bot extends EventEmitter {
    * @param {string} guildID - Guild to Edit
    * @param {string} roleID - Role to edit
    * @param {RoleCreateObject} settings - Role Settings
-  */
-  EditRole(guildID,roleID, settings) {
+   */
+  EditRole(guildID, roleID, settings) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Patch(self.key, "guilds/"+guildID+"/roles/"+roleID, settings)
-        .then(function(data){
+      APIUtil.Patch(self.key, "guilds/" + guildID + "/roles/" + roleID, settings)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "EditRole", err.display);
           reject(err);
         });
@@ -1424,19 +1439,19 @@ class Bot extends EventEmitter {
   }
 
   /**
-   * Edit Role
+   * Delete Role
    * @param {string} guildID - Guild to Edit
    * @param {string} roleID - Role to edit
    * @param {RoleCreateObject} setting - Role Settings
-  */
-  DeleteRole(guildID,roleID) {
+   */
+  DeleteRole(guildID, roleID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Delete(self.key, "guilds/"+guildID+"/roles/"+roleID)
-        .then(function(data){
+      APIUtil.Delete(self.key, "guilds/" + guildID + "/roles/" + roleID)
+        .then(function(data) {
           resolve(data);
         })
-        .catch(function(err){
+        .catch(function(err) {
           Logger.Error("Bot", "DeleteRole", err.display);
           reject(err);
         });
@@ -1448,7 +1463,7 @@ class Bot extends EventEmitter {
    * Gets a guild ID from a ChannelID
    * @param {string} channelID - ChannelID of where to send the message
    * @return {string} guildID
-  */
+   */
   GetGuildIDFromChannel(channelID) {
     var self = this;
     var _server = "DM";
