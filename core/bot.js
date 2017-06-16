@@ -559,7 +559,7 @@ class Bot extends EventEmitter {
    * @param {string} channelID - ChannelID of where to send the message
    * @param {EmbedObject} embed - the Embed Object to send
   */
-  SendEmbed(channelID, embed) {
+  SendEmbed(channelID, embed, tts=false) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
@@ -577,6 +577,7 @@ class Bot extends EventEmitter {
         })
         .catch(function(err){
           Logger.Error("Bot", "SendEmbed", err.display);
+          console.dir(err);
           reject(err);
         });
     });

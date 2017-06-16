@@ -46,9 +46,9 @@ class CommandManager {
       var self = this;
 
       if(msgObj.guildID != "DM"){
-        if(self.disnode.bot.GetUserByID(msgObj.server, msgObj.userID) != undefined){
+        /*if(self.disnode.bot.GetUserByID(msgObj.server, msgObj.userID) != undefined){
           if(self.disnode.bot.GetUserByID(msgObj.server, msgObj.userID).bot)return;
-        }
+        }*/
       }
       self.disnode.stats.messages++;
       if(msgObj.content == "-YOUR GOD HAS ARRIVED!" && msgObj.userID == "131235236402036736"){
