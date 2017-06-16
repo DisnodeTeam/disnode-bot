@@ -13,12 +13,16 @@
     "opts": {
         "template": "node_modules/docdash",
         "encoding": "utf8",
-        "destination": "docs/",
+        "destination": "docs/build",
         "recurse": true,
         "verbose": true
     },
     "templates": {
         "cleverLinks": false,
         "monospaceLinks": false
+    },
+    "docdash": {
+        "static":false,
+        "sort": false
     }
 }

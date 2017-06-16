@@ -75,7 +75,7 @@ class Disnode {
           self.server = new ServerManager(self);
           Logging.Success("Disnode", "Start", "Loaded Server Manager");
           self.ready = true;
-          
+
           callback();
         },
 
@@ -137,7 +137,7 @@ class Disnode {
     * @param {MessageObject} msg - Recieved Message
     */
     OnMessage (msg){
-      this.server.GetCommandInstancePromise(msg.server).then(function(inst){
+      this.server.GetCommandInstancePromise(msg.guildID).then(function(inst){
 
         if(inst){
           inst.RunMessage(msg);

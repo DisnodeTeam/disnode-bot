@@ -5,7 +5,7 @@
   "main": "dist/Disnode.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "gen-docs": "jsdoc -c jsdoc.json"
+    "gen-docs": "jsdoc -c jsdoc.json -u ./docs/tutorials"
   },
   "repository": {
     "type": "git",
@@ -43,5 +43,8 @@
     "unzip2": "^0.2.5",
     "walk": "^2.3.9",
     "ytdl-core": "^0.14.0"
+  },
+  "devDependencies": {
+    "minami": "^1.2.3"
   }
 }
