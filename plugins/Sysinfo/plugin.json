@@ -1,0 +1,8 @@
+{
+  "name":"System Info",
+  "id": "Sysinfo",
+  "script": "Sysinfo.js",
+  "load" : true,
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}

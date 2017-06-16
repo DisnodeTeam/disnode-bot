@@ -2,7 +2,7 @@
   "name":"RPG Plugin",
   "id": "rpg-plugin",
   "script": "Plugin.js",
-  "load" : true,
+  "load" : false,
   "commandsFile": "Commands.json",
   "configFile" : "Config.json"
 }
