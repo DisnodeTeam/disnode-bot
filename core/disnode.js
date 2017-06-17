@@ -1,6 +1,6 @@
 const DiscordBot = require('./bot');
 const ServerManager = require ('./servermanager');
-
+const Communication = require('./communication')
 const StateManager  = require ('./statemanager');
 const Platform = require("./platform")
 const Stats = require('./stats');
@@ -60,6 +60,17 @@ class Disnode {
             callback();
           }else {
             Logging.Info("Disnode", "Start", "Loading of DB skipped because user wished not to use DB");
+            callback();
+          }
+       },
+       function(callback) {
+          if(self.botConfig.relayServer){
+            Logging.Info("Disnode", "Start", "Loading Communication");
+            self.communication = new Communication(self);
+            self.communication.Connect();
+            callback();
+          }else {
+            Logging.Info("Disnode", "Start", "Not using relay server");
             callback();
           }
        },
