@@ -583,6 +583,40 @@ class Bot extends EventEmitter {
         });
     });
   }
+  SendDMEmbed(userID, embed){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.GetOrCreateDM(userID).then(function(channel){
+        var msgObject = {
+          embed: embed
+        };
+        APIUtil.APIPost(self.key, 'channels/' + channel + '/messages', msgObject)
+          .then(function(data) {
+            resolve(data);
+          })
+          .catch(function(err) {
+            Logger.Error("Bot", "SendDMEmbed", err.display);
+            console.dir(err);
+            reject(err);
+          });
+      });
+    });
+  }
+  GetOrCreateDM(userID){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIPost(self.key, 'users/@me/channels',  {recipient_id: userID})
+      .then(function(data) {
+        resolve(data.id);
+        console.dir(data);
+      })
+      .catch(function(err) {
+        Logger.Error("Bot", "GetOrCreateDM", err.display);
+        console.dir(err);
+        reject(err);
+      });
+    });
+  }
 
   /**
    * send an embed as a compact one, less lines defining a embed object
