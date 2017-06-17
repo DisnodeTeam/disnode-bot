@@ -23,7 +23,7 @@
     "colors": "^1.1.2",
     "countdownjs": "^2.0.0",
     "discord.io": "^2.5.0",
-    "disnode-logger": "0.0.1",
+    "disnode-logger": "0.1.1",
     "fetch": "^1.1.0",
     "fs-extra": "^2.1.2",
     "jsonfile": "^2.3.1",

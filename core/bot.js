@@ -362,6 +362,7 @@ class Bot extends EventEmitter {
 
   CacheGuild(data) {
     this.guilds[data.id] = data;
+    
     for (var i = 0; i < data.channels.length; i++) {
       data.channels[i].guild_id = data.id;
 
