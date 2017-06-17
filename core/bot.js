@@ -608,7 +608,6 @@ class Bot extends EventEmitter {
       APIUtil.APIPost(self.key, 'users/@me/channels',  {recipient_id: userID})
       .then(function(data) {
         resolve(data.id);
-        console.dir(data);
       })
       .catch(function(err) {
         Logger.Error("Bot", "GetOrCreateDM", err.display);
