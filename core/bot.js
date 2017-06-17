@@ -362,7 +362,7 @@ class Bot extends EventEmitter {
 
   CacheGuild(data) {
     this.guilds[data.id] = data;
-    
+
     for (var i = 0; i < data.channels.length; i++) {
       data.channels[i].guild_id = data.id;
 
@@ -615,6 +615,9 @@ class Bot extends EventEmitter {
         reject(err);
       });
     });
+  }
+  GetSnowflakeDate(resourceID) {
+    return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
   }
 
   /**
