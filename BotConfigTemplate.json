@@ -1,0 +1,15 @@
+{
+  "key":"",
+  "prefix":"",
+  "preload": true,
+  "shardCount": 0,
+  "db": {
+    "use_db":true,
+    "auth":true,
+    "user":"",
+    "pass":"",
+    "host":"",
+    "port":"",
+    "DBName":""
+  }
+}
