@@ -28,11 +28,15 @@ class Util {
         }
         return obj;
     }
+    /**
+     * Convers a Snowflake ID to a JS Date Object
+     * @param {String} resourceID - The Snowflake ID you want to convert
+     * @return {Date} Converted Date
+     */
     GetSnowflakeDate(resourceID) {
       return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
     }
     ObjectbyString(o, s) {
-
         s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
         s = s.replace(/^\./, ''); // strip a leading dot
         var a = s.split('.');
