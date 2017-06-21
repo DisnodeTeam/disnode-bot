@@ -28,6 +28,9 @@ class Util {
         }
         return obj;
     }
+    GetSnowflakeDate(resourceID) {
+      return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
+    }
     ObjectbyString(o, s) {
 
         s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
