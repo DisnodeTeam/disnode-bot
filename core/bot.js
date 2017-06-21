@@ -776,7 +776,7 @@ class Bot extends EventEmitter {
         content: msg
       };
       if (!message || message == "") {
-        msgObject.content = "`DisnodeAPIAutoError: Messaged was empty or null`"
+        msgObject.content = "`DisnodeAPIAutoError: Message was empty or null`"
       }
       APIUtil.APIPatch(self.key, "channels/" + channelID + "/messages/" + messageID, msgObject)
         .then(function(data) {
