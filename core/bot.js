@@ -1207,7 +1207,7 @@ class Bot extends EventEmitter {
    * @param {string} guildID - Guild to Edit
    * @param {ChannelSettings} settings - New Guild Info
    */
-  CreateChannel(guildID) {
+  CreateChannel(guildID, settings) {
     var self = this;
     return new Promise(function(resolve, reject) {
       APIUtil.APIPost(self.key, "guilds/" + guildID + "/channels", settings)

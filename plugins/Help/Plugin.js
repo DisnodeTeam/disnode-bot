@@ -16,8 +16,8 @@ class Help {
       });
 
     }, function () {
-      var bStuff = self.disnode.bot.GetBotInfo();
-      self.disnode.bot.SendEmbed(command.msg.channel, {
+      var bStuff = self.disnode.bot.botInfo;
+      self.disnode.bot.SendEmbed(command.msg.channel_id, {
         color: 3447003,
         author: {
           name: bStuff.username + '\'s Help',

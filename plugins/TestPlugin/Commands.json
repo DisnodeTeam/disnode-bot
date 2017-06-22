@@ -1,8 +1,4 @@
 {
   "commands":[
-    {
-      "cmd": "state",
-      "run": "commandState"
-    }
   ]
 }

@@ -1,25 +1,105 @@
 class TestPlugin {
   constructor() {
-    this.sendServer = "";
-
+    this.stage = 0;
+    this.createChannel = ""
   }
-  Init(){
+  default (command) { // This is the default command that is ran when you do your bot prefix and your plugin prefix example   !ping
     var self = this;
-    var bot = self.disnode.bot;
-    bot.on("message_delete", function(data){
-      if(data.server != self.server){return;}
-      console.log("Mesaged Deleted");
-      bot.SendMessage("301778274928033793", "Message Deleted!")
-      .catch(function(err){
-        console.log("ERROR SENDING MESSAGE: " + err);
-      })
-    })
+
+
+    self.RunTest();
   }
-  default(command){ // This is the default command that is ran when you do your bot prefix and your plugin prefix example   !ping
 
+  RunTest() {
+    var self = this;
+    var bot = this.disnode.bot;
 
+    if(this.stage > 3){
+      bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Test Suite Completed**")
+      return;
+    }
+    switch (this.stage) {
+      case 0:
+        self.disnode.bot.SendCompactEmbed(this.config.channel, "Test Suite", "**Running Stage: GetChannel **")
+        bot.GetChannel(self.config.channel)
+          .then(function(data) {
+            bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Stage Successful: Get Channel** (`"+data.name+"`) :white_check_mark:")
+            setTimeout(function () {
+              self.stage += 1;
+              self.RunTest();
+            }, 1000);
+          })
+          .catch(function(err) {
+            bot.SendMessage(self.config.channel, "```json\n ERROR:" + JSON.stringify(err, " ", " ") + "```")
+            bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Stage Failed: GetChannel :x:**")
+          })
+      break;
 
+      case 1:
+        self.disnode.bot.SendCompactEmbed(this.config.channel, "Test Suite", "**Running Stage: CreateChannel **")
+        var chanObj= {
+          name: "spawned-chan",
+          position: 0,
+          topic: "Created: " + new Date(),
+        }
+        bot.CreateChannel(self.config.guild,chanObj)
+          .then(function(data) {
+            self.createChannel = data.id;
+            bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Stage Successful: CreateChannel** (`"+data.id+"`) :white_check_mark:")
+            setTimeout(function () {
+              self.stage += 1;
+              self.RunTest();
+            }, 1000);
+          })
+          .catch(function(err) {
 
+            bot.SendMessage(self.config.channel, "```json\n ERROR:" + JSON.stringify(err, " ", " ") + "```")
+            bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Stage Failed: CreateChannel :x:**")
+          })
+      break;
+
+      case 2:
+        self.disnode.bot.SendCompactEmbed(this.config.channel, "Test Suite", "**Running Stage: EditChannel **")
+        var chanObj= {
+          name: "edited-chan",
+        }
+        bot.UpdateChannel(self.createChannel,chanObj)
+          .then(function(data) {
+
+            bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Stage Successful: UpdateChannel** (`"+data.name+"`) :white_check_mark:")
+            setTimeout(function () {
+              self.stage += 1;
+              self.RunTest();
+            }, 1000);
+          })
+          .catch(function(err) {
+
+            bot.SendMessage(self.config.channel, "```json\n ERROR:" + JSON.stringify(err, " ", " ") + "```")
+            bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Stage Failed: UpdateChannel :x:**")
+          })
+      break;
+
+      case 3:
+        self.disnode.bot.SendCompactEmbed(this.config.channel, "Test Suite", "**Running Stage: DeleteChannel **")
+        var chanObj= {
+          name: "edited-chan",
+        }
+        bot.DeleteChannel("!@#!@#!#@",chanObj)
+          .then(function(data) {
+
+            bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Stage Successful: DeleteChannel** (`"+data.id+"`) :white_check_mark:")
+            setTimeout(function () {
+              self.stage += 1;
+              self.RunTest();
+            }, 1000);
+          })
+          .catch(function(err) {
+
+            bot.SendMessage(self.config.channel, "```json\n ERROR:" + JSON.stringify(err, " ", " ") + "```")
+            bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Stage Failed: DeleteChannel :x:**")
+          })
+      break;
+    }
   }
 
 }

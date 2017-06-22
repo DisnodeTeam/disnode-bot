@@ -19,12 +19,12 @@ class PluginManager {
   commandAdd(command) {
     var self = this;
     if (!command.params[0]) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
+      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
       return;
     }
-    self.disnode.bot.SendMessage(command.msg.channel, "**Downloading Plugin:** `" + command.params[0] + "`")
+    self.disnode.bot.SendMessage(command.msg.channel_id, "**Downloading Plugin:** `" + command.params[0] + "`")
     self.pluginManager.AddServerPluginRemote(command.params[0]).then(function () {
-      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Success :white_check_mark: ", "**Added Plugin! This plugin can now be used and configured for this server!:** `" + command.params[0] + "`");
+      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Success :white_check_mark: ", "**Added Plugin! This plugin can now be used and configured for this server!:** `" + command.params[0] + "`");
 
     });
   }
@@ -34,17 +34,17 @@ class PluginManager {
 
     for (var i = 0; i < self.pluginManager.plugins.length; i++) {
       var _plugin = self.pluginManager.plugins[i];
-      LoadedText += " - **" + _plugin.name + "** - *" + _plugin.id + "* - `" + _plugin.path + "`\n";
+      LoadedText += " - **" + _plugin.name + "** - *" + _plugin.id + "* \n";
     }
 
     var LaucnhedText = "";
 
     for (var i = 0; i < self.pluginManager.instances.length; i++) {
       var _plugin = self.pluginManager.instances[i];
-      LaucnhedText += " - **" + _plugin.name + "** - *" + _plugin.id + "* - `" + _plugin.path + "`\n";
+      LaucnhedText += " - **" + _plugin.name + "** - *" + _plugin.id + "* \n";
     }
 
-    self.disnode.bot.SendEmbed(command.msg.channel, {
+    self.disnode.bot.SendEmbed(command.msg.channel_id, {
       color: 3447003,
       author: {},
       fields: [{
@@ -76,16 +76,16 @@ class PluginManager {
     console.log("INFO!");
     var self = this;
     if (!command.params[0]) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
+      this.disnode.bot.SendCompactEmbed(command.msgchannel_id, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
       return;
     }
-    self.disnode.bot.SendMessage(command.msg.channel, "**Getting Plugin:** `" + command.params[0] + "`")
+    self.disnode.bot.SendMessage(command.msg.channel_id, "**Getting Plugin:** `" + command.params[0] + "`")
 
     axios.get("https://www.disnodeteam.com/api/plugins/" + command.params[0]).then(function (res) {
       var suc = res.data.type;
       switch (suc) {
         case "SUC":
-          self.disnode.bot.SendEmbed(command.msg.channel, {
+          self.disnode.bot.SendEmbed(command.msg.channel_id, {
             color: 3447003,
             author: {},
             fields: [{
@@ -155,12 +155,12 @@ class PluginManager {
 
 
           }
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Plugins (Only Verified Plugins, see http://disnodeteam.com/#/plugins for all)", msg);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Plugins (Only Verified Plugins, see http://disnodeteam.com/#/plugins for all)", msg);
 
 
           break;
         case "ERR":
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", res.data.data);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", res.data.data);
           break;
       }
     });
@@ -169,7 +169,7 @@ class PluginManager {
   commandRemove(command) {
     var self = this;
     if (!command.params[0]) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
+      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
       return;
     }
 
@@ -185,15 +185,15 @@ class PluginManager {
     var value = command.params[3];
 
     if (!plugin) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", "Please Enter a Plugin ID!");
+      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID!");
       return;
     }
     if (!file) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", "Please Enter a file (config, command)!");
+      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a file (config, command)!");
       return;
     }
     if (!key) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", "Please Enter a key!");
+      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a key!");
       return;
     }
     if (!value) {
