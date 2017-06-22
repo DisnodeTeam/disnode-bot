@@ -1306,6 +1306,7 @@ class Bot extends EventEmitter {
     });
   }
 
+
   /**
    * Set username of bot
    * @param {string} guildID - Guild to Edit
@@ -1653,6 +1654,16 @@ class Bot extends EventEmitter {
     });
   }
 
+  /**
+   * Set the bots status
+   * @param {string} status - User to retrieve
+   */
+  SetStatus(status) {
+    var self = this;
+    var packet = requests.presence(status);
+
+    self.ws.send(JSON.stringify(packet));
+  }
   /**
    * Edit Bot user Object
    * @param {string} username - Username
