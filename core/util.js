@@ -54,7 +54,30 @@ class Util {
         }
         return o;
     }
-
+    /**
+     * Pagify results
+     * @param {array} arr - Array to be paged
+     * @param {integer} page - Page number
+     * @param {integer} perPage - Results per page
+     */
+    pageResults(arr, page, perPage = 10) {
+      var returnArr = [];
+      var maxindex;
+      var startindex;
+      if (page == 1) {
+        page = 1;
+        startindex = 0
+        maxindex = perPage;
+      } else {
+        maxindex = (page * perPage);
+        startindex = maxindex - perPage;
+      }
+      for (var i = startindex; i < arr.length; i++) {
+        if (i == maxindex) break;
+        returnArr.push(arr[i]);
+      }
+      return returnArr;
+    }
     JoinParams(params, startIndex = 0){
       var finalParams = [];
 

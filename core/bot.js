@@ -554,7 +554,33 @@ class Bot extends EventEmitter {
         });
     });
   }
-
+  /**
+   * Sends a DM
+   * @param {string} userID - ChannelID of where to send the message
+   * @param {EmbedObject} message - the Embed Object to send
+   */
+  SendDMEmbed(userID, message){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.GetOrCreateDM(userID).then(function(channel){
+        var msgObject = {
+          content: message,
+          tts: tts
+        };
+        if (!message || message == "") {
+          msgObject.content = "`DisnodeAPIAutoError: Messaged was empty or null`"
+        }
+        APIUtil.APIPost(self.key, "channels/" + channel + "/messages", msgObject)
+          .then(function(data) {
+            resolve(data);
+          })
+          .catch(function(err) {
+            Logger.Error("Bot", "*/", err.display);
+            reject(err);
+          });
+      });
+    });
+  }
   /**
    * Sends a Embed
    * @param {string} channelID - ChannelID of where to send the message
@@ -583,6 +609,11 @@ class Bot extends EventEmitter {
         });
     });
   }
+  /**
+   * Sends a Embed
+   * @param {string} userID - ChannelID of where to send the message
+   * @param {EmbedObject} embed - the Embed Object to send
+   */
   SendDMEmbed(userID, embed){
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -599,20 +630,6 @@ class Bot extends EventEmitter {
             console.dir(err);
             reject(err);
           });
-      });
-    });
-  }
-  GetOrCreateDM(userID){
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      APIUtil.APIPost(self.key, 'users/@me/channels',  {recipient_id: userID})
-      .then(function(data) {
-        resolve(data.id);
-      })
-      .catch(function(err) {
-        Logger.Error("Bot", "GetOrCreateDM", err.display);
-        console.dir(err);
-        reject(err);
       });
     });
   }
@@ -648,6 +665,42 @@ class Bot extends EventEmitter {
           Logger.Error("Bot", "SendCompactEmbed", err.display);
           reject(err);
         });
+    });
+  }
+
+  /**
+   * send an embed as a compact one, less lines defining a embed object
+   * @param {string} channel - ChannelID of where to send the message
+   * @param {string} title - The title of the embed
+   * @param {string} body - The body of the embed
+   * @param {int|RGBint} color - (Optional)RGB Int of what color the embed should be (default 3447003)
+   */
+  SendDMCompactEmbed(userID, embed){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.GetOrCreateDM(userID).then(function(channel){
+        var msgObject = {
+          embed: {
+            color: color,
+            author: {},
+            fields: [{
+              name: title,
+              inline: false,
+              value: "" + body,
+            }],
+            footer: {}
+          }
+        };
+        APIUtil.APIPost(self.key, "channels/" + channel + "/messages", msgObject)
+          .then(function(data) {
+            resolve(data);
+          })
+          .catch(function(err) {
+            Logger.Error("Bot", "SendDMCompactEmbed", err.display);
+            reject(err);
+          });
+      });
+      });
     });
   }
 
@@ -997,7 +1050,7 @@ class Bot extends EventEmitter {
   GetPinnedMessages(channelID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Get(self.key, "channels/" + channelID + "/pins")
+      APIUtil.APIGet(self.key, "channels/" + channelID + "/pins")
         .then(function(data) {
           resolve(data);
         })
@@ -1016,7 +1069,7 @@ class Bot extends EventEmitter {
   AddPinnedMessage(channelID, messageID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Put(self.key, "channels/" + channelID + "/pins/" + messageID)
+      APIUtil.APIPut(self.key, "channels/" + channelID + "/pins/" + messageID)
         .then(function(data) {
           resolve(data);
         })
@@ -1035,7 +1088,7 @@ class Bot extends EventEmitter {
   DeletePinnedMessage(channelID, messageID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Delete(self.key, "channels/" + channelID + "/pins/" + messageID)
+      APIUtil.APIDelete(self.key, "channels/" + channelID + "/pins/" + messageID)
         .then(function(data) {
           resolve(data);
         })
@@ -1060,7 +1113,7 @@ class Bot extends EventEmitter {
         access_token: accessToken,
         nick: nick
       };
-      APIUtil.Put(self.key, "channels/" + channelID + "/recipients/" + userID, data)
+      APIUtil.APIPut(self.key, "channels/" + channelID + "/recipients/" + userID, data)
         .then(function(data) {
           resolve(data);
         })
@@ -1083,7 +1136,7 @@ class Bot extends EventEmitter {
         access_token: accessToken,
         nick: nick
       };
-      APIUtil.Delete(self.key, "channels/" + channelID + "/recipients/" + userID)
+      APIUtil.APIDelete(self.key, "channels/" + channelID + "/recipients/" + userID)
         .then(function(data) {
           resolve(data);
         })
@@ -1101,7 +1154,7 @@ class Bot extends EventEmitter {
   GetGuild(guildID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Get(self.key, "guilds/" + guildID)
+      APIUtil.APIGet(self.key, "guilds/" + guildID)
         .then(function(data) {
           resolve(data);
         })
@@ -1120,7 +1173,7 @@ class Bot extends EventEmitter {
   EditGuilds(guildID, settings = {}) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Patch(self.key, "guilds/" + guildID, settings)
+      APIUtil.APIPatch(self.key, "guilds/" + guildID, settings)
         .then(function(data) {
           resolve(data);
         })
@@ -1138,7 +1191,7 @@ class Bot extends EventEmitter {
   GetGuildChannels(guildID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Get(self.key, "guilds/" + guildID + "/channels")
+      APIUtil.APIGet(self.key, "guilds/" + guildID + "/channels")
         .then(function(data) {
           resolve(data);
         })
@@ -1157,7 +1210,7 @@ class Bot extends EventEmitter {
   CreateChannel(guildID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Post(self.key, "guilds/" + guildID + "/channels", settings)
+      APIUtil.APIPost(self.key, "guilds/" + guildID + "/channels", settings)
         .then(function(data) {
           resolve(data);
         })
@@ -1177,7 +1230,7 @@ class Bot extends EventEmitter {
   EditChannelPosition(guildID, channelID, postion) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Patch(self.key, "guilds/" + guildID + "/channels", {
+      APIUtil.APIPatch(self.key, "guilds/" + guildID + "/channels", {
           id: channelID,
           postion: position
         })
@@ -1199,7 +1252,7 @@ class Bot extends EventEmitter {
   GetGuildMemeber(guildID, userID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Get(self.key, "guilds/" + guildID + "/members/" + userID)
+      APIUtil.APIGet(self.key, "guilds/" + guildID + "/members/" + userID)
         .then(function(data) {
           resolve(data);
         })
@@ -1219,7 +1272,7 @@ class Bot extends EventEmitter {
   ListGuildMemebers(guildID, userID, limit = 100, after) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Get(self.key, "guilds/" + guildID + "/members/" + userID, {
+      APIUtil.APIGet(self.key, "guilds/" + guildID + "/members/" + userID, {
           limit: limit,
           after: after
         })
@@ -1242,7 +1295,7 @@ class Bot extends EventEmitter {
   EditGuildMember(guildID, userID, setting) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Patch(self.key, "guilds/" + guildID + "/members/" + userID, settings)
+      APIUtil.APIPatch(self.key, "guilds/" + guildID + "/members/" + userID, settings)
         .then(function(data) {
           resolve(data);
         })
@@ -1261,7 +1314,7 @@ class Bot extends EventEmitter {
   SetNickname(guildID, nickname) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Patch(self.key, "guilds/" + guildID + "/members/@me/nick", {
+      APIUtil.APIPatch(self.key, "guilds/" + guildID + "/members/@me/nick", {
           nick: nickname
         })
         .then(function(data) {
@@ -1283,7 +1336,7 @@ class Bot extends EventEmitter {
   AddRole(guildID, userID, roleID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Put(self.key, "guilds/" + guildID + "/members/" + userID + "/roles/" + roleID)
+      APIUtil.APIPut(self.key, "guilds/" + guildID + "/members/" + userID + "/roles/" + roleID)
         .then(function(data) {
           resolve(data);
         })
@@ -1303,7 +1356,7 @@ class Bot extends EventEmitter {
   RemoveRole(guildID, userID, roleID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Delete(self.key, "guilds/" + guildID + "/members/" + userID + "/roles/" + roleID)
+      APIUtil.APIDelete(self.key, "guilds/" + guildID + "/members/" + userID + "/roles/" + roleID)
         .then(function(data) {
           resolve(data);
         })
@@ -1322,7 +1375,7 @@ class Bot extends EventEmitter {
   RemoveMember(guildID, userID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Delete(self.key, "guilds/" + guildID + "/members/" + userID)
+      APIUtil.APIDelete(self.key, "guilds/" + guildID + "/members/" + userID)
         .then(function(data) {
           resolve(data);
         })
@@ -1340,7 +1393,7 @@ class Bot extends EventEmitter {
   GetBans(guildID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Delete(self.key, "guilds/" + guildID + "/bans")
+      APIUtil.APIDelete(self.key, "guilds/" + guildID + "/bans")
         .then(function(data) {
           resolve(data);
         })
@@ -1360,7 +1413,7 @@ class Bot extends EventEmitter {
   BanUser(guildID, userID, days = 0) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Put(self.key, "guilds/" + guildID + "/bans/" + userID, {
+      APIUtil.APIPut(self.key, "guilds/" + guildID + "/bans/" + userID, {
           'delete-message-days': days
         })
         .then(function(data) {
@@ -1381,7 +1434,7 @@ class Bot extends EventEmitter {
   UnBanUser(guildID, userID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Delete(self.key, "guilds/" + guildID + "/bans/" + userID)
+      APIUtil.APIDelete(self.key, "guilds/" + guildID + "/bans/" + userID)
         .then(function(data) {
           resolve(data);
         })
@@ -1399,7 +1452,7 @@ class Bot extends EventEmitter {
   GetRoles(guildID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Get(self.key, "guilds/" + guildID + "/roles")
+      APIUtil.APIGet(self.key, "guilds/" + guildID + "/roles")
         .then(function(data) {
           resolve(data);
         })
@@ -1418,7 +1471,7 @@ class Bot extends EventEmitter {
   CreateRole(guildID, setting) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Post(self.key, "guilds/" + guildID + "/roles")
+      APIUtil.APIPost(self.key, "guilds/" + guildID + "/roles")
         .then(function(data) {
           resolve(data);
         })
@@ -1438,7 +1491,7 @@ class Bot extends EventEmitter {
   EditRolePosition(guildID, roleID, position) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Post(self.key, "guilds/" + guildID + "/roles", {
+      APIUtil.APIPost(self.key, "guilds/" + guildID + "/roles", {
           id: roleID,
           position: position
         })
@@ -1461,7 +1514,7 @@ class Bot extends EventEmitter {
   EditRole(guildID, roleID, settings) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Patch(self.key, "guilds/" + guildID + "/roles/" + roleID, settings)
+      APIUtil.APIPatch(self.key, "guilds/" + guildID + "/roles/" + roleID, settings)
         .then(function(data) {
           resolve(data);
         })
@@ -1481,7 +1534,7 @@ class Bot extends EventEmitter {
   DeleteRole(guildID, roleID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Delete(self.key, "guilds/" + guildID + "/roles/" + roleID)
+      APIUtil.APIDelete(self.key, "guilds/" + guildID + "/roles/" + roleID)
         .then(function(data) {
           resolve(data);
         })
@@ -1499,7 +1552,7 @@ class Bot extends EventEmitter {
   GetGuildPruneCount(guildID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Get(self.key, "guilds/" + guildID + "/prune")
+      APIUtil.APIGet(self.key, "guilds/" + guildID + "/prune")
         .then(function(data) {
           resolve(data);
         })
@@ -1517,7 +1570,7 @@ class Bot extends EventEmitter {
   BeginGuildPrune(guildID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Post(self.key, "guilds/" + guildID + "/prune")
+      APIUtil.APIPost(self.key, "guilds/" + guildID + "/prune")
         .then(function(data) {
           resolve(data);
         })
@@ -1535,16 +1588,104 @@ class Bot extends EventEmitter {
   GetGuildVoiceRegions(guildID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.Post(self.key, "guilds/" + guildID + "/prune")
+      APIUtil.APIGet(self.key, "guilds/" + guildID + "/regions")
         .then(function(data) {
           resolve(data);
         })
         .catch(function(err) {
-          Logger.Error("Bot", "BeginGuildPrune", err.display);
+          Logger.Error("Bot", "GetGuildVoiceRegions", err.display);
           reject(err);
         });
     });
   }
+
+  /**
+   * Returns a list of invite objects (with invite metadata) for the guild
+   * @param {string} guildID - Guild to Edit
+   */
+  GetGuildInvites(guildID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIGet(self.key, "guilds/" + guildID + "/invites")
+        .then(function(data) {
+          resolve(data);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "GetGuildInvites", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Get Bot user Object
+   *
+   */
+  GetBotUser() {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIGet(self.key, "/users/@me")
+        .then(function(data) {
+          resolve(data);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "GetBotUser", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Get Bot user Object
+   * @param {string} userID - User to retrieve
+   */
+  GetUser(userID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIGet(self.key, "/users/" + userID)
+        .then(function(data) {
+          resolve(data);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "GetBotUser", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Edit Bot user Object
+   * @param {string} username - Username
+   * @param {string} avatar - Avatar Data
+   */
+  EditBotUser( username, avatar) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIPatch(self.key, "/users/@me", {username: username, avatar: avatar})
+        .then(function(data) {
+          resolve(data);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "EditBotUser", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  GetOrCreateDM(userID){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.APIPost('https://discordapp.com/api/users/@me/channels',  {recipient_id: userID})
+        .then(function(response) {
+          resolve(response.data.id);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "EditBotUser", err.display);
+          reject(err);
+        });
+    });
+  }
+
   /**
    * Gets a guild ID from a ChannelID
    * @param {string} channelID - ChannelID of where to send the message
