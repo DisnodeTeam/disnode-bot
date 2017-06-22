@@ -3,12 +3,17 @@ const axios = require('axios');
 class PluginManager {
 
   default(command) { // This is the default command that is ran when you do your bot prefix and your plugin prefix example   !ping
-    const sizeof = require('object-sizeof');
     var self = this;
-
-    var evals = eval(command.params[0]);
-    console.log(evals);
-    self.disnode.bot.SendCompactEmbed(command.msg.channel, "SIZE", sizeof(evals));
+    var commandHelp = "";
+    commandHelp += self.disnode.util.CommandHelpBuilder("add <plugin-id>", "_OWNER_ Downloads and adds a plugin to your server\n");
+    commandHelp += self.disnode.util.CommandHelpBuilder("remove <plugin-id>", "_OWNER_ Removes a plugin from your server \n");
+    commandHelp += self.disnode.util.CommandHelpBuilder("list", "List all plugins on the sever \n");
+    commandHelp += self.disnode.util.CommandHelpBuilder("info <plugin-id>", "Show info about a plugin\n");
+    commandHelp += self.disnode.util.CommandHelpBuilder("browse <page>", "Browse Plugins\n");
+    commandHelp += self.disnode.util.CommandHelpBuilder("config set <config|commands> <key> <value>", "Set the config value of a plugin\n");
+    commandHelp += self.disnode.util.CommandHelpBuilder("config add <config|commands> <key> <value>", "Add an element to a config array\n");
+    commandHelp += self.disnode.util.CommandHelpBuilder("config remove <config|commands> <key> <value>", "Remove an element from a config array\n");
+    self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Plugin Manager Commands", commandHelp)
   }
 
   commandAdd(command) {
@@ -201,7 +206,7 @@ class PluginManager {
     switch (file) {
       case "config":
 
-        
+
         break;
     }
 

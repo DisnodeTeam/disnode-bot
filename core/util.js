@@ -31,6 +31,10 @@ class Util {
     GetSnowflakeDate(resourceID) {
       return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
     }
+
+    CommandHelpBuilder(command, description){
+      return "`" + this.disnode.botConfig.prefix + command + "` - **" + description + "**";
+    }
     ObjectbyString(o, s) {
 
         s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties

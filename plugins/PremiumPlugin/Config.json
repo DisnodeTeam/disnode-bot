@@ -1,4 +1,4 @@
 {
   "prefix":"ultra",
-  "run":true
+  "load": true
 }

@@ -1495,7 +1495,59 @@ class Bot extends EventEmitter {
     });
   }
 
+  /**
+   * Returns an object with one 'pruned' key indicating the number of members that would be removed in a prune operation.
+   * @param {string} guildID - Guild to Edit
+   */
+  GetGuildPruneCount(guildID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Get(self.key, "guilds/" + guildID + "/prune")
+        .then(function(data) {
+          resolve(data);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "GetGuildPruneCount", err.display);
+          reject(err);
+        });
+    });
+  }
 
+  /**
+   * Begin a prune operation. Requires the 'KICK_MEMBERS' permission
+   * @param {string} guildID - Guild to Edit
+   */
+  BeginGuildPrune(guildID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Post(self.key, "guilds/" + guildID + "/prune")
+        .then(function(data) {
+          resolve(data);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "BeginGuildPrune", err.display);
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Returns a list of voice region objects for the guild.
+   * @param {string} guildID - Guild to Edit
+   */
+  GetGuildVoiceRegions(guildID) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      APIUtil.Post(self.key, "guilds/" + guildID + "/prune")
+        .then(function(data) {
+          resolve(data);
+        })
+        .catch(function(err) {
+          Logger.Error("Bot", "BeginGuildPrune", err.display);
+          reject(err);
+        });
+    });
+  }
   /**
    * Gets a guild ID from a ChannelID
    * @param {string} channelID - ChannelID of where to send the message
