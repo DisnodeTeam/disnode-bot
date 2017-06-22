@@ -23,7 +23,12 @@ class Help {
           name: bStuff.username + '\'s Help',
           icon_url: "https:\/\/cdn.discordapp.com\/avatars\/" + bStuff.id + "\/" + bStuff.avatar + ".png"
         },
-        fields: [{
+        fields: [
+          {
+            name: '\nWelcome Message',
+            inline: false,
+            value: self.config.welcome || "Welcome!",
+          },{
           name: '\nCommands',
           inline: false,
           value: plugins,

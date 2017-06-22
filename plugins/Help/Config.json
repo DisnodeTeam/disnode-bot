@@ -1,5 +1,4 @@
 {
   "prefix":"help",
-  "static": "false",
-  "load": true
+  "welcome" : "**Disnode Bot and the Disnode Platform is Currently Under Contruction. Currently Plugin Downloading is Disabled.**"
 }

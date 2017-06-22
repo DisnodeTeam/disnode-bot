@@ -4,5 +4,6 @@
   "script": "Sysinfo.js",
   "load" : true,
   "commandsFile": "Commands.json",
-  "configFile" : "Config.json"
+  "configFile" : "Config.json",
+  "requirements": ["os-utils"]
 }
