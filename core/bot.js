@@ -699,7 +699,7 @@ class Bot extends EventEmitter {
             Logger.Error("Bot", "SendDMCompactEmbed", err.display);
             reject(err);
           });
-      });
+
       });
     });
   }
