@@ -616,9 +616,6 @@ class Bot extends EventEmitter {
       });
     });
   }
-  GetSnowflakeDate(resourceID) {
-    return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
-  }
 
   /**
    * send an embed as a compact one, less lines defining a embed object
@@ -638,7 +635,7 @@ class Bot extends EventEmitter {
           fields: [{
             name: title,
             inline: false,
-            value: body,
+            value: "" + body,
           }],
           footer: {}
         }

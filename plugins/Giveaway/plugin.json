@@ -1,0 +1,8 @@
+{
+  "name":"Giveaway Plugin",
+  "id": "giveaway-plugin",
+  "script": "Plugin.js",
+  "load": true,
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}
