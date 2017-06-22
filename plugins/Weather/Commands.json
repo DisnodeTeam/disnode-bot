@@ -1,0 +1,16 @@
+{
+  "commands":[
+    {
+      "cmd": "log",
+      "run": "log"
+    },
+    {
+      "cmd" : "info",
+      "run" : "info"
+    },
+    {
+      "cmd" : "forecast",
+      "run" : "forecast"
+    }
+  ]
+}
