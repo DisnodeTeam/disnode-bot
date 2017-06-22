@@ -1,1 +1,3 @@
-{"prefix":"plugin","static":"false","run":true}
+{
+  "prefix": "plugins"
+}

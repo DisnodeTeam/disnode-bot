@@ -162,7 +162,6 @@ class CasinoPlugin {
   }
   default(command) {
     var self = this;
-
     if(command.params[0] == 'dev'){
       command.params.splice(0,1);
       self.commandAdmin(command);
@@ -180,7 +179,7 @@ class CasinoPlugin {
         msg += self.disnode.botConfig.prefix + self.config.prefix + " " + self.commands[i].cmd + " - " + self.commands[i].desc + "\n";
       }
 
-      self.disnode.bot.SendEmbed(command.msg.channel, {
+      self.disnode.bot.SendEmbed(command.msg.channel_id, {
         color: 3447003,
         author: {},
         fields: [ {
@@ -207,7 +206,7 @@ class CasinoPlugin {
   }
   commandInvite(command){
     var self = this;
-    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Invite", "https://discordapp.com/oauth2/authorize?client_id=263330369409908736&scope=bot&permissions=19456");
+    self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Invite", "https://discordapp.com/oauth2/authorize?client_id=263330369409908736&scope=bot&permissions=19456");
     return;
   }
   commandBal(command){
@@ -215,19 +214,19 @@ class CasinoPlugin {
     if(command.params[0] != undefined){
       self.utils.getPlayer(command).then(function(player) {
         if(!player.rules){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
           return;
         }
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
             return;
           }
         }
         self.utils.findPlayer(command.params[0]).then(function(res) {
           if(res.found){
-            self.disnode.bot.SendEmbed(command.msg.channel, {
+            self.disnode.bot.SendEmbed(command.msg.channel_id, {
               color: 1433628,
               author: {},
               title: res.p.name + " Balance",
@@ -259,24 +258,24 @@ class CasinoPlugin {
                 footer: {}
             });
           }else {
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
           }
         });
       });
     }else {
       self.utils.getPlayer(command).then(function(player) {
         if(!player.rules){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
           return;
         }
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
             return;
           }
         }
-        self.disnode.bot.SendEmbed(command.msg.channel,
+        self.disnode.bot.SendEmbed(command.msg.channel_id,
           {
             color: 1433628,
             author: {},
@@ -317,13 +316,13 @@ class CasinoPlugin {
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
         return;
       }
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
             return;
           }
         }
@@ -331,7 +330,7 @@ class CasinoPlugin {
           var minJackpotBet = (player.money * 0.03);
         }else var minJackpotBet = 250;
         self.utils.updateLastSeen(player);
-        self.disnode.bot.SendEmbed(command.msg.channel, {
+        self.disnode.bot.SendEmbed(command.msg.channel_id, {
           color: 1433628,
           author: {},
           fields: [ {
@@ -357,13 +356,13 @@ class CasinoPlugin {
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
         return;
       }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
           return;
         }
       }
@@ -372,7 +371,7 @@ class CasinoPlugin {
           if(player.money > 8500){
             var minJackpotBet = (player.money * 0.03);
           }else var minJackpotBet = 250;
-          self.disnode.bot.SendEmbed(command.msg.channel, {
+          self.disnode.bot.SendEmbed(command.msg.channel_id, {
             color: 1433628,
             author: {},
             title: 'Casino Slots',
@@ -413,7 +412,7 @@ class CasinoPlugin {
             });
           break;
         case undefined:
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Slots", "Hi, Welcome to the slots! If you need info on the slots the run `!casino slot info`\n\nIf you want to try the slots then do `!casino slot [bet]` for example `casino slot 100` that will run the slot with $100 as the bet");
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Slots", "Hi, Welcome to the slots! If you need info on the slots the run `!casino slot info`\n\nIf you want to try the slots then do `!casino slot [bet]` for example `casino slot 100` that will run the slot with $100 as the bet");
           break;
         default:
           if(command.params[0]){
@@ -426,12 +425,12 @@ class CasinoPlugin {
             if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
             if(!timeoutInfo.pass){
               logger.Info("Casino", "Slot", "Player: " + player.name + " Tried the slots before their delay of: " + timeoutInfo.remain);
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
+              self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
               return;
             }
             if(bet > 0.01){
               if(bet > player.money | bet == NaN | bet == "NaN"){// Checks to see if player has enough money for their bet
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
                 return;
               }else{
                 player.money -= parseFloat(bet);
@@ -470,8 +469,8 @@ class CasinoPlugin {
               self.state.data.casinoObj.jackpotValue = parseFloat(self.state.data.casinoObj.jackpotValue.toFixed(2));
               self.utils.handleRecentBetters(player);
               self.utils.updateLastSeen(player);
-              self.utils.checkLV(player, command.msg.channel);
-              self.disnode.bot.SendEmbed(command.msg.channel, {
+              self.utils.checkLV(player, command.msg.channel_id);
+              self.disnode.bot.SendEmbed(command.msg.channel_id, {
                 color: 1433628,
                 author: {},
                 fields: [ {
@@ -518,7 +517,7 @@ class CasinoPlugin {
               self.utils.DB.Update("players", {"id":player.id}, player);
               self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
             }else {
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a Number for bet or `!casino slot` for general help", 16772880)
+              self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: Please use a Number for bet or `!casino slot` for general help", 16772880)
             }
           }
       }
@@ -529,18 +528,18 @@ class CasinoPlugin {
       var self = this;
       self.utils.getPlayer(command).then(function(player) {
         if(!player.rules){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
           return;
         }
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
             return;
           }
         }
         if(player.lv < 2){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must be Level 2 to Play Coin Flip!", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You must be Level 2 to Play Coin Flip!", 16772880);
           return;
         }
         var flipinfo = {
@@ -559,7 +558,7 @@ class CasinoPlugin {
           flipinfo.tag = "Tails";
           flipinfo.ltag = "Heads";
         }else {
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Coin Flip", "Welcome to Coin Flip! You can play by using this command `!casino flip [heads/tails] [bet]` Examples `!casino flip heads 100` and `!casino flip tails 100`", 1433628);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Coin Flip", "Welcome to Coin Flip! You can play by using this command `!casino flip [heads/tails] [bet]` Examples `!casino flip heads 100` and `!casino flip tails 100`", 1433628);
           return;
         }if(command.params[1]){
           if(command.params[1].toLowerCase() == "allin"){
@@ -573,11 +572,11 @@ class CasinoPlugin {
           if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
           if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
           if(!timeoutInfo.pass){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
             return;
           }
           if(bet > player.money){// Checks to see if player has enough money for their bet
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
             return;
           }else{
             var minbet = player.money * 0.015;
@@ -604,7 +603,7 @@ class CasinoPlugin {
             logger.Info("Casino", "CoinFlip", "Player: " + player.name + " Has Won Coin Flip Winnings: " + flipinfo.winAmount + "original bet: " + bet);
             self.utils.updateLastSeen(player);
             minbet = player.money * 0.015;
-            self.disnode.bot.SendEmbed(command.msg.channel, {
+            self.disnode.bot.SendEmbed(command.msg.channel_id, {
               color: 1433628,
               author: {},
               fields: [ {
@@ -641,7 +640,7 @@ class CasinoPlugin {
             );
             self.utils.updatePlayerLastMessage(player);
             self.utils.updateLastSeen(player);
-            self.utils.checkLV(player, command.msg.channel);
+            self.utils.checkLV(player, command.msg.channel_id);
           }else {
             flipinfo.winText = flipinfo.ltag + " House Wins!";
             if(bet >= 250){}else {
@@ -652,7 +651,7 @@ class CasinoPlugin {
             }else player.stats.coinHeads++;
             logger.Info("Casino", "CoinFlip", "Player: " + player.name + " Has Lost Coin Flip Winnings: " + flipinfo.winAmount + "original bet: " + bet);
             self.utils.updateLastSeen(player);
-            self.disnode.bot.SendEmbed(command.msg.channel, {
+            self.disnode.bot.SendEmbed(command.msg.channel_id, {
               color: 3447003,
               author: {},
               fields: [ {
@@ -685,12 +684,12 @@ class CasinoPlugin {
             );
             self.utils.updatePlayerLastMessage(player);
             self.utils.updateLastSeen(player);
-            self.utils.checkLV(player, command.msg.channel);
+            self.utils.checkLV(player, command.msg.channel_id);
           }
           self.utils.DB.Update("players", {"id":player.id}, player);
           self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
         }else {
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a bet! Example `!casino flip tails 100`", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: Please enter a bet! Example `!casino flip tails 100`", 16772880);
         }
       });
       return;
@@ -708,20 +707,20 @@ class CasinoPlugin {
     var timeoutInfo;
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
         return;
       }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
           return;
         }
       }
       switch (command.params[0]) {
         case "spin":
           if(player.lv < 2){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must be Level 2 to Play The Wheel!", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You must be Level 2 to Play The Wheel!", 16772880);
             return;
           }
           if(command.params[1] == "allin"){
@@ -734,11 +733,11 @@ class CasinoPlugin {
           if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
           if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
             if(!timeoutInfo.pass){
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
+              self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
               return;
             }
             if(command.params.length > 7){
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You can only put a maximum of 5 Bet Types!", 16772880);
+              self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You can only put a maximum of 5 Bet Types!", 16772880);
             }
             for (var i = 2; i < command.params.length; i++) {
               if(command.params[i] == undefined)break;
@@ -763,15 +762,15 @@ class CasinoPlugin {
                 for (var i = 0; i < invalidbets.length; i++) {
                   msg += invalidbets[i] + " ";
                 }
-                self.disnode.bot.SendCompactEmbed(command.msg.channel,"Error", ":warning: Please Enter valid bet types! Invalid: " + msg, 16772880);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel_id,"Error", ":warning: Please Enter valid bet types! Invalid: " + msg, 16772880);
                 return;
               }else {
-                self.disnode.bot.SendCompactEmbed(command.msg.channel,"Error", ":warning: Please Enter valid bet types!", 16772880);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel_id,"Error", ":warning: Please Enter valid bet types!", 16772880);
                 return;
               }
             }
             if(bet > player.money){// Checks to see if player has enough money for their bet
-              self.disnode.bot.SendCompactEmbed(command.msg.channel,"Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
+              self.disnode.bot.SendCompactEmbed(command.msg.channel_id,"Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
               return;
             }else{
               var minbet = player.money * 0.015;
@@ -803,10 +802,10 @@ class CasinoPlugin {
             minbet = player.money * 0.015;
             logger.Info("Casino", "Wheel", "Wheel Player: " + player.name + " bet: " + bet + " Win: " + wheelInfo.winAmount);
           }else {
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a number for your bet!", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: Please use a number for your bet!", 16772880);
             return;
           }
-          self.disnode.bot.SendEmbed(command.msg.channel, {
+          self.disnode.bot.SendEmbed(command.msg.channel_id, {
             color: 1433628,
             author: {},
             fields: [ {
@@ -847,12 +846,12 @@ class CasinoPlugin {
           );
           self.utils.updatePlayerLastMessage(player);
           self.utils.updateLastSeen(player);
-          self.utils.checkLV(player, command.msg.channel);
+          self.utils.checkLV(player, command.msg.channel_id);
           self.utils.DB.Update("players", {"id":player.id}, player);
           self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
           break;
         case "info":
-          self.disnode.bot.SendEmbed(command.msg.channel, {
+          self.disnode.bot.SendEmbed(command.msg.channel_id, {
               color: 3447003,
               author: {},
               fields: [ {
@@ -881,7 +880,7 @@ class CasinoPlugin {
           );
           break;
         default:
-          self.disnode.bot.SendEmbed(command.msg.channel, {
+          self.disnode.bot.SendEmbed(command.msg.channel_id, {
             color: 3447003,
             author: {},
             fields: [ {
@@ -901,13 +900,13 @@ class CasinoPlugin {
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
         return;
       }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
           return;
         }
       }
@@ -915,7 +914,7 @@ class CasinoPlugin {
       for (var i = 0; i < self.utils.recentBetters.length; i++) {
         msg += (i+1) + ". **" + self.utils.recentBetters[i].name + "** -=- `" + self.utils.recentBetters[i].time + "`\n";
       }
-      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Recent Betters -=- Current Time: " + self.utils.getDateTime(), msg);
+      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Recent Betters -=- Current Time: " + self.utils.getDateTime(), msg);
     });
     return;
   }
@@ -923,13 +922,13 @@ class CasinoPlugin {
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
         return;
       }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
           return;
         }
       }
@@ -968,7 +967,7 @@ class CasinoPlugin {
           if(i == maxindex)break;
           msg += "" + (i + 1) + ". **" + orderTop[i].name + "** -=- $" + numeral(orderTop[i].money).format('0,0.00') + "\n";
         }
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Wealthiest Players", msg);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Wealthiest Players", msg);
       });
     });
     return;
@@ -977,13 +976,13 @@ class CasinoPlugin {
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
         return;
       }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
           return;
         }
       }
@@ -1022,7 +1021,7 @@ class CasinoPlugin {
           if(i == maxindex)break;
           msg += "" + (i + 1) + ". **" + orderTop[i].name + "** -=- Level: " + orderTop[i].lv + "\n";
         }
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Experienced Players", msg);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Experienced Players", msg);
       });
     });
     return;
@@ -1031,13 +1030,13 @@ class CasinoPlugin {
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
         return;
       }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
           return;
         }
       }
@@ -1047,14 +1046,14 @@ class CasinoPlugin {
         if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
         if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
           if(!timeoutInfo.pass){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
             return;
           }
           var CrateID = numeral(command.params[1]).value();
           if(CrateID >= 0 && CrateID < self.cratesys.crates.length){
             var Crate = self.cratesys.crates[CrateID];
             if(Crate == undefined){
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "The ID that you entered is not valid!", 16772880);
+              self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "The ID that you entered is not valid!", 16772880);
               return;
             }
             if(player.keys >= Crate.cost){
@@ -1063,31 +1062,31 @@ class CasinoPlugin {
               switch (Item.type) {
                 case 0:
                   player.money += Item.amount;
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
                   break;
                 case 1:
                   player.xp += Item.amount;
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
                   break;
                 case 2:
                   player.money += player.income;
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
                   break;
                 case 3:
                   player.money += (player.income * 2);
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
                   break;
               }
               self.utils.updatePlayerLastMessage(player);
               self.utils.updateLastSeen(player);
-              self.utils.checkLV(player, command.msg.channel);
+              self.utils.checkLV(player, command.msg.channel_id);
               self.utils.DB.Update("players", {"id":player.id}, player);
               self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
             }else {
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough Keys!\nNEED: " + Crate.cost + "\nHAVE: " + player.keys, 16772880);
+              self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "You Dont have enough Keys!\nNEED: " + Crate.cost + "\nHAVE: " + player.keys, 16772880);
             }
           }else {
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "The ID that you entered is not valid!", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "The ID that you entered is not valid!", 16772880);
           }
           break;
         default:
@@ -1098,7 +1097,7 @@ class CasinoPlugin {
             crates += " # **" + self.cratesys.crates[i].items[l].item + "**\n";
           }
         }
-        self.disnode.bot.SendEmbed(command.msg.channel, {
+        self.disnode.bot.SendEmbed(command.msg.channel_id, {
           color: 3447003,
           author: {},
           fields: [ {
@@ -1121,13 +1120,13 @@ class CasinoPlugin {
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
         return;
       }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
           return;
         }
       }
@@ -1174,7 +1173,7 @@ class CasinoPlugin {
                 "**High, Low**: " + res.p.stats.wheellowhigh + " / " + res.p.stats.wheelLandedlowhigh + "\n" +
                 "**Even, Odd**: " + res.p.stats.wheelevenodd + " / " + res.p.stats.wheelLandedevenodd + "\n" +
                 "**Red, Black**: " + res.p.stats.wheelcolor + " / " + res.p.stats.wheelLandedcolor;
-              self.disnode.bot.SendEmbed(command.msg.channel,{
+              self.disnode.bot.SendEmbed(command.msg.channel_id,{
                 color: 1433628,
                 author: {},
                 fields: [ {
@@ -1199,7 +1198,7 @@ class CasinoPlugin {
               );
             });
           }else {
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Player card Not Found Please @mention the user you are trying to send to or make sure you have the correct name if not using a @mention! Also make sure they have a account on the game!\n\n" + res.msg, 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: Player card Not Found Please @mention the user you are trying to send to or make sure you have the correct name if not using a @mention! Also make sure they have a account on the game!\n\n" + res.msg, 16772880);
           }
         })
       }else {
@@ -1243,7 +1242,7 @@ class CasinoPlugin {
               "**High, Low**: " + player.stats.wheellowhigh + " / " + player.stats.wheelLandedlowhigh + "\n" +
               "**Even, Odd**: " + player.stats.wheelevenodd + " / " + player.stats.wheelLandedevenodd + "\n" +
               "**Red, Black**: " + player.stats.wheelcolor + " / " + player.stats.wheelLandedcolor;
-          self.disnode.bot.SendEmbed(command.msg.channel,{
+          self.disnode.bot.SendEmbed(command.msg.channel_id,{
             color: 1433628,
             author: {},
             fields: [ {
@@ -1277,7 +1276,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin == undefined)player.Admin = false;
       if(!player.Admin){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: YOU SHALL NOT PASS! (**You are not an Admin in the Disnode Official Discord Server**)", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: YOU SHALL NOT PASS! (**You are not an Admin in the Disnode Official Discord Server**)", 16772880);
       }else {
         switch (command.params[0]) {
           case "reset":
@@ -1292,9 +1291,9 @@ class CasinoPlugin {
                   res.p.nextlv = 500;
                   res.p.maxIncome = 1000;
                   self.utils.DB.Update("players", {"id":res.p.id}, res.p);
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + res.p.name + " Is now reset", 3447003);
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Action Complete", ":white_check_mark: Player: " + res.p.name + " Is now reset", 3447003);
                 }else {
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
                 }
               });
             }
@@ -1329,25 +1328,25 @@ class CasinoPlugin {
                     res.p.maxIncome = 1000;
                     self.utils.DB.Update("players", {"id":res.p.id}, res.p);
                   }
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + res.p.name + " Is now Banned", 3447003);
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Action Complete", ":white_check_mark: Player: " + res.p.name + " Is now Banned", 3447003);
                 }else {
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
                 }
               });
             }
             break;
           case "save":
             self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", ":white_check_mark: Database Saved!", 3447003);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", ":white_check_mark: Database Saved!", 3447003);
             break;
           case "player":
             switch (command.params[1]) {
               case "get":
                 self.utils.findPlayer(command.params[2]).then(function(res) {
                   if(res.found){
-                    self.disnode.bot.SendMessage(command.msg.channel, "```json\n" + JSON.stringify(res.p, false, 2) + "```");
+                    self.disnode.bot.SendMessage(command.msg.channel_id, "```json\n" + JSON.stringify(res.p, false, 2) + "```");
                   }else {
-                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
                   }
                 });
                 break;
@@ -1359,9 +1358,9 @@ class CasinoPlugin {
                         var setTo = numeral(command.params[4]).value();
                         if(setTo >= 0)res.p.money = setTo;
                         self.utils.DB.Update("players", {"id":res.p.id}, res.p);
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Money set to: $" + setTo, 3447003);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", res.p.name + " Money set to: $" + setTo, 3447003);
                       }else {
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
                       }
                     });
                     break;
@@ -1371,9 +1370,9 @@ class CasinoPlugin {
                         var setTo = numeral(command.params[4]).value();
                         if(setTo >= 0)res.p.income = setTo;
                         self.utils.DB.Update("players", {"id":res.p.id}, res.p);
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Income set to: $" + setTo, 3447003);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", res.p.name + " Income set to: $" + setTo, 3447003);
                       }else {
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
                       }
                     });
                     break;
@@ -1383,9 +1382,9 @@ class CasinoPlugin {
                         var setTo = numeral(command.params[4]).value();
                         if(setTo >= 0)res.p.xp = setTo;
                         self.utils.DB.Update("players", {"id":res.p.id}, res.p);
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " XP set to: " + setTo, 3447003);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", res.p.name + " XP set to: " + setTo, 3447003);
                       }else {
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
                       }
                     });
                     break;
@@ -1396,9 +1395,9 @@ class CasinoPlugin {
                         var oldname = res.p.name;
                         res.p.name = setTo;
                         self.utils.DB.Update("players", {"id":res.p.id}, res.p);
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", oldname + " Name set to: " + setTo, 3447003);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", oldname + " Name set to: " + setTo, 3447003);
                       }else {
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
                       }
                     });
                     break;
@@ -1408,9 +1407,9 @@ class CasinoPlugin {
                         var setTo = numeral(command.params[4]).value();
                         if(setTo >= 0)res.p.lv = setTo;
                         self.utils.DB.Update("players", {"id":res.p.id}, res.p);
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " LV set to: " + setTo, 3447003);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", res.p.name + " LV set to: " + setTo, 3447003);
                       }else {
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
                       }
                     });
                     break;
@@ -1420,9 +1419,9 @@ class CasinoPlugin {
                         var setTo = numeral(command.params[4]).value();
                         if(setTo >= 0)res.p.maxIncome = setTo;
                         self.utils.DB.Update("players", {"id":res.p.id}, res.p);
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Max Income set to: $" + setTo, 3447003);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", res.p.name + " Max Income set to: $" + setTo, 3447003);
                       }else {
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
                       }
                     });
                     break;
@@ -1432,9 +1431,9 @@ class CasinoPlugin {
                         var setTo = numeral(command.params[4]).value();
                         if(setTo >= 0)res.p.key = setTo;
                         self.utils.DB.Update("players", {"id":res.p.id}, res.p);
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Keys set to: " + setTo, 3447003);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", res.p.name + " Keys set to: " + setTo, 3447003);
                       }else {
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
                       }
                     });
                     break;
@@ -1444,9 +1443,9 @@ class CasinoPlugin {
                         if(command.params[4] == "true")res.p.Admin = true;
                         if(command.params[4] == "false")res.p.Admin = false;
                         self.utils.DB.Update("players", {"id":res.p.id}, res.p);
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Admin set to: " + command.params[4], 3447003);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", res.p.name + " Admin set to: " + command.params[4], 3447003);
                       }else {
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
                       }
                     });
                     break;
@@ -1456,9 +1455,9 @@ class CasinoPlugin {
                         if(command.params[4] == "true")res.p.Mod = true;
                         if(command.params[4] == "false")res.p.Mod = false;
                         self.utils.DB.Update("players", {"id":res.p.id}, res.p);
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Mod set to: " + command.params[4], 3447003);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", res.p.name + " Mod set to: " + command.params[4], 3447003);
                       }else {
-                        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
                       }
                     });
                     break;
@@ -1481,9 +1480,9 @@ class CasinoPlugin {
                   res.p.Premium = false;
                 }
                 self.utils.DB.Update("players", {"id":res.p.id}, res.p);
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", res.p.name + " Premium set to: " + res.p.Premium, 3447003);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Complete", res.p.name + " Premium set to: " + res.p.Premium, 3447003);
               }else {
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
               }
             });
             break;
@@ -1494,9 +1493,9 @@ class CasinoPlugin {
             try {
               var evaled = eval(code);
               if(typeof evaled !== "string")evaled = require("util").inspect(evaled);
-              self.disnode.bot.SendMessage(command.msg.channel,"```\n" + evaled + "\n```");
+              self.disnode.bot.SendMessage(command.msg.channel_id,"```\n" + evaled + "\n```");
             } catch (e) {
-              self.disnode.bot.SendMessage(command.msg.channel,"```\n" + e + "\n```");
+              self.disnode.bot.SendMessage(command.msg.channel_id,"```\n" + e + "\n```");
             }
             break;
           case "listprem":
@@ -1510,7 +1509,7 @@ class CasinoPlugin {
                   msg += players[i].name + "\n";
                 }
               }
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Premium Users", msg, 3447003);
+              self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Premium Users", msg, 3447003);
             });
             break;
           default:
@@ -1526,7 +1525,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Mod == undefined)player.Mod = false;
       if(!player.Mod){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: YOU SHALL NOT PASS! (**You are not a Moderator or above in the Disnode Official Discord Server**)", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: YOU SHALL NOT PASS! (**You are not a Moderator or above in the Disnode Official Discord Server**)", 16772880);
       }else {
         switch (command.params[0]) {
           case "cleartimers":
@@ -1536,7 +1535,7 @@ class CasinoPlugin {
               players[i].lastMessage = null;
               self.utils.DB.Update("players", {"id":players[i].id}, players[i]);
             }
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Premium Users", ":white_check_mark: Timeouts Cleared!", 3447003);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Premium Users", ":white_check_mark: Timeouts Cleared!", 3447003);
           });
             break;
           default:
@@ -1550,13 +1549,13 @@ class CasinoPlugin {
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
         return;
       }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
           return;
         }
       }
@@ -1579,7 +1578,7 @@ class CasinoPlugin {
           if(player.Admin || player.Premium){
             title = "Premium Store List";
           }else title = "Store List";
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, title, msg);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, title, msg);
           break;
         case "buy":
           if(command.params[1] && (command.params[1] >= 0 && command.params[1] <= (self.store.length - 1))){
@@ -1625,7 +1624,7 @@ class CasinoPlugin {
               var remainMax = player.maxIncome - player.income;
               if(((self.store[ID].amount * quantity)) > remainMax){
                 console.log((self.store[ID].amount * quantity) + " / " + remainMax);
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Such transaction will exceed your Max Income of: $" + numeral(player.maxIncome).format('0,00.00') + "\nLevel up to increase this max.", 16772880);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: Such transaction will exceed your Max Income of: $" + numeral(player.maxIncome).format('0,00.00') + "\nLevel up to increase this max.", 16772880);
                 return;
               }
             }
@@ -1637,13 +1636,13 @@ class CasinoPlugin {
             if(self.store[ID].type == 1){
               costString =  "$" + cost;
               if(player.money < cost){
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money!\nNeed: $" + cost + "\nYou have: $" + player.money, 16772880);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You dont have that much Money!\nNeed: $" + cost + "\nYou have: $" + player.money, 16772880);
                 return;
               }
             }else {
               costString = cost + " XP"
               if(player.xp < cost){
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much XP!\nNeed: " + cost + "XP\nYou have: " + player.xp, 16772880);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You dont have that much XP!\nNeed: " + cost + "XP\nYou have: " + player.xp, 16772880);
                 return;
               }
             }
@@ -1659,7 +1658,7 @@ class CasinoPlugin {
               default:
                 break;
             }
-            self.disnode.bot.SendEmbed(command.msg.channel, {
+            self.disnode.bot.SendEmbed(command.msg.channel_id, {
               color: 1433628,
               author: {},
               fields: [ {
@@ -1688,7 +1687,7 @@ class CasinoPlugin {
           }
           break;
         default:
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Store", "Welcome to the store! to see a list of Items use `!casino store list` use the ID of the item when buying for example `!casino store buy 0` if you want to buy more than one of the item use `!casino store buy 0 10` to buy 10, or use `!casino store buy 0 max` to buy as much as you can!");
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Store", "Welcome to the store! to see a list of Items use `!casino store list` use the ID of the item when buying for example `!casino store buy 0` if you want to buy more than one of the item use `!casino store buy 0 10` to buy 10, or use `!casino store buy 0 max` to buy as much as you can!");
       }
     });
     return;
@@ -1697,13 +1696,13 @@ class CasinoPlugin {
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
         return;
       }
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
           return;
         }
       }
@@ -1712,7 +1711,7 @@ class CasinoPlugin {
       if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
       if(!timeoutInfo.pass){
         logger.Info("Casino", "Slot", "Player: " + player.name + " Tried the slots before their delay of: " + timeoutInfo.remain.sec);
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
         return;
       }
       if(command.params[0]){
@@ -1721,12 +1720,12 @@ class CasinoPlugin {
             var transferPlayer = res.p;
             var toTransfer = numeral(command.params[1]).value();
             if(transferPlayer.id == player.id){
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You cant transfer to yourself!", 16772880);
+              self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "You cant transfer to yourself!", 16772880);
               return;
             }
             if(toTransfer > 0){
               if(toTransfer > player.money){
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
                 return;
               }else {
                 var pbalbef = player.money
@@ -1735,7 +1734,7 @@ class CasinoPlugin {
                 transferPlayer.money += toTransfer
                 player.money = Number(parseFloat(player.money).toFixed(2));
                 transferPlayer.money = Number(parseFloat(transferPlayer.money).toFixed(2));
-                self.disnode.bot.SendEmbed(command.msg.channel, {
+                self.disnode.bot.SendEmbed(command.msg.channel_id, {
                   color: 3447003,
                   author: {},
                   fields: [ {
@@ -1763,10 +1762,10 @@ class CasinoPlugin {
                 return;
               }
             }else {
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a number for the transfer amount! example `!casino transfer FireGamer3 100`", 16772880);
+              self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: Please enter a number for the transfer amount! example `!casino transfer FireGamer3 100`", 16772880);
             }
           }else {
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", res.msg, 16772880);
           }
         });
       }
@@ -1777,11 +1776,11 @@ class CasinoPlugin {
     var self = this;
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
         return;
       }
       if(!player.Premium){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Blackjack is currently in beta, therefore only Ultra members may access this game mode right now. To learn more about Ultra and its perks look at the bottom of `!casino` Thanks for your support of our bots!", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: Blackjack is currently in beta, therefore only Ultra members may access this game mode right now. To learn more about Ultra and its perks look at the bottom of `!casino` Thanks for your support of our bots!", 16772880);
         return;
       }
       switch (command.params[0]) {
@@ -1796,22 +1795,22 @@ class CasinoPlugin {
             if(wager > 0){
               if(player.money >= wager){
                 player.money -= wager;
-                self.Blackjack.newGame(player, wager, command.msg.channel);
+                self.Blackjack.newGame(player, wager, command.msg.channel_id);
               }else {
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
               }
             }
           }
           break;
         case "hit":
-          self.Blackjack.hit(player, command.msg.channel);
+          self.Blackjack.hit(player, command.msg.channel_id);
           break;
         case "stand":
-          self.Blackjack.stand(player, command.msg.channel);
+          self.Blackjack.stand(player, command.msg.channel_id);
           break;
         default:
           var commands = "`!casino 21 start (bet)` - Start a game of blackjack with a Wager amount\n`!casino 21 hit` - Draw a card (In game)\n`!casino 21 stand` - End your turn and let the dealer start playing (In game)";
-          self.disnode.bot.SendCompactEmbed(command.msg.channel,"Blackjack", commands);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id,"Blackjack", commands);
           break;
       }
       self.utils.DB.Update("players", {"id":player.id}, player);
@@ -1825,11 +1824,11 @@ class CasinoPlugin {
         self.utils.getPlayer(command).then(function(player) {
           player.rules = true;
           self.utils.DB.Update("players", {"id":player.id}, player);
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Rules", "Thanks for accepting the rules! Enjoy our bot.");
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Rules", "Thanks for accepting the rules! Enjoy our bot.");
         });
         break;
       default:
-      self.disnode.bot.SendEmbed(command.msg.channel, {
+      self.disnode.bot.SendEmbed(command.msg.channel_id, {
         color: 1433628,
         author: {},
         fields: [ {
@@ -1849,9 +1848,9 @@ class CasinoPlugin {
           inline: false,
           value: "The use of macros or bots is not allowed",
         }, {
-          name: 'Premium',
+          name: 'Ultra',
           inline: false,
-          value: "If you get Premium you must pay for the first month of your Premium membership or face account reset",
+          value: "If you get Ultra you must pay for the first month of your Ultra membership or face account reset",
         }],
           footer: {}
         });
@@ -1863,7 +1862,7 @@ class CasinoPlugin {
     self.utils.getPlayer(command).then(function(player) {
       self.utils.ultraCheck(player).then(function(data) {
         if(data.isUltra){
-          self.disnode.bot.SendEmbed(command.msg.channel, {
+          self.disnode.bot.SendEmbed(command.msg.channel_id, {
             color: 1433628,
             author: {},
             fields: [ {
@@ -1880,18 +1879,18 @@ class CasinoPlugin {
               value: "" + dateformat(new Date(data.purchasedOn), "dddd, mmmm dS, yyyy, h:MM:ss TT"),
             }],
             footer: {
-              text: command.msg.user,
+              text: command.msg.author.username,
               icon_url: self.utils.avatarCommandUser(command),
             },
             timestamp: new Date(),
             });
         }else {
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Ultra", "You Dont have Ultra!");
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Ultra", "You Dont have Ultra!");
         }
         self.utils.DB.Update("players", {"id":player.id}, player);
       }).catch(function(err) {
         console.log(err);
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Something went wrong! try again!\n" + err, 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: Something went wrong! try again!\n" + err, 16772880);
         return;
       });
     });

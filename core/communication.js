@@ -17,8 +17,33 @@ class Communication{
     self.socket.connect(self.PORT, self.IP, function(){
       console.log("CONNECTED!");
       self.connected = true;
-      self.socket.write('{"TEST":"123"}')
+      self.SendPacket("Test", "123")
     });
+  }
+  SendPacket( header, data) {
+    var packet = {
+      header: header,
+      data: data,
+      timestamp: new Date()
+    };
+    this.socket.write(JSON.stringify(packet))
+  }
+
+  RegisterBot(){
+    var self = thisl
+    if(!self.disnode.botConfig.api){
+      return;
+    }
+
+    if(!self.disnode.botConfig.api.key){
+      return;
+    }
+
+    if(!self.disnode.botConfig.api.appid){
+      return;
+    }
+
+    SendPacket("REGISTER", appid + " " + key)
   }
 
 }

@@ -28,8 +28,19 @@ class Util {
         }
         return obj;
     }
-    ObjectbyString(o, s) {
+    /**
+     * Convers a Snowflake ID to a JS Date Object
+     * @param {String} resourceID - The Snowflake ID you want to convert
+     * @return {Date} Converted Date
+     */
+    GetSnowflakeDate(resourceID) {
+      return new Date(parseInt(resourceID) / 4194304 + 1420070400000);
+    }
 
+    CommandHelpBuilder(command, description){
+      return "`" + this.disnode.botConfig.prefix + command + "` - **" + description + "**";
+    }
+    ObjectbyString(o, s) {
         s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
         s = s.replace(/^\./, ''); // strip a leading dot
         var a = s.split('.');
@@ -43,7 +54,30 @@ class Util {
         }
         return o;
     }
-
+    /**
+     * Pagify results
+     * @param {array} arr - Array to be paged
+     * @param {integer} page - Page number
+     * @param {integer} perPage - Results per page
+     */
+    pageResults(arr, page, perPage = 10) {
+      var returnArr = [];
+      var maxindex;
+      var startindex;
+      if (page == 1) {
+        page = 1;
+        startindex = 0
+        maxindex = perPage;
+      } else {
+        maxindex = (page * perPage);
+        startindex = maxindex - perPage;
+      }
+      for (var i = startindex; i < arr.length; i++) {
+        if (i == maxindex) break;
+        returnArr.push(arr[i]);
+      }
+      return returnArr;
+    }
     JoinParams(params, startIndex = 0){
       var finalParams = [];
 

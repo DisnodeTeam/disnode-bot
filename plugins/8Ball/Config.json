@@ -1,0 +1,13 @@
+{
+  "prefix":"8ball",
+  "responses": [
+    "Yep :white_check_mark:",
+    "Meh",
+    "No :x:",
+    "Definitely NO! :x::x::x:",
+    "Ask me again :stuck_out_tongue:",
+    "It's possible :shrug: ",
+    "Ask Phil",
+    "Never :x:"
+  ]
+}

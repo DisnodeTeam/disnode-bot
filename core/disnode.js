@@ -38,7 +38,17 @@ class Disnode {
             callback();
           }).catch(callback);
         },
-
+        function(callback) {
+           if(self.botConfig.relayServer){
+             Logging.Info("Disnode", "Start", "Loading Communication");
+             self.communication = new Communication(self);
+             self.communication.Connect();
+             callback();
+           }else {
+             Logging.Info("Disnode", "Start", "Not using relay server");
+             callback();
+           }
+        },
         // Connect to Discord
         function(callback) {
           Logging.Info("Disnode", "Start", "Connecting to Discord");
@@ -63,17 +73,7 @@ class Disnode {
             callback();
           }
        },
-       function(callback) {
-          if(self.botConfig.relayServer){
-            Logging.Info("Disnode", "Start", "Loading Communication");
-            self.communication = new Communication(self);
-            self.communication.Connect();
-            callback();
-          }else {
-            Logging.Info("Disnode", "Start", "Not using relay server");
-            callback();
-          }
-       },
+       
        function(callback) {
          Logging.Info("Disnode", "Start", "Loading State Manager");
          self.state = new StateManager(self);

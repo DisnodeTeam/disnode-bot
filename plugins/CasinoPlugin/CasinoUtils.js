@@ -178,21 +178,21 @@ class CasinoUtils {
       self.recentBetters.splice(10, 1)
     }
   }
-  getPlayer(data){
+  getPlayer(command){
     var self = this;
     var players = [];
     return new Promise(function(resolve, reject) {
-      self.DB.Find("players", {"id": data.msg.userID}).then(function(found) {
+      self.DB.Find("players", {"id": command.msg.author.id}).then(function(found) {
         players = found;
         for (var i = 0; i < players.length; i++) {
-          if(data.msg.userID == players[i].id){
+          if(command.msg.author.id == players[i].id){
             resolve(players[i]);
             return;
           }
         }
         var newPlayer = {
-          name:  data.msg.user,
-          id: data.msg.userID,
+          name:  command.msg.author.username,
+          id: command.msg.author.id,
           money: 10000,
           income: 1000,
           maxIncome: 1000,
@@ -369,7 +369,7 @@ class CasinoUtils {
   }
   checkBan(player, command){
     if(player.banned){
-      this.disnode.bot.SendEmbed(command.msg.channel, {
+      this.disnode.bot.SendEmbed(command.msg.channel_id, {
         color: 16711680,
         author: {},
         fields: [ {
@@ -559,10 +559,10 @@ class CasinoUtils {
     return false;
   }
   doChannelCheck(command){
-    if(command.msg.server == '236338097955143680'){
-      if(command.msg.channel == '275395383071342594')return false;
-      if(command.msg.channel == '236338097955143680')return false;
-      if(command.msg.channel == '268049832596340746')return false;
+    if(command.msg.guildID == '236338097955143680'){
+      if(command.msg.channel_id == '275395383071342594')return false;
+      if(command.msg.channel_id == '236338097955143680')return false;
+      if(command.msg.channel_id == '268049832596340746')return false;
       return true;
     }else return true;
   }
@@ -602,11 +602,11 @@ class CasinoUtils {
   }
   avatarCommandUser(command) {
     var self = this;
-    if (command.msg.raw.author.avatar != null) {
-      if (command.msg.raw.author.avatar.indexOf('_') > -1) {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".gif";
+    if (command.msg.author.avatar != null) {
+      if (command.msg.author.avatar.indexOf('_') > -1) {
+        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.author.id + "\/" + command.msg.author.avatar + ".gif";
       } else {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".png";
+        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.author.id + "\/" + command.msg.author.avatar + ".png";
       }
     }
   }
@@ -653,7 +653,7 @@ class CasinoUtils {
           f.Premium = true;
           self.DB.Update("players", {"id":f.id}, f);
         }).catch(function(err){
-          
+
         });
       }
       for(var i = 0; i < notInApi.length; i++){
@@ -661,7 +661,7 @@ class CasinoUtils {
           f.Premium = false;
           self.DB.Update("players", {"id":f.id}, f);
         }).catch(function(err){
-          
+
         });
       }
     });
