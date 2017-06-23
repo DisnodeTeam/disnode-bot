@@ -8,7 +8,7 @@ const http = require('https');
 const unzip = require('unzip2');
 var npmi = require('npmi');
 var path = require('path');
-
+const spawn = require('cross-spawn')
 var timer = new Stopwatch();
 /**
  * PluginManager Handle all Plugin Related Task
@@ -298,10 +298,6 @@ class PluginManager {
       }
     });
 
-
-
-
-
   }
   /**
    * Adds/Downloads a Plugin to a server Folder
@@ -311,6 +307,7 @@ class PluginManager {
   AddServerPluginRemote(pluginId, cb) {
     var self = this;
     return new Promise(function (resolve, reject) {
+      Logger.Info("PluginManager-" + self.server, "AddServerPluginRemote:" + pluginId, "Installing Plugin");
       self.command = self.disnode.server.GetCommandInstance(self.server);
       self.MakeServerFolder();
       var newPath = "servers/" + self.server;
@@ -320,6 +317,7 @@ class PluginManager {
           path: newPath
         }));
         response.on("end", function () {
+          Logger.Success("PluginManager-" + self.server, "AddServerPluginRemote:" + pluginId, "Installed Plugin!");
           setTimeout(function () {
             self.LoadAllPlugins().then(function () {
               self.InstallPluginRequirements(pluginId).then(function () {
@@ -343,7 +341,7 @@ class PluginManager {
    */
   AddServerPluginLocal(pluginId) {
     var self = this;
-    console.log("Adding Local Plugin: " + pluginId)
+
     return new Promise(function (resolve, rejecy) {
       self.command = self.disnode.server.GetCommandInstance(self.server);
       self.MakeServerFolder();
@@ -404,34 +402,26 @@ class PluginManager {
 
       if (pluginObj.requirements) {
         Logger.Info("PluginManager-" + self.server, "InstallPluginRequirements:" + pluginObj.id, "Installing Requirements: " + pluginObj.requirements);
-        async.each(pluginObj.requirements, self.InstallPackage, function (err) {
+        var execString = "npm";
 
-          resolve();
-        });
+
+        var args = ['i'];
+        for (var i = 0; i < pluginObj.requirements.length; i++) {
+          args.push(pluginObj.requirements[i]);
+        }
+
+
+        var child = spawn.sync(execString, ['i'], {
+		      stdio: 'inherit',
+
+		    });
+        Logger.Success("PluginManager-" + self.server, "InstallPluginRequirements:" + pluginObj.id, "Installed Requirements!");
+        resolve();
+
 
       } else {
         resolve();
       }
-    });
-  }
-
-  InstallPackage(pack, callback) {
-    var self = this;
-    var options = {
-      name: pack,
-      forceInstall: false, // force install if set to true (even if already installed, it will do a reinstall) [default: false]
-      npmLoad: { // npm.load(options, callback): this is the "options" given to npm.load()
-        loglevel: 'warn' // [default: {loglevel: 'silent'}]
-      }
-    };
-    npmi(options, function (err, result) {
-      if (err) {
-        callback();
-        return;
-      }
-
-      // installed
-      callback();
     });
   }
   /**

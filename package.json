@@ -22,6 +22,7 @@
     "axios": "^0.16.1",
     "colors": "^1.1.2",
     "countdownjs": "^2.0.0",
+    "cross-spawn": "^5.1.0",
     "discord.io": "^2.5.0",
     "disnode-logger": "0.1.1",
     "fetch": "^1.1.0",

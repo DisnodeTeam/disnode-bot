@@ -9,6 +9,17 @@ class Util {
     constructor(disnode) {
         this.disnode = disnode;
     }
+    avatarCommandUser(command) {
+      var self = this;
+      if (command.msg.author.avatar != null) {
+        if (command.msg.author.avatar.indexOf('_') > -1) {
+          return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.author.id + "\/" + command.msg.author.avatar + ".gif";
+        } else {
+          return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.author.id + "\/" + command.msg.author.avatar + ".png";
+        }
+      }
+    }
+
     /**
      * Converts an array to and object using a key as the object name. Useful for quick object look up
      * @example

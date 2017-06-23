@@ -57,7 +57,7 @@ exports.APIPost = function ( key,endpoint, data) {
       }
 
       var ErrorObject = {
-        message: error.response.data.message,
+        message: error.response.statusText || error.response.data.message,
         status: error.response.status,
         display: "Error ["+error.response.status+"] " + error.response.data.message,
         raw: error

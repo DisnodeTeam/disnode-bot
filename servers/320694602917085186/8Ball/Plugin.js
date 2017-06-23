@@ -11,7 +11,6 @@ class EightBall {
     }
     var response = self.config.responses[Math.floor(Math.random()*self.config.responses.length)];
     self.disnode.bot.SendCompactEmbed(command.msg.channel_id, ":crystal_ball: 8 Ball",response);
-    self.Destory();
   }
 
 }

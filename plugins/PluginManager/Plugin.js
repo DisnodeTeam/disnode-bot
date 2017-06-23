@@ -73,10 +73,10 @@ class PluginManager {
 
   }
   commandInfo(command) {
-    console.log("INFO!");
+
     var self = this;
     if (!command.params[0]) {
-      this.disnode.bot.SendCompactEmbed(command.msgchannel_id, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
+      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
       return;
     }
     self.disnode.bot.SendMessage(command.msg.channel_id, "**Getting Plugin:** `" + command.params[0] + "`")
@@ -116,13 +116,13 @@ class PluginManager {
 
           break;
         case "ERR":
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", res.data.data);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", res.data.data);
           break;
       }
     });
   }
   parseBool(val, render){
-    if(val){return render;}
+    if(val){return render;}else{return ":x:"}
   }
   commandBrowse(command) {
     var self = this;

@@ -1,0 +1,10 @@
+{
+  "name":"8-Ball",
+  "description":"Ask the magic Disnode 8-Ball your questions as it is all-knowing. (or its just random, but who knows?)",
+  "id": "eight-ball",
+  "script": "Plugin.js",
+  "load": true,
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json",
+  "requirements": ["disnode-logger", "axios"]
+}
