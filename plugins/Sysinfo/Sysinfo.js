@@ -8,9 +8,10 @@ class Sysinfo {
     var fieldEmbed = [];
     cpu.cpuUsage(function(v){
       var cpumsg = "```Markdown\n[" + os.cpus()[0].model + "]\n" + self.renderPercentage(parseInt(v * 10)) + "[Cpu Usage: " + parseInt(v * 100) + "%]\n```";
-      var ramMsg = "```Markdown\n" + self.renderPercentage(parseInt((os.freemem() / os.totalmem()) * 10)) + "[RAM Usage: " + parseInt((os.freemem() / os.totalmem()) * 10) + "%]\n" +
-      "[Free: " + parseInt(((os.totalmem() - os.freemem()) / 1024) / 1024) + " MB]\n" +
-      "[Used: " + parseInt((os.freemem() / 1024) / 1024) + " MB]\n" +
+      var ramMsg = "```Markdown\n" + self.renderPercentage(parseInt((os.freemem() / os.totalmem()) * 10)) + "[Free RAM: " + parseInt((os.freemem() / os.totalmem()) * 100) + "%]\n" +
+      self.renderPercentage(((os.totalmem() - os.freemem()) / os.totalmem()) * 10) + "[Used RAM: " + parseInt(((os.totalmem() - os.freemem()) / os.totalmem()) * 100) + "%]\n" +
+      "[Free: " + parseInt((os.freemem() / 1024) / 1024) + " MB]\n" +
+      "[Used: " + parseInt(((os.totalmem() - os.freemem()) / 1024) / 1024) + " MB]\n" +
       "[Total: " + parseInt((os.totalmem() / 1024) / 1024) + " MB]\n```"
       self.disnode.bot.SendEmbed(command.msg.channel_id, {
         color: 3447003,
