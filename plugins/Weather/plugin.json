@@ -1,5 +1,6 @@
 {
   "name":"Weather",
+  "description": "Get the current info or the 5 day forecast for a city!",
   "id": "weather",
   "script": "Weather.js",
   "load" : true,

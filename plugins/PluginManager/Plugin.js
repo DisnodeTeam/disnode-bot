@@ -24,8 +24,10 @@ class PluginManager {
     }
     self.disnode.bot.SendMessage(command.msg.channel_id, "**Downloading Plugin:** `" + command.params[0] + "`")
     self.pluginManager.AddServerPluginRemote(command.params[0]).then(function () {
-      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Success :white_check_mark: ", "**Added Plugin! This plugin can now be used and configured for this server!:** `" + command.params[0] + "`");
-
+      self.disnode.bot.SendCompactEmbed(command.msg.channel_id,
+        "Success :white_check_mark: ", "**Added Plugin! This plugin can now be used and configured for this server!:** `" + command.params[0] + "`");
+    }).catch(function(err){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", err);
     });
   }
   commandList(command) {
