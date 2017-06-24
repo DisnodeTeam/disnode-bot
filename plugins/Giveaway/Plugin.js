@@ -59,13 +59,15 @@ class Giveaway {
     if(!currentSession){
       self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: Try using this format`" + self.disnode.botConfig.prefix + self.config.prefix + " enter @mention` where the @mention is the user who created the geiveaway.", 16772880);
     }else {
-      for (var i = 0; i < currentSession.entries.length; i++) {
-        if(currentSession.entries[i].id == command.msg.author.id){
+      console.log(currentSession);
+      for (var i = 0; i < currentSession.game.entries.length; i++) {
+        console.log(currentSession.game.entries[i] + " " + command.msg.author.id);
+        if(currentSession.game.entries[i] == command.msg.author.id){
           self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You are already entered into the giveaway!", 16772880);
           return;
         }
       }
-      currentSession.entries.push(command.msg.author.id)
+      currentSession.game.entries.push(command.msg.author.id)
       self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Giveaway", "Entered!");
     }
   }
