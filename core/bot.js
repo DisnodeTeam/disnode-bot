@@ -1,6 +1,5 @@
 const net = require('net');
 const shortid = require('shortid');
-const Discord = require('discord.io');
 const Logger = require('disnode-logger');
 const axios = require('axios');
 const WebSocket = require('ws');

@@ -49,18 +49,35 @@ class Giveaway {
     if(!currentSession){
       self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You don't have an active giveaway!", 16772880);
     }else {
-      for (var i = 0; i < self.sessions.length; i++) {
-        if(self.sessions[i].id == command.msg.author.id){
-          self.sessions[i].cleanup();
-          self.sessions.splice(i,1);
-          break;
-        }
-      }
+      self.endSession(command.msg.author.id);
       self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Giveaway", "Giveaway Disbanded!");
     }
   }
   commandEnter(command){
-    //soon
+    var self = this;
+    var currentSession = self.findSession(self.parseMention(command.params[0]));
+    if(!currentSession){
+      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: Try using this format`" + self.disnode.botConfig.prefix + self.config.prefix + " enter @mention` where the @mention is the user who created the geiveaway.", 16772880);
+    }else {
+      for (var i = 0; i < currentSession.entries.length; i++) {
+        if(currentSession.entries[i].id == command.msg.author.id){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You are already entered into the giveaway!", 16772880);
+          return;
+        }
+      }
+      currentSession.entries.push(command.msg.author.id)
+      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Giveaway", "Entered!");
+    }
+  }
+  endSession(id){
+    var self = this;
+    for (var i = 0; i < self.sessions.length; i++) {
+      if(self.sessions[i].id == command.msg.author.id){
+        self.sessions[i].cleanup();
+        self.sessions.splice(i,1);
+        break;
+      }
+    }
   }
   findSession(id){
     for (var i = 0; i < this.sessions.length; i++) {

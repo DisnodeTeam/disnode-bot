@@ -8,6 +8,10 @@
       "cmd": "disband",
       "desc":"Cancels your current active Giveaway",
       "run": "commandCancel"
+    },{
+      "cmd": "enter",
+      "desc":"Enter an active Giveaway",
+      "run": "commandEnter"
     }
   ]
 }
