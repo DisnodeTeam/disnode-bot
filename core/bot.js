@@ -1470,7 +1470,7 @@ class Bot extends EventEmitter {
   CreateRole(guildID, setting) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.APIPost(self.key, "guilds/" + guildID + "/roles")
+      APIUtil.APIPost(self.key, "guilds/" + guildID + "/roles", setting)
         .then(function(data) {
           resolve(data);
         })
