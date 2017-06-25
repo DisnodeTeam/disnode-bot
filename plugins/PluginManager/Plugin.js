@@ -19,6 +19,8 @@ class PluginManager {
 
   commandAdd(command) {
     var self = this;
+  
+
     if (!command.params[0]) {
       this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
       return;
@@ -33,6 +35,10 @@ class PluginManager {
   }
 
   commandRemove(command) {
+    if(command.flags.permissionDenied){
+        this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "You do not have permission to run this command!");
+        return;
+    }
     var self = this;
     if (!command.params[0]) {
       this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");

@@ -59,26 +59,26 @@ class CommandManager {
       }
         this.GetCommandData(msgObj, false, function(plugin, command, params){
 
-            self.RunChecks(msgObj,command);
+
             self.plugin.RunPluginMessage(plugin.plugin, {command: command, params: params, msg: msgObj});
         });
     }
 
-    RunChecks(msg,command){
-      
-    }
+
 
     GetCommandData(msgObj, ignoreFirst, callback) {
 
         var self = this;
         var msg = msgObj.content;
-        var firstLetter = msg.substring(0, 1);
+        var firstLetter = msg.substring(0,self.prefix.length);
+
         var params = GetParams(msg);
         var firstWord;
         var pluginPrefix;
         var plugin;
         var command;
         if(firstLetter != this.prefix && !ignoreFirst){
+
           return;
         }
         var SpaceIndex = msg.length;
@@ -89,7 +89,7 @@ class CommandManager {
         if(ignoreFirst){
           firstWord = msg.substring(0, SpaceIndex);
         }else{
-          firstWord = msg.substring(1, SpaceIndex);
+          firstWord = msg.substring(self.prefix.length, SpaceIndex);
         }
 
         if(this.CheckForPrefix(firstWord) != null){

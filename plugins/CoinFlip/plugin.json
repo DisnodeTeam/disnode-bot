@@ -1,0 +1,9 @@
+{
+  "name":"Coin Flip",
+  "description": "Flips a Discord Coin!",
+  "id": "coin-flip",
+  "script": "Plugin.js",
+  "load": true,
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}

@@ -180,6 +180,7 @@ class PluginManager {
 
     var commandObj = this.GetCommandObject(pluginID, commandObject.command);
 
+
     if (!pluginID[commandObj.run]) {
       Logger.Warning("PluginManager-" + this.server, "RunCommandBind", "No Function Found for: " + commandObj.run);
       return;
@@ -189,6 +190,11 @@ class PluginManager {
       commandObject.params.unshift(commandObject.command);
     }
 
+    if(commandObj.owner){
+      if(commandObject.msg.author.id != this.disnode.bot.guilds[this.server].owner_id){
+         
+      }
+    }
 
     pluginID[commandObj.run](commandObject);
 
@@ -413,7 +419,7 @@ class PluginManager {
     var self = this;
     return new Promise(function(resolve, reject) {
       var pluginObj = self.GetPluginByID(pluginId);
-      
+
       if (!pluginObj) {
         Logger.Warning("PluginManager-" + self.server, "InstallPluginRequirements:" + pluginId, "Failed to find PluginOBJ");
 
