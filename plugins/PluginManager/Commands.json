@@ -23,8 +23,8 @@
       "run": "commandBrowse"
     },
     {
-      "cmd": "set",
-      "run": "commandSet",
+      "cmd": "config",
+      "run": "commandConfig",
       "owner": true
     }
 

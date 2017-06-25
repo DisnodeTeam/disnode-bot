@@ -10,9 +10,10 @@ class PluginManager {
     commandHelp += self.disnode.util.CommandHelpBuilder("list", "List all plugins on the sever \n");
     commandHelp += self.disnode.util.CommandHelpBuilder("info <plugin-id>", "Show info about a plugin\n");
     commandHelp += self.disnode.util.CommandHelpBuilder("browse <page>", "Browse Plugins\n");
-    commandHelp += self.disnode.util.CommandHelpBuilder("config set <config|commands> <key> <value>", "Set the config value of a plugin\n");
-    commandHelp += self.disnode.util.CommandHelpBuilder("config add <config|commands> <key> <value>", "Add an element to a config array\n");
-    commandHelp += self.disnode.util.CommandHelpBuilder("config remove <config|commands> <key> <value>", "Remove an element from a config array\n");
+    commandHelp += self.disnode.util.CommandHelpBuilder("prefix <plugin-id> <new prefix>", "Set the prefix of a new plugin\n");
+    commandHelp += self.disnode.util.CommandHelpBuilder("config set <plugin-id> <key> <value>", "Set the config value of a plugin\n");
+    commandHelp += self.disnode.util.CommandHelpBuilder("config add <plugin-id> <key> <value>", "Add an element to a config array\n");
+    commandHelp += self.disnode.util.CommandHelpBuilder("config remove <plugin-id> <key> <value>", "Remove an element from a config array\n");
     self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Plugin Manager Commands", commandHelp)
   }
 
@@ -30,6 +31,17 @@ class PluginManager {
         self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", err);
     });
   }
+
+  commandRemove(command) {
+    var self = this;
+    if (!command.params[0]) {
+      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
+      return;
+    }
+
+    self.pluginManager.RemoveServerPlugin(command.params[0]);
+  }
+
   commandList(command) {
     var self = this;
     var LoadedText = "";
@@ -123,9 +135,7 @@ class PluginManager {
       }
     });
   }
-  parseBool(val, render){
-    if(val){return render;}else{return ":x:"}
-  }
+
   commandBrowse(command) {
     var self = this;
 
@@ -168,18 +178,7 @@ class PluginManager {
     });
   }
 
-  commandRemove(command) {
-    var self = this;
-    if (!command.params[0]) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
-      return;
-    }
-
-    self.pluginManager.RemoveServerPlugin(command.params[0]);
-  }
-
-
-  commandSet(command) {
+  commandConfig(command) {
     var self = this;
     var plugin = command.params[0];
     var file = command.params[1];
@@ -209,12 +208,14 @@ class PluginManager {
       case "config":
 
 
-        break;
+      break;
     }
 
   }
 
 
-
+  parseBool(val, render){
+    if(val){return render;}else{return ":x:"}
+  }
 }
 module.exports = PluginManager;

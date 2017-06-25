@@ -1,0 +1,9 @@
+{
+  "name":"Minecraft Plugin",
+  "description": "Get Minecraft related info!",
+  "id": "mc-plugin",
+  "script": "Plugin.js",
+  "load": true,
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}

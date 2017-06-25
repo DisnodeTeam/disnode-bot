@@ -65,30 +65,7 @@ class CommandManager {
     }
 
     RunChecks(msg,command){
-      var self = this;
-      if(!command){
-        return;
-      }
-      if(command.whitelist){
-        command.userAllowed = false;
-        for (var i = 0; i < command.whitelist.length; i++) {
-          if(msg.userID == command.whitelist[i]){
-            command.userAllowed = true;
-          }
-        }
-      }
-
-      if(command.roles){
-        command.roleAllowed = false;
-        for (var i = 0; i < command.roles.length; i++) {
-          var userRoles = self.disnode.bot.GetUserRoles(msg.guildID, msg.userID);
-          for (var j = 0; j < userRoles.length; j++) {
-            if(userRoles[j] == command.roles[i]){
-              command.roleAllowed = true;
-            }
-          }
-        }
-      }
+      
     }
 
     GetCommandData(msgObj, ignoreFirst, callback) {
