@@ -67,7 +67,7 @@ exports.APIPost = function ( key,endpoint, data) {
   });
 };
 
-exports.APIPut = function (endpoint, key, data) {
+exports.APIPut = function ( key, endpoint, data) {
   var self = this;
   return new Promise(function(resolve, reject) {
     axios.put(DiscordURL + endpoint,data,{headers: {'Authorization': "Bot " + key}})

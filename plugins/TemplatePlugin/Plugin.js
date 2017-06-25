@@ -4,7 +4,7 @@ class Template {
   }
   default(command){ // This is the default command that is ran when you do your bot prefix and your plugin prefix example   !ping
     var self = this;
-    self.disnode.bot.https://discord.gg/6YR4yY
+    self.disnode.bot.
   }
   commandTest(command){
     var self = this;

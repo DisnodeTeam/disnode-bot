@@ -585,18 +585,19 @@ class Bot extends EventEmitter {
    * @param {string} channelID - ChannelID of where to send the message
    * @param {EmbedObject} embed - the Embed Object to send
    */
-  SendEmbed(channelID, embed, tts = false) {
+  SendEmbed(channelID, embed, tts = false, file=null) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
       var msgObject = {
         embed: embed,
-        tts: tts
+        tts: tts,
+        file: file
       };
       if (!embed || embed == {}) {
         msgObject.content = "`DisnodeAPIAutoError: Embed Object was null;`"
       }
-
+  
       APIUtil.APIPost(self.key, "channels/" + channelID + "/messages", msgObject)
         .then(function(data) {
           resolve(data);
