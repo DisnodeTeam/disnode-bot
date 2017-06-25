@@ -1,7 +1,7 @@
 {
   "name":"Test Plugin",
   "id": "Test-plugin",
-  "load": false,
+  "load": true,
   "script": "Plugin.js",
   "commandsFile": "Commands.json",
   "configFile" : "Config.json"

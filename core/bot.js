@@ -494,12 +494,16 @@ class Bot extends EventEmitter {
    */
   GetMessages(channelID, settings = {}) {
     var self = this;
+
     return new Promise(function(resolve, reject) {
-      APIUtil.APIGet(self.key, "/channels/" + channelID + "/messages", data)
+
+      APIUtil.APIGet(self.key, "/channels/" + channelID + "/messages", settings)
         .then(function(data) {
+          
           resolve(data);
         })
         .catch(function(err) {
+          console.log("ERR", err);
           Logger.Error("Bot", "GetChannelMessages", err.display);
           reject(err);
         });
@@ -597,7 +601,7 @@ class Bot extends EventEmitter {
       if (!embed || embed == {}) {
         msgObject.content = "`DisnodeAPIAutoError: Embed Object was null;`"
       }
-  
+
       APIUtil.APIPost(self.key, "channels/" + channelID + "/messages", msgObject)
         .then(function(data) {
           resolve(data);

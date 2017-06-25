@@ -5,16 +5,20 @@ const DiscordURL = 'https://discordapp.com/api/';
 function DataToParams(url, data){
   var finalURL = url + "?";
   for (var prop in data) {
-    finalURL += prop +"=" +obj[prop] +"?";
+    finalURL += prop +"=" +data[prop] +"&";
   }
+
+
   return finalURL;
 }
 
-exports.APIGet = function (key,endpoint, data) {
+exports.APIGet = function (key,endpoint, data=null) {
   var self = this;
+
   return new Promise(function(resolve, reject) {
     var url = DiscordURL + endpoint;
     if(data){
+      
       url = DataToParams(url, data)
     }
 
