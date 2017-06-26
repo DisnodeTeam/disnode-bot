@@ -14,7 +14,7 @@ Software Powering Communities
 `npm install disnode --save && npm install`
 ##### Bot Config
 Make a file called Bot-Config.json in `/bots` and fill it in with your bots information
-* ```json
+```json
   {
   "key": "Bot Token Here",
      "prefix" : "Bot Prefix",
