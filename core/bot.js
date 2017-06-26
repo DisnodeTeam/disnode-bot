@@ -499,7 +499,7 @@ class Bot extends EventEmitter {
 
       APIUtil.APIGet(self.key, "/channels/" + channelID + "/messages", settings)
         .then(function(data) {
-          
+
           resolve(data);
         })
         .catch(function(err) {
@@ -562,10 +562,10 @@ class Bot extends EventEmitter {
    * @param {string} userID - ChannelID of where to send the message
    * @param {EmbedObject} message - the Embed Object to send
    */
-  SendDMEmbed(userID, message){
+  SendDMEmbed(userID, message) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      self.GetOrCreateDM(userID).then(function(channel){
+      self.GetOrCreateDM(userID).then(function(channel) {
         var msgObject = {
           content: message,
           tts: tts
@@ -589,7 +589,7 @@ class Bot extends EventEmitter {
    * @param {string} channelID - ChannelID of where to send the message
    * @param {EmbedObject} embed - the Embed Object to send
    */
-  SendEmbed(channelID, embed, tts = false, file=null) {
+  SendEmbed(channelID, embed, tts = false, file = null) {
     var self = this;
     return new Promise(function(resolve, reject) {
 
@@ -617,10 +617,10 @@ class Bot extends EventEmitter {
    * @param {string} userID - ChannelID of where to send the message
    * @param {EmbedObject} embed - the Embed Object to send
    */
-  SendDMEmbed(userID, embed){
+  SendDMEmbed(userID, embed) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      self.GetOrCreateDM(userID).then(function(channel){
+      self.GetOrCreateDM(userID).then(function(channel) {
         var msgObject = {
           embed: embed
         };
@@ -678,10 +678,10 @@ class Bot extends EventEmitter {
    * @param {string} body - The body of the embed
    * @param {int|RGBint} color - (Optional)RGB Int of what color the embed should be (default 3447003)
    */
-  SendDMCompactEmbed(userID, embed){
+  SendDMCompactEmbed(userID, embed) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      self.GetOrCreateDM(userID).then(function(channel){
+      self.GetOrCreateDM(userID).then(function(channel) {
         var msgObject = {
           embed: {
             color: color,
@@ -932,7 +932,7 @@ class Bot extends EventEmitter {
   DeleteMessages(channelID, messageIDs) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.APIPost(self.key, "channels/" + channelID + "/messages", {
+      APIUtil.APIPost(self.key, "channels/" + channelID + "/messages/bulk-delete", {
           messages: messageIDs
         })
         .then(function(data) {
@@ -1672,10 +1672,13 @@ class Bot extends EventEmitter {
    * @param {string} username - Username
    * @param {string} avatar - Avatar Data
    */
-  EditBotUser( username, avatar) {
+  EditBotUser(username, avatar) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.APIPatch(self.key, "/users/@me", {username: username, avatar: avatar})
+      APIUtil.APIPatch(self.key, "/users/@me", {
+          username: username,
+          avatar: avatar
+        })
         .then(function(data) {
           resolve(data);
         })
@@ -1686,10 +1689,12 @@ class Bot extends EventEmitter {
     });
   }
 
-  GetOrCreateDM(userID){
+  GetOrCreateDM(userID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.APIPost('https://discordapp.com/api/users/@me/channels',  {recipient_id: userID})
+      APIUtil.APIPost('https://discordapp.com/api/users/@me/channels', {
+          recipient_id: userID
+        })
         .then(function(response) {
           resolve(response.data.id);
         })
