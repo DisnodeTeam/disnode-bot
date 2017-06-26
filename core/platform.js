@@ -9,7 +9,7 @@ class Platform {
       var self = this;
 
       return new Promise(function (resolve, reject) {
-          Axios.get("https://disnodeteam.com/api/user/" + userID)
+          Axios.get("https://api.disnodeteam.com/user/" + userID)
           .then(function (res) {
               if (res.data.type == "ERR") {
                   reject(res.data.data);
@@ -25,7 +25,7 @@ class Platform {
       var self = this;
 
       return new Promise(function (resolve, reject) {
-          Axios.get("https://disnodeteam.com/api/user/ultra")
+          Axios.get("https://api.disnodeteam.com/user/ultra")
           .then(function (res) {
               if (res.data.type == "ERR") {
                   reject(res.data.data);
@@ -41,7 +41,7 @@ class Platform {
         var self = this;
 
         return new Promise(function (resolve, reject) {
-            Axios.get("https://disnodeteam.com/api/user/" + userID + "/ultra")
+            Axios.get("https://api.disnodeteam.com/user/" + userID + "/ultra")
             .then(function (res) {
                 if (res.data.type == "ERR") {
 
