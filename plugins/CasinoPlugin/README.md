@@ -1,6 +1,6 @@
 # Casino Plugin
 ---
-  *  `[p] Stands for the bot prefix which varies from bot to bog example ! $ % & ^`
+  *  `[p] Stands for the bot prefix which varies from bot to bot example ! $ % & ^`
 ## Commands
 
   * `[p]casino` - *The help of the plugin*

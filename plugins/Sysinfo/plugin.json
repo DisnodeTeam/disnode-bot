@@ -1,6 +1,7 @@
 {
   "name":"System Info",
-  "id": "Sysinfo",
+  "description": "This plugin tells you how much RAM and CPU your system / bot Host is using.",
+  "id": "sysinfo",
   "script": "Sysinfo.js",
   "load" : true,
   "commandsFile": "Commands.json",
