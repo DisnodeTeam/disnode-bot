@@ -9,8 +9,11 @@ class TestPlugin {
       this.stage = parseInt(command.params[0])
       this.disnode.bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Setting Stage to: **" +   this.stage)
     }
-
-    self.RunTest();
+    this.disnode.bot.EditRole("105513877634031616", {name: "GOD", color: "16711680", hoist: true, permission: 2146958591, mentionable: true})
+    .catch(function(err){
+      self.disnode.bot.SendMessage(command.channel_id, ":warning: Error: " + err.display)
+    })
+    //self.RunTest();
   }
 
   RunTest() {
