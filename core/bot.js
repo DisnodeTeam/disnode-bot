@@ -42,6 +42,7 @@ class Bot extends EventEmitter {
     this.users = {
       count: 0
     };
+    this.setMaxListeners(1000);
   }
 
   /**
@@ -562,7 +563,7 @@ class Bot extends EventEmitter {
    * @param {string} userID - ChannelID of where to send the message
    * @param {EmbedObject} message - the Embed Object to send
    */
-  SendDMEmbed(userID, message) {
+  SendDMMessage(userID, message) {
     var self = this;
     return new Promise(function(resolve, reject) {
       self.GetOrCreateDM(userID).then(function(channel) {
