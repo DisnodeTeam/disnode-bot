@@ -192,7 +192,7 @@ class PluginManager {
 
     if(commandObj.owner){
       if(commandObject.msg.author.id != this.disnode.bot.guilds[this.server].owner_id){
-         
+
       }
     }
 
@@ -250,14 +250,14 @@ class PluginManager {
 
       //Plugin to edit
 
-      var pluginClass = pluginManager.GetPluginByID(plugin);
+      var pluginClass = self.GetPluginByID(plugin);
 
       //Check if plugin is in Core or already added to server
       if (!pluginClass.isServer) {
 
         self.AddServerPluginLocal(plugin)
           .then(function() {
-            pluginClass = pluginManager.GetPluginByID(plugin);
+            pluginClass = self.GetPluginByID(plugin);
             return self.GetConfigFile(pluginClass);
           })
 
@@ -282,7 +282,7 @@ class PluginManager {
 
       } else {
 
-        self.GetConfigFile(plugin)
+        self.GetConfigFile(pluginClass)
           .then(function(obj) {
             var newConfig = obj;
 
@@ -318,7 +318,7 @@ class PluginManager {
       self.MakeServerFolder();
       var newPath = "servers/" + self.server;
 
-      var request = http.get("https://www.disnodeteam.com/api/plugins/download/" + pluginId, function(response) {
+      var request = http.get("https://api.disnodeteam.com/plugins/download/" + pluginId, function(response) {
         response.on('data', function(chunk) {
           try {
               var data = JSON.parse(chunk);

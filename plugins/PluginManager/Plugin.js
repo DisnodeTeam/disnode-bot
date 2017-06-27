@@ -19,7 +19,7 @@ class PluginManager {
 
   commandAdd(command) {
     var self = this;
-  
+
 
     if (!command.params[0]) {
       this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
@@ -187,35 +187,28 @@ class PluginManager {
   commandConfig(command) {
     var self = this;
     var plugin = command.params[0];
-    var file = command.params[1];
-    var key = command.params[2];
-    var value = command.params[3];
+    var key = command.params[1];
+    var value = command.params[2];
 
     if (!plugin) {
       this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID!");
       return;
     }
-    if (!file) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a file (config, command)!");
-      return;
-    }
+
     if (!key) {
       this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a key!");
       return;
     }
     if (!value) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel, "Error :warning: ", "Please Enter a value!");
+      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a value!");
       return;
     }
 
     var pluginManager = self.disnode.server.GetPluginInstance(self.server);
-
-    switch (file) {
-      case "config":
-
-
-      break;
-    }
+    
+    pluginManager.ChangePluginConfig(plugin, key, value).then(function(){
+      self.disnode.bot.SendMessage(command.msg.channel_id, "Reloaded!")
+    })
 
   }
 
