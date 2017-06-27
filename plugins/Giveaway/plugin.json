@@ -1,8 +1,10 @@
 {
   "name":"Giveaway Plugin",
+  "description": "For those times where you want a discord compatable drawing system this is the plugin for you!",
   "id": "giveaway-plugin",
   "script": "Plugin.js",
   "load": true,
   "commandsFile": "Commands.json",
-  "configFile" : "Config.json"
+  "configFile" : "Config.json",
+  "requirements": []
 }

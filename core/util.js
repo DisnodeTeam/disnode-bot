@@ -8,6 +8,7 @@ var Axios = require('axios');
 class Util {
     constructor(disnode) {
         this.disnode = disnode;
+        this.plugininstances = 0;
     }
     avatarCommandUser(command) {
       var self = this;
@@ -101,6 +102,14 @@ class Util {
       }
 
       return finalParams;
+    }
+    CountInstance(){
+      var self = this;
+      self.plugininstances++;
+    }
+    ReturnInstances(){
+      var self = this;
+      return self.plugininstances;
     }
 }
 

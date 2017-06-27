@@ -57,11 +57,13 @@ class Giveaway {
     var self = this;
     var currentSession = self.findSession(self.parseMention(command.params[0]));
     if(!currentSession){
-      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: Try using this format`" + self.disnode.botConfig.prefix + self.config.prefix + " enter @mention` where the @mention is the user who created the geiveaway.", 16772880);
+      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: Giveaway not found. Try using this format`" + self.disnode.botConfig.prefix + self.config.prefix + " enter @mention` where the @mention is the user who created the geiveaway.", 16772880);
     }else {
-      console.log(currentSession);
+      if(currentSession.id == command.msg.author.id){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You can't enter your own giveaway!", 16772880);
+        return;
+      }
       for (var i = 0; i < currentSession.game.entries.length; i++) {
-        console.log(currentSession.game.entries[i] + " " + command.msg.author.id);
         if(currentSession.game.entries[i] == command.msg.author.id){
           self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You are already entered into the giveaway!", 16772880);
           return;
@@ -70,6 +72,22 @@ class Giveaway {
       currentSession.game.entries.push(command.msg.author.id)
       self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Giveaway", "Entered!");
     }
+  }
+  commandDraw(command){
+    var self = this;
+    var currentSession = self.findSession(command.msg.author.id);
+    if(!currentSession){
+      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You don't have an active giveaway!", 16772880);
+    }else {
+      var winner = currentSession.game.entries[self.getRandomIntInclusive(0,currentSession.game.entries.length -1)];
+      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Giveaway", "<@" + winner + "> Won the Giveaway!");
+      self.endSession(command.msg.author.id);
+    }
+  }
+  getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
   endSession(id){
     var self = this;

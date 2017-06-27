@@ -12,6 +12,10 @@
       "cmd": "enter",
       "desc":"Enter an active Giveaway",
       "run": "commandEnter"
+    },{
+      "cmd": "draw",
+      "desc":"draw a winner of your active Giveaway",
+      "run": "commandDraw"
     }
   ]
 }
