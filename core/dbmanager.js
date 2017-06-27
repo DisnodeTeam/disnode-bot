@@ -27,9 +27,8 @@ class DBManager{
       }
       logger.Info("DBManager", "InitPromise", "Creating and Connecting new DB Instance: " + settings.DBName)
       var _newDB = new DBClass(self.disnode,settings);
-
+      self.instances.push(_newDB);
       _newDB.Connect().then(function(){
-        self.instances.push(_newDB);
         logger.Success("DBManager", "InitPromise", "DB Instance Created and Connected: " + settings.DBName)
         resolve(_newDB);
         return;
