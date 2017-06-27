@@ -1,0 +1,54 @@
+{
+  "commands":[
+    {
+      "cmd": "kick",
+      "desc": "*Kicks a user from the guild*",
+      "run": "commandKick"
+    },
+    {
+      "cmd" : "ban",
+      "desc": "*Bans a user from the guild, add 1-7 after the username to delete x amount of days worth of messages*",
+      "run" : "commandBan"
+    },
+    {
+      "cmd" : "softban",
+      "desc": "*Bans then unbans a user deleting 1 days worth of messages sent from the user*",
+      "run" : "commandSoftban"
+    },
+    {
+      "cmd" : "unban",
+      "desc": "*Unbans a user (Needs User ID)*",
+      "run" : "commandUnban"
+    },
+    {
+      "cmd" : "mute",
+      "desc": "*Mutes a user by giving them the muted role*",
+      "run" : "commandMute"
+    },
+    {
+      "cmd" : "unmute",
+      "desc": "*Unmutes a user*",
+      "run" : "commandUnmute"
+    },
+    {
+      "cmd" : "delete",
+      "desc" : "*Deletes between 1-100 messages*",
+      "run" : "commandDelete"
+    },
+    {
+      "cmd" : "role",
+      "desc" :"*Sets the role that can use these cmds (has to be a mentionable role)*",
+      "run" : "commandRole"
+    },
+    {
+      "cmd" : "log",
+      "desc" :"*Sets the mod log channel*",
+      "run" : "commandLog"
+    },
+    {
+      "cmd" : "reason",
+      "desc" : "*Set the reason in a case in mod log*",
+      "run" : "reason"
+    }
+  ]
+}
