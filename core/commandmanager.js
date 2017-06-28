@@ -4,35 +4,21 @@ const async = require('async');
 const jsonfile = require('jsonfile');
 const Logging = require('disnode-logger');
 class CommandManager {
-    constructor(disnode, server, cb) {
+    constructor(disnode, guildInstance) {
         this.disnode  = disnode;
-        this.server   = server;
-        this.plugin   = disnode.server.GetPluginInstance(server);
+        this.guildInstance   = guildInstance;
+        this.guildID       = guildInstance.id;
+
         this.prefixes = [];
         var self = this;
-        Logging.Success("Command-"+self.server, "Start","New Command Instnace Created!");
+        Logging.Success("Command-"+self.guildID, "Start","New Command Instnace Created!");
         if(self.disnode.botConfig.prefix){
           self.prefix = self.disnode.botConfig.prefix;
-          Logging.Info("Command-"+self.server, "Start","prefix set to: " + self.prefix);
+          Logging.Info("Command-"+self.guildID, "Start","prefix set to: " + self.prefix);
         }else {
-          Logging.Info("Command-"+self.server, "Start","no prefix found in config setting default of \'!\'");
+          Logging.Info("Command-"+self.guildID, "Start","no prefix found in config setting default of \'!\'");
           self.prefix = "!";
         }
-
-        self.plugin.LoadAllPlugins().then(function(){
-          self.plugin.GetCommandPrefixes().then(function(prefixes){
-            self.prefixes = prefixes;
-            cb();
-          }).catch(function(err){
-            Logging.Warning("Command-"+self.server, "Start", "Err Loading Prefixes: " + err)
-            cb();
-          });
-
-        }).catch(function(err){
-          Logging.Warning("Command-"+self.server, "Start", "Err Loading Plugins: " + err)
-          cb();
-        });;
-
     }
 
     UpdateAllPrefixes(){

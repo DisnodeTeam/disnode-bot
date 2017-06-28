@@ -1,5 +1,5 @@
 const DiscordBot = require('./bot');
-const ServerManager = require ('./servermanager');
+const PluginManager = require ('./pluginmanager');
 const Communication = require('./communication')
 const StateManager  = require ('./statemanager');
 const Platform = require("./platform")
@@ -26,18 +26,29 @@ class Disnode {
       var self = this;
       async.waterfall([
         // Load Config and Init bot
-        function(callback) {
 
+        function(callback) {
           Logging.Info("Disnode", "Start", "Loading Config");
+
           self.LoadBotConfig().then(function(){
             self.bot = new DiscordBot(self.botConfig.key, self);
-            self.stats = new Stats(self);
-            self.platform = new Platform(self);
-             self.util = new Util(self);
             Logging.Success("Disnode", "Start", "Loaded Config");
+
             callback();
           }).catch(callback);
         },
+
+        function(callback) {
+          Logging.Info("Disnode", "Start", "Loading Core");
+
+          self.stats    = new Stats(self);
+          self.platform = new Platform(self);
+          self.util     = new Util(self);
+          self.state    = new StateManager(self);
+          self.plugin = new PluginManager(self);
+          callback();
+        },
+
         function(callback) {
            if(self.botConfig.relayServer){
              Logging.Info("Disnode", "Start", "Loading Communication");
@@ -59,9 +70,16 @@ class Disnode {
         },
         function(callback) {
           Logging.Info("Disnode", "Start", "Binding Events");
-          self.bot.SetUpLocalBinds();
+          self.BindBotEvents();
           Logging.Success("Disnode", "Start", "Binded Events");
-          callback();
+
+          self.PreLoad().then(function(){
+            self.ready = true;
+              callback();
+              Logging.Success("Disnode", "Start", "Bot Ready!");
+          });
+
+
         },
         function(callback) {
           if(self.botConfig.db.use_db){
@@ -73,58 +91,6 @@ class Disnode {
             callback();
           }
        },
-       
-       function(callback) {
-         Logging.Info("Disnode", "Start", "Loading State Manager");
-         self.state = new StateManager(self);
-         Logging.Success("Disnode", "Start", "Loaded State Manager");
-         callback();
-       },
-        // Create Command Handler
-        function(callback) {
-          Logging.Info("Disnode", "Start", "Loading Server Manager");
-          self.server = new ServerManager(self);
-          Logging.Success("Disnode", "Start", "Loaded Server Manager");
-          
-          if(self.botConfig.preload){
-            Logging.Info("Disnode", "Start", "PRE-LAUNCHING INSTANCES FOR ALL GUILDS! Disabling Logs.");
-            Logging.DisableLogs();
-            setTimeout(function () {
-              var guilds = [];
-
-              async.eachSeries( self.bot.guilds, function(guild,callback){
-                if(!guild){
-                  callback();
-                  
-                  return;
-                }
-                var commandManager = self.server.GetCommandInstancePromise(guild.id).then(function(){
-                    
-                    setTimeout(function () {
-                      callback();
-                    }, 10);
-                })
-              },function(err){
-                Logging.EnableLogs();
-                if(err){
-                  Logging.Error("Disnode", "Start", "Error PreLoading: " + err)
-                  self.ready = true;
-                  callback();
-                  return;
-                }
-                Logging.Success("Disnode","Start", "Finished Launching! Guilds: " + self.bot.guilds.count)
-                self.ready = true;
-                callback();
-              })
-            }, 1000);
-          }else{
-            self.ready = true;
-            callback();
-          }
-
-        },
-
-
 
       ], function (err, result) {
           if(err){
@@ -177,21 +143,69 @@ class Disnode {
         });
       });
     }
-    /**
-    * Event called when messages are recieved
-    * @param {MessageObject} msg - Recieved Message
-    */
-    OnMessage (msg){
-      this.server.GetCommandInstancePromise(msg.guildID).then(function(inst){
 
-        if(inst){
-          inst.RunMessage(msg);
-        }else{
-          Logging.Warning("Disnode", "Message", "No Command Handler!");
+    PreLoad(){
+      var self = this;
+      return new Promise(function(resolve, reject) {
+        if(!self.bot){
+          return;
         }
+        Logging.Info("Disnode","Start", "Preloading Guilds " )
+        async.eachSeries( self.bot.guilds, function(guild,callback){
+          if(!guild || self.plugin.guilds[guild.id]){
+            callback();
+            return;
+          }
+          Logging.DisableLogs();
+          self.plugin.NewInstance(guild.id).then(function(){
+            callback();
+          });
+
+        },function(err){
+          Logging.EnableLogs();
+          if(err){
+            Logging.Error("Disnode", "Start", "Error PreLoading: " + err)
+
+            reject()
+            return;
+          }
+          Logging.Success("Disnode","Start", "Finished Launching! Guilds: " + self.plugin.guilds.count)
+          resolve();
+        })
+      });
+    }
+
+    BindBotEvents(){
+      var self = this;
+      if(!self.bot){
+        return;
+      }
+
+      self.bot.on("guild_create",function(guild) {
+        self.HandleGuildCreate(guild);
+      });
+      self.bot.on('message', function(data){
+        // self.HandleMessage(data);
       });
 
+    }
 
+    HandleGuildCreate (data){
+      var self = this;
+      self.PreLoad();
+    }
+
+    HandleMessage (data){
+      var firstLetter = data.content.substring(0, self.disnode.botConfig.prefix.length);
+      if (self.disnode.ready && firstLetter == self.disnode.botConfig.prefix) {
+        this.disnode.server.GetCommandInstancePromise(data.guildID).then(function(inst) {
+          if (inst) {
+            inst.RunMessage(data);
+          } else {
+            Logging.Warning("Disnode", "OnMessage", "No Command Handler!");
+          }
+        });
+      }
     }
 
 

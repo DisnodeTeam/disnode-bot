@@ -395,22 +395,6 @@ class Bot extends EventEmitter {
       });
   }
 
-  SetUpLocalBinds() {
-    var self = this;
-    self.on('message', function(data) {
-      var firstLetter = data.content.substring(0, self.disnode.botConfig.prefix.length);
-      if (self.disnode.ready && firstLetter == self.disnode.botConfig.prefix) {
-        this.disnode.server.GetCommandInstancePromise(data.guildID).then(function(inst) {
-          if (inst) {
-            inst.RunMessage(data);
-          } else {
-            Logging.Warning("Bot", "Message", "No Command Handler!");
-          }
-        });
-      }
-    });
-  }
-
   GetGatewayURL() {
     var self = this;
     return new Promise(function(resolve, reject) {
