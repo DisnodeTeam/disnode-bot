@@ -305,7 +305,7 @@ class Bot extends EventEmitter {
         var data = {
           id: data.d.id,
           channel: data.d.channel_id,
-          server: self.GetGuildIDFromChannel(data.d.channel_id),
+          guild_id: self.GetGuildIDFromChannel(data.d.channel_id),
           raw: data.d
         };
         self.emit("message_delete", data);

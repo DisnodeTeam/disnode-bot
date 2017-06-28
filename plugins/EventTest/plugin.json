@@ -1,0 +1,9 @@
+{
+  "name":"Template Plugin",
+  "id": "event-plugin",
+  "script": "Plugin.js",
+  "load": true,
+  "launchOnStart": true,
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}

@@ -3,7 +3,7 @@
   "id": "moderation",
   "script": "Moderation.js",
   "load" : false,
-  "launch": true,
+  "launchOnStart": false,
   "commandsFile": "Moderation-Commands.json",
   "configFile" : "Moderation-Config.json"
 }

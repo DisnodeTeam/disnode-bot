@@ -69,19 +69,6 @@ class Disnode {
           });
         },
         function(callback) {
-          Logging.Info("Disnode", "Start", "Binding Events");
-          self.BindBotEvents();
-          Logging.Success("Disnode", "Start", "Binded Events");
-
-          self.PreLoad().then(function(){
-            self.ready = true;
-              callback();
-              Logging.Success("Disnode", "Start", "Bot Ready!");
-          });
-
-
-        },
-        function(callback) {
           if(self.botConfig.db.use_db){
             Logging.Info("Disnode", "Start", "Loading DB Manager");
             self.db = new DBManager(self);
@@ -91,8 +78,22 @@ class Disnode {
             callback();
           }
        },
+        function(callback) {
+          Logging.Info("Disnode", "Start", "Binding Events");
+          self.BindBotEvents();
+          Logging.Success("Disnode", "Start", "Binded Events");
+
+          setTimeout(function () {
+            self.PreLoad().then(function(){
+                self.ready = true;
+                callback();
+                Logging.Success("Disnode", "Start", "Bot Ready!");
+            });
+          }, 5000);
+        }
 
       ], function (err, result) {
+
           if(err){
             Logging.Error("Disnode", "Start", err)
           }
@@ -193,7 +194,9 @@ class Disnode {
 
     HandleGuildCreate (data){
       var self = this;
-      self.PreLoad();
+      if(self.ready){
+        self.PreLoad();
+      }
     }
 
     HandleMessage (data){

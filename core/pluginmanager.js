@@ -73,6 +73,7 @@ class GuildInstance{
 
           var pluginObject = self.GeneratePluginObject(pluginPath);
           if(pluginObject == null){return;}
+          if(!pluginObject.load){return;}
           self.plugins[pluginObject.id] = pluginObject;
           self.plugins.count += 1;
 
@@ -87,6 +88,7 @@ class GuildInstance{
       defaultPluginsPaths.forEach(function(pluginPath) {
         var pluginObject = self.GeneratePluginObject(pluginPath);
         if(pluginObject == null){return;}
+          if(!pluginObject.load){return;}
         self.plugins[pluginObject.id] = pluginObject;
         self.plugins.count += 1;
 
@@ -287,7 +289,8 @@ class GuildInstance{
       self.GetScriptRequire(pluginFile).then(function(requireClass) {
         pluginFile.disnode = self.disnode;
         pluginFile.pluginManager = self;
-        pluginFile.server = self.server;
+        pluginFile.server = self.id;
+        pluginFile.guildId = self.id;
         _newPlugin = merge(new requireClass(), pluginFile);
 
         self.disnode.stats.pluginInstances++;
