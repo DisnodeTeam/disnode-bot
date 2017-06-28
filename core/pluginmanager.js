@@ -32,62 +32,67 @@ class PluginManager {
 
 
       Logger.Info("PluginManager","NewInstance","New Intance: " + guildID);
+      var newInstance = new GuildInstance(guildID, self)
 
-      var instance = {
-        id: guildID,
-        plugins: {count: 0}, //Loaded plugin.json files
-        instances: [], // Launched plugins
-        prefixed: []
-      };
-
-      self.LoadPlugins(instance).then(function(){
+      newInstance.LoadPlugins().then(function(){
         resolve();
       });
 
-      self.guilds[guildID] = instance;
+      self.guilds[guildID] = newInstance;
       self.guilds.count++;
     });
 
 
   }
 
+}
 
-  ///// ======== INSTANCED ====== /////
+class GuildInstance{
+  constructor(guildID, parent){
+    this.id =guildID;
+    this.parent = parent;
+    this.disnode = parent.disnode;
+    this.plugins = {count: 0}, //Loaded plugin.json files
+    this.instances = [], // Launched plugins
+    this.prefixes = {count: 0 };
+  }
 
-
-  LoadPlugins(guild){
+  LoadPlugins(){
     var self = this;
     return new Promise(function(resolve, reject) {
 
-      Logger.Info("PluginManager", "LoadPlugins-"+guild.id, "Loading Plugins.")
+      Logger.Info("PluginManager", "LoadPlugins-"+self.id, "Loading Plugins.")
 
-      var guildPluginsPaths    = self.GetPluginsPath(guild.id);
+      var guildPluginsPaths    = self.GetPluginsPath(self.id);
       var defaultPluginsPaths  = self.GetPluginsPath();
 
       if(guildPluginsPaths.length != 0){
-        Logger.Info("PluginManager", "LoadPlugins-"+guild.id, "Loading Guild Plugins("+guildPluginsPaths.length+")")
+        Logger.Info("PluginManager", "LoadPlugins-"+self.id, "Loading Guild Plugins("+guildPluginsPaths.length+")")
 
         guildPluginsPaths.forEach(function(pluginPath) {
-          var pluginObject = self.ReadPluginFile(pluginPath);
-          guild.plugins[pluginObject.id] = pluginObject;
-          guild.plugins.count += 1;
+
+          var pluginObject = self.GeneratePluginObject(pluginPath);
+          if(pluginObject == null){return;}
+          self.plugins[pluginObject.id] = pluginObject;
+          self.plugins.count += 1;
         });
-        Logger.Success("PluginManager", "LoadPlugins-"+guild.id, "Loaded Guild Plugins("+ guild.plugins.count+")")
+        Logger.Success("PluginManager", "LoadPlugins-"+self.id, "Loaded Guild Plugins("+ self.plugins.count+")")
       }
 
-      Logger.Info("PluginManager", "LoadPlugins-"+guild.id, "Loading Default Plugins("+defaultPluginsPaths.length+")")
+      Logger.Info("PluginManager", "LoadPlugins-"+self.id, "Loading Default Plugins("+defaultPluginsPaths.length+")")
 
       defaultPluginsPaths.forEach(function(pluginPath) {
-        var pluginObject = self.ReadPluginFile(pluginPath);
+        var pluginObject = self.GeneratePluginObject(pluginPath);
         if(pluginObject == null){return;}
-        guild.plugins[pluginObject.id] = pluginObject;
-        guild.plugins.count += 1;
+        self.plugins[pluginObject.id] = pluginObject;
+        self.plugins.count += 1;
       });
-      Logger.Success("PluginManager", "LoadPlugins-"+guild.id, "Loaded Default Plugins("+ guild.plugins.count+")")
-      resolve(guild.plugins);
+      Logger.Success("PluginManager", "LoadPlugins-"+self.id, "Loaded Default Plugins("+ self.plugins.count+")")
+      self.LoadPrefixes();
+      Logger.Success("PluginManager", "LoadPlugins-"+self.id, "Loaded Prefixes("+ self.prefixes.count+")")
+      resolve(self.plugins);
     });
   }
-
 
   GetPluginsPath(guildID = null){
     var path = "./"
@@ -112,24 +117,138 @@ class PluginManager {
     return finalPaths;
   }
 
-
-  ReadPluginFile(pluginPath){
-
-    if (!fs.existsSync(pluginPath + "/plugin.json")) {
-      Logger.Warning("PluginManager", "ReadPluginFile", "Could not find plugin.json: " + pluginPath + "./plugin.json")
+  GeneratePluginObject(pluginPath){
+    var plugin = {};
+    var files = this.ReadJSONFiles(pluginPath);
+    if(!files){
       return null;
     }
 
-    var pluginFileRaw = fs.readFileSync(pluginPath + "/plugin.json");
-    var jsonPluginFile = null;
-
-    try{
-      jsonPluginFile = JSON.parse(pluginFileRaw);
-      return jsonPluginFile;
-    }catch(err){
-      Logger.Warning("PluginManager", "ReadPluginFile", "Error Reading Plugin File: " + pluginPath + " - " + err)
-      return null
+    if(files.Commands){
+      files.Commands = files.Commands.commands;
     }
+
+    plugin = files['plugin'];
+
+    merge(plugin, files)
+
+
+    return plugin;
+
+  }
+
+  ReadJSONFiles(pluginPath){
+    var files = null;
+    try{
+      files = fs.readdirSync(pluginPath);
+    }catch(err){
+      return;
+    }
+
+    if(!files || files.length == 0){return;}
+
+    var returnData = {};
+    files.forEach(function(file){
+      if(!file.includes('.json')){
+        return;
+      }
+
+      var filePath = pluginPath + '/' + file;
+      var fileName = file.substring(0, file.indexOf('.json'));
+
+      var fileContents = fs.readFileSync(filePath);
+      var fileJSON = null;
+
+      try{
+        fileJSON = JSON.parse(fileContents);
+        returnData[fileName] = fileJSON;
+      }catch(err){
+        Logger.Warning("PluginManager", "ReadJSONFiles", "Error Reading Plugin File: " + fileName + " - " + err)
+      }
+
+    });
+
+    return returnData;
+  }
+
+  LoadPrefixes(){
+    var self = this;
+    for (var prop in self.plugins) {
+
+      if(prop == "count"){continue}
+      if (!self.plugins.hasOwnProperty(prop)) {
+        continue;
+      }
+      var plugin = self.plugins[prop];
+
+      if(!plugin.Config){continue}
+      self.prefixes[plugin.Config.prefix] = plugin.id;
+
+      self.prefixes.count ++;
+    }
+
+  }
+  RunMessage(msgObject){
+    var self = this;
+    var fullText = msgObject.content;
+    var prefixLength = self.disnode.botConfig.prefix.length;
+    var commandText = fullText.substring(prefixLength);
+    var params = commandText.split(' ');
+
+    // Clean up params
+    var openQuote = false;
+
+
+    for (var index in params){
+
+      var param = params[index];
+
+      if(param == ''){
+        params.split(index, 1);
+      }
+
+    }
+
+    var pluginPrefix = params[0];
+    var pluginID = self.prefixes[pluginPrefix];
+    var plugin   = self.plugins[pluginID];
+
+    if(!plugin){
+      return;
+    }
+
+    params.splice(0,1);
+    var commandText = params[0];
+    var command = self.GetCommand(pluginID, commandText) || {cmd: "_default", run: "default"};
+
+    var sendObject = {command: command, msg: msgObject};
+
+    LaunchPlugin(pluginID).then(function(instance){
+      if(!instnace[command.run]){
+        return;
+      }
+
+      instance[command.run](sendObject);
+    });
+  }
+
+  LaunchPlugin(pluginID){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      
+    });
+  }
+
+
+  GetCommand(pluginID, command){
+    var plugin = this.plugins[pluginID];
+    if(!plugin.Commands){return null;}
+    for (var i = 0; i < plugin.Commands.length; i++) {
+      if(plugin.Commands[i].cmd == command){
+        return plugin.Commands[i]
+      }
+    }
+    return null;
   }
 
 }

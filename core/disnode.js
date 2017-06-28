@@ -151,12 +151,13 @@ class Disnode {
           return;
         }
         Logging.Info("Disnode","Start", "Preloading Guilds " )
+        Logging.DisableLogs();
         async.eachSeries( self.bot.guilds, function(guild,callback){
           if(!guild || self.plugin.guilds[guild.id]){
             callback();
             return;
           }
-          Logging.DisableLogs();
+
           self.plugin.NewInstance(guild.id).then(function(){
             callback();
           });
@@ -185,7 +186,7 @@ class Disnode {
         self.HandleGuildCreate(guild);
       });
       self.bot.on('message', function(data){
-        // self.HandleMessage(data);
+        self.HandleMessage(data);
       });
 
     }
@@ -196,15 +197,10 @@ class Disnode {
     }
 
     HandleMessage (data){
-      var firstLetter = data.content.substring(0, self.disnode.botConfig.prefix.length);
-      if (self.disnode.ready && firstLetter == self.disnode.botConfig.prefix) {
-        this.disnode.server.GetCommandInstancePromise(data.guildID).then(function(inst) {
-          if (inst) {
-            inst.RunMessage(data);
-          } else {
-            Logging.Warning("Disnode", "OnMessage", "No Command Handler!");
-          }
-        });
+      var self = this;
+      var firstLetter = data.content.substring(0, self.botConfig.prefix.length);
+      if (self.ready && firstLetter == self.botConfig.prefix) {
+        self.plugin.guilds[data.guild_id].RunMessage( data);
       }
     }
 
