@@ -53,7 +53,7 @@ class GuildInstance{
     this.parent = parent;
     this.disnode = parent.disnode;
     this.plugins = {count: 0}, //Loaded plugin.json files
-    this.instances = [], // Launched plugins
+    this.instances = {}, // Launched plugins
     this.prefixes = {count: 0 };
   }
 
@@ -75,6 +75,9 @@ class GuildInstance{
           if(pluginObject == null){return;}
           self.plugins[pluginObject.id] = pluginObject;
           self.plugins.count += 1;
+
+
+
         });
         Logger.Success("PluginManager", "LoadPlugins-"+self.id, "Loaded Guild Plugins("+ self.plugins.count+")")
       }
@@ -86,11 +89,32 @@ class GuildInstance{
         if(pluginObject == null){return;}
         self.plugins[pluginObject.id] = pluginObject;
         self.plugins.count += 1;
+
       });
       Logger.Success("PluginManager", "LoadPlugins-"+self.id, "Loaded Default Plugins("+ self.plugins.count+")")
       self.LoadPrefixes();
       Logger.Success("PluginManager", "LoadPlugins-"+self.id, "Loaded Prefixes("+ self.prefixes.count+")")
-      resolve(self.plugins);
+      self.LaunchOnStart().then(function(){
+          resolve(self.plugins);
+      })
+    });
+  }
+
+  LaunchOnStart(){
+    var self = this;
+
+    return new Promise(function(resolve, reject) {
+      async.eachSeries(self.plugins, function(plugin, cb){
+        if(plugin.launchOnStart){
+          self.LaunchPlugin(plugin.id).then(function(){
+            cb();
+          });
+        }else{
+          cb();
+        }
+      },function(err){
+        resolve();
+      });
     });
   }
 
@@ -118,20 +142,24 @@ class GuildInstance{
   }
 
   GeneratePluginObject(pluginPath){
-    var plugin = {};
+    var plugin = {path: pluginPath};
+    if(pluginPath.includes("./servers/")){
+      plugin.isServer = true;
+    }
+
     var files = this.ReadJSONFiles(pluginPath);
     if(!files){
       return null;
     }
 
-    if(files.Commands){
-      files.Commands = files.Commands.commands;
-    }
 
-    plugin = files['plugin'];
-
+    merge(plugin, files['plugin'])
+    delete files['plugin'];
     merge(plugin, files)
 
+    if(plugin.commands){
+      plugin.commands = plugin.commands.commands;
+    }
 
     return plugin;
 
@@ -156,11 +184,20 @@ class GuildInstance{
       var filePath = pluginPath + '/' + file;
       var fileName = file.substring(0, file.indexOf('.json'));
 
+      if(fileName.includes('Commands')){
+        fileName = "commands";
+      }
+      if(fileName.includes('Config')){
+        fileName = "config";
+      }
+
       var fileContents = fs.readFileSync(filePath);
       var fileJSON = null;
 
       try{
         fileJSON = JSON.parse(fileContents);
+
+
         returnData[fileName] = fileJSON;
       }catch(err){
         Logger.Warning("PluginManager", "ReadJSONFiles", "Error Reading Plugin File: " + fileName + " - " + err)
@@ -181,8 +218,8 @@ class GuildInstance{
       }
       var plugin = self.plugins[prop];
 
-      if(!plugin.Config){continue}
-      self.prefixes[plugin.Config.prefix] = plugin.id;
+      if(!plugin.config){continue}
+      self.prefixes[plugin.config.prefix] = plugin.id;
 
       self.prefixes.count ++;
     }
@@ -219,12 +256,15 @@ class GuildInstance{
 
     params.splice(0,1);
     var commandText = params[0];
-    var command = self.GetCommand(pluginID, commandText) || {cmd: "_default", run: "default"};
+    var command = self.GetCommand(pluginID, commandText) || {cmd: "_default", run: "default", isDefault: true};
+    if(!command.isDefault ){
+      params.splice(0,1);
+    }
+    var sendObject = {command: command, msg: msgObject, params: params};
 
-    var sendObject = {command: command, msg: msgObject};
+    self.LaunchPlugin(pluginID).then(function(instance){
 
-    LaunchPlugin(pluginID).then(function(instance){
-      if(!instnace[command.run]){
+      if(!instance[command.run]){
         return;
       }
 
@@ -232,23 +272,291 @@ class GuildInstance{
     });
   }
 
-  LaunchPlugin(pluginID){
+  LaunchPlugin(pluginID, commandObject) {
     var self = this;
+    Logger.Info("PluginManager-" + self.id, "LaunchPlugin", "Requesting Plugin: " + pluginID);
     return new Promise(function(resolve, reject) {
-      
+
+      if(self.instances[pluginID]){
+        resolve(self.instances[pluginID]); return;
+      }
+      Logger.Info("PluginManager-" + self.id, "LaunchPlugin", "Launching New Plugin: " + pluginID);
+      var pluginFile = self.plugins[pluginID];
+      var _newPlugin = {};
+
+      self.GetScriptRequire(pluginFile).then(function(requireClass) {
+        pluginFile.disnode = self.disnode;
+        pluginFile.pluginManager = self;
+        pluginFile.server = self.server;
+        _newPlugin = merge(new requireClass(), pluginFile);
+
+        self.disnode.stats.pluginInstances++;
+
+        _newPlugin.Destory = function() {
+          self.DestoryPlugin(_newPlugin.id);
+        }
+        if (_newPlugin.Init) {
+          _newPlugin.Init(function() {
+            self.instances[_newPlugin.id] = _newPlugin;
+            resolve(_newPlugin);
+          })
+        } else {
+          resolve(_newPlugin);
+          self.instances[_newPlugin.id] = _newPlugin;
+        }
+
+      }).catch(function(err) {
+        console.log(err);
+        reject(err);
+      })
     });
   }
 
+  DestoryPlugin(pluginID) {
+    var self = this;
 
+    Logger.Success("PluginManager-" + self.id, "DestoryPlugin", "Destroyed Plugin Instance: " + pluginID);
+    delete self.instances[pluginID];
+    self.disnode.stats.pluginInstances--;
+  }
   GetCommand(pluginID, command){
     var plugin = this.plugins[pluginID];
-    if(!plugin.Commands){return null;}
-    for (var i = 0; i < plugin.Commands.length; i++) {
-      if(plugin.Commands[i].cmd == command){
-        return plugin.Commands[i]
+
+    if(!plugin.commands){return null;}
+    for (var i = 0; i < plugin.commands.length; i++) {
+      if(plugin.commands[i].cmd == command){
+        return plugin.commands[i]
       }
     }
     return null;
+  }
+  GetScriptRequire(plugin) {
+    return new Promise(function(resolve, reject) {
+      if (!plugin.script) {
+        reject("No Script Set");
+        return;
+      }
+
+      var className = plugin.script;
+      var path = plugin.path + "/" + className;
+      async.waterfall([
+        // Check if class exists
+        function(callback) {
+          Logger.Info("PluginManager", "Load-" + plugin.name, "Checking for class");
+          fs.stat(path, function(err, stats) {
+            if (err) {
+              Logger.Error("PluginManager", "Load-" + plugin.name, "Failed to find Class (" + path + ")");
+              callback(err);
+              return;
+            } else {
+              Logger.Success("PluginManager", "Load-" + plugin.name, "Found Class");
+              callback();
+            }
+          });
+        },
+        // Attempt to import the class
+        function(callback) {
+          Logger.Info("PluginManager", "Load-" + plugin.name, "Trying to import class");
+          try {
+            var NpmRequire = require("../" + path);
+
+            Logger.Success("PluginManager", "Load-" + plugin.name, "Imported");
+
+            callback(null, NpmRequire);
+          } catch (e) {
+            Logger.Error("PluginManager", "Load-" + plugin.name, "Failed to Import: " + className + " - '" + e + "'");
+            callback(e, null);
+          }
+        },
+      ], function(err, result) {
+        if (err) {
+          console.log(err);
+          reject(err);
+          return;
+        }
+
+        resolve(result);
+
+      });
+
+    });
+  }
+
+  /**
+   * Adds/Downloads a Plugin to a server Folder
+   * @param {string} pluginID - Plugin to Download and Add
+   * @param {function} cb - Callback when Done
+   */
+  AddServerPluginRemote(pluginId, cb) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      Logger.Info("PluginManager-" + self.server, "AddServerPluginRemote:" + pluginId, "Downloading Plugin");
+      self.command = self.disnode.server.GetCommandInstance(self.server);
+      self.MakeServerFolder();
+      var newPath = "servers/" + self.server;
+
+      var request = http.get("https://api.disnodeteam.com/plugins/download/" + pluginId, function(response) {
+        response.on('data', function(chunk) {
+          try {
+              var data = JSON.parse(chunk);
+              if (data.type && data.type == "ERR") {
+                reject(data.data)
+                return;
+              }
+          } catch (e) {
+
+          }
+        });
+        response.pipe(unzip.Extract({
+          path: newPath
+        }));
+
+
+        response.on("end", function() {
+          Logger.Success("PluginManager-" + self.server, "AddServerPluginRemote:" + pluginId, "Downloaded Plugin!");
+          setTimeout(function() {
+            self.LoadAllPlugins().then(function() {
+              self.InstallPluginRequirements(pluginId).then(function() {
+                self.command.UpdateAllPrefixes();
+                Logger.Success("PluginManager-" + self.server, "AddServerPluginRemote:" + pluginId, "Installed Plugin!");
+                resolve();
+              })
+
+            });
+
+
+          }, 1000);
+        })
+
+      });
+    });
+  }
+  /**
+   * Adds a plugin from the Core Folder
+   * @param {string} pluginID - Plugin to Download and Add
+   * @param {function} cb - Callback when Done
+   */
+  AddServerPluginLocal(pluginId) {
+    var self = this;
+
+    return new Promise(function(resolve, rejecy) {
+      self.command = self.disnode.server.GetCommandInstance(self.server);
+      self.MakeServerFolder();
+      for (var i = 0; i < self.plugins.length; i++) {
+        if (self.plugins[i].isServer) {
+          return;
+        }
+
+        if (self.plugins[i].id == pluginId) {
+          var newPath = self.plugins[i].path.replace("plugins/", "servers/" + self.server);
+          console.log(newPath);
+
+          fs.copy(self.plugins[i].path, newPath, function(err) {
+            if (err) return console.error(err)
+            setTimeout(function() {
+              self.LoadAllPlugins().then(function() {
+                self.command.UpdateAllPrefixes();
+                resolve();
+              });
+
+            }, 1000);
+          });
+        }
+      }
+    });
+  }
+
+  /**
+   * Removes a Plugin frome a server Folder
+   * @param {string} pluginID - Plugin to Download and Add
+   */
+  RemoveServerPlugin(pluginId) {
+    var self = this;
+    self.MakeServerFolder();
+    for (var i = 0; i < self.plugins.length; i++) {
+      if (self.plugins[i].isServer == false) {
+
+        return;
+      }
+
+      if (self.plugins[i].id == pluginId) {
+        var newPath = self.plugins[i].path.replace("plugins/", "servers/" + this.server);
+
+        fs.remove(self.plugins[i].path, err => {
+          if (err) return console.error(err)
+          this.LoadAllPlugins();
+
+        })
+      }
+
+    }
+  }
+
+  InstallPluginRequirements(pluginId) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      var pluginObj = self.GetPluginByID(pluginId);
+
+      if (!pluginObj) {
+        Logger.Warning("PluginManager-" + self.server, "InstallPluginRequirements:" + pluginId, "Failed to find PluginOBJ");
+
+        resolve();
+        return;
+
+      }
+      if (pluginObj.requirements) {
+        Logger.Info("PluginManager-" + self.server, "InstallPluginRequirements:" + pluginObj.id, "Installing Requirements: " + pluginObj.requirements);
+
+        if (process.platform == "linux") {
+          var execString = "sudo";
+          var args = ['npm', 'i'];
+          for (var i = 0; i < pluginObj.requirements.length; i++) {
+            args.push(pluginObj.requirements[i]);
+          }
+
+          var child = spawn.sync(execString, args, {
+            stdio: 'inherit',
+            env: process.env,
+            cwd: __dirname
+          });
+        } else {
+          var execString = "npm";
+          var args = ['i'];
+          for (var i = 0; i < pluginObj.requirements.length; i++) {
+            args.push(pluginObj.requirements[i]);
+          }
+
+          var child = spawn.sync(execString, args, {
+            stdio: 'inherit',
+            env: process.env,
+            cwd: __dirname
+          });
+        }
+
+
+
+        if (child.error) {
+          Logger.Error("PluginManager-" + self.server, "InstallPluginRequirements:" + pluginObj.id, "Error Installing Package: " + JSON.stringify(child.error));
+        }
+        Logger.Success("PluginManager-" + self.server, "InstallPluginRequirements:" + pluginObj.id, "Installed Requirements!");
+        resolve();
+
+
+      } else {
+        resolve();
+      }
+    });
+  }
+  /**
+   * Creates a server specific folder for plugins
+   * @param {string} pluginID - Plugin to Download and Add
+   */
+  MakeServerFolder() {
+    var dir = "./servers/" + this.server;
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
+
   }
 
 }

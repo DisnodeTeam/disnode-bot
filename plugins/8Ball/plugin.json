@@ -4,6 +4,7 @@
   "id": "eight-ball",
   "script": "Plugin.js",
   "load": true,
+  "launchOnStart": true,
   "commandsFile": "Commands.json",
   "configFile" : "Config.json"
 }
