@@ -1,0 +1,9 @@
+{
+  "name":"Cards Against Discord",
+  "id": "cah-plugin",
+  "description":"Play Cards Against Humanity with your friends on Discord!",
+  "script": "Plugin.js",
+  "load": true,
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}
