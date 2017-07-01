@@ -30,7 +30,7 @@ class Communication{
   }
 
   RegisterBot(){
-    var self = thisl
+    var self = this;
     if(!self.disnode.botConfig.api){
       return;
     }
@@ -43,7 +43,7 @@ class Communication{
       return;
     }
 
-    SendPacket("REGISTER", appid + " " + key)
+    SendPacket("REGISTER",{app: appid, key: key, type: "BOT"})
   }
 
 }

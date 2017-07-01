@@ -1693,14 +1693,14 @@ class Bot extends EventEmitter {
   GetOrCreateDM(userID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.APIPost('https://discordapp.com/api/users/@me/channels', {
+      APIUtil.APIPost(self.key, 'https://discordapp.com/api/users/@me/channels', {
           recipient_id: userID
         })
         .then(function(response) {
           resolve(response.data.id);
         })
         .catch(function(err) {
-          Logger.Error("Bot", "EditBotUser", err.display);
+          Logger.Error("Bot", "GetOrCreateDM", err.display);
           reject(err);
         });
     });
