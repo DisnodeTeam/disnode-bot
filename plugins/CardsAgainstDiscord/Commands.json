@@ -1,8 +1,11 @@
 {
   "commands":[
     {
-      "cmd": "test",
-      "run": "commandTest"
+      "cmd": "new",
+      "run": "commandNew"
+    },{
+      "cmd": "join",
+      "run": "commandJoin"
     }
   ]
 }
