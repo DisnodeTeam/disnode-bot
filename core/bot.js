@@ -679,7 +679,7 @@ class Bot extends EventEmitter {
    * @param {string} body - The body of the embed
    * @param {int|RGBint} color - (Optional)RGB Int of what color the embed should be (default 3447003)
    */
-  SendDMCompactEmbed(userID, embed) {
+  SendDMCompactEmbed(userID, title, body, color = 3447003) {
     var self = this;
     return new Promise(function(resolve, reject) {
       self.GetOrCreateDM(userID).then(function(channel) {
