@@ -1,3 +1,5 @@
+
+
 class TestPlugin {
   constructor() {
     this.stage = 0;
@@ -9,11 +11,8 @@ class TestPlugin {
       this.stage = parseInt(command.params[0])
       this.disnode.bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Setting Stage to: **" +   this.stage)
     }
-    this.disnode.bot.EditRole("105513877634031616", {name: "GOD", color: "16711680", hoist: true, permission: 2146958591, mentionable: true})
-    .catch(function(err){
-      self.disnode.bot.SendMessage(command.channel_id, ":warning: Error: " + err.display)
-    })
-    //self.RunTest();
+
+    self.RunTest();
   }
 
   RunTest() {
@@ -124,25 +123,25 @@ class TestPlugin {
             bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Stage Failed: DeleteChannel :x:**")
           })
       break;
-
       case 5:
-        self.disnode.bot.SendCompactEmbed(this.config.channel, "Test Suite", "**Running Stage: GetMessages **")
+        self.disnode.bot.SendCompactEmbed(this.config.channel, "Test Suite", "**Running Stage: AddReaction **")
 
-        bot.GetMessages(self.config.channel,{before:"328679534490812426", limit:"5"})
+        bot.AddReaction(self.config.channel, "333020922485407745", ":x:")
           .then(function(data) {
 
-            bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Stage Successful: GetMessages** (`"+data[0].content+" / "+data.length+" messages`) :white_check_mark:")
+            bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Stage Successful: AddReaction** (``) :white_check_mark:")
             setTimeout(function () {
               self.stage += 1;
               self.RunTest();
             }, 1000);
           })
           .catch(function(err) {
-
+            console.log(err);
             bot.SendMessage(self.config.channel, "```json\n ERROR:" + JSON.stringify(err, " ", " ") + "```")
             bot.SendCompactEmbed(self.config.channel, "Test Suite", "**Stage Failed: GetMessages :x:**")
           })
-      break;
+        break;
+
     }
   }
 

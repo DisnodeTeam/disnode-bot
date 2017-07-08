@@ -9,11 +9,11 @@ class Template {
       self.OnMessageDelete(info)
     })
 
-      self.disnode.db.InitPromise({}).then(function(dbo) {
-        Logging.Info("Moderation", "DB", "Started  ||  Plugin # " + self.disnode.util.ReturnInstances() + " || Servers # " + (Object.keys(self.disnode.bot.guilds).length - 1))
-        self.DB = dbo;
-        done();
-      });
+    self.disnode.db.InitPromise({}).then(function(dbo) {
+      Logging.Info("Moderation", "DB", "Started  ||  Plugin # " + self.disnode.util.ReturnInstances() + " || Servers # " + (Object.keys(self.disnode.bot.guilds).length - 1))
+      self.DB = dbo;
+      done();
+    });
   }
 
   OnMessageDelete(info){

@@ -9,8 +9,8 @@ const requests = require('./api/request')
 const APIUtil = require("./api/apiutils");
 const async = require('async');
 const EventEmitter = require('events').EventEmitter;
-
-
+const EmojiConvertor = require('emoji-js')
+const emojiJS = new EmojiConvertor();
 /**
  * Class to ineract with Discord
  * @constructor
@@ -237,6 +237,7 @@ class Bot extends EventEmitter {
          */
       case codes.dispatch.GUILD_MEMBER_ADD:
         self.emit("guild_memeber_add", data.d);
+        self.CacheGuild(data.d);
         break;
         /**
          * Message Delete event.
@@ -246,6 +247,7 @@ class Bot extends EventEmitter {
          */
       case codes.dispatch.GUILD_MEMBER_REMOVE:
         self.emit("guild_memeber_removed", data.d);
+        self.CacheGuild(data.d);
         break;
         /**
          * Message Delete event.
@@ -255,6 +257,7 @@ class Bot extends EventEmitter {
          */
       case codes.dispatch.GUILD_ROLE_CREATE:
         self.emit("guild_role_created", data.d);
+        self.CacheGuild(data.d);
         break;
         /**
          * Message Delete event.
@@ -264,6 +267,7 @@ class Bot extends EventEmitter {
          */
       case codes.dispatch.GUILD_ROLE_DELETE:
         self.emit("guild_role_delete", data.d);
+        self.CacheGuild(data.d);
         break;
         /**
          * Message Delete event.
@@ -273,6 +277,7 @@ class Bot extends EventEmitter {
          */
       case codes.dispatch.GUILD_ROLE_UPDATE:
         self.emit("guild_role_update", data.d);
+        self.CacheGuild(data.d);
         break;
         /**
          * Message Delete event.
@@ -282,6 +287,7 @@ class Bot extends EventEmitter {
          */
       case codes.dispatch.GUILD_UPDATE:
         self.emit("guild_update", data.d);
+        self.CacheGuild(data.d);
         break;
         /**
          * Message Create event.
@@ -362,12 +368,11 @@ class Bot extends EventEmitter {
 
   CacheGuild(data) {
     this.guilds[data.id] = data;
-    this.guilds.count++;
+
     for (var i = 0; i < data.channels.length; i++) {
       data.channels[i].guild_id = data.id;
 
       this.channels[data.channels[i].id] = data.channels[i];
-      this.channels.count += 1;
     }
     var mem = this.guilds[data.id].members
 
@@ -701,6 +706,10 @@ class Bot extends EventEmitter {
   AddReaction(channelID, messageID, emoji) {
     var self = this;
     return new Promise(function(resolve, reject) {
+      emojiJS.init_env(); // else auto-detection will trigger when we first convert
+      emojiJS.replace_mode = 'unified';
+      emojiJS.allow_native = true;
+      emoji = emojiJS.replace_colons(emoji);
 
       APIUtil.APIPut(self.key,
           "channels/" + channelID + "/messages/" + messageID + "/reactions/" + emoji + "/@me"
@@ -708,6 +717,7 @@ class Bot extends EventEmitter {
           resolve(data);
         })
         .catch(function(err) {
+          console.log(err);
           Logger.Error("Bot", "AddReaction", err.display);
           reject(err);
         });

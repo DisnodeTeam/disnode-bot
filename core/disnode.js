@@ -152,7 +152,7 @@ class Disnode {
           return;
         }
         Logging.Info("Disnode","Start", "Preloading Guilds " )
-        Logging.DisableLogs();
+        //Logging.DisableLogs();
         async.eachSeries( self.bot.guilds, function(guild,callback){
           if(!guild || self.plugin.guilds[guild.id]){
             callback();
