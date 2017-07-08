@@ -34,13 +34,10 @@ class Bot extends EventEmitter {
     this.shardID = 0;
     this.lastS = null;
     this.guilds = {
-      count: 0
     };
     this.channels = {
-      count: 0
     };
     this.users = {
-      count: 0
     };
     this.setMaxListeners(1000);
   }
