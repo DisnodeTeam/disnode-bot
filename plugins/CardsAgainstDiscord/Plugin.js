@@ -1,10 +1,11 @@
 const Session = require('./Session.js');
-
+const logger = require('disnode-logger');
+const cc = require('cardcast-api');
 class CAHPlugin {
   constructor() {
     var self = this;
     self.games = [];
-
+    self.ccapi = new self.cc.CardcastAPI();
   }
   Init(done){
     var self = this;
@@ -15,7 +16,31 @@ class CAHPlugin {
   default(command){
     var self = this;
   }
-
+  commandStart(command){
+    var self = this;
+    var game = self.findGame(command.msg.author.id);
+    if(!game){
+      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "You don't have an active game or you are in a game where you are not the host.");
+    }else {
+      if(game.game.hasStarted){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "The game has already started!");
+        return;
+      }
+      if(game.game.players.length >= 3){
+        game.game.origchat = command.msg.channel_id;
+        game.game.hasStarted = true;
+        self.DealCards(game.game);
+      }else {
+        if(command.params[0] == "true" && game.game.players.length == 2){
+          game.game.origchat = command.msg.channel_id;
+          game.game.hasStarted = true;
+          self.DealCards(game.game);
+        }else {
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "CAH requires 3 people to be an enjoyable game, however you can start with 2 people in game with `" self.disnode.botConfig.prefix + self.config.prefix + " start true`");
+        }
+      }
+    }
+  }
   commandNew(command){
     var self = this;
     var currentSession = self.findGame(command.msg.author.id);
@@ -54,7 +79,7 @@ class CAHPlugin {
               self.games.splice(i,1);
             }
           }
-        }, 3600000);
+        }, 7200000);
         self.games.push(newSession);
         self.disnode.bot.SendEmbed(command.msg.channel_id,{
           color: 3447003,
@@ -62,7 +87,7 @@ class CAHPlugin {
           fields: [ {
             name: 'New Game',
             inline: true,
-            value: "New game created! Others can join this game by typing `" + self.disnode.botConfig.prefix + self.config.prefix + " join @person` Where @person is the user that created the game in the form of a mention.",
+            value: "New game created! Others can join this game by typing `" + self.disnode.botConfig.prefix + self.config.prefix + " join @person` Where @person is the user that created the game in the form of a mention. Note: the game will end in 2 hours automatically to conserve bot resources",
           }, {
             name: 'Discord Server',
             inline: false,
@@ -163,6 +188,18 @@ class CAHPlugin {
     }
     return false;
   }
+  getGameUserIsIn(userID){
+    var self = this;
+    for (var i = 0; i < self.games.length; i++) {
+      self.games[i]
+      for (var j = 0; j < self.games[i].game.players.length; j++) {
+        if(self.games[i].game.players[j].id == userID){
+          return self.games[i].game;
+        }
+      }
+    }
+    return false;
+  }
   //
   //    GAME FUNCTION
   //
@@ -192,6 +229,19 @@ class CAHPlugin {
   //
   //    END GAME FUNCTION
   //
+  getHand(player){
+    var self = this;
+    var msg = " ";
+    for (var i = 0; i < player.cards.length; i++) {
+      var card = player.cards[i];
+      if(i == 9){
+        msg += "╚**[" + (i+1) + "** - " + card.text + "]\n";
+      }else{
+        msg += "╠**[" + (i+1) + "** - " + card.text + "]\n";
+      }
+    }
+    self.disnode.bot.SendDMCompactEmbed(player.id, msg);
+  }
   getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -230,6 +280,7 @@ class CAHPlugin {
         self.drawWhiteCard(game, p);
       }
     }
+    self.gameFunc(game);
   }
   drawWhiteCard(game,player){
     var self = this;
