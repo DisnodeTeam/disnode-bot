@@ -1,6 +1,6 @@
 const Session = require('./Session.js');
 
-class Template {
+class CAHPlugin {
   constructor() {
     var self = this;
     self.games = [];
@@ -56,7 +56,6 @@ class Template {
           }
         }, 3600000);
         self.games.push(newSession);
-        console.log(newSession);
         self.disnode.bot.SendEmbed(command.msg.channel_id,{
           color: 3447003,
           author: {},
@@ -85,12 +84,32 @@ class Template {
       }else {
         if(game.game.hasStarted){
           if(game.game.allowJoinInProgress){
+            self.sendEmbedToAllPlayers(game, {
+              color: 3447003,
+              author: {},
+              fields: [ {
+                name: 'Game Status',
+                inline: true,
+                value: command.msg.author.username + " has joined the game!",
+              }],
+                footer: {}
+            });
             self.joinGame(game.id,command.msg.author.id,command.msg.author.username);
             self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Joined", "You joined the game!");
           }else {
             self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Error", "This game has join in Progress disabled so you cannot join.");
           }
         }else {
+          self.sendEmbedToAllPlayers(game, {
+            color: 3447003,
+            author: {},
+            fields: [ {
+              name: 'Game Status',
+              inline: true,
+              value: command.msg.author.username + " has joined the game!",
+            }],
+              footer: {}
+          });
           self.joinGame(game.id,command.msg.author.id,command.msg.author.username);
           self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Joined", "You joined the game!");
         }
@@ -144,6 +163,107 @@ class Template {
     }
     return false;
   }
+  //
+  //    GAME FUNCTION
+  //
+  gameFunc(game){
+    var self = this;
+    if(!game.hasStarted)return;
+    switch (game.state) {
+      case 0:
+        if(game.CzarOrderCount < game.players.length){
+          game.currentCardCzar = game.players[game.CzarOrderCount];
+          game.CzarOrderCount++;
+        }else{
+          game.CzarOrderCount = 0;
+          game.currentCardCzar = game.players[game.CzarOrderCount];
+          game.CzarOrderCount++;
+        }
+        self.drawBlackCard(game).then(function(card) {
+          game.blackCard = card;
+        }).catch(function(err) {
+          console.log(err);
+        });
+        break;
+      default:
+        break;
+    }
+  }
+  //
+  //    END GAME FUNCTION
+  //
+  getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  drawBlackCard(game){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      var card = game.blackCards.splice(self.getRandomIntInclusive(0,game.blackCards.length - 1),1)[0];
+      if(game.blackCards.length == 0){
+        for (var i = 0; i < game.decks.length; i++) {
+          self.getDeck(game.decks[i].id).then(function(deck) {
+            var blacks = self.copyObject(deck.blackCards);
+            game.blackCards = [];
+            for (var i = 0; i < blacks.length; i++) {
+              game.blackCards.push(blacks[i]);
+            }
+          }).catch(function(err) {
+            console.log(err);
+          });
+        }
+        game.blackCard = card;
+        resolve(card);
+      }else {
+        game.blackCard = card;
+        resolve(card);
+      }
+    });
+  }
+  DealCards(game){
+    var self = this;
+    var players = game.players;
+    for (var i = 0; i < players.length; i++) {
+      var p = players[i];
+      for (var j = 0; j < 10; j++) {
+        self.drawWhiteCard(game, p);
+      }
+    }
+  }
+  drawWhiteCard(game,player){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      var card = game.whiteCards.splice(self.getRandomIntInclusive(0,game.whiteCards.length - 1),1)[0];
+      if(game.whiteCards.length == 0){
+        for (var i = 0; i < game.decks.length; i++) {
+          self.getDeck(game.decks[i].id).then(function(deck) {
+            var whites = self.copyObject(deck.whiteCards);
+            game.whiteCards = [];
+            for (var i = 0; i < whites.length; i++) {
+              game.whiteCards.push(whites[i]);
+            }
+          }).catch(function(err) {
+            console.log(err);
+          });
+        }
+        player.cards.push(card);
+        resolve(card);
+      }else {
+        player.cards.push(card);
+        resolve(card);
+      }
+    });
+  }
+  sendEmbedToAllPlayers(game,embed){
+    if(game.mode == 0){
+      for (var i = 0; i < game.players.length; i++) {
+        self.disnode.bot.SendDMEmbed(game.players[i].id, embed);
+      }
+    }else {
+      self.disnode.bot.SendEmbed(game.origchat, embed);
+    }
+  }
   joinGame(gameID, playerID, playerName){
     var self = this;
     for (var i = 0; i < self.games.length; i++) {
@@ -151,6 +271,7 @@ class Template {
         var newPlayer = {
           name:  playerName,
           id: playerID,
+          cards: [],
           points: 0
         }
         self.games[i].game.players.push(newPlayer);
@@ -164,4 +285,4 @@ class Template {
     return returnV;
   }
 }
-module.exports = Template;
+module.exports = CAHPlugin;
