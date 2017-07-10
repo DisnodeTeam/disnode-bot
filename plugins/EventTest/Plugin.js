@@ -10,8 +10,9 @@ class Template {
     })
 
     self.disnode.db.InitPromise({}).then(function(dbo) {
-      Logging.Info("Moderation", "DB", "Started  ||  Plugin # " + self.disnode.util.ReturnInstances() + " || Servers # " + (Object.keys(self.disnode.bot.guilds).length - 1))
+
       self.DB = dbo;
+      Logging.Info("TestPlugin - " + self.disnode.bot.guilds[self.guildId].name, "Init", "INIT'D!");
       done();
     });
   }

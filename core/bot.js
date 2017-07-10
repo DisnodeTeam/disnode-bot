@@ -254,7 +254,6 @@ class Bot extends EventEmitter {
          */
       case codes.dispatch.GUILD_ROLE_CREATE:
         self.emit("guild_role_created", data.d);
-        self.CacheGuild(data.d);
         break;
         /**
          * Message Delete event.
@@ -264,7 +263,6 @@ class Bot extends EventEmitter {
          */
       case codes.dispatch.GUILD_ROLE_DELETE:
         self.emit("guild_role_delete", data.d);
-        self.CacheGuild(data.d);
         break;
         /**
          * Message Delete event.
@@ -274,7 +272,6 @@ class Bot extends EventEmitter {
          */
       case codes.dispatch.GUILD_ROLE_UPDATE:
         self.emit("guild_role_update", data.d);
-        self.CacheGuild(data.d);
         break;
         /**
          * Message Delete event.
@@ -365,21 +362,26 @@ class Bot extends EventEmitter {
 
   CacheGuild(data) {
     this.guilds[data.id] = data;
+    if(data.channels){
+      for (var i = 0; i < data.channels.length; i++) {
+        data.channels[i].guild_id = data.id;
 
-    for (var i = 0; i < data.channels.length; i++) {
-      data.channels[i].guild_id = data.id;
-
-      this.channels[data.channels[i].id] = data.channels[i];
-    }
-    var mem = this.guilds[data.id].members
-
-    var rawUsers = [];
-    for (var i = 0; mem.length; i++) {
-      if (mem[i] == null) {
-        return;
+        this.channels[data.channels[i].id] = data.channels[i];
       }
-      this.users[mem[i].user.id] = mem[i].user;
     }
+    if(data.members){
+      var mem = this.guilds[data.id].members
+
+      var rawUsers = [];
+      for (var i = 0; mem.length; i++) {
+        if (mem[i] == null) {
+          return;
+        }
+        this.users[mem[i].user.id] = mem[i].user;
+      }
+    }
+
+
   }
 
   CacheBotUser() {
