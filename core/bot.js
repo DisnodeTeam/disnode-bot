@@ -357,19 +357,25 @@ class Bot extends EventEmitter {
       case codes.dispatch.VOICE_STATE_UPDATE:
         self.emit("voice_update", data.d);
         break;
+      case codes.dispatch.MESSAGE_REACTION_ADD:
+        self.emit("reaction_add", data.d);
+        break;
+      case codes.dispatch.MESSAGE_REACTION_REMOVE:
+        self.emit("reaction_remove", data.d);
+        break;
     }
   }
 
   CacheGuild(data) {
     this.guilds[data.id] = data;
-    if(data.channels){
+    if (data.channels) {
       for (var i = 0; i < data.channels.length; i++) {
         data.channels[i].guild_id = data.id;
 
         this.channels[data.channels[i].id] = data.channels[i];
       }
     }
-    if(data.members){
+    if (data.members) {
       var mem = this.guilds[data.id].members
 
       var rawUsers = [];
