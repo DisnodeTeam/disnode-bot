@@ -557,7 +557,7 @@ class Bot extends EventEmitter {
    * @param {string} userID - ChannelID of where to send the message
    * @param {EmbedObject} message - the Embed Object to send
    */
-  SendDMMessage(userID, message) {
+  SendDMMessage(userID, message, tts = false) {
     var self = this;
     return new Promise(function(resolve, reject) {
       self.GetOrCreateDM(userID).then(function(channel) {
@@ -1692,14 +1692,14 @@ class Bot extends EventEmitter {
   GetOrCreateDM(userID) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      APIUtil.APIPost('https://discordapp.com/api/users/@me/channels', {
+      APIUtil.APIPost(self.key, '/users/@me/channels', {
           recipient_id: userID
         })
         .then(function(response) {
-          resolve(response.data.id);
+          resolve(response.id);
         })
         .catch(function(err) {
-          Logger.Error("Bot", "EditBotUser", err.display);
+          Logger.Error("Bot", "GetOrCreateDM", err.display);
           reject(err);
         });
     });
