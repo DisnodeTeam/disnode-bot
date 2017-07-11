@@ -203,7 +203,7 @@ class Disnode {
       var self = this;
       var firstLetter = data.content.substring(0, self.botConfig.prefix.length);
       if (self.ready && firstLetter == self.botConfig.prefix) {
-        self.plugin.guilds[data.guild_id].RunMessage( data);
+        self.plugin.guilds[data.guildID].RunMessage( data);
       }
     }
 
