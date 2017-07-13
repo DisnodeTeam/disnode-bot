@@ -1,0 +1,9 @@
+{
+  "name":"IRC Plugin",
+  "id": "irc-plugin",
+  "script": "IRC.js",
+  "load" : true,
+  "launchOnStart": true,
+  "commandsFile": "IRC-Commands.json",
+  "configFile" : "IRC-Config.json"
+}

@@ -1,0 +1,16 @@
+{
+  "commands":[
+    {
+      "cmd": "connect",
+      "run": "connect"
+    },
+    {
+      "cmd" : "start",
+      "run" : "start"
+    },
+    {
+      "cmd" : "stop",
+      "run" : "stop"
+    }
+  ]
+}
