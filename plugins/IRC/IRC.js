@@ -36,7 +36,7 @@ class IRCPlugin {
         irc = newServer;
       }
       self.utils.irc('add', command).then(function(status) {
-        if (status.good == true) {
+        if (status.good) {
           if (status.coun > 1) {
             sleep(1000);
             self.utils.irc('stop', command);
