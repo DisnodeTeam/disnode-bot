@@ -22,8 +22,8 @@ class IRCUtils {
             reconnect: true
           },
           identity: {
-            username: self.plugin.disnode.bot.botConfig.twitchuser,
-            password: self.plugin.disnode.bot.botConfig.twitchtoken
+            username: self.plugin.disnode.botConfig.twitchuser,
+            password: self.plugin.disnode.botConfig.twitchtoken
           },
           channels: irc.channels
         };
