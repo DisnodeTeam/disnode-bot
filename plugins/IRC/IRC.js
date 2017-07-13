@@ -41,7 +41,10 @@ class IRCPlugin {
             sleep(1000);
             self.utils.irc('stop', command);
             self.utils.irc('start', command);
-          } else self.utils.irc('start', command);
+          } else {
+            sleep(1000);
+            self.utils.irc('start', command);
+          }
         }
       });
     });
