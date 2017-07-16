@@ -1,5 +1,6 @@
 var Logger = require("disnode-logger");
 var Axios = require('axios');
+var Hex2RGB = require('hex-rgb-converter');
 /**
  * Useful functions
  * @constructor
@@ -111,6 +112,11 @@ class Util {
       var self = this;
       return self.plugininstances;
     }
+    RGBInt(hexcode) {
+      var rgb = Hex2RGB.toRGB(hexcode);
+      var res = (rgb[0] << 16) + (rgb[1] << 8) + (rgb[2]);
+      return res;
+   }
 }
 
 module.exports = Util;
