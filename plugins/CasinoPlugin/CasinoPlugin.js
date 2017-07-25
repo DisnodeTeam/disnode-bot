@@ -738,6 +738,7 @@ class CasinoPlugin {
             }
             if(command.params.length > 7){
               self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", ":warning: You can only put a maximum of 5 Bet Types!", 16772880);
+              return;
             }
             for (var i = 2; i < command.params.length; i++) {
               if(command.params[i] == undefined)break;
