@@ -3,21 +3,22 @@ class RPGUtils {
     var self = this;
     self.plugin = plugin;
   }
-  gUser(command) {
+  GetUser(command) {
     var self = this;
     var players = [];
     return new Promise(function(resolve, reject) {
-      self.plugin.DB.Find("players", {"id": command.msg.userID}).then(function(found) {
+      self.plugin.DB.Find("players", {"id": command.msg.author.id}).then(function(found) {
         players = found;
         for (var i = 0; i < players.length; i++) {
-          if (command.msg.userID == players[i].id) {
+          if (command.msg.author.id == players[i].id) {
             resolve(players[i]);
             return;
           }
         }
+        self.plugin.disnode.platform.GetUserData(command.msg.author.id).then(function(data) {
         var newPlayer = {
-          name: command.msg.user,
-          id: command.msg.userID,
+          name: command.msg.author.username,
+          id: command.msg.author.id,
           dev: (data.isAdmin == null) ? false : data.isAdmin,
           banned: false,
           pvp: false,
@@ -28,8 +29,8 @@ class RPGUtils {
           thealth: 50,
           gold: 50,
           xp: 0,
-          lv: 1,
-          nextlv: 100,
+          lvl: 1,
+          nextlvl: 100,
           skills: {
             strength: 1,
             defense: 1,
@@ -46,7 +47,8 @@ class RPGUtils {
             maxDamage: 7,
             lvl: 1,
             buy: 0,
-            sell: 0
+            sell: 0,
+            amount: 1
           },
           {
             type: 'breastplate',
@@ -56,7 +58,8 @@ class RPGUtils {
             maxDefense: 12,
             lvl: 1,
             buy: 0,
-            sell: 0
+            sell: 0,
+            amount: 1
           },
           {
             type: 'greaves',
@@ -66,7 +69,8 @@ class RPGUtils {
             maxDefense: 7,
             lvl: 1,
             buy: 0,
-            sell: 0
+            sell: 0,
+            amount: 1
           },
           {
             type: 'helmet',
@@ -76,7 +80,8 @@ class RPGUtils {
             maxDefense: 7,
             lvl: 1,
             buy: 0,
-            sell: 0
+            sell: 0,
+            amount: 1
           },
           {
             type: 'shield',
@@ -86,28 +91,25 @@ class RPGUtils {
             maxDefense: 7,
             lvl: 1,
             buy: 0,
-            sell: 0
+            sell: 0,
+            amount: 1
           }],
-          inv: [{
-              defaultName : "Apple",
-              amount: 5
-            },
-            {
-              defaultName: "Health Potion",
-              amount: 2
-            }
-          ],
-          adventure: [{
-            name: "",
-            minDamage: 0,
-            maxDamage: 0,
-            maxHealth: 0,
-            currentHealth: 0,
-            minDefense: 0,
-            maxDefense: 0,
-            minXP: 0,
-            maxXP: 0
-          }],
+          inv: [],
+          adventure: {
+            type : "",
+            Name : "",
+            MaxHealth : 0,
+            MinDamage : 0,
+            MaxDamage : 0,
+            MinDefense : 0,
+            MaxDefense : 0,
+            lvlmin : 0,
+            lvlmax : 0,
+            minXP : 0,
+            maxXP : 0,
+            minGold : 0,
+            maxGold : 0
+          },
           lastMessage: null
         }
         for (var i = 0; i < players.length; i++) {
@@ -120,9 +122,10 @@ class RPGUtils {
         resolve(newPlayer);
         return;
       });
+      });
     });
   }
-  gGuild(guildID) {
+  GetGuild(guildID) {
     var self = this;
     var guilds = [];
     return new Promise(function(resolve, reject) {
@@ -138,7 +141,7 @@ class RPGUtils {
       });
     });
   }
-  gNameGuild(guildName) {
+  GetGuildName(guildName) {
     var self = this;
     var guilds = [];
     return new Promise(function(resolve, reject) {
@@ -154,23 +157,16 @@ class RPGUtils {
       });
     });
   }
-  /*
-  gMob(lvlmin) {
+  GetMobs(lvl) {
     var self = this;
-    var guilds = [];
+    var mob = [];
     return new Promise(function(resolve, reject) {
-      self.plugin.DB.Find("mobs", {"encounterlvlmin": >= lvlmin}).then(function(found) {
-        guilds = found;
-        for (var i = 0; i < guilds.length; i++) {
-          if (guildName == guilds[i].name) {
-              resolve(guilds[i]);
-              return;
-          }
-        }
-        reject("Guild Not Found!");
+      self.plugin.DB.Find("mobs",{}).then(function(found) {
+        mob = found;
+        resolve(mob);
       });
     });
-  }*/
+  }
   newGuild(player, name){
     var self = this;
     return new Promise(function(resolve, reject) {
@@ -203,7 +199,7 @@ class RPGUtils {
       });
     });
   }
-  fplayer(info){
+  FindPlayer(info){
     var self = this;
     return new Promise(function(resolve, reject) {
       self.plugin.DB.Find("players", {}).then(function(players) {
@@ -241,7 +237,7 @@ class RPGUtils {
       });
     });
   }
-  fGuild(guildname) {
+  FindGuild(guildname) {
     var self = this;
     var guilds = [];
     return new Promise(function(resolve, reject) {
@@ -254,6 +250,14 @@ class RPGUtils {
           }
         }
         resolve(false);
+      });
+    });
+  }
+  GetGather(db, number) {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.plugin.DB.Find(db, {}).then(function(found) {
+        resolve(found);
       });
     });
   }
@@ -312,30 +316,82 @@ class RPGUtils {
   checkLV(player, channel){
     var self = this;
     var lvup = false;
-    while(player.xp >= (player.nextlv)){
-      player.lv++;
+    while(player.xp >= (player.nextlvl)){
+      player.lvl++;
       player.thealth = player.thealth + 50;
-      player.nextlv += (100 * player.lv);
+      player.nextlvl += (100 * player.lvl);
       lvup = true;
     }
-    if(lvup)self.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lv + "\n**Your health has been healed and increased to:** " + player.thealth + "HP", 1433628);
+    if(lvup)self.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lvl + "\n**Your health has been healed and increased to:** " + player.thealth + "HP", 1433628);
   }
-  pMention(uid) {
+  theMaths(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  parseMention(uid) {
     var id = uid.replace(/\D/g, '');
     return id;
   }
   avatarCommandUser(command) {
     var self = this;
-    if (command.msg.raw.author.avatar != null) {
-      if (command.msg.raw.author.avatar.indexOf('_') > -1) {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".gif";
+    if (command.msg.author.avatar != null) {
+      if (command.msg.author.avatar.indexOf('_') > -1) {
+        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.author.id + "\/" + command.msg.author.avatar + ".gif";
       } else {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".png";
+        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.author.id + "\/" + command.msg.author.avatar + ".png";
       }
     }
   }
   ChangeLog(){
     return '`Test ChangeLog Embed`'
+  }
+  updatePlayerLastMessage(player){
+    var currentDate = new Date().getTime();
+    player.lastMessage = parseInt(currentDate);
+  }
+  checkTimeout(player, seconds){
+    var self = this;
+    var currentDate = new Date().getTime();
+    if(player.lastMessage == null){
+      return {pass: true};
+    }
+    var targetMS = player.lastMessage + (seconds * 1000);
+    var remainingMS = currentDate - targetMS;
+    if(remainingMS >= 0){
+      var elapsedObj = self.getElapsedTime(remainingMS);
+      return {pass: true, remain: elapsedObj.days + " Days" + elapsedObj.hours + " Hours " + elapsedObj.minutes + " Minutes " + elapsedObj.seconds + " Seconds " + elapsedObj.miliseconds + " Miliseconds"};
+    }else {
+      remainingMS = -remainingMS;
+      var elapsedObj = self.getElapsedTime(remainingMS);
+      return {pass: false, remain: elapsedObj.minutes + " Minutes " + elapsedObj.seconds + " Seconds"};
+    }
+  }
+  getElapsedTime(ms){
+    var days = 0;
+    var hours = 0;
+    var minutes = 0;
+    var seconds = parseInt(ms / 1000);
+    var miliseconds = ms % 1000;
+    while (seconds > 60) {
+      minutes++;
+      seconds -= 60;
+      if (minutes == 60) {
+        hours++;
+        minutes = 0;
+      }
+      if(hours == 24){
+        days++
+        hours = 0;
+      }
+    }
+    return {
+      days: days,
+      hours: hours,
+      minutes: minutes,
+      seconds: seconds,
+      miliseconds: miliseconds
+    }
   }
 }
 module.exports = RPGUtils;
