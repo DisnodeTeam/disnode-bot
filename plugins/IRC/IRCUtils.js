@@ -56,7 +56,9 @@ class IRCUtils {
             resolve(status);
             break;
           case 'start':
-            client.connect();
+            client.connect().then(function(hi){
+              console.log(hi)
+            })
             break;
           case 'stop':
             client.disconnect();
