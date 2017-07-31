@@ -9,6 +9,7 @@ const Logging = require("disnode-logger");
 const async = require('async');
 const DBManager = require('./dbmanager')
 const Util = require('./util')
+const Discoin = require('./Discoin')
 /** Main Disnode Class. Holds all features and interaction with Disnode
 @constructor
 * @param {string} configPath - Path to Bot Config.
@@ -34,6 +35,7 @@ class Disnode {
             self.stats = new Stats(self);
             self.platform = new Platform(self);
              self.util = new Util(self);
+             self.dsc = Discoin;
             Logging.Success("Disnode", "Start", "Loaded Config");
             callback();
           }).catch(callback);
@@ -73,7 +75,7 @@ class Disnode {
             callback();
           }
        },
-       
+
        function(callback) {
          Logging.Info("Disnode", "Start", "Loading State Manager");
          self.state = new StateManager(self);
@@ -85,7 +87,7 @@ class Disnode {
           Logging.Info("Disnode", "Start", "Loading Server Manager");
           self.server = new ServerManager(self);
           Logging.Success("Disnode", "Start", "Loaded Server Manager");
-          
+
           if(self.botConfig.preload){
             Logging.Info("Disnode", "Start", "PRE-LAUNCHING INSTANCES FOR ALL GUILDS! Disabling Logs.");
             Logging.DisableLogs();
@@ -95,11 +97,11 @@ class Disnode {
               async.eachSeries( self.bot.guilds, function(guild,callback){
                 if(!guild){
                   callback();
-                  
+
                   return;
                 }
                 var commandManager = self.server.GetCommandInstancePromise(guild.id).then(function(){
-                    
+
                     setTimeout(function () {
                       callback();
                     }, 10);

@@ -1,6 +1,5 @@
 const Logging = require('disnode-logger');
-const pmx = require('pmx');
-var probe = pmx.probe();
+
 class Stats {
   constructor(disnode) {
     var self = this;
@@ -17,34 +16,6 @@ class Stats {
     this.commandManagers = 0;
     this.pluginInstances = 0;
     var self = this;
-    var metric1 = probe.metric({
-      name    : 'Plugin Managers',
-      value   : function() {
-        return self.pluginManagers
-      }
-    });
-
-    var metric2 = probe.metric({
-      name    : 'Command Managers',
-      value   : function() {
-        return self.commandManagers
-      }
-    });
-
-    var metric3 = probe.metric({
-      name    : 'Plugin Instances',
-      value   : function() {
-        return self.pluginInstances
-      }
-    });
-
-    var metric4 = probe.metric({
-      name    : 'messagesParsed',
-      value   : function() {
-        return self.messagesParsed
-      }
-    });
-
   }
   getUptime(){
     var self = this;
@@ -79,7 +50,7 @@ class Stats {
   }
   updateServerMemberCount(){
     var self = this;
-    self.serverCount = Object.keys(self.disnode.bot.guilds).length;
+    self.serverCount = Object.keys(self.disnode.bot.servers).length;
     self.memberCount = Object.keys(self.disnode.bot.users).length;
     self.channelCount = Object.keys(self.disnode.bot.channels).length;/*
     self.directMessageCount = Object.keys(self.disnode.bot.client.directMessages).length;*/

@@ -186,6 +186,15 @@ class CasinoUtils {
         players = found;
         for (var i = 0; i < players.length; i++) {
           if(command.msg.author.id == players[i].id){
+            if(players[i].name.startsWith("&&*TEMP*&&")){
+              players[i].name = command.msg.author.username;
+              for (var j = 0; j < players.length; j++) {
+                if(players[i].name == players[j].name){
+                  players[i].name += "1";
+                  break;
+                }
+              }
+            }
             resolve(players[i]);
             return;
           }
