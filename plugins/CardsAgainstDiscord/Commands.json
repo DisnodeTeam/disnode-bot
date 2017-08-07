@@ -6,6 +6,15 @@
     },{
       "cmd": "join",
       "run": "commandJoin"
+    },{
+      "cmd": "start",
+      "run": "commandStart"
+    },{
+      "cmd": "pick",
+      "run": "commandPick"
+    },{
+      "cmd": "submit",
+      "run": "commandSubmit"
     }
   ]
 }

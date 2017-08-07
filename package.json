@@ -20,6 +20,7 @@
   "dependencies": {
     "async": "^2.4.1",
     "axios": "^0.16.2",
+    "cardcast-api": "^0.2.3",
     "countdownjs": "^2.0.0",
     "cross-spawn": "^5.1.0",
     "dateformat": "^2.0.0",

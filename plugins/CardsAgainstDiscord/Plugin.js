@@ -1,11 +1,12 @@
 const Session = require('./Session.js');
 const logger = require('disnode-logger');
-const cc = require('cardcast-api');
+const CardcastAPI  = require('cardcast-api');
 class CAHPlugin {
   constructor() {
     var self = this;
     self.games = [];
-    self.ccapi = new self.cc.CardcastAPI();
+    var CardcastAPI  = require('cardcast-api');
+    self.ccapi = new CardcastAPI.CardcastAPI();
   }
   Init(done){
     var self = this;
@@ -15,6 +16,7 @@ class CAHPlugin {
   }
   default(command){
     var self = this;
+    console.log(command);
   }
   commandStart(command){
     var self = this;
@@ -36,7 +38,7 @@ class CAHPlugin {
           game.game.hasStarted = true;
           self.DealCards(game.game);
         }else {
-          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "CAH requires 3 people to be an enjoyable game, however you can start with 2 people in game with `" self.disnode.botConfig.prefix + self.config.prefix + " start true`");
+          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "CAH requires 3 people to be an enjoyable game, however you can start with 2 people in game with `" + self.disnode.botConfig.prefix + self.config.prefix + " start true`");
         }
       }
     }
@@ -190,14 +192,14 @@ class CAHPlugin {
       var game = self.getGameUserIsIn(command.msg.author.id);
       if(!game.hasStarted)return;
       if(game.currentCardCzar == command.msg.author.id){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "You can't do this as the card Czar!");
+        self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Error", "You can't do this as the card Czar!");
         return;
       }else {
         for (var i = 0; i < game.players.length; i++) {
           if(game.players[i].id == command.msg.author.id){
             var player = game.players[i];
             if(player.cards.length < 10){
-              self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "You already submitted a card!");
+              self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Error", "You already submitted a card!");
               return;
             }
             if(command.params[0]){
@@ -208,19 +210,19 @@ class CAHPlugin {
                 submitCard.sender = player.id;
                 game.currentWhiteCards.push(submitCard);
                 player.cards.splice(index,1);
-                self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Submitted!", "You submitted:`" + submitCard.text + "`");
+                self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Submitted!", "You submitted:`" + submitCard.text + "`");
               }else {
-                self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "The card you picked was outside of the range (1-10)!");
+                self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Error", "The card you picked was outside of the range (1-10)!");
               }
             }else {
-              self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Pick the index of the card you want to submit and add it to the end of the command!");
+              self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Error", "Pick the index of the card you want to submit and add it to the end of the command!");
             }
             self.gameFunc(game);
           }
         }
       }
     }else {
-      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "You must be in a game to do this!");
+      self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Error", "You must be in a game to do this!");
     }
   }
   commandPick(command){
@@ -229,11 +231,11 @@ class CAHPlugin {
       var game = self.getGameUserIsIn(command.msg.author.id);
       if(!game.hasStarted)return;
       if(!game.currentCardCzar == command.msg.author.id){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "You can't do this you must be card Czar!");
+        self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Error", "You can't do this you must be card Czar!");
         return;
       }else {
         if(game.currentWhiteCards.length < (game.players.length - 1)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "You can't pick a card yet!");
+          self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Error", "You can't pick a card yet!");
           return;
         }
         if(command.params[0]){
@@ -243,23 +245,23 @@ class CAHPlugin {
             var picked = game.whiteCards[index];
             var p;
             for(var i = 0; i < game.players.length; i++){
-              if(game.players[i].id == picked.player.id){
+              if(game.players[i].id == picked.sender){
                 game.players[i].points++;
                 p = game.players[i];
                 break;
               }
             }//fix these embed sends
-            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Card Picked!", "Card: :`" + picked.text + "` Submitted by");
+            self.sendQuickEmbedToAllPlayers(command.msg.channel_id, "Card Picked!", "Card: :`" + picked.text + "` Submitted by" + p.name);
           }else {
-            self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "The card you picked was outside of the range (1-" + game.currentWhiteCards.length +")!");
+            self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Error", "The card you picked was outside of the range (1-" + game.currentWhiteCards.length +")!");
           }
         }else {
-          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Pick the index of the card you want to submit and add it to the end of the command!");
+          self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Error", "Pick the index of the card you want to submit and add it to the end of the command!");
         }
         self.gameFunc(game);
       }
     }else {
-      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "You must be in a game to do this!");
+      self.disnode.bot.SendDMCompactEmbed(command.msg.author.id, "Error", "You must be in a game to do this!");
     }
   }
   copyObject(obj){
@@ -337,11 +339,13 @@ class CAHPlugin {
         }
         self.drawBlackCard(game).then(function(card) {
           game.blackCard = card;
+          
         }).catch(function(err) {
           console.log(err);
         });
         break;
       case 1: //Allow player to submit a white card for the black card move on to stage 2
+      console.log("Stage 1");
         if(game.currentWhiteCards.length < (game.players.length - 1)){
           self.sendQuickEmbedToAllPlayers(game, "Submitted Cards", "`" + game.currentWhiteCards.length + "/" + (game.players.length - 1) + "`");
         }else {
@@ -383,6 +387,7 @@ class CAHPlugin {
         }
         break;
       case 2: //Card Czar will pick the winning card and points are awarded then move on to stage 3
+      console.log("Stage 2");
         msg = " ";
         for(var i = 0; i < game.players.length; i++){
           msg += "**[" + game.players[i].name + "]** Points: " + game.players[i].points + " \n";
@@ -392,6 +397,7 @@ class CAHPlugin {
         self.gameFunc(game);
         break;
       case 3: //(check if there is a winner if no winner then draw up to ten cards and go back to stage 0)
+      console.log("Stage 3");
         for(var i = 0; i < game.players.length; i++){
           if(game.players[i].points >= game.pointsToWin){
             self.sendQuickEmbedToAllPlayers(game, "A player has Won!", "Winner: `" + game.players[i].name + '`');
@@ -498,21 +504,32 @@ class CAHPlugin {
     });
   }
   sendEmbedToAllPlayers(game,embed){
-    if(game.mode == 0){
-      for (var i = 0; i < game.players.length; i++) {
-        self.disnode.bot.SendDMEmbed(game.players[i].id, embed);
+    var self = this;
+    console.log(game.game.players);
+    if(game.game.mode == 0){
+      for (var i = 0; i < game.game.players.length; i++) {
+        self.disnode.bot.SendDMEmbed(game.game.players[i].id, embed).catch(function(err) {
+          //console.log(err);
+        });
       }
     }else {
-      self.disnode.bot.SendEmbed(game.origchat, embed);
+      self.disnode.bot.SendEmbed(game.game.origchat, embed).catch(function(err) {
+        //console.log(err);
+      });
     }
   }
   sendQuickEmbedToAllPlayers(game,title, body){
-    if(game.mode == 0){
-      for (var i = 0; i < game.players.length; i++) {
-        self.disnode.bot.SendDMCompactEmbed(game.players[i].id, title,body);
+    var self = this;
+    if(game.game.mode == 0){
+      for (var i = 0; i < game.game.players.length; i++) {
+        self.disnode.bot.SendDMCompactEmbed(game.game.players[i].id, title,body).catch(function(err) {
+          console.log(err);
+        });
       }
     }else {
-      self.disnode.bot.SendEmbed(game.origchat, embed);
+      self.disnode.bot.SendEmbed(game.game.origchat, embed).catch(function(err) {
+        console.log(err);
+      });
     }
   }
   joinGame(gameID, playerID, playerName){
