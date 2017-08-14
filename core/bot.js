@@ -418,6 +418,7 @@ class Bot extends EventEmitter {
 
       APIUtil.APIGet(self.key, "gateway/bot")
         .then(function(data) {
+          console.log(data);
           Logger.Success("Bot", "GetGatewayURL", "Aquired Gatway URL!");
           var url = data.url + "/?encoding=json&v=5";
           resolve(url)

@@ -480,8 +480,8 @@ class CasinoPlugin {
 		self.state = self.disnode.state.Init(self);
 		self.utils = new CasinoUtils(self.disnode, self.state, this);
 		self.Blackjack = new Blackjack(self.disnode);
-		self.dsc = new self.disnode.dsc(self.disnode.botConfig.DiscoinAuth);
-		if (self.stateAuth) self.dsc.setupInterval(self.HandleDiscoinTransactions, 120000, self);
+		//self.dsc = new self.disnode.dsc(self.disnode.botConfig.DiscoinAuth);
+		//if (self.stateAuth) self.dsc.setupInterval(self.HandleDiscoinTransactions, 120000, self);
 		self.utils.init().then(function() {
 			if (self.utils.AutoStatus() && self.stateAuth) {
 				var n = self.utils.getRandomIntInclusive(0, 4);
@@ -1282,7 +1282,7 @@ class CasinoPlugin {
 							}, {
 								name: 'Winnings',
 								inline: true,
-								value: "$" + numeral(flipinfo.winAmount).format('0,0.00'),
+								value: "$" + numeral(wheelInfo.winAmount).format('0,0.00'),
 							}],
 							footer: {}
 						});
@@ -2511,6 +2511,7 @@ class CasinoPlugin {
 	}
 	commandDiscoin(command) {
 		var self = this;
+		return;
 		self.utils.getPlayer(command).then(function(player) {
 			switch (command.params[0]) {
 				case "transfer":
