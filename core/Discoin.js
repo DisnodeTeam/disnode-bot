@@ -4,7 +4,7 @@ const Logger = require('disnode-logger');
 class Discoin {
   constructor(authkey) {
     this.req = axios.create({
-      baseURL: 'http://discoin-austinhuang.rhcloud.com/transaction/',
+      baseURL: 'https://discoin.disnodeteam.com/transaction',
       timeout: 3000,
       headers: {'Authorization': authkey, 'json':'true'}
     })

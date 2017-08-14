@@ -2,7 +2,7 @@
   "name":"Disnode Plugin",
   "id": "disnode-plugin",
   "script": "DisnodePlugin.js",
-  "load" : false,
+  "load" : true,
   "commandsFile": "Commands.json",
   "configFile" : "Config.json"
 }

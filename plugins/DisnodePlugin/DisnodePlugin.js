@@ -5,7 +5,7 @@ class DisnodePlugin {
     default (command) {
         var self = this;
         self.disnode.stats.updateServerMemberCount();
-        self.disnode.bot.SendEmbed(command.msg.channel, {
+        self.disnode.bot.SendEmbed(command.msg.channel_id, {
             color: 3447003,
             author: {},
             fields: [{
@@ -65,6 +65,8 @@ class DisnodePlugin {
                 value: self.disnode.stats.getUptime(),
             }],
             footer: {}
+        }).catch(function(err) {
+          console.log(err);
         });
     }
 }
