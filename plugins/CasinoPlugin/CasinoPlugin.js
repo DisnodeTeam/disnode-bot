@@ -2461,6 +2461,14 @@ class CasinoPlugin {
 						name: 'Ultra',
 						inline: false,
 						value: "If you get Ultra you must pay for the first month of your Ultra membership or face account reset",
+					}, {
+						name: 'Data Collection',
+						inline: false,
+						value: "We (Disnode Team) Collect only usernames upon the first command you issue to the bot. currently that is the only EUD we collect with Casino Bot.",
+					}, {
+						name: 'Discord TOS',
+						inline: false,
+						value: "With a new revision to Discord's TOS on 8/20/17. If you accept the rules you agree that We collect the data described above and that you agree to the Discord TOS (https://discordapp.com/developers/docs/legal) and the Discord Privacy Policy (https://discordapp.com/privacy)",
 					}],
 					footer: {}
 				});
