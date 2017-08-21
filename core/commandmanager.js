@@ -45,40 +45,63 @@ class CommandManager {
     RunMessage(msgObj) {
       var self = this;
 
-      if(msgObj.guildID != "DM"){
-        /*if(self.disnode.bot.GetUserByID(msgObj.server, msgObj.userID) != undefined){
+      if(msgObj.server != "DM"){
+        if(self.disnode.bot.GetUserByID(msgObj.server, msgObj.userID) != undefined){
           if(self.disnode.bot.GetUserByID(msgObj.server, msgObj.userID).bot)return;
-        }*/
+        }
       }
       self.disnode.stats.messages++;
-      if(msgObj.content == "-YOUR GOD HAS ARRIVED!" && msgObj.userID == "131235236402036736"){
+      if(msgObj.message == "-YOUR GOD HAS ARRIVED!" && msgObj.userID == "131235236402036736"){
         self.disnode.bot.SendMessage(msgObj.channel, "HAIL OUR LORD VICTORY!");
       }
-      if(msgObj.content == "-YOUR GOD HAS ARRIVED!" && msgObj.userID == "112786170655600640"){
+      if(msgObj.message == "-YOUR GOD HAS ARRIVED!" && msgObj.userID == "112786170655600640"){
         self.disnode.bot.SendMessage(msgObj.channel, "HAIL OUR LORD FIRE!");
       }
         this.GetCommandData(msgObj, false, function(plugin, command, params){
 
-
+            self.RunChecks(msgObj,command);
             self.plugin.RunPluginMessage(plugin.plugin, {command: command, params: params, msg: msgObj});
         });
     }
 
+    RunChecks(msg,command){
+      var self = this;
+      if(!command){
+        return;
+      }
+      if(command.whitelist){
+        command.userAllowed = false;
+        for (var i = 0; i < command.whitelist.length; i++) {
+          if(msg.userID == command.whitelist[i]){
+            command.userAllowed = true;
+          }
+        }
+      }
 
+      if(command.roles){
+        command.roleAllowed = false;
+        for (var i = 0; i < command.roles.length; i++) {
+          var userRoles = self.disnode.bot.GetUserRoles(msg.server, msg.userID);
+          for (var j = 0; j < userRoles.length; j++) {
+            if(userRoles[j] == command.roles[i]){
+              command.roleAllowed = true;
+            }
+          }
+        }
+      }
+    }
 
     GetCommandData(msgObj, ignoreFirst, callback) {
-
+      
         var self = this;
-        var msg = msgObj.content;
-        var firstLetter = msg.substring(0,self.prefix.length);
-
+        var msg = msgObj.message;
+        var firstLetter = msg.substring(0, 1);
         var params = GetParams(msg);
         var firstWord;
         var pluginPrefix;
         var plugin;
         var command;
         if(firstLetter != this.prefix && !ignoreFirst){
-
           return;
         }
         var SpaceIndex = msg.length;
@@ -89,7 +112,7 @@ class CommandManager {
         if(ignoreFirst){
           firstWord = msg.substring(0, SpaceIndex);
         }else{
-          firstWord = msg.substring(self.prefix.length, SpaceIndex);
+          firstWord = msg.substring(1, SpaceIndex);
         }
 
         if(this.CheckForPrefix(firstWord) != null){

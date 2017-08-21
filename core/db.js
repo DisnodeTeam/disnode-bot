@@ -6,7 +6,7 @@ const MongoClient = require('mongodb').MongoClient
 class DB {
 	constructor(disnode, settings) {
 
-		this.reconnect = null;
+
 		Logging.Info("DB", "Constructor", "Started" )
 		this.disnode = disnode;
 		this.DB = {};
@@ -42,21 +42,8 @@ class DB {
 					reject(err);
 					return;
 				}
-				if(self.reconnect != null){
-					clearInterval(reconnect);
-					reconnect = null;
-				}
 				self.DB = connectedDB;
 				self.DB.on('close', function () {
-					Logging.Error("DB", "Error", "DB Closed, AttemptReconnect" );
-    			self.AttemptReconnect();
-  			});
-				self.DB.on('error', function () {
-					Logging.Error("DB", "Error", "DB Error, AttemptReconnect" );
-    			self.AttemptReconnect();
-  			});
-				self.DB.on('timeout', function () {
-					Logging.Error("DB", "Error", "DB timeout, AttemptReconnect" );
     			self.AttemptReconnect();
   			});
 				resolve();
@@ -68,9 +55,7 @@ class DB {
 	}
 
 	AttemptReconnect(){
-		var self = this;
-		self.reconnect = setInterval(function () {
-			Logging.Info("DB", "Reconnect", "Attempting Connection" );
+		setInterval(function () {
 			this.Connect();
 		}, 5000);
 	}

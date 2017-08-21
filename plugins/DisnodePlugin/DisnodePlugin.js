@@ -5,7 +5,7 @@ class DisnodePlugin {
     default (command) {
         var self = this;
         self.disnode.stats.updateServerMemberCount();
-        self.disnode.bot.SendEmbed(command.msg.channel_id, {
+        self.disnode.bot.SendEmbed(command.msg.channel, {
             color: 3447003,
             author: {},
             fields: [{
@@ -28,11 +28,11 @@ class DisnodePlugin {
                 name: 'Members',
                 inline: true,
                 value: self.disnode.stats.memberCount,
-            }, /*{
+            }, {
                 name: 'Open DM\'s',
                 inline: true,
                 value: self.disnode.stats.directMessageCount,
-            }, */{
+            }, {
                 name: 'Total Messages',
                 inline: true,
                 value: self.disnode.stats.messages,
@@ -65,8 +65,6 @@ class DisnodePlugin {
                 value: self.disnode.stats.getUptime(),
             }],
             footer: {}
-        }).catch(function(err) {
-          console.log(err);
         });
     }
 }

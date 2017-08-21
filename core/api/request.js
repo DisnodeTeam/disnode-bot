@@ -33,7 +33,7 @@ exports.presence = function (name) {
       "idle_since": null,
       "game":{
         "name": name,
-        "type": 0
+	"type": 0
       }
     }
   }

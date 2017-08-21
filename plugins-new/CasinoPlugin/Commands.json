@@ -1,0 +1,99 @@
+{
+  "commands":[
+    {
+      "cmd": "rules",
+      "desc": "*Rules for CasinoBot*",
+      "run": "commandRules"
+    },
+    {
+      "cmd": "invite",
+      "desc": "*Invite link for CasinoBot*",
+      "run": "commandInvite"
+    },
+    {
+      "cmd": "slot",
+      "desc": "*Slots (general help)*",
+      "run": "commandSlot"
+    },
+    {
+      "cmd": "flip",
+      "desc": "*Flip a Coin, Heads Or Tails!*",
+      "run": "commandCoinFlip"
+    },
+    {
+      "cmd": "wheel",
+      "desc": "*Play a nice game of roulette!*",
+      "run": "commandWheel"
+    },
+    {
+      "cmd": "bal",
+      "desc": "*Check yours or others; Money and XP Quickly*",
+      "run": "commandBal"
+    },
+    {
+      "cmd": "top",
+      "desc": "*See whos on top and compete with your friends!*",
+      "run": "commandTop"
+    },
+    {
+      "cmd": "lvtop",
+      "desc": "*See whos on top and compete with your friends!*",
+      "run": "commandTopLV"
+    },
+    {
+      "cmd": "betters",
+      "desc": "*See who recently played slots!*",
+      "run": "commandRecentBetters"
+    },
+    {
+      "cmd": "crate",
+      "desc": "*Use keys and open Crates for money and XP!*",
+      "run": "commandCrate"
+    },
+    {
+      "cmd": "store",
+      "desc": "*Get more money or more income here!*",
+      "run": "commandStore"
+    },
+    {
+      "cmd": "jackpot",
+      "desc": "*Get Quick info about the Jackpot*",
+      "run": "commandJackpotInfo"
+    },
+    {
+      "cmd": "stats",
+      "desc": "*View you stats for the bot!*",
+      "run": "commandStats"
+    },
+    {
+      "cmd": "transfer",
+      "desc": "*Transfer money to other players!*",
+      "run": "commandTransfer"
+    },
+    {
+      "cmd": "21",
+      "desc": "*Play blackjack*",
+      "run": "commandBlackjack"
+    },
+    {
+      "cmd": "dev",
+      "desc": "*DEVELOPER COMMAND YOU CANT RUN THIS*",
+      "run": "commandAdmin"
+    },
+    {
+      "cmd": "mod",
+      "desc": "*MOD COMMAND YOU CANT RUN THIS*",
+      "run": "commandAdmin"
+    },
+    {
+      "cmd": "ultra",
+      "desc": "*Check your ultra stats*",
+      "run": "commandUltra"
+    },
+    {
+      "cmd": "discoin",
+      "desc": "*Discoin transfers*",
+      "run": "commandDiscoin"
+    }
+  ]
+}

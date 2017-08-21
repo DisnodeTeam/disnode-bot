@@ -77,7 +77,7 @@
     },
     {
       "cmd": "dev",
-      "desc": "*DEVELOPER COMMAND YOU CANT RUN THIS*",
+      "desc": "*ADMIN COMMAND YOU CANT RUN THIS*",
       "run": "commandAdmin"
     },
     {
@@ -89,11 +89,6 @@
       "cmd": "ultra",
       "desc": "*Check your ultra stats*",
       "run": "commandUltra"
-    },
-    {
-      "cmd": "discoin",
-      "desc": "*Discoin transfers*",
-      "run": "commandDiscoin"
     }
   ]
 }

@@ -1,0 +1,10 @@
+{
+  "name":"Casino Plugin",
+  "description": "Casino is a plugin that allows users to play Casino Games on Discord - FOR AMUSEMENT ONLY.",
+  "id": "casino-plugin",
+  "script": "CasinoPlugin.js",
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json",
+  "load": true,
+  "requirements": ["countdownjs" ,"numeral","dateformat"]
+}
