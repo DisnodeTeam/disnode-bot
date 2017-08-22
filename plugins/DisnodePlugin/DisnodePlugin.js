@@ -29,10 +29,6 @@ class DisnodePlugin {
                 inline: true,
                 value: self.disnode.stats.memberCount,
             }, {
-                name: 'Open DM\'s',
-                inline: true,
-                value: self.disnode.stats.directMessageCount,
-            }, {
                 name: 'Total Messages',
                 inline: true,
                 value: self.disnode.stats.messages,
@@ -52,19 +48,11 @@ class DisnodePlugin {
              inline: true,
              value: self.disnode.stats.commandManagers,
          }, {
-                name: 'Shard #',
-                inline: true,
-                value: self.disnode.bot.shardID + ' of ' + self.disnode.botConfig.shardCount,
-            }, {
-                name: 'Shard Mode',
-                inline: true,
-                value: '' + self.disnode.botConfig.shardMode,
-            }, {
-                name: 'Uptime',
-                inline: true,
-                value: self.disnode.stats.getUptime(),
-            }],
-            footer: {}
+            name: 'Uptime',
+            inline: true,
+            value: self.disnode.stats.getUptime(),
+        }],
+        footer: {}
         });
     }
 }

@@ -79,10 +79,10 @@ class Stats {
   }
   updateServerMemberCount(){
     var self = this;
-    self.serverCount = Object.keys(self.disnode.bot.client.servers).length;
-    self.memberCount = Object.keys(self.disnode.bot.client.users).length;
-    self.channelCount = Object.keys(self.disnode.bot.client.channels).length;
-    self.directMessageCount = Object.keys(self.disnode.bot.client.directMessages).length;
+    self.serverCount = Object.keys(self.disnode.bot.servers).length;
+    self.memberCount = Object.keys(self.disnode.bot.members).length;
+    //self.channelCount = Object.keys(self.disnode.bot.channels).length;
+    //self.directMessageCount = Object.keys(self.disnode.bot.client.directMessages).length;
   }
 }
 module.exports = Stats;

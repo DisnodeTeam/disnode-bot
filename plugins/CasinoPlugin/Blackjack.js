@@ -330,7 +330,7 @@ class Blackjack {
       fields: [ {
         name: 'Table Rules',
         inline: false,
-        value: "Dealer draws up to 16, stands at 17. No insurance, No Splits, No Doubles",
+        value: "Dealer draws up to 16, stands at 17. No insurance, no splits, no doubles.",
       },{
         name: 'Hands',
         inline: false,

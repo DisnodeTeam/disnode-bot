@@ -1,6 +1,5 @@
 {
   "prefix":"disnode",
   "requirePrefix":true,
-  "static": true,
-  "run":true
+  "static": true
 }

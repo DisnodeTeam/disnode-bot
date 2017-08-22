@@ -186,7 +186,7 @@ class CasinoPlugin {
         fields: [ {
           name: 'Casino',
           inline: true,
-          value: "Hello, " + player.name + "!\nCasino Bot is A Discord bot that allows users to play Casino Games on Discord **FOR AMUSEMENT ONLY**",
+          value: "Hello, " + player.name + "!\nCasino Bot is a Discord bot that allows users to play casino games on Discord. __**FOR AMUSEMENT ONLY**__.",
         },{
           name: 'Commands:',
           inline: true,
@@ -194,11 +194,11 @@ class CasinoPlugin {
         }, {
           name: 'Discord Server',
           inline: false,
-          value: "**Join the Disnode Server for Support and More!:** https://discord.gg/AbZhCen",
+          value: "**Join our Discord Server for Support and More!:** https://discord.gg/AbZhCen",
         }, {
           name: 'Disnode Ultra',
           inline: false,
-          value: "**Help us keep the bots running 24/7 and get great perks by doing so by Purchasing Ultra :** https://www.disnodeteam.com/auth",
+          value: "**Do you want to support us, so we can keep our bots up and running? Then buy Disnode Ultra for some sweet perks today!** https://www.disnodeteam.com/ultra (when purchased run `!casino ultra` to activate)",
         }],
           footer: {}
       });
@@ -221,7 +221,7 @@ class CasinoPlugin {
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
             return;
           }
         }
@@ -272,7 +272,7 @@ class CasinoPlugin {
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
             return;
           }
         }
@@ -323,7 +323,7 @@ class CasinoPlugin {
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
             return;
           }
         }
@@ -363,7 +363,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
           return;
         }
       }
@@ -413,7 +413,7 @@ class CasinoPlugin {
             });
           break;
         case undefined:
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Slots", "Hi, Welcome to the slots! If you need info on the slots the run `!casino slot info`\n\nIf you want to try the slots then do `!casino slot [bet]` for example `casino slot 100` that will run the slot with $100 as the bet");
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Slots", "Hi, and welcome to slots. If you need any info on the slots, run the command `!casino slot info`.\n\nIf you want to try the slots, then type `!casino slot [bet]. For example, `!casino slot 100` will run the slots with $100 as the bet.");
           break;
         default:
           if(command.params[0]){
@@ -535,7 +535,7 @@ class CasinoPlugin {
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
             return;
           }
         }
@@ -559,7 +559,7 @@ class CasinoPlugin {
           flipinfo.tag = "Tails";
           flipinfo.ltag = "Heads";
         }else {
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Coin Flip", "Welcome to Coin Flip! You can play by using this command `!casino flip [heads/tails] [bet]` Examples `!casino flip heads 100` and `!casino flip tails 100`", 1433628);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Coin Flip", "Welcome to coin flip! To play, use this command: `!casino flip [heads/tails]`. Here are some examples: `!casino flip heads 100` and `!casino flip tails 100`.", 1433628);
           return;
         }if(command.params[1]){
           if(command.params[1].toLowerCase() == "allin"){
@@ -714,7 +714,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
           return;
         }
       }
@@ -859,19 +859,19 @@ class CasinoPlugin {
               fields: [ {
                 name: ':money_with_wings: The Wheel :money_with_wings:',
                 inline: false,
-                value: "The Wheel acts much like Roulette however it has a differeing rule set to Roulette.",
+                value: "The wheel acts much like a game of roulette, however, it has a differing rule set to roulette.",
               }, {
                 name: 'Playing The Wheel',
                 inline: false,
-                value: "You can play the wheel by typing in `!casino wheel spin [bet] [betType] [betType] ...` EXAMPLE: `!casino wheel spin 100 black`",
+                value: "To play the wheel, you can type `!casino wheel spin [bet] [Bet Type] [Bet Type]...` Example: `!casino wheel spin 100 black`",
               }, {
                 name: 'Bet Types',
                 inline: true,
-                value: "As shown bet types can be one of the following: `[black,red,(0-36),even,odd,1st,2nd,3rd,low,high]`\n`Black / Red` Number must match color to win.\n`Even / Odd` Win if the number is even or odd depending on what you choose\n`1st / 2nd / 3rd` 1st is numbers 1-12, 2nd is numbers 13-24, 3rd is numbers 25-36\n`Low / High` Low is 1-18, and High is 19-36",
+                value: "As shown, bet types can be one of the following: `[black/red, 0-36, even/odd, 1st/2nd/3rd, and low/high]`\n`Black/Red` - Number must match the colour to win.\n`Even/Odd` - Depending on what number you choose, if that number is even or odd, you win.\n`1st/2nd/3rd` - 1st consists of numbers 1-12, 2nd consists of numbers 13-24, and 3rd consists of numbers 25-36.\n`Low/High` - Low consists of numbers 1-18, and High consists of numbers 19-36.",
               }, {
                 name: 'Winnings',
                 inline: true,
-                value: "0 - 37x\nany other number - 36x\n1st/2nd/3rd 3x\nEven/odd/black/red/low/high 2x",
+                value: "0 - Upon winning 0, you get 37 times the amount you bet as your win.\nAny other number (1-36) - Upon winning, you get 36 times the amount you bet as your win.\n1st/2nd/3rd - Upon winning any of these bet types, you get 3 times the amount you bet as your win.\nEven/Odd, Black/Red, Low and High - Upon winning any of these bet types, you get 2 times the amount you bet as your win.",
               }, {
                 name: 'Numbers',
                 inline: true,
@@ -888,7 +888,7 @@ class CasinoPlugin {
             fields: [ {
               name: "The Wheel (Roulette)",
               inline: false,
-              value: "Welcome to The Wheel! You can play by using this command `!casino wheel spin [bet] [betType]` Examples `!casino wheel spin 100 black`\nFor more info on what win types are and how the game is payed out use `!casino wheel info`",
+              value: "Welcome to the wheel! To play, use this command: `!casino wheel spin 100 black`. For more info on what the win types are, and how the game is played out, use `!casino wheel info`.",
             }],
               footer: {}
             }
@@ -908,7 +908,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
           return;
         }
       }
@@ -930,7 +930,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
           return;
         }
       }
@@ -984,7 +984,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
           return;
         }
       }
@@ -1038,7 +1038,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
           return;
         }
       }
@@ -1165,7 +1165,7 @@ class CasinoPlugin {
           fields: [ {
             name: 'Crate System',
             inline: true,
-            value: "Crates are boosts to help you keep going! Use keys that you find in the Slots to open Crates.\nUse `!casino crate open ID` to open a crate!",
+            value: "Crates are boosts that help you keep going! Use the keys that you find in slots to open crates.\nUse `!casino crate open ID` to open a crate!",
           },{
             name: 'Crates',
             inline: false,
@@ -1188,7 +1188,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
           return;
         }
       }
@@ -1617,7 +1617,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
           return;
         }
       }
@@ -1749,7 +1749,7 @@ class CasinoPlugin {
           }
           break;
         default:
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Store", "Welcome to the store! to see a list of Items use `!casino store list` use the ID of the item when buying for example `!casino store buy 0` if you want to buy more than one of the item use `!casino store buy 0 10` to buy 10, or use `!casino store buy 0 max` to buy as much as you can!");
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Store", "Welcome to the store! To see a list of items, use `!casino store list`. When buying, use the ID of that item; for example: `!casino store buy 0`. If you want to purchase one or more of the item, use `!casino store buy 0 10`. To buy as much as you can, use `!casino store buy 0 max`.");
       }
     });
     return;
@@ -1764,7 +1764,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328> or <#296477731883843584>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
           return;
         }
       }
@@ -1847,7 +1847,7 @@ class CasinoPlugin {
         return;
       }
       if(!player.Premium){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Blackjack is an Ultra exclusive Command. Only Ultra members may access this game mode. To learn more about Ultra and it's perks look at the bottom of `!casino` Thanks for your support of our bots!", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Blackjack is an Ultra exclusive Command. Only Ultra members may access this game mode. To learn more about Ultra and its perks, look at the bottom of `!casino` Thanks for your support of our bots!", 16772880);
         return;
       }
       switch (command.params[0]) {
@@ -1905,31 +1905,31 @@ class CasinoPlugin {
         fields: [ {
           name: 'Casino Rules',
           inline: false,
-          value: "Hello, Please read the rules",
+          value: "Hello, please read the rules before using our bot.",
         }, {
-          name: 'Alts',
+          name: 'ALTS (alternate accounts)',
           inline: false,
-          value: "ALTS or alternative accounts are not allowed anyone using an ALTS will have that alt banned",
+          value: "ALTS or the use of alternate accounts are not allowed. Anyone using an ALT will have that ALT banned; __**no exceptions**__.",
         }, {
           name: 'Accept',
           inline: false,
-          value: "To accept these rules type: !casino rules accept (Read the rest of the rules first)",
+          value: "To accept these rules, type !casino rules accept (__read all of the rules first__).",
         }, {
           name: 'Bots and Macros',
           inline: false,
-          value: "The use of macros or bots is not allowed",
+          value: "The use of bots and/or macros aren't allowed.",
         }, {
           name: 'Ultra',
           inline: false,
-          value: "If you get Ultra you must pay for the first month of your Premium membership or face account reset",
+          value: "If you want to get Ultra, visit this link: https://wwww.disnodeteam.com/ultra - account resets no longer occur as you can pay when able.",
         }, {
           name: 'Data Collection',
 	        inline: false,
-	        value: "We (Disnode Team) Collect only usernames upon the first command you issue to the bot. currently that is the only EUD we collect with Casino Bot.",
+	        value: "We, Disnode Team, only collect usernames upon the first command you issue to the bot. Currently, that is the only EUD we collect with Casino Bot.",
 	      }, {
 	        name: 'Discord TOS',
 	        inline: false,
-	        value: "With a new revision to Discord's TOS on 8/20/17. If you accept the rules you agree that We collect the data described above and that you agree to the Discord TOS (https://discordapp.com/developers/docs/legal) and the Discord Privacy Policy (https://discordapp.com/privacy)",
+	        value: "With a new revision to the Discord TOS on 8/20/2017, if you accept the rules, you agree that we collect the data described above, and that you agree to the Discord TOS (https://www.discordapp.com/developers/docs/legal) and the Discord Privacy Policy (https://www.discordapp.com/privacy).",
 	      }],
         footer: {}
       });
