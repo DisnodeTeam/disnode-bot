@@ -146,9 +146,37 @@ class Blackjack {
         self.endSession(player, channel);
         return;
       }else if (session.game.playerHand.high == 21) {
+        var Winnings = session.game.wager * 2
+        player.money += Winnings;
         self.showGameStatus(session.game, channel, player);
-        self.disnode.bot.SendCompactEmbed(channel, "Blackjack " + player.name, "Blackjack!");
-        self.stand(player, channel);
+        self.disnode.bot.SendEmbed(channel, {
+          color: 3447003,
+          author: {},
+          fields: [ {
+            name: 'Blackjack ' + player.name,
+            inline: false,
+            value: "Blackjack!",
+          },{
+            name: 'Wager',
+            inline: true,
+            value: "$" + numeral(session.game.wager).format('0,0.00'),
+          },{
+            name: 'Winnings',
+            inline: true,
+            value: "$" + numeral(Winnings).format('0,0.00'),
+          },{
+            name: 'Net Gain',
+            inline: true,
+            value: "$" + numeral(Winnings - session.game.wager).format('0,0.00'),
+          },{
+            name: 'Balance',
+            inline: true,
+            value: "$" + numeral(player.money).format('0,0.00'),
+          }],
+            footer: {}
+          }
+        );
+        self.endSession(player, channel);
         return;
       }
       self.showGameStatus(session.game, channel, player);

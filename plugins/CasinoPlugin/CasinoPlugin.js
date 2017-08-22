@@ -591,7 +591,7 @@ class CasinoPlugin {
               player.stats.coinHeads++;
             }else player.stats.coinTails++;
             flipinfo.winText = flipinfo.tag + " You Win!"
-            flipinfo.winAmount = Number(parseFloat(bet * 1.75).toFixed(2));
+            flipinfo.winAmount = Number(parseFloat(bet * 2).toFixed(2));
             player.stats.moneyWon += Number(parseFloat(flipinfo.winAmount).toFixed(2));
             player.stats.moneyWon = Number(parseFloat(player.stats.moneyWon).toFixed(2));
             player.money += Number(parseFloat(flipinfo.winAmount).toFixed(2));
@@ -1058,34 +1058,94 @@ class CasinoPlugin {
               self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "The ID that you entered is not valid!", 16772880);
               return;
             }
-            if(player.keys >= Crate.cost){
-              player.keys -= Crate.cost;
-              var Item = Crate.items[self.utils.getRandomIntInclusive(0, (Crate.items.length - 1))];
-              switch (Item.type) {
-                case 0:
-                  player.money += Item.amount;
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
-                  break;
-                case 1:
-                  player.xp += Item.amount;
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
-                  break;
-                case 2:
-                  player.money += player.income;
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
-                  break;
-                case 3:
-                  player.money += (player.income * 2);
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
-                  break;
+            if(command.params[2]){
+							var quantity = numeral(command.params[2]).value();
+							if(quantity == 0)quantity = 1;
+							if(player.keys >= (Crate.cost * quantity)){
+								player.keys -= (Crate.cost * quantity);
+								var amountWon = [0,0,0,0];
+								for (var i = 0; i < quantity; i++) {
+									var Item = Crate.items[self.utils.getRandomIntInclusive(0, (Crate.items.length - 1))];
+									switch (Item.type) {
+										case 0:
+											player.money += Item.amount;
+											amountWon[0] += Item.amount;
+											break;
+										case 1:
+											player.xp += Item.amount;
+											amountWon[1] += Item.amount;
+											break;
+										case 2:
+											player.money += player.income;
+											amountWon[2] += player.income;
+											break;
+										case 3:
+											player.money += (player.income * 2);
+											amountWon[3] += (player.income * 2);
+											break;
+									}
+								}
+								var msg = quantity + " " + Crate.name + " Crates Opened\n";
+								for (var i = 0; i < amountWon.length; i++) {
+									if(amountWon[i] == 0)continue;
+									switch (i) {
+										case 0:
+											msg += "You got **$" + numeral(amountWon[i]).format('0,0.00') + "**\n";
+											break;
+										case 1:
+											msg += "You got **" + numeral(amountWon[i]).format('0,0') + "** XP\n";
+											break;
+										case 2:
+											msg += "You got **$" + numeral(amountWon[i]).format('0,0.00') + "** of Instant Income\n";
+											break;
+										case 3:
+											msg += "You got **$" + numeral(amountWon[i]).format('0,0.00') + "** of Instant Income\n";
+											break;
+									}
+								}
+								self.disnode.bot.SendCompactEmbed(command.msg.channel, "Crates", msg, 3447003);
+								self.utils.updatePlayerLastMessage(player);
+								self.utils.updateLastSeen(player);
+								self.utils.checkLV(player, command.msg.channel);
+								self.utils.DB.Update("players", {
+									"id": player.id
+								}, player);
+								self.utils.DB.Update("casinoObj", {
+									"id": self.state.data.casinoObj.id
+								}, self.state.data.casinoObj);
+							}else {
+								self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough Keys!\nNEED: " + Crate.cost + "\nHAVE: " + player.keys, 16772880);
+							}
+						}else{
+              if(player.keys >= Crate.cost){
+                player.keys -= Crate.cost;
+                var Item = Crate.items[self.utils.getRandomIntInclusive(0, (Crate.items.length - 1))];
+                switch (Item.type) {
+                  case 0:
+                    player.money += Item.amount;
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                    break;
+                  case 1:
+                    player.xp += Item.amount;
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                    break;
+                  case 2:
+                    player.money += player.income;
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                    break;
+                  case 3:
+                    player.money += (player.income * 2);
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                    break;
+                }
+                self.utils.updatePlayerLastMessage(player);
+                self.utils.updateLastSeen(player);
+                self.utils.checkLV(player, command.msg.channel);
+                self.utils.DB.Update("players", {"id":player.id}, player);
+                self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
+              }else {
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough Keys!\nNEED: " + Crate.cost + "\nHAVE: " + player.keys, 16772880);
               }
-              self.utils.updatePlayerLastMessage(player);
-              self.utils.updateLastSeen(player);
-              self.utils.checkLV(player, command.msg.channel);
-              self.utils.DB.Update("players", {"id":player.id}, player);
-              self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
-            }else {
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough Keys!\nNEED: " + Crate.cost + "\nHAVE: " + player.keys, 16772880);
             }
           }else {
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "The ID that you entered is not valid!", 16772880);
@@ -1724,7 +1784,10 @@ class CasinoPlugin {
             if(transferPlayer.id == player.id){
               self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You cant transfer to yourself!", 16772880);
               return;
-            }
+            } else if (transferPlayer.lv < 3) {
+							self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You cant transfer to a player whos level is less than 3!", 16772880);
+							return;
+						}
             if(toTransfer > 0){
               if(toTransfer > player.money){
                 self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
@@ -1770,7 +1833,9 @@ class CasinoPlugin {
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
           }
         });
-      }
+      }else {
+				self.disnode.bot.SendCompactEmbed(command.msg.channel, "transfer", "This command allows you to transfer money from one person to another as long as the other person is lv 3. Example `!casino transfer FireGamer3 100`");
+			}
     });
     return;
   }
@@ -1782,7 +1847,7 @@ class CasinoPlugin {
         return;
       }
       if(!player.Premium){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Blackjack is currently in beta, therefore only Ultra members may access this game mode right now. To learn more about Ultra and its perks look at the bottom of `!casino` Thanks for your support of our bots!", 16772880);
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Blackjack is an Ultra exclusive Command. Only Ultra members may access this game mode. To learn more about Ultra and it's perks look at the bottom of `!casino` Thanks for your support of our bots!", 16772880);
         return;
       }
       switch (command.params[0]) {
@@ -1815,6 +1880,10 @@ class CasinoPlugin {
           self.disnode.bot.SendCompactEmbed(command.msg.channel,"Blackjack", commands);
           break;
       }
+      self.utils.handleRecentBetters(player);
+      self.utils.updateLastSeen(player);
+      self.utils.checkLV(player, command.msg.channel);
+      self.utils.updatePlayerLastMessage(player);
       self.utils.DB.Update("players", {"id":player.id}, player);
     });
     return;
@@ -1855,15 +1924,15 @@ class CasinoPlugin {
           value: "If you get Ultra you must pay for the first month of your Premium membership or face account reset",
         }, {
           name: 'Data Collection',
-	  inline: false,
-	  value: "We (Disnode Team) Collect only usernames upon the first command you issue to the bot. currently that is the only EUD we collect with Casino Bot.",
-	}, {
-	  name: 'Discord TOS',
-	  inline: false,
-	  value: "With a new revision to Discord's TOS on 8/20/17. If you accept the rules you agree that We collect the data described above and that you agree to the Discord TOS (https://discordapp.com/developers/docs/legal) and the Discord Privacy Policy (https://discordapp.com/privacy)",
-	}],
-          footer: {}
-        });
+	        inline: false,
+	        value: "We (Disnode Team) Collect only usernames upon the first command you issue to the bot. currently that is the only EUD we collect with Casino Bot.",
+	      }, {
+	        name: 'Discord TOS',
+	        inline: false,
+	        value: "With a new revision to Discord's TOS on 8/20/17. If you accept the rules you agree that We collect the data described above and that you agree to the Discord TOS (https://discordapp.com/developers/docs/legal) and the Discord Privacy Policy (https://discordapp.com/privacy)",
+	      }],
+        footer: {}
+      });
     }
     return;
   }
@@ -1904,12 +1973,6 @@ class CasinoPlugin {
         return;
       });
     });
-  }
-  quit(){
-    var self = this;
-    if(!self.stateAuth){
-      self.Destory();
-    }
   }
 }
 
