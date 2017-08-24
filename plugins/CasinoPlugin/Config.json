@@ -3,5 +3,5 @@
   "autoStatus":true,
   "requirePrefix":true,
   "run":true,
-  "testing":false
+  "testing":true
 }

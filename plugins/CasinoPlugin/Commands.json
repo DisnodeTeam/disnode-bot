@@ -11,6 +11,11 @@
       "run": "commandInvite"
     },
     {
+      "cmd": "ultra",
+      "desc": "*Check your Ultra stats!*",
+      "run": "commandUltra"
+    },
+    {
       "cmd": "slot",
       "desc": "*slots (general help).*",
       "run": "commandSlot"
@@ -24,6 +29,16 @@
       "cmd": "wheel",
       "desc": "*play a nice game of roulette.*",
       "run": "commandWheel"
+    },
+    {
+      "cmd": "21",
+      "desc": "*Play a game of blackjack!* (Ultra only)",
+      "run": "commandBlackjack"
+    },
+    {
+      "cmd": "dice",
+      "desc": "*Roll a die and see if you are lucky enought to pick the right number!*",
+      "run": "commandDice"
     },
     {
       "cmd": "bal",
@@ -69,16 +84,6 @@
       "cmd": "transfer",
       "desc": "*Transfer money to other players!*",
       "run": "commandTransfer"
-    },
-    {
-      "cmd": "21",
-      "desc": "*Play a game of blackjack!* (Ultra only)",
-      "run": "commandBlackjack"
-    },
-    {
-      "cmd": "ultra",
-      "desc": "*Check your Ultra stats!*",
-      "run": "commandUltra"
     }
   ]
 }

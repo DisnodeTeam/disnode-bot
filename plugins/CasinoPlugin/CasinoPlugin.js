@@ -916,6 +916,116 @@ class CasinoPlugin {
     });
     return;
   }
+  commandDice(command){
+    var self = this;
+    var timeoutInfo;
+    self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
+      if(self.utils.checkBan(player, command))return;
+      if(player.Admin || player.Mod){}else {
+        if(!self.utils.doChannelCheck(command)){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+          return;
+        }
+      }
+
+      switch (command.params[0]) {
+        case "roll":
+          timeoutInfo = self.utils.checkTimeout(player, 5);
+          if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
+          if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
+          if(!timeoutInfo.pass){
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
+            return;
+          }
+          if(command.params[1]){
+            var dicenum = numeral(command.params[1]).value();
+            if(dicenum >= 5){
+              if(command.params[2]){
+                var pick = numeral(command.params[2]).value();
+                if(pick >= 1 && pick <= dicenum){
+                  if(command.params[3]){
+                    var bet = numeral(command.params[3]).value();
+                    if(bet >= 0 && player.money >= bet){
+                      player.money -= bet;
+                      var rolled = self.utils.getRandomIntInclusive(1, dicenum);
+                      var winnings = 0;
+                      if(rolled == pick){
+                        winnings = (bet * dicenum);
+                        player.money += winnings;
+                        var xpmult = Math.floor((dicenum / 10));
+                        if(xpmult <= 0)xpmult = 1;
+                        player.xp += 10 * xpmult;
+                      }
+                      self.disnode.bot.SendEmbed(command.msg.channel, {
+                        color: 1433628,
+                        author: {},
+                        fields: [ {
+                          name: ':game_die: ' + player.name + ' Dice Result :game_die:',
+                          inline: false,
+                          value: "Rolled a " + rolled + " On a " + dicenum + " Sided Die.",
+                        }, {
+                          name: 'Your Pick',
+                          inline: true,
+                          value: "" + pick,
+                        }, {
+                          name: 'Bet',
+                          inline: true,
+                          value: "$" + numeral(bet).format('0,0.00'),
+                        }, {
+                          name: 'Winnings',
+                          inline: true,
+                          value: "$" + numeral(winnings).format('0,0.00'),
+                        }, {
+                          name: 'Net Gain',
+                          inline: true,
+                          value: "$" + numeral(winnings - bet).format('0,0.00'),
+                        }, {
+                          name: 'Balance',
+                          inline: true,
+                          value: "$" + numeral(player.money).format('0,0.00'),
+                        }, {
+                          name: 'XP',
+                          inline: true,
+                          value: player.xp,
+                        }],
+                          footer: {}
+                        }
+                      );
+                      self.utils.updatePlayerLastMessage(player);
+                      self.utils.updateLastSeen(player);
+                      self.utils.checkLV(player, command.msg.channel);
+                      self.utils.DB.Update("players", {"id":player.id}, player);
+                      self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
+                    }else{
+                      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must enter a bet that is greater than 0, Or you cant afford the bet that you want to place.", 16772880);
+                    }
+                  }else{
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You either put in an invalid bet ore you cant afford the bet you placed.", 16772880);
+                  }
+                }else{
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: must pick a number starting with 1 and go no higher than the number of sides to your dice.", 16772880);
+                }
+              }else{
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must pick a number on the dice to roll! like `!casino dice roll 7 3 100`", 16772880);
+              }
+            }else{
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: the amount of sides to the dice must be 5 or greater like `!casino dice roll 7 3 100`", 16772880);
+            }
+          }else{
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter the amount of sides to the dice (5 and up) like `!casino dice roll 7 3 100`", 16772880);
+          }
+          break;
+      
+        default:
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Dice Roll", "Welcome to Dice Roll! Here you can choose how many sides you want ro roll the general command structure is `!casino dice roll (sides) (your pick) (bet)` example `!casino dice roll 10 4 1000`.\nYou get `x times your bet` if you pick the same number the dice landed on. where x is the number of sides the dice has.");
+          break;
+      }
+    });
+  }
   commandRecentBetters(command){
     var self = this;
     var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
