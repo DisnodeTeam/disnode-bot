@@ -4,7 +4,7 @@ const Countdown = require('countdownjs');
 const CasinoUtils = require('./CasinoUtils');
 const Blackjack = require('./Blackjack');
 const dateformat = require('dateformat');
-
+const ua = require('universal-analytics');
 class CasinoPlugin {
   constructor() {
     var self = this;
@@ -138,6 +138,7 @@ class CasinoPlugin {
   }
   Init(done){
     var self = this;
+    
     self.state = self.disnode.state.Init(self);
     self.utils = new CasinoUtils(self.disnode, self.state, this);
     self.Blackjack = new Blackjack(self.disnode);
@@ -162,6 +163,9 @@ class CasinoPlugin {
   }
   default(command) {
     var self = this;
+
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Default Command").send()
 
     if(command.params[0] == 'dev'){
       command.params.splice(0,1);
@@ -207,11 +211,15 @@ class CasinoPlugin {
   }
   commandInvite(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Invite Command").send()
     self.disnode.bot.SendCompactEmbed(command.msg.channel, "Invite", "https://discordapp.com/oauth2/authorize?client_id=263330369409908736&scope=bot&permissions=19456");
     return;
   }
   commandBal(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Balanace Command").send()
     if(command.params[0] != undefined){
       self.utils.getPlayer(command).then(function(player) {
         if(!player.rules){
@@ -315,6 +323,10 @@ class CasinoPlugin {
   }
   commandJackpotInfo(command){
     var self = this;
+
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Jackpot Info Command").send()
+    
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -355,6 +367,8 @@ class CasinoPlugin {
   }
   commandSlot(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Slot Command").send()
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -527,6 +541,8 @@ class CasinoPlugin {
   }
   commandCoinFlip(command){
       var self = this;
+      var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+      visitor.pageview("Cloin Flip Command").send()
       self.utils.getPlayer(command).then(function(player) {
         if(!player.rules){
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -706,6 +722,8 @@ class CasinoPlugin {
     }
     var invalidbets = [];
     var timeoutInfo;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Wheel Command").send()
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -900,6 +918,8 @@ class CasinoPlugin {
   }
   commandRecentBetters(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Recent Betters Command").send()
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -922,6 +942,8 @@ class CasinoPlugin {
   }
   commandTop(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Top Command").send()
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -976,6 +998,8 @@ class CasinoPlugin {
   }
   commandTopLV(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Top Level Command").send()
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1030,6 +1054,8 @@ class CasinoPlugin {
   }
   commandCrate(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Create Command").send()
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1180,6 +1206,8 @@ class CasinoPlugin {
   }
   commandStats(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Stats Command").send()
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1334,6 +1362,8 @@ class CasinoPlugin {
   }
   commandAdmin(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Admin Command").send()
     self.utils.getPlayer(command).then(function(player) {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin == undefined)player.Admin = false;
@@ -1583,6 +1613,8 @@ class CasinoPlugin {
   }
   commandMod(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Mod Command").send()
     self.utils.getPlayer(command).then(function(player) {
       if(self.utils.checkBan(player, command))return;
       if(player.Mod == undefined)player.Mod = false;
@@ -1609,6 +1641,8 @@ class CasinoPlugin {
   }
   commandStore(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Store Command").send()
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1756,6 +1790,8 @@ class CasinoPlugin {
   }
   commandTransfer(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Transfer Command").send()
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1841,6 +1877,8 @@ class CasinoPlugin {
   }
   commandBlackjack(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("BlackJack Command").send()
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1890,6 +1928,8 @@ class CasinoPlugin {
   }
   commandRules(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Rules Command").send()
     switch (command.params[0]) {
       case "accept":
         self.utils.getPlayer(command).then(function(player) {
@@ -1938,6 +1978,8 @@ class CasinoPlugin {
   }
   commandUltra(command){
     var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Ultras Command").send()
     self.utils.getPlayer(command).then(function(player) {
       self.utils.ultraCheck(player).then(function(data) {
         if(data.isUltra){

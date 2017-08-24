@@ -35,6 +35,7 @@
     "os-utils": "0.0.14",
     "shortid": "^2.2.8",
     "timer-stopwatch": "^0.2.0",
+    "universal-analytics": "^0.4.15",
     "unzip": "^0.1.11",
     "unzip2": "^0.2.5",
     "ws": "^3.0.0"
