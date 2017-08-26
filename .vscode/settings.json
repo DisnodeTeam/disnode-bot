@@ -1,0 +1,6 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "editor.fontSize": 21,
+	"editor.insertSpaces": false,
+	"editor.tabCompletion": true
+}

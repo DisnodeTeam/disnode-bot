@@ -919,6 +919,8 @@ class CasinoPlugin {
   commandDice(command){
     var self = this;
     var timeoutInfo;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Dice Command").send()
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1021,7 +1023,7 @@ class CasinoPlugin {
           break;
       
         default:
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Dice Roll", "Welcome to Dice Roll! Here you can choose how many sides you want ro roll the general command structure is `!casino dice roll (sides) (your pick) (bet)` example `!casino dice roll 10 4 1000`.\nYou get `x times your bet` if you pick the same number the dice landed on. where x is the number of sides the dice has.");
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Dice Roll", "Welcome to Dice Roll! Here you can choose how many sides you want to roll. The general command structure is `!casino dice roll (sides) (your pick) (bet)` example `!casino dice roll 10 4 1000`.\nYou get `x times your bet` if you pick the same number the dice landed on. where x is the number of sides the dice has.");
           break;
       }
     });
