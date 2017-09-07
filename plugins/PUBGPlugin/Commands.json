@@ -1,0 +1,8 @@
+{
+  "commands":[
+    {
+      "cmd": "username",
+      "run": "commandUser"
+    }
+  ]
+}

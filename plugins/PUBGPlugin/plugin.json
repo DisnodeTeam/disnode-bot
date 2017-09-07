@@ -1,0 +1,10 @@
+{
+  "name":"PUBG Plugin",
+  "description":"Get PUBG Stats and Information for a player!",
+  "id": "pubg",
+  "script": "Plugin.js",
+  "load": true,
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json",
+  "requirements": ["pubg-api-redis"]
+}

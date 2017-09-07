@@ -101,7 +101,7 @@ class PluginManager {
     }
     self.disnode.bot.SendMessage(command.msg.channel_id, "**Getting Plugin:** `" + command.params[0] + "`")
 
-    axios.get("https://www.disnodeteam.com/api/plugins/" + command.params[0]).then(function (res) {
+    axios.get("https://api.disnodeteam.com/plugins/" + command.params[0]).then(function (res) {
       var suc = res.data.type;
       switch (suc) {
         case "SUC":
@@ -145,7 +145,7 @@ class PluginManager {
   commandBrowse(command) {
     var self = this;
 
-    axios.get("http://www.disnodeteam.com/api/plugins/").then(function (res) {
+    axios.get("http://api.disnodeteam.com/plugins/").then(function (res) {
       var suc = res.data.type;
       switch (suc) {
         case "SUC":

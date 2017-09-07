@@ -9,7 +9,7 @@ const Logging = require("disnode-logger");
 const async = require('async');
 const DBManager = require('./dbmanager')
 const Util = require('./util')
-const Discoin = require('./Discoin')
+
 /** Main Disnode Class. Holds all features and interaction with Disnode
 @constructor
 * @param {string} configPath - Path to Bot Config.
@@ -35,7 +35,6 @@ class Disnode {
             self.stats = new Stats(self);
             self.platform = new Platform(self);
              self.util = new Util(self);
-             self.dsc = Discoin;
             Logging.Success("Disnode", "Start", "Loaded Config");
             callback();
           }).catch(callback);
@@ -51,7 +50,7 @@ class Disnode {
              callback();
            }
         },
-        // Connect to Discord
+        // Connect to Discord 
         function(callback) {
           Logging.Info("Disnode", "Start", "Connecting to Discord");
           self.bot.Connect().then(function(){
