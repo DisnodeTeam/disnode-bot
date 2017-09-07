@@ -51,6 +51,11 @@
       "run": "commandTop"
     },
     {
+      "cmd": "inctop",
+      "desc": "*check who's on top, and compete with your friends!*",
+      "run": "commandIncomeTop"
+    },
+    {
       "cmd": "lvtop",
       "desc": "*check who's on top, and compete with your friends!*",
       "run": "commandTopLV"

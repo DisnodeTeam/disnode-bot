@@ -138,7 +138,7 @@ class CasinoPlugin {
   }
   Init(done){
     var self = this;
-    
+
     self.state = self.disnode.state.Init(self);
     self.utils = new CasinoUtils(self.disnode, self.state, this);
     self.Blackjack = new Blackjack(self.disnode);
@@ -326,7 +326,7 @@ class CasinoPlugin {
 
     var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
     visitor.pageview("Jackpot Info Command").send()
-    
+
     self.utils.getPlayer(command).then(function(player) {
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1021,7 +1021,7 @@ class CasinoPlugin {
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter the amount of sides to the dice (5 and up) like `!casino dice roll 7 3 100`", 16772880);
           }
           break;
-      
+
         default:
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Dice Roll", "Welcome to Dice Roll! Here you can choose how many sides you want to roll. The general command structure is `!casino dice roll (sides) (your pick) (bet)` example `!casino dice roll 10 4 1000`.\nYou get `x times your bet` if you pick the same number the dice landed on. where x is the number of sides the dice has.");
           break;
@@ -1104,6 +1104,62 @@ class CasinoPlugin {
           msg += "" + (i + 1) + ". **" + orderTop[i].name + "** -=- $" + numeral(orderTop[i].money).format('0,0.00') + "\n";
         }
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Wealthiest Players", msg);
+      });
+    });
+    return;
+  }
+  commandIncomeTop(command){
+    var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Income Top Command").send()
+    self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
+      if(self.utils.checkBan(player, command))return;
+      if(player.Admin || player.Mod){}else {
+        if(!self.utils.doChannelCheck(command)){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+          return;
+        }
+      }
+      self.utils.DB.Find("players", {}).then(function(players) {
+        var orderTop = [];
+        for (var i = 0; i < players.length; i++) {
+          var placed = false;
+          for (var x = 0; x < orderTop.length; x++) {
+            if(players[i].income > orderTop[x].income){
+              orderTop.splice(x, 0, players[i]);
+              placed = true;
+              break;
+            }
+          }
+          if(!placed){
+            orderTop.push(players[i]);
+          }
+        }
+        var page = 1;
+        var maxindex;
+        var startindex;
+        if (parseInt(command.params[0]) >= 1) {
+          page = Number(parseInt(command.params[0]));
+        }
+        if (page == 1) {
+          page = 1;
+          startindex = 0
+          maxindex = 10;
+        }else {
+          maxindex = (page * 10);
+          startindex = maxindex - 10;
+        }
+
+        var msg = "**Page:** " + page + "\n";
+        for (var i = startindex; i < orderTop.length; i++) {
+          if(i == maxindex)break;
+          msg += "" + (i + 1) + ". **" + orderTop[i].name + "** -=- $" + numeral(orderTop[i].income).format('0,0.00') + "\n";
+        }
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Top Incomes", msg);
       });
     });
     return;
