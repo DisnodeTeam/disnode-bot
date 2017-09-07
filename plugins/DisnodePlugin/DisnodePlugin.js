@@ -17,17 +17,9 @@ class DisnodePlugin {
                 inline: true,
                 value: self.disnode.stats.serverCount,
             }, {
-                name: 'Channels',
-                inline: true,
-                value: self.disnode.stats.channelCount,
-            }, {
                 name: 'Commands',
                 inline: true,
                 value: self.disnode.stats.messagesParsed,
-            }, {
-                name: 'Members',
-                inline: true,
-                value: self.disnode.stats.memberCount,
             }, {
                 name: 'Total Messages',
                 inline: true,
