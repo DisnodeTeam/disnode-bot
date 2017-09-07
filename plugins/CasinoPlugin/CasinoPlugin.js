@@ -229,7 +229,7 @@ class CasinoPlugin {
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
             return;
           }
         }
@@ -280,7 +280,7 @@ class CasinoPlugin {
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
             return;
           }
         }
@@ -335,7 +335,7 @@ class CasinoPlugin {
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
             return;
           }
         }
@@ -377,7 +377,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
           return;
         }
       }
@@ -551,7 +551,7 @@ class CasinoPlugin {
         if(self.utils.checkBan(player, command))return;
         if(player.Admin || player.Mod){}else {
           if(!self.utils.doChannelCheck(command)){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
             return;
           }
         }
@@ -732,7 +732,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
           return;
         }
       }
@@ -929,7 +929,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
           return;
         }
       }
@@ -1040,7 +1040,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
           return;
         }
       }
@@ -1055,8 +1055,9 @@ class CasinoPlugin {
   commandTop(command){
     var self = this;
     var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
-    visitor.pageview("Top Command").send()
+    visitor.pageview("Top Command").send();
     self.utils.getPlayer(command).then(function(player) {
+      var pid = player.id;
       if(!player.rules){
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
         return;
@@ -1064,161 +1065,112 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
           return;
         }
       }
       self.utils.DB.Find("players", {}).then(function(players) {
-        var orderTop = [];
-        for (var i = 0; i < players.length; i++) {
-          var placed = false;
-          for (var x = 0; x < orderTop.length; x++) {
-            if(players[i].money > orderTop[x].money){
-              orderTop.splice(x, 0, players[i]);
-              placed = true;
-              break;
+        var mode = "";
+        if(command.params[0] == undefined){}else{
+          mode = command.params[0].toLowerCase();
+        }
+        switch (mode) {
+          case "income":
+          case "money":
+          case "lv":
+          case "overall":
+            mode = command.params[0].toLowerCase()
+            break;
+          default:
+            self.disnode.bot.SendEmbed(command.msg.channel, {
+              color: 1433628,
+              author: {},
+              title: 'Top Command',
+              fields: [ {
+                name: 'Info',
+                inline: false,
+                value: "The top command can be used to see who is the best player in several different fields.",
+              },{
+                name: 'Commands',
+                inline: false,
+                value: "all commands are formatted like this `!casino top (mode) (page)` page is an optional field if you don't supply a page the top 10 is shown for that mode.",
+              },{
+                name: 'Modes',
+                inline: false,
+                value: "Modes:\n**income**: Sorts users by income\n**money**: Sorts users by how much money they have\n**lv**: Sorts users by their Level\n**overall**: Sorts users by a calculated score the calulation is as follows: `((income / 1000) + (lv * 1000))`",
+              }],
+                footer: {}
+              }
+            );
+            return;
+        }
+        var ordered = [];
+        switch (mode) {
+          case "income":
+          case "money":
+          case "lv":
+            ordered = self.utils.orgArray(players, mode);
+            break;
+          default:
+            for (var i = 0; i < players.length; i++) {
+              players[i].score = ((players[i].income / 1000) + (players[i].lv * 1000))
             }
-          }
-          if(!placed){
-            orderTop.push(players[i]);
+            ordered = self.utils.orgArray(players, "score");
+            break;
+        }
+        var playerplace = 0;
+        for (var i = 0; i < ordered.length; i++) {
+          var el = ordered[i];
+          if(el.id == pid){
+            playerplace = i + 1;
+            break;
           }
         }
         var page = 1;
-        var maxindex;
-        var startindex;
-        if (parseInt(command.params[0]) >= 1) {
-          page = Number(parseInt(command.params[0]));
+        if(command.params[1] && numeral(command.params[1]).value() > 0){
+          ordered = self.utils.pageArray(ordered, numeral(command.params[1]).value());
+          page = numeral(command.params[1]).value();
+        }else{
+          ordered = self.utils.pageArray(ordered);
         }
-        if (page == 1) {
-          page = 1;
-          startindex = 0
-          maxindex = 10;
-        }else {
-          maxindex = (page * 10);
-          startindex = maxindex - 10;
-        }
-
         var msg = "**Page:** " + page + "\n";
-        for (var i = startindex; i < orderTop.length; i++) {
-          if(i == maxindex)break;
-          msg += "" + (i + 1) + ". **" + orderTop[i].name + "** -=- $" + numeral(orderTop[i].money).format('0,0.00') + "\n";
-        }
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Wealthiest Players", msg);
-      });
-    });
-    return;
-  }
-  commandIncomeTop(command){
-    var self = this;
-    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
-    visitor.pageview("Income Top Command").send()
-    self.utils.getPlayer(command).then(function(player) {
-      if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
-        return;
-      }
-      if(self.utils.checkBan(player, command))return;
-      if(player.Admin || player.Mod){}else {
-        if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
-          return;
-        }
-      }
-      self.utils.DB.Find("players", {}).then(function(players) {
-        var orderTop = [];
-        for (var i = 0; i < players.length; i++) {
-          var placed = false;
-          for (var x = 0; x < orderTop.length; x++) {
-            if(players[i].income > orderTop[x].income){
-              orderTop.splice(x, 0, players[i]);
-              placed = true;
+        for (var i = 0; i < ordered.length; i++) {
+          var player = ordered[i];
+          switch (mode) {
+            case "income":
+              if(page>1){
+                msg += "" + (i + ((page * 10) - 9)) + ". **" + player.name + "** -=- $" + numeral(player.income).format('0,0.00') + "\n";
+              }else{
+                msg += "" + (i + 1) + ". **" + player.name + "** -=- $" + numeral(player.income).format('0,0.00') + "\n";
+              }
               break;
-            }
-          }
-          if(!placed){
-            orderTop.push(players[i]);
-          }
-        }
-        var page = 1;
-        var maxindex;
-        var startindex;
-        if (parseInt(command.params[0]) >= 1) {
-          page = Number(parseInt(command.params[0]));
-        }
-        if (page == 1) {
-          page = 1;
-          startindex = 0
-          maxindex = 10;
-        }else {
-          maxindex = (page * 10);
-          startindex = maxindex - 10;
-        }
-
-        var msg = "**Page:** " + page + "\n";
-        for (var i = startindex; i < orderTop.length; i++) {
-          if(i == maxindex)break;
-          msg += "" + (i + 1) + ". **" + orderTop[i].name + "** -=- $" + numeral(orderTop[i].income).format('0,0.00') + "\n";
-        }
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Top Incomes", msg);
-      });
-    });
-    return;
-  }
-  commandTopLV(command){
-    var self = this;
-    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
-    visitor.pageview("Top Level Command").send()
-    self.utils.getPlayer(command).then(function(player) {
-      if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
-        return;
-      }
-      if(self.utils.checkBan(player, command))return;
-      if(player.Admin || player.Mod){}else {
-        if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
-          return;
-        }
-      }
-      self.utils.DB.Find("players", {}).then(function(players) {
-        var orderTop = [];
-        for (var i = 0; i < players.length; i++) {
-          var placed = false;
-          for (var x = 0; x < orderTop.length; x++) {
-            if(players[i].lv > orderTop[x].lv){
-              orderTop.splice(x, 0, players[i]);
-              placed = true;
+            case "money":
+              if(page>1){
+                msg += "" + (i + ((page * 10) - 9)) + ". **" + player.name + "** -=- $" + numeral(player.money).format('0,0.00') + "\n";
+              }else{
+                msg += "" + (i + 1) + ". **" + player.name + "** -=- $" + numeral(player.money).format('0,0.00') + "\n";
+              }
               break;
-            }
+            case "lv":
+              if(page>1){
+                msg += "" + (i + ((page * 10) - 9)) + ". **" + player.name + "** -=- Level: " + player.lv + "\n";
+              }else{
+                msg += "" + (i + 1) + ". **" + player.name + "** -=- Level: " + player.lv + "\n";
+              }
+              break;
+            default:
+              if(page>1){
+                msg += "" + (i + ((page * 10) - 9)) + ". **" + player.name + "** -=- Score: " + numeral(player.score).format('0,0.00') + "\n";
+              }else{
+                msg += "" + (i + 1) + ". **" + player.name + "** -=- Score: " + numeral(player.score).format('0,0.00') + "\n";
+              }
+              break;
           }
-          if(!placed){
-            orderTop.push(players[i]);
-          }
         }
-        var page = 1;
-        var maxindex;
-        var startindex;
-        if (parseInt(command.params[0]) >= 1) {
-          page = Number(parseInt(command.params[0]));
-        }
-        if (page == 1) {
-          page = 1;
-          startindex = 0
-          maxindex = 10;
-        }else {
-          maxindex = (page * 10);
-          startindex = maxindex - 10;
-        }
-
-        var msg = "**Page:** " + page + "\n";
-        for (var i = startindex; i < orderTop.length; i++) {
-          if(i == maxindex)break;
-          msg += "" + (i + 1) + ". **" + orderTop[i].name + "** -=- Level: " + orderTop[i].lv + "\n";
-        }
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Experienced Players", msg);
+        msg += "\n**Your Rank:** " + playerplace;
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Order: " + mode, msg);
       });
     });
-    return;
   }
   commandCrate(command){
     var self = this;
@@ -1232,7 +1184,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
           return;
         }
       }
@@ -1384,7 +1336,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
           return;
         }
       }
@@ -1819,7 +1771,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
           return;
         }
       }
@@ -1968,7 +1920,7 @@ class CasinoPlugin {
       if(self.utils.checkBan(player, command))return;
       if(player.Admin || player.Mod){}else {
         if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use <#269839796069859328>", 16772880);
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
           return;
         }
       }
@@ -2129,7 +2081,7 @@ class CasinoPlugin {
         }, {
           name: 'Ultra',
           inline: false,
-          value: "If you want to get Ultra, visit this link: https://wwww.disnodeteam.com/ultra - account resets no longer occur as you can pay when able.",
+          value: "If you want to get Ultra, visit this link: https://www.disnodeteam.com/ultra - account resets no longer occur as you can pay when able.",
         }, {
           name: 'Data Collection',
 	        inline: false,

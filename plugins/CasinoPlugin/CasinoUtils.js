@@ -53,7 +53,7 @@ class CasinoUtils {
       slot.winAmount = parseFloat((slot.bet * 16).toFixed(2));
       slot.winText = "WINNER WINNER HUUUUGE MONEY!";
       if(slot.player.Premium || slot.player.Admin){
-        slot.winText += " **(Premium Bonus!)**";
+        slot.winText += " **(Disnode Ultra Bonus!)**";
         slot.winAmount += parseFloat(slot.winAmount);
       }
       slot.player.stats.slot1s++;
@@ -62,7 +62,7 @@ class CasinoUtils {
       if(slot.bet >= 250){
         slot.player.xp += 80;
       }else {
-        slot.winText += " `You bet lower than $250 fair warning here, you wont get any XP and you cant win the true JACKPOT`"
+        slot.winText += " `You bet lower than $250. Fair warning here, you won't get any XP and you can't win the TRUE jackpot.`"
       }
       return;
     }
@@ -70,7 +70,7 @@ class CasinoUtils {
       slot.winAmount = parseFloat((slot.bet * 8).toFixed(2));
       slot.winText = "WINNER WINNER BIG MONEY!";
       if(slot.player.Premium || slot.player.Admin){
-        slot.winText += " **(Premium Bonus!)**";
+        slot.winText += " **(Disnode Ultra Bonus!)**";
         slot.winAmount += parseFloat(slot.winAmount);
       }
       slot.player.stats.slot2s++;
@@ -79,7 +79,7 @@ class CasinoUtils {
       if(slot.bet >= 250){
         slot.player.xp += 40;
       }else {
-        slot.winText += " `You bet lower than $250 fair warning here, you wont get any XP and you cant win the true JACKPOT`"
+        slot.winText += " `You bet lower than $250. Fair warning here, you won't get any XP and you can't win the TRUE jackpot.`"
       }
       return;
     }
@@ -87,7 +87,7 @@ class CasinoUtils {
       slot.winAmount = parseFloat((slot.bet * 4).toFixed(2));
       slot.winText = "WINNER!";
       if(slot.player.Premium || slot.player.Admin){
-        slot.winText += " **(Premium Bonus!)**";
+        slot.winText += " **(Disnode Ultra Bonus!)**";
         slot.winAmount += parseFloat(slot.winAmount);
       }
       slot.player.stats.slot3s++;
@@ -96,7 +96,7 @@ class CasinoUtils {
       if(slot.bet >= 250){
         slot.player.xp += 20;
       }else {
-        slot.winText += " `You bet lower than $250 fair warning here, you wont get any XP and you cant win the true JACKPOT`"
+        slot.winText += " `You bet lower than $250. Fair warning here, you won't get any XP and you can't win the TRUE jackpot.`"
       }
       return;
     }
@@ -104,7 +104,7 @@ class CasinoUtils {
       slot.winAmount = parseFloat((slot.bet * 2).toFixed(2));
       slot.winText = "Winner";
       if(slot.player.Premium || slot.player.Admin){
-        slot.winText += " **(Premium Bonus!)**";
+        slot.winText += " **(Disnode Ultra Bonus!)**";
         slot.winAmount += parseFloat(slot.winAmount);
       }
       slot.player.stats.slotTripleC++;
@@ -113,13 +113,13 @@ class CasinoUtils {
       if(slot.bet >= 250){
         slot.player.xp += 10;
       }else {
-        slot.winText += " `You bet lower than $250 fair warning here, you wont get any XP and you cant win the true JACKPOT`"
+        slot.winText += " `You bet lower than $250. Fair warning here, you won't get any XP and you can't win the TRUE jackpot.`"
       }
       return;
     }
     if((slot.reel1 == ":key:") && (slot.reel2 == ":key:") && (slot.reel3 == ":key:")){
       if(slot.bet < minJackpotBet){
-        slot.winText = "Hey There are some keys here but they are rusted! You didnt put enough money as your bet to restore the keys. oh well... ";
+        slot.winText = "Hey There are some keys here but they are rusted! You didnt bet your minimum bet to restore the keys. oh well... ";
         return;
       }
       slot.winText = "WOW! Thats a lot of keys!";
@@ -128,10 +128,10 @@ class CasinoUtils {
     }
     if((slot.reel1 == ":key:") || (slot.reel2 == ":key:") || (slot.reel3 == ":key:")){
       if(slot.bet < minJackpotBet){
-        slot.winText = "Hey There are some keys here but they are rusted! You didnt put enough money as your bet to restore the keys. oh well... ";
+        slot.winText = "Hey a key... but it's rusted! You didnt bet your minimum bet to restore the key. oh well... ";
         return;
       }else {
-        slot.winText = "Hey! a Key! These could be useful later on... ";
+        slot.winText = "Hey! a Key! ";
         slot.player.keys++;
       }
     }
@@ -144,17 +144,50 @@ class CasinoUtils {
       if(slot.bet >= 250){
         slot.player.xp += 5;
       }else {
-        slot.winText += " `You bet lower than $250 fair warning here, you wont get any XP and you cant win the true JACKPOT`"
+        slot.winText += " `You bet lower than $250. Fair warning here, you won't get any XP and you can't win the TRUE jackpot.`"
       }
       return;
     }
     slot.winAmount = 0;
-    slot.winText += "DANG! Better luck next time!";
+    slot.winText += "Dang, better luck next time...";
     if(slot.bet >= 250){
       slot.player.xp += 1;
     }else {
-      slot.winText += " `You bet lower than $250 fair warning here, you wont get any XP and you cant win the true JACKPOT`"
+      slot.winText += " `You bet lower than $250. Fair warning here, you won't get any XP and you can't win the TRUE jackpot.`"
     }
+  }
+  orgArray(array, orgMember){
+    var temp = [];
+    for (var i = 0; i < array.length; i++) {
+      var placed = false;
+      for (var x = 0; x < temp.length; x++) {
+        if(array[i][orgMember] > temp[x][orgMember]){
+          temp.splice(x, 0, array[i]);
+          placed = true;
+          break;
+        }
+      }
+      if(!placed){
+        temp.push(array[i]);
+      }
+    }
+    return temp;
+  }
+  pageArray(array, page=1, maxElements=10){
+    var temp = [];
+    if (page == 1) {
+      page = 1;
+      var startindex = 0
+      var maxindex = maxElements;
+    }else {
+      var maxindex = (page * maxElements);
+      var startindex = maxindex - maxElements;
+    }
+    for (var i = startindex; i < array.length; i++) {
+      if(i == maxindex)break;
+      temp.push(array[i]);
+    }
+    return temp;
   }
   updatePlayerLastMessage(player){
     var currentDate = new Date().getTime();
@@ -356,7 +389,7 @@ class CasinoUtils {
   updateLastSeen(player){
       var date = new Date().getTime();
       player.lastSeen = parseInt(date);
-    }
+  }
   canGetIncome(player){
     var self = this;
     var date = new Date().getTime();
