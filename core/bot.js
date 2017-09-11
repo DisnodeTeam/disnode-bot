@@ -19,7 +19,7 @@ var EventEmitter = require('events').EventEmitter;
  * @param {DisnodeObj} disnode - Refrence to Disnode Class (disnode.js)
  */
 class Bot extends EventEmitter {
-  constructor(key, disnode) {
+  constructor(key, disnode, shardID=0, totalShards=1) {
     super();
     this.key = key;
     this.client = {};
@@ -27,7 +27,8 @@ class Bot extends EventEmitter {
     this.bind_onMessage = null;
     this.isRemote = false;
     this.remoteID = "";
-    this.shardID = 0;
+    this.shardID = shardID;
+    this.totalShards = totalShards;
     this.s = null;
     this.servers = {
       count: 0
@@ -127,7 +128,6 @@ class Bot extends EventEmitter {
     }
     switch (operation) {
       case codes.OPCode.HELLO:
-
         self.wsIdentify();
         self.StartHeartbeat(data.d['heartbeat_interval'])
         break;
@@ -144,7 +144,7 @@ class Bot extends EventEmitter {
   wsIdentify() {
     var self = this;
     Logger.Info("Bot", "wsIdentify", "Sending ID to Gateway");
-    var packet = requests.identify(this.key);
+    var packet = requests.identify(this.key, this.shardID, this.totalShards);
     self.ws.send(JSON.stringify(packet));
   }
 

@@ -216,6 +216,27 @@ class CasinoPlugin {
     self.disnode.bot.SendCompactEmbed(command.msg.channel, "Invite", "https://discordapp.com/oauth2/authorize?client_id=263330369409908736&scope=bot&permissions=19456");
     return;
   }
+  commandTime(command){
+    var self = this;
+    var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+    visitor.pageview("Time Command").send();
+    self.utils.getPlayer(command).then(function(player) {
+      if(!player.rules){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+        return;
+      }
+      if(self.utils.checkBan(player, command))return;
+      if(player.Admin || player.Mod){}else {
+        if(!self.utils.doChannelCheck(command)){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
+          return;
+        }
+      }
+      self.utils.csAPI.get("/time").then(function(resp){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Time Until Income", resp.data.readable);
+      });
+    });
+  }
   commandBal(command){
     var self = this;
     var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
@@ -328,40 +349,42 @@ class CasinoPlugin {
     visitor.pageview("Jackpot Info Command").send()
 
     self.utils.getPlayer(command).then(function(player) {
-      if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
-        return;
-      }
-        if(self.utils.checkBan(player, command))return;
-        if(player.Admin || player.Mod){}else {
-          if(!self.utils.doChannelCheck(command)){
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
-            return;
-          }
+      self.utils.getCasinoObj().then(function(casinoObj){
+        if(!player.rules){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+          return;
         }
-        if(player.money > 8500){
-          var minJackpotBet = (player.money * 0.03);
-        }else var minJackpotBet = 250;
-        self.utils.updateLastSeen(player);
-        self.disnode.bot.SendEmbed(command.msg.channel, {
-          color: 1433628,
-          author: {},
-          fields: [ {
-            name: 'JACKPOT Value',
-            inline: true,
-            value: "$" + numeral(self.state.data.casinoObj.jackpotValue).format('0,0.00'),
-          },{
-            name: 'Minimum bet to Win JACKPOT',
-            inline: false,
-            value: "$" + numeral(minJackpotBet).format('0,0.00')
-          }, {
-            name: 'JACKPOT History',
-            inline: false,
-            value: "**Last won by:** " + self.state.data.casinoObj.jackpotstat.lastWon + " **Amount Won:** $" + numeral(self.state.data.casinoObj.jackpotstat.LatestWin).format('0,0.00'),
-          }],
-            footer: {}
+          if(self.utils.checkBan(player, command))return;
+          if(player.Admin || player.Mod){}else {
+            if(!self.utils.doChannelCheck(command)){
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
+              return;
+            }
           }
-        )
+          if(player.money > 8500){
+            var minJackpotBet = (player.money * 0.03);
+          }else var minJackpotBet = 250;
+          self.utils.updateLastSeen(player);
+          self.disnode.bot.SendEmbed(command.msg.channel, {
+            color: 1433628,
+            author: {},
+            fields: [ {
+              name: 'JACKPOT Value',
+              inline: true,
+              value: "$" + numeral(casinoObj.jackpotValue).format('0,0.00'),
+            },{
+              name: 'Minimum bet to Win JACKPOT',
+              inline: false,
+              value: "$" + numeral(minJackpotBet).format('0,0.00')
+            }, {
+              name: 'JACKPOT History',
+              inline: false,
+              value: "**Last won by:** " + casinoObj.jackpotstat.lastWon + " **Amount Won:** $" + numeral(casinoObj.jackpotstat.LatestWin).format('0,0.00'),
+            }],
+              footer: {}
+            }
+          )
+      });
     });
     return;
   }
@@ -370,172 +393,175 @@ class CasinoPlugin {
     var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
     visitor.pageview("Slot Command").send()
     self.utils.getPlayer(command).then(function(player) {
-      if(!player.rules){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
-        return;
-      }
-      if(self.utils.checkBan(player, command))return;
-      if(player.Admin || player.Mod){}else {
-        if(!self.utils.doChannelCheck(command)){
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
+      self.utils.getCasinoObj().then(function(casinoObj){
+        if(!player.rules){
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
           return;
         }
-      }
-      switch (command.params[0]) {
-        case "info":
-          if(player.money > 8500){
-            var minJackpotBet = (player.money * 0.03);
-          }else var minJackpotBet = 250;
-          self.disnode.bot.SendEmbed(command.msg.channel, {
-            color: 1433628,
-            author: {},
-            title: 'Casino Slots',
-            description: 'Info',
-            fields: [ {
-              name: 'Slot Items',
-              inline: false,
-              value: ":cherries: - Cherries (Most Common)\n\n:third_place:\n\n:second_place:\n\n:first_place:\n\n:100: - 100 (Most Rare)",
-            }, {
-              name: 'Slot Wins and Payouts',
-              inline: false,
-              value: "\n:cherries::cherries::cherries: - 2x bet 10XP\n"+
-              ":third_place::third_place::third_place: - 4x bet 20XP\n"+
-              ":second_place::second_place::second_place: - 8x bet 40XP\n"+
-              ":first_place::first_place::first_place: - 16x bet 80XP\n"+
-              ":100::100::100: - JACKPOT value - 1000XP\n" +
-              ":key::key::key: -  3 Keys (**Minimum Jackpot Bet Required**)\n" +
-              "At least one :key: - 1 Key (**Minimum Jackpot Bet Required**)\n" +
-              "At least one :cherries: - 1/2 your Original Bet",
-            },{
-              name: 'Minimum bet to Win Jackpot',
-              inline: false,
-              value: "Minimum bet: $**" + numeral(minJackpotBet).format('0,0.00') + "** (if money < 8,500 min bet = 250) else (min bet = money * 0.03 or 3%))"
-            },{
-              name: 'XP',
-              inline: false,
-              value: "The XP system has changed a bit, if your bet is lower than $250, you will not get any XP",
-            },{
-              name: 'Jackpot',
-              inline: false,
-              value: "Jackpot Value is increased every time someone plays slots, the value is increased by the players bet amount and has a default value of $100,000\n**Current Jackpot Value: **$" + numeral(self.state.data.casinoObj.jackpotValue).format('0,0.00'),
-            }, {
-              name: 'Jackpot History',
-              inline: true,
-              value: "**Last won by:** " + self.state.data.casinoObj.jackpotstat.lastWon,
-            }],
-              footer: {}
-            });
-          break;
-        case undefined:
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Slots", "Hi, and welcome to slots. If you need any info on the slots, run the command `!casino slot info`.\n\nIf you want to try the slots, then type `!casino slot [bet]. For example, `!casino slot 100` will run the slots with $100 as the bet.");
-          break;
-        default:
-          if(command.params[0]){
-            if(command.params[0].toLowerCase() == "allin"){
-              command.params[0] = player.money;
-            }
-            var bet = numeral(command.params[0]).value();
-            var timeoutInfo = self.utils.checkTimeout(player, 5);
-            if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
-            if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
-            if(!timeoutInfo.pass){
-              logger.Info("Casino", "Slot", "Player: " + player.name + " Tried the slots before their delay of: " + timeoutInfo.remain);
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
-              return;
-            }
-            if(bet > 0.01){
-              if(bet > player.money | bet == NaN | bet == "NaN"){// Checks to see if player has enough money for their bet
-                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
-                return;
-              }else{
-                player.money -= parseFloat(bet);
-                self.state.data.casinoObj.jackpotValue += parseFloat(bet);
-                player.money = parseFloat(player.money.toFixed(2));
-                self.state.data.casinoObj.jackpotValue = parseFloat(self.state.data.casinoObj.jackpotValue.toFixed(2));
-              }
-              var slotInfo = {
-                bet: bet,
-                player: player,
-                winText: "",
-                winAmount: 0,
-                reel1: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
-                reel2: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
-                reel3: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
-                fake1: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
-                fake2: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
-                fake3: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
-                fake4: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
-                fake5: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
-                fake6: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item
-              }
-              self.utils.didWin(slotInfo);
-              if(player.money > 8500){
-                var minJackpotBet = (player.money * 0.03);
-              }else var minJackpotBet = 250;
-              if(timeoutInfo.remain){
-                logger.Info("Casino", "Slot", "Player: " + player.name + " Slot Winnings: " + slotInfo.winAmount + " original bet: " + bet + " Time since they could use this command again: " + timeoutInfo.remain);
-              }else {
-                logger.Info("Casino", "Slot", "Player: " + player.name + " Slot Winnings: " + slotInfo.winAmount + " original bet: " + bet);
-              }
-              player.money = parseFloat(player.money.toFixed(2));
-              minJackpotBet = parseFloat(minJackpotBet.toFixed(2));
-              player.stats.moneyWon = parseFloat(parseFloat(player.stats.moneyWon) + parseFloat(slotInfo.winAmount));
-              player.stats.moneyWon = player.stats.moneyWon.toFixed(2);
-              self.state.data.casinoObj.jackpotValue = parseFloat(self.state.data.casinoObj.jackpotValue.toFixed(2));
-              self.utils.handleRecentBetters(player);
-              self.utils.updateLastSeen(player);
-              self.utils.checkLV(player, command.msg.channel);
-              self.disnode.bot.SendEmbed(command.msg.channel, {
-                color: 1433628,
-                author: {},
-                fields: [ {
-                  name: ':slot_machine: ' + player.name + ' Slots Result :slot_machine:',
-                  inline: false,
-                  value: "| " + slotInfo.fake1 + slotInfo.fake2 + slotInfo.fake3 + " |\n**>**" + slotInfo.reel1 + slotInfo.reel2 + slotInfo.reel3 +"**<** Pay Line\n| " + slotInfo.fake4 + slotInfo.fake5 + slotInfo.fake6 + " |\n\n" + slotInfo.winText,
-                }, {
-                  name: 'Bet',
-                  inline: true,
-                  value: "$" + numeral(bet).format('0,0.00'),
-                }, {
-                  name: 'Winnings',
-                  inline: true,
-                  value: "$" + numeral(slotInfo.winAmount).format('0,0.00'),
-                }, {
-                  name: 'Net Gain',
-                  inline: true,
-                  value: "$" + numeral(slotInfo.winAmount - bet).format('0,0.00'),
-                }, {
-                  name: 'Balance',
-                  inline: true,
-                  value: "$" + numeral(player.money).format('0,0.00'),
-                }, {
-                  name: 'Keys',
-                  inline: true,
-                  value: player.keys
-                }, {
-                  name: 'XP',
-                  inline: true,
-                  value: player.xp,
-                }, {
-                  name: 'Minimum JACKPOT bet',
-                  inline: true,
-                  value: "$" + numeral(minJackpotBet).format('0,0.00'),
-                }, {
-                  name: 'JACKPOT Value',
-                  inline: true,
-                  value: "$" + numeral(self.state.data.casinoObj.jackpotValue).format('0,0.00'),
-                }],
-                  footer: {}
-                }
-              );
-              self.utils.updatePlayerLastMessage(player);
-              self.utils.DB.Update("players", {"id":player.id}, player);
-              self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
-            }else {
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a Number for bet or `!casino slot` for general help", 16772880)
-            }
+        if(self.utils.checkBan(player, command))return;
+        if(player.Admin || player.Mod){}else {
+          if(!self.utils.doChannelCheck(command)){
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
+            return;
           }
-      }
+        }
+        switch (command.params[0]) {
+          case "info":
+            if(player.money > 8500){
+              var minJackpotBet = (player.money * 0.03);
+            }else var minJackpotBet = 250;
+            self.disnode.bot.SendEmbed(command.msg.channel, {
+              color: 1433628,
+              author: {},
+              title: 'Casino Slots',
+              description: 'Info',
+              fields: [ {
+                name: 'Slot Items',
+                inline: false,
+                value: ":cherries: - Cherries (Most Common)\n\n:third_place:\n\n:second_place:\n\n:first_place:\n\n:100: - 100 (Most Rare)",
+              }, {
+                name: 'Slot Wins and Payouts',
+                inline: false,
+                value: "\n:cherries::cherries::cherries: - 2x bet 10XP\n"+
+                ":third_place::third_place::third_place: - 4x bet 20XP\n"+
+                ":second_place::second_place::second_place: - 8x bet 40XP\n"+
+                ":first_place::first_place::first_place: - 16x bet 80XP\n"+
+                ":100::100::100: - JACKPOT value - 1000XP\n" +
+                ":key::key::key: -  3 Keys (**Minimum Jackpot Bet Required**)\n" +
+                "At least one :key: - 1 Key (**Minimum Jackpot Bet Required**)\n" +
+                "At least one :cherries: - 1/2 your Original Bet",
+              },{
+                name: 'Minimum bet to Win Jackpot',
+                inline: false,
+                value: "Minimum bet: $**" + numeral(minJackpotBet).format('0,0.00') + "** (if money < 8,500 min bet = 250) else (min bet = money * 0.03 or 3%))"
+              },{
+                name: 'XP',
+                inline: false,
+                value: "The XP system has changed a bit, if your bet is lower than $250, you will not get any XP",
+              },{
+                name: 'Jackpot',
+                inline: false,
+                value: "Jackpot Value is increased every time someone plays slots, the value is increased by the players bet amount and has a default value of $100,000\n**Current Jackpot Value: **$" + numeral(casinoObj.jackpotValue).format('0,0.00'),
+              }, {
+                name: 'Jackpot History',
+                inline: true,
+                value: "**Last won by:** " + casinoObj.jackpotstat.lastWon,
+              }],
+                footer: {}
+              });
+            break;
+          case undefined:
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Slots", "Hi, and welcome to slots. If you need any info on the slots, run the command `!casino slot info`.\n\nIf you want to try the slots, then type `!casino slot [bet]. For example, `!casino slot 100` will run the slots with $100 as the bet.");
+            break;
+          default:
+            if(command.params[0]){
+              if(command.params[0].toLowerCase() == "allin"){
+                command.params[0] = player.money;
+              }
+              var bet = numeral(command.params[0]).value();
+              var timeoutInfo = self.utils.checkTimeout(player, 5);
+              if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
+              if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
+              if(!timeoutInfo.pass){
+                logger.Info("Casino", "Slot", "Player: " + player.name + " Tried the slots before their delay of: " + timeoutInfo.remain);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
+                return;
+              }
+              if(bet > 0.01){
+                if(bet > player.money | bet == NaN | bet == "NaN"){// Checks to see if player has enough money for their bet
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You dont have that much Money! You have $" + numeral(player.money).format('0,0.00'), 16772880);
+                  return;
+                }else{
+                  player.money -= parseFloat(bet);
+                  casinoObj.jackpotValue += parseFloat(bet);
+                  player.money = parseFloat(player.money.toFixed(2));
+                  casinoObj.jackpotValue = parseFloat(casinoObj.jackpotValue.toFixed(2));
+                }
+                var slotInfo = {
+                  bet: bet,
+                  player: player,
+                  casinoObj: casinoObj,
+                  winText: "",
+                  winAmount: 0,
+                  reel1: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                  reel2: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                  reel3: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                  fake1: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                  fake2: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                  fake3: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                  fake4: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                  fake5: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item,
+                  fake6: self.slotItems[self.utils.getRandomIntInclusive(0,(self.slotItems.length - 1))].item
+                }
+                self.utils.didWin(slotInfo);
+                if(player.money > 8500){
+                  var minJackpotBet = (player.money * 0.03);
+                }else var minJackpotBet = 250;
+                if(timeoutInfo.remain){
+                  logger.Info("Casino", "Slot", "Player: " + player.name + " Slot Winnings: " + slotInfo.winAmount + " original bet: " + bet + " Time since they could use this command again: " + timeoutInfo.remain);
+                }else {
+                  logger.Info("Casino", "Slot", "Player: " + player.name + " Slot Winnings: " + slotInfo.winAmount + " original bet: " + bet);
+                }
+                player.money = parseFloat(player.money.toFixed(2));
+                minJackpotBet = parseFloat(minJackpotBet.toFixed(2));
+                player.stats.moneyWon = parseFloat(parseFloat(player.stats.moneyWon) + parseFloat(slotInfo.winAmount));
+                player.stats.moneyWon = player.stats.moneyWon.toFixed(2);
+                casinoObj.jackpotValue = parseFloat(casinoObj.jackpotValue.toFixed(2));
+                self.utils.handleRecentBetters(player);
+                self.utils.updateLastSeen(player);
+                self.utils.checkLV(player, command.msg.channel);
+                self.disnode.bot.SendEmbed(command.msg.channel, {
+                  color: 1433628,
+                  author: {},
+                  fields: [ {
+                    name: ':slot_machine: ' + player.name + ' Slots Result :slot_machine:',
+                    inline: false,
+                    value: "| " + slotInfo.fake1 + slotInfo.fake2 + slotInfo.fake3 + " |\n**>**" + slotInfo.reel1 + slotInfo.reel2 + slotInfo.reel3 +"**<** Pay Line\n| " + slotInfo.fake4 + slotInfo.fake5 + slotInfo.fake6 + " |\n\n" + slotInfo.winText,
+                  }, {
+                    name: 'Bet',
+                    inline: true,
+                    value: "$" + numeral(bet).format('0,0.00'),
+                  }, {
+                    name: 'Winnings',
+                    inline: true,
+                    value: "$" + numeral(slotInfo.winAmount).format('0,0.00'),
+                  }, {
+                    name: 'Net Gain',
+                    inline: true,
+                    value: "$" + numeral(slotInfo.winAmount - bet).format('0,0.00'),
+                  }, {
+                    name: 'Balance',
+                    inline: true,
+                    value: "$" + numeral(player.money).format('0,0.00'),
+                  }, {
+                    name: 'Keys',
+                    inline: true,
+                    value: player.keys
+                  }, {
+                    name: 'XP',
+                    inline: true,
+                    value: player.xp,
+                  }, {
+                    name: 'Minimum JACKPOT bet',
+                    inline: true,
+                    value: "$" + numeral(minJackpotBet).format('0,0.00'),
+                  }, {
+                    name: 'JACKPOT Value',
+                    inline: true,
+                    value: "$" + numeral(casinoObj.jackpotValue).format('0,0.00'),
+                  }],
+                    footer: {}
+                  }
+                );
+                self.utils.updatePlayerLastMessage(player);
+                self.utils.DB.Update("players", {"id":player.id}, player);
+                self.utils.updateCasinoObj(casinoObj);
+              }else {
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please use a Number for bet or `!casino slot` for general help", 16772880)
+              }
+            }
+        }
+      });
     });
     return;
   }
@@ -704,7 +730,7 @@ class CasinoPlugin {
             self.utils.checkLV(player, command.msg.channel);
           }
           self.utils.DB.Update("players", {"id":player.id}, player);
-          self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
+          
         }else {
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a bet! Example `!casino flip tails 100`", 16772880);
         }
@@ -868,7 +894,7 @@ class CasinoPlugin {
           self.utils.updateLastSeen(player);
           self.utils.checkLV(player, command.msg.channel);
           self.utils.DB.Update("players", {"id":player.id}, player);
-          self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
+          
           break;
         case "info":
           self.disnode.bot.SendEmbed(command.msg.channel, {
@@ -945,7 +971,7 @@ class CasinoPlugin {
           }
           if(command.params[1]){
             var dicenum = numeral(command.params[1]).value();
-            if(dicenum >= 5){
+            if(dicenum >= 5 && dicenum <= 10000){
               if(command.params[2]){
                 var pick = numeral(command.params[2]).value();
                 if(pick >= 1 && pick <= dicenum){
@@ -1001,7 +1027,7 @@ class CasinoPlugin {
                       self.utils.updateLastSeen(player);
                       self.utils.checkLV(player, command.msg.channel);
                       self.utils.DB.Update("players", {"id":player.id}, player);
-                      self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
+                      
                     }else{
                       self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must enter a bet that is greater than 0, Or you cant afford the bet that you want to place.", 16772880);
                     }
@@ -1015,7 +1041,7 @@ class CasinoPlugin {
                 self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must pick a number on the dice to roll! like `!casino dice roll 7 3 100`", 16772880);
               }
             }else{
-              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: the amount of sides to the dice must be 5 or greater like `!casino dice roll 7 3 100`", 16772880);
+              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: the amount of sides to the dice must be between 5 and 10,000  `!casino dice roll 7 3 100`", 16772880);
             }
           }else{
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter the amount of sides to the dice (5 and up) like `!casino dice roll 7 3 100`", 16772880);
@@ -1288,7 +1314,7 @@ class CasinoPlugin {
                 self.utils.updateLastSeen(player);
                 self.utils.checkLV(player, command.msg.channel);
                 self.utils.DB.Update("players", {"id":player.id}, player);
-                self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
+                
               }else {
                 self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough Keys!\nNEED: " + Crate.cost + "\nHAVE: " + player.keys, 16772880);
               }
@@ -1548,7 +1574,7 @@ class CasinoPlugin {
             }
             break;
           case "save":
-            self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
+            
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", ":white_check_mark: Database Saved!", 3447003);
             break;
           case "player":
@@ -1899,7 +1925,7 @@ class CasinoPlugin {
             );
             self.utils.updateLastSeen(player);
             self.utils.DB.Update("players", {"id":player.id}, player);
-            self.utils.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
+            
           }
           break;
         default:

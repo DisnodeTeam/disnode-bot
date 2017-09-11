@@ -1,6 +1,7 @@
 const numeral = require('numeral');
 const logger = require('disnode-logger');
 const Countdown = require('countdownjs');
+const axios = require("axios");
 
 class CasinoUtils {
   constructor(disnode, state, plugin) {
@@ -9,6 +10,11 @@ class CasinoUtils {
     this.state = state;
     this.plugin = plugin;
     this.recentBetters = [];
+    this.csAPI = axios.create({
+      baseURL: 'https://casino-api.disnodeteam.com/casino/',
+      timeout: 1000,
+      headers: {'auth': self.disnode.botConfig.apikey}
+    });
     self.DB;
   }
   init(){
@@ -16,12 +22,7 @@ class CasinoUtils {
     return new Promise(function(resolve, reject) {
       self.disnode.db.InitPromise({}).then(function(dbo) {
         self.DB = dbo;
-        self.DB.Find("casinoObj", {}).then(function(res) {
-          if(self.plugin.stateAuth)self.state.data.casinoObj = res[0];
-          self.updateCoroutine();
-          console.log(self.state.data);
-          resolve();
-        });
+        resolve();
       });
     });
   }
@@ -37,11 +38,11 @@ class CasinoUtils {
         slot.winAmount = parseFloat((slot.bet * 60).toFixed(2));
         slot.winText = "YOU GOT A JACKPOT! however you didnt meet the minimum bet requirement ($" + minJackpotBet + ") to get the JACKPOT value so here is 60x your bet";
       }else {
-        slot.winAmount = parseFloat(self.state.data.casinoObj.jackpotValue);
-        self.state.data.casinoObj.jackpotValue = 100000;
+        slot.winAmount = parseFloat(slot.casinoObj.jackpotValue);
+        slot.casinoObj.jackpotValue = 100000;
         slot.winText = "JACKPOT JACKPOT JACKPOT!!!!!";
-        self.state.data.casinoObj.jackpotstat.lastWon = slot.player.name;
-        self.state.data.casinoObj.jackpotstat.LatestWin = slot.winAmount;
+        slot.casinoObj.jackpotstat.lastWon = slot.player.name;
+        slot.casinoObj.jackpotstat.LatestWin = slot.winAmount;
       }
       slot.player.stats.slotJackpots++;
       slot.player.stats.slotWins++;
@@ -699,50 +700,25 @@ class CasinoUtils {
       }
     });
   }
-  updateCoroutine(){
+  getCasinoObj(){
     var self = this;
-    if(self.plugin.config.testing)return;
-    if(!self.plugin.stateAuth){
-      console.log("Im not auth!");
-      return;
-    }
-    console.log("\n\n\nUPDATE\n\n\n");
-    self.DB.Find("players", {}).then(function(players) {
-      for (var i = 0; i < players.length; i++) {
-        if(players[i].lastSeen == undefined){
-          self.updateLastSeen(players[i]);
-        }
-        if(players[i].rules == undefined){
-          players[i].rules = false;
-        }
-        if(self.canGetIncome(players[i])){
-          players[i].money += players[i].income;
-        }
-        players[i].lastMessage = null;
-        self.DB.Update("players", {"id":players[i].id}, players[i]);
-      }
+    return new Promise(function(resolve, reject) {
+      self.csAPI.get("/cobj").then(function(resp){
+        resolve(resp.data);
+      });
     });
-    self.DB.Update("casinoObj", {"id":self.state.data.casinoObj.id}, self.state.data.casinoObj);
-    if(self.timer)self.timer.stop();
-    self.updateUltraUsers();
-    self.timer = new Countdown(1800000,function(){
-      if(self.AutoStatus()) {
-        var n = self.getRandomIntInclusive(0,4);
-        if(n == 0){
-          self.disnode.bot.SetStatus("!casino slot");
-        }else if (n == 1) {
-          self.disnode.bot.SetStatus("!casino wheel");
-        }else if (n == 2) {
-          self.disnode.bot.SetStatus("!casino flip");
-        }else if (n == 3) {
-          self.disnode.bot.SetStatus("!casino 21");
-        }else {
-          self.disnode.bot.SetStatus("!casino");
+  }
+  updateCasinoObj(cobj){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.csAPI.post("/cobj", cobj).then(function(resp){
+        if(resp.status == 200){
+          resolve();
+        }else{
+          reject(resp.data.error);
         }
-      }
-      self.updateCoroutine();
+      });
     });
-    self.timer.start();
   }
 }
 module.exports = CasinoUtils;

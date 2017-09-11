@@ -39,7 +39,17 @@ class DisnodePlugin {
              name: 'Command Managers',
              inline: true,
              value: self.disnode.stats.commandManagers,
-         }, {
+         },
+         {
+            name: 'ShardID',
+            inline: true,
+            value: self.disnode.shardID + 1,
+        },
+        {
+           name: 'Total Shards',
+           inline: true,
+           value: self.disnode.totalShards,
+       }, {
             name: 'Uptime',
             inline: true,
             value: self.disnode.stats.getUptime(),

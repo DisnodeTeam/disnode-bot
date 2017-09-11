@@ -46,6 +46,11 @@
       "run": "commandBal"
     },
     {
+      "cmd": "time",
+      "desc": "*Check how long until the next Income!*",
+      "run": "commandTime"
+    },
+    {
       "cmd": "top",
       "desc": "*check who's on top, and compete with your friends!*",
       "run": "commandTop"

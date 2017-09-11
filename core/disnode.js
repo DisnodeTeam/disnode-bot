@@ -15,9 +15,11 @@ const DBManager = require('./dbmanager')
 
  */
 class Disnode {
-    constructor(config) {
+    constructor(config, shardID=0,totalShards=1) {
         this.botConfigPath = config;
         this.ready = false;
+        this.shardID = shardID;
+        this.totalShards = totalShards;
     }
     /**
     * Starts the Bot

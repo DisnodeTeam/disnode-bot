@@ -20,7 +20,10 @@ class DB {
 		var self = this;
 		return new Promise(function (resolve, reject) {
 			var url = "mongodb://";
-
+			if(self.int != null){
+				clearInterval(self.int);
+				self.int = null;
+			}
 			if(self.settings.auth){
 				var user = encodeURIComponent(self.settings.user);
 				var pwd =  encodeURIComponent(self.settings.pass);
@@ -55,7 +58,7 @@ class DB {
 	}
 
 	AttemptReconnect(){
-		setInterval(function () {
+		this.int = setInterval(function () {
 			this.Connect();
 		}, 5000);
 	}
@@ -77,7 +80,6 @@ class DB {
 
 	Update(collection, identifier, newData) {
 		var self = this;
-
     return new Promise(function (resolve, reject) {
       var _collection = self.DB.collection(collection);
 			_collection.updateOne(identifier, {$set : newData}, {upsert: true}, function (err, result) {
@@ -106,7 +108,6 @@ class DB {
   }
 	Find(collection, search) {
 		var self = this;
-
 		return new Promise(function (resolve, reject) {
       var _collection = self.DB.collection(collection);
 			_collection.find(search, function (err, docs) {

@@ -23,7 +23,6 @@ class Platform {
     }
     GetUltraUsers(){
       var self = this;
-
       return new Promise(function (resolve, reject) {
           Axios.get("https://api.disnodeteam.com/user/ultra")
           .then(function (res) {
