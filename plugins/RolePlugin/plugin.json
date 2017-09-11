@@ -1,0 +1,9 @@
+{
+  "name":"Role Plugin",
+  "id": "role-plugin",
+  "desc":"Allow users to give themselves their own roles!",
+  "script": "Plugin.js",
+  "load": true,
+  "commandsFile": "Commands.json",
+  "configFile" : "Config.json"
+}

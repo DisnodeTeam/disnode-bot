@@ -50,9 +50,9 @@ class Stats {
   }
   updateServerMemberCount(){
     var self = this;
-    self.serverCount = Object.keys(self.disnode.bot.guilds).length;
-    self.memberCount = Object.keys(self.disnode.bot.users).length;
-    self.channelCount = Object.keys(self.disnode.bot.channels).length;/*
+    self.serverCount = self.disnode.bot.guilds.GetArray().length;
+    self.memberCount =  self.disnode.bot.members.GetArray().length;
+    self.channelCount =  self.disnode.bot.channels.GetArray().length;/*
     self.directMessageCount = Object.keys(self.disnode.bot.client.directMessages).length;*/
   }
 }

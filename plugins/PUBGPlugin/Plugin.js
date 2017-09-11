@@ -12,7 +12,7 @@ class Template {
     var _username = command.params[0];
 
     if (!_username) {
-      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "PUBG Bot Error", ":warning: Please enter a username!");
+      self.disnode.bot.SendCompactEmbed(command.msg.channelID, "PUBG Bot Error", ":warning: Please enter a username!");
       return;
     }
    
@@ -32,7 +32,7 @@ class Template {
         _type = MATCH.DEFAULT;
         break;
     }
-    self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "PUBG Loading", "Getting stats for player: **" + _username + "**").then((msg)=>{
+    self.disnode.bot.SendCompactEmbed(command.msg.channelID, "PUBG Loading", "Getting stats for player: **" + _username + "**").then((msg)=>{
       var lastid = msg.id;
 
       self.api.getProfileByNickname(_username)
@@ -126,9 +126,9 @@ class Template {
           ],
         }
 
-        self.disnode.bot.EditEmbed(command.msg.channel_id, lastid, embed, 16750080).catch((err) => { console.log(err) });
+        self.disnode.bot.EditEmbed(command.msg.channelID, lastid, embed, 16750080).catch((err) => { console.log(err) });
 
-      }).catch((err) => { self.disnode.bot.EditCompactEmbed(command.msg.channel_id,lastid, "PUBG Stats Error :x:", "Error: " + err.toString(), 16711680) });
+      }).catch((err) => { self.disnode.bot.EditCompactEmbed(command.msg.channelID,lastid, "PUBG Stats Error :x:", "Error: " + err.toString(), 16711680) });
     });
    
   }

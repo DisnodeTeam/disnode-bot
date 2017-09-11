@@ -13,7 +13,7 @@ class Sysinfo {
       "[Free: " + parseInt((os.freemem() / 1024) / 1024) + " MB]\n" +
       "[Used: " + parseInt(((os.totalmem() - os.freemem()) / 1024) / 1024) + " MB]\n" +
       "[Total: " + parseInt((os.totalmem() / 1024) / 1024) + " MB]\n```"
-      self.disnode.bot.SendEmbed(command.msg.channel_id, {
+      self.disnode.bot.SendEmbed(command.msg.channelID, {
         color: 3447003,
         author: {},
         fields: [{

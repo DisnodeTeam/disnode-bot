@@ -5,14 +5,14 @@ class WeatherPlugin {
   default (command) {
     var self = this;
     var prefix = self.disnode.botConfig.prefix;
-    self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Weather Commands", "**" + prefix + "weather forecast** - Gets the forecast of a place.\n**" + prefix + "weather info** - Gets the current weather info of a place");
+    self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Weather Commands", "**" + prefix + "weather forecast** - Gets the forecast of a place.\n**" + prefix + "weather info** - Gets the current weather info of a place");
 
   }
   info(command) {
     var self = this;
     var prefix = self.disnode.botConfig.prefix;
     if (command.params[0] == undefined) {
-      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Current Weather Commands", "**" + prefix + "weather info [Name of place]** - Gets the current weather info of a place.");
+      self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Current Weather Commands", "**" + prefix + "weather info [Name of place]** - Gets the current weather info of a place.");
       return;
     }
     weather.find({
@@ -21,7 +21,7 @@ class WeatherPlugin {
     }, function(err, result) {
       if (typeof result !== 'undefined' && result.length > 0) {
         var out = result[0];
-        self.disnode.bot.SendEmbed(command.msg.channel_id, {
+        self.disnode.bot.SendEmbed(command.msg.channelID, {
           color: 1752220,
           author: {},
           thumbnail: {
@@ -54,14 +54,14 @@ class WeatherPlugin {
           },
           timestamp: new Date(),
         });
-      } else self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Could not find a place called ``" + command.params.join(" ") + '``');
+      } else self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error", "Could not find a place called ``" + command.params.join(" ") + '``');
     });
   }
   forecast(command) {
     var self = this;
     var prefix = self.disnode.botConfig.prefix;
     if (command.params[0] == undefined) {
-      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Forecast Commands", "**" + prefix + "weather forecast [Day/5day] [Name of place]** - Gets the forecast of a place.");
+      self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Forecast Commands", "**" + prefix + "weather forecast [Day/5day] [Name of place]** - Gets the forecast of a place.");
       return;
     }
     weather.find({
@@ -89,7 +89,7 @@ class WeatherPlugin {
               var high = '``' + out.forecast[pos].high + '`` °F | ``' + parseInt((out.forecast[pos].high - 32) * 5 / 9) + '`` °C';
               var sky = out.forecast[pos].skytextday;
               var precip = out.forecast[pos].precip;
-              self.disnode.bot.SendEmbed(command.msg.channel_id, {
+              self.disnode.bot.SendEmbed(command.msg.channelID, {
                 color: 1752220,
                 author: {},
                 fields: [{
@@ -103,7 +103,7 @@ class WeatherPlugin {
                 },
                 timestamp: new Date(),
               });
-            } else self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Forcast", 'No data for Monday\'s forcast yet');
+            } else self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Forcast", 'No data for Monday\'s forcast yet');
             break;
           case "Tuesday":
             var found = false;
@@ -120,7 +120,7 @@ class WeatherPlugin {
               var high = '``' + out.forecast[pos].high + '`` °F | ``' + parseInt((out.forecast[pos].high - 32) * 5 / 9) + '`` °C';
               var sky = out.forecast[pos].skytextday;
               var precip = out.forecast[pos].precip;
-              self.disnode.bot.SendEmbed(command.msg.channel_id, {
+              self.disnode.bot.SendEmbed(command.msg.channelID, {
                 color: 1752220,
                 author: {},
                 fields: [{
@@ -134,7 +134,7 @@ class WeatherPlugin {
                 },
                 timestamp: new Date(),
               });
-            } else self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Forcast", 'No data for Tuesday\'s forcast yet');
+            } else self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Forcast", 'No data for Tuesday\'s forcast yet');
             break;
           case "Wednesday":
             var found = false;
@@ -151,7 +151,7 @@ class WeatherPlugin {
               var high = '``' + out.forecast[pos].high + '`` °F | ``' + parseInt((out.forecast[pos].high - 32) * 5 / 9) + '`` °C';
               var sky = out.forecast[pos].skytextday;
               var precip = out.forecast[pos].precip;
-              self.disnode.bot.SendEmbed(command.msg.channel_id, {
+              self.disnode.bot.SendEmbed(command.msg.channelID, {
                 color: 1752220,
                 author: {},
                 fields: [{
@@ -165,7 +165,7 @@ class WeatherPlugin {
                 },
                 timestamp: new Date(),
               });
-            } else self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Forcast", 'No data for Wednesday\'s forcast yet');
+            } else self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Forcast", 'No data for Wednesday\'s forcast yet');
             break;
           case "Thursday":
             var found = false;
@@ -182,7 +182,7 @@ class WeatherPlugin {
               var high = '``' + out.forecast[pos].high + '`` °F | ``' + parseInt((out.forecast[pos].high - 32) * 5 / 9) + '`` °C';
               var sky = out.forecast[pos].skytextday;
               var precip = out.forecast[pos].precip;
-              self.disnode.bot.SendEmbed(command.msg.channel_id, {
+              self.disnode.bot.SendEmbed(command.msg.channelID, {
                 color: 1752220,
                 author: {},
                 fields: [{
@@ -196,7 +196,7 @@ class WeatherPlugin {
                 },
                 timestamp: new Date(),
               });
-            } else self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Forcast", 'No data for Thursday\'s forcast yet');
+            } else self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Forcast", 'No data for Thursday\'s forcast yet');
             break;
           case "Friday":
             var found = false;
@@ -213,7 +213,7 @@ class WeatherPlugin {
               var high = '``' + out.forecast[pos].high + '`` °F | ``' + parseInt((out.forecast[pos].high - 32) * 5 / 9) + '`` °C';
               var sky = out.forecast[pos].skytextday;
               var precip = out.forecast[pos].precip;
-              self.disnode.bot.SendEmbed(command.msg.channel_id, {
+              self.disnode.bot.SendEmbed(command.msg.channelID, {
                 color: 1752220,
                 author: {},
                 fields: [{
@@ -227,7 +227,7 @@ class WeatherPlugin {
                 },
                 timestamp: new Date(),
               });
-            } else self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Forcast", 'No data for Friday\'s forcast yet');
+            } else self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Forcast", 'No data for Friday\'s forcast yet');
             break;
           case "Saturday":
             var found = false;
@@ -244,7 +244,7 @@ class WeatherPlugin {
               var high = '``' + out.forecast[pos].high + '`` °F | ``' + parseInt((out.forecast[pos].high - 32) * 5 / 9) + '`` °C';
               var sky = out.forecast[pos].skytextday;
               var precip = out.forecast[pos].precip;
-              self.disnode.bot.SendEmbed(command.msg.channel_id, {
+              self.disnode.bot.SendEmbed(command.msg.channelID, {
                 color: 1752220,
                 author: {},
                 fields: [{
@@ -258,7 +258,7 @@ class WeatherPlugin {
                 },
                 timestamp: new Date(),
               });
-            } else self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Forcast", 'No data for Saturday\'s forcast yet');
+            } else self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Forcast", 'No data for Saturday\'s forcast yet');
             break;
           case "Sunday":
             var found = false;
@@ -275,7 +275,7 @@ class WeatherPlugin {
               var high = '``' + out.forecast[pos].high + '`` °F | ``' + parseInt((out.forecast[pos].high - 32) * 5 / 9) + '`` °C';
               var sky = out.forecast[pos].skytextday;
               var precip = out.forecast[pos].precip;
-              self.disnode.bot.SendEmbed(command.msg.channel_id, {
+              self.disnode.bot.SendEmbed(command.msg.channelID, {
                 color: 1752220,
                 author: {},
                 fields: [{
@@ -289,7 +289,7 @@ class WeatherPlugin {
                 },
                 timestamp: new Date(),
               });
-            } else self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Forcast", 'No data for Sunday\'s forcast yet');
+            } else self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Forcast", 'No data for Sunday\'s forcast yet');
             break;
           case "5day":
             if (out.forecast.length >= 5) {
@@ -304,7 +304,7 @@ class WeatherPlugin {
                   info += (out.forecast[i].precip != '') ? day + '\n' + low + '\n' + high + '\nSky ``' + sky + '``\nPrecip ``' + precip + '``%\n\n' : day + '\n' + low + '\n' + high + '\nSky ``' + sky + '``\nPrecip ``0``%\n\n';
                 }
               }
-              self.disnode.bot.SendEmbed(command.msg.channel_id, {
+              self.disnode.bot.SendEmbed(command.msg.channelID, {
                 color: 1752220,
                 author: {},
                 fields: [{
@@ -318,10 +318,10 @@ class WeatherPlugin {
                 },
                 timestamp: new Date(),
               });
-            } else self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Forcast", 'No data for a 5 day forcast yet');
+            } else self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Forcast", 'No data for a 5 day forcast yet');
             break;
         }
-      } else self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error", "Could not find a place called ``" + command.params.join(" ") + '``');
+      } else self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error", "Could not find a place called ``" + command.params.join(" ") + '``');
     });
   }
   avatarCommandUser(command) {

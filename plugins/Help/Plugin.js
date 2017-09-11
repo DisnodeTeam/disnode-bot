@@ -17,7 +17,7 @@ class Help {
 
     }, function () {
       var bStuff = self.disnode.bot.botInfo;
-      self.disnode.bot.SendEmbed(command.msg.channel_id, {
+      self.disnode.bot.SendEmbed(command.msg.channelID, {
         color: 3447003,
         author: {
           name: bStuff.username + '\'s Help',
@@ -43,7 +43,7 @@ class Help {
           value: "[Bot Invite](https://discordapp.com/oauth2/authorize?client_id=" + bStuff.id + "&scope=bot&permissions=410019886)\n[Support Server](https://discord.gg/AbZhCen)",
         }],
         footer: {}
-      });
+      }).catch((err)=>{console.log(err)}).then(()=>{self.Destory()});
 
     });
 

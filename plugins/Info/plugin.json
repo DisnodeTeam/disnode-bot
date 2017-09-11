@@ -2,7 +2,7 @@
   "name":"Info Plugin",
   "id": "info-plugin",
   "script": "Info.js",
-  "load" : false,
+  "load" : true,
   "commandsFile": "Info-Commands.json",
   "configFile" : "Info-Config.json"
 }

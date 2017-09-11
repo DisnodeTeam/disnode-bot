@@ -1,4 +1,4 @@
-const DiscordBot = require('./bot');
+
 const ServerManager = require ('./servermanager');
 const Communication = require('./communication')
 const StateManager  = require ('./statemanager');
@@ -10,6 +10,8 @@ const async = require('async');
 const DBManager = require('./dbmanager')
 const Util = require('./util')
 
+const DLite = require("disnode-lite")
+
 /** Main Disnode Class. Holds all features and interaction with Disnode
 @constructor
 * @param {string} configPath - Path to Bot Config.
@@ -17,6 +19,8 @@ const Util = require('./util')
  */
 class Disnode {
     constructor(config) {
+
+        
         this.botConfigPath = config;
         this.ready = false;
     }
@@ -31,7 +35,7 @@ class Disnode {
 
           Logging.Info("Disnode", "Start", "Loading Config");
           self.LoadBotConfig().then(function(){
-            self.bot = new DiscordBot(self.botConfig.key, self);
+            self.bot = new DLite(self.botConfig);
             self.stats = new Stats(self);
             self.platform = new Platform(self);
              self.util = new Util(self);
@@ -60,7 +64,7 @@ class Disnode {
         },
         function(callback) {
           Logging.Info("Disnode", "Start", "Binding Events");
-          self.bot.SetUpLocalBinds();
+          self.SetUpLocalBinds();
           Logging.Success("Disnode", "Start", "Binded Events");
           callback();
         },
@@ -178,21 +182,22 @@ class Disnode {
         });
       });
     }
-    /**
-    * Event called when messages are recieved
-    * @param {MessageObject} msg - Recieved Message
-    */
-    OnMessage (msg){
-      this.server.GetCommandInstancePromise(msg.guildID).then(function(inst){
 
-        if(inst){
-          inst.RunMessage(msg);
-        }else{
-          Logging.Warning("Disnode", "Message", "No Command Handler!");
+    SetUpLocalBinds(){
+      var self = this;
+      self.bot.on('message', function(data) {
+        var firstLetter = data.message.substring(0, self.botConfig.prefix.length);
+        if (self.ready && firstLetter == self.botConfig.prefix) {
+          self.server.GetCommandInstancePromise(data.guildID).then(function(inst) {
+            if (inst) {
+              inst.RunMessage(data);
+            } else {
+              Logging.Warning("Bot", "Message", "No Command Handler!");
+            }
+          });
         }
       });
-
-
+      
     }
 
 

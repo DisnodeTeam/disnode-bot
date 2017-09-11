@@ -6,9 +6,21 @@ class CoinFlip {
     var self = this;
     var answer = Math.floor(Math.random()*2);
     if(answer == 1){
-      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Coin Flip", "Landed on... **HEADS**")
+      self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Coin Flip", "Landed on... **HEADS**")
+      .catch(function(err) {
+        console.log(err);
+        self.Destory();
+      }).then(()=>{
+        self.Destory();
+      });
     }else{
-      self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Coin Flip", "Landed on... **TAILS**")
+      self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Coin Flip", "Landed on... **TAILS**")
+      .catch(function(err) {
+        console.log(err);
+        self.Destory();
+      }).then(()=>{
+        self.Destory();
+      });
     }
   }
 

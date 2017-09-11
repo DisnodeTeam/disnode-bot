@@ -6,7 +6,7 @@ class InfoPlugin {
   }
   default (command) {
     var self = this;
-    self.disnode.bot.SendEmbed(command.msg.channel, {
+    self.disnode.bot.SendEmbed(command.msg.channelID, {
       color: 1752220,
       thumbnail: {},
       author: {},
@@ -16,7 +16,7 @@ class InfoPlugin {
         value: "**" + self.disnode.botConfig.prefix + "info user** - Gets the info of a user.\n**" + self.disnode.botConfig.prefix + "info server** - Gets the info of the server.",
       }],
       footer: {
-        text: command.msg.user,
+        text: command.msg.user.username,
         icon_url: self.avatarCommandUser(command),
       },
       timestamp: new Date(),
@@ -24,10 +24,10 @@ class InfoPlugin {
   }
   commandServer(command) {
     var self = this;
-    var bot = this.disnode.bot.GetBotInfo();
-    var serv = self.disnode.bot.servers[command.msg.server];
-    var own = this.disnode.bot.GetUserInfo(serv.owner_id);
-    var now = self.disnode.bot.GetSnowflakeDate(command.msg.server);
+    var bot = this.disnode.bot.botInfo;
+    var serv = self.disnode.bot.guilds.Get(command.msg.guildID);
+    var own = this.disnode.bot.members.Get(serv.owner_id);
+    var now = self.disnode.bot.GetSnowflakeDate(command.msg.guildID);
     var roles = "";
     for (var ids in serv.roles) {
       if (serv.roles.hasOwnProperty(ids)) {
@@ -41,7 +41,7 @@ class InfoPlugin {
         emotes += "<:" + serv.emojis[ids].name + ':' + serv.emojis[ids].id + '> ';
       }
     }
-    self.disnode.bot.SendEmbed(command.msg.channel, {
+    self.disnode.bot.SendEmbed(command.msg.channelID, {
       color: 1752220,
       thumbnail: {
         url: self.iconServer(command),
@@ -212,7 +212,7 @@ class InfoPlugin {
   }
   avatarBot(command) {
     var self = this;
-    return "https:\/\/cdn.discordapp.com\/avatars\/" + self.disnode.bot.GetBotInfo().id + "\/" + self.disnode.bot.GetBotInfo().avatar + ".jpg?size=1024";
+    return "https://cdn.discordapp.com/avatars/" + self.disnode.bot.GetBotInfo().id + "/" + self.disnode.bot.GetBotInfo().avatar + ".jpg?size=1024";
   }
   avatarUser(command) {
     var self = this;
@@ -220,22 +220,14 @@ class InfoPlugin {
     uid = uid.replace(/\D/g, '');
     var own = this.disnode.bot.GetUserInfo(uid);
     if (own.avatar != null) {
-      if (own.avatar.indexOf('_') > -1) {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + uid + "\/" + own.avatar + ".gif";
-      } else {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + uid + "\/" + own.avatar + ".png";
-      }
+      return "https://cdn.discordapp.com/avatars/" + uid + "/" + own.avatar + ".png";
     }
   }
   avatarCommandUser(command) {
     var self = this;
-
-    if (command.msg.raw.author.avatar != null) {
-      if (command.msg.raw.author.avatar.indexOf('_') > -1) {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".gif";
-      } else {
-        return "https:\/\/cdn.discordapp.com\/avatars\/" + command.msg.userID + "\/" + command.msg.raw.author.avatar + ".png";
-      }
+    
+    if (command.msg.user.avatar != null) {
+      return "https://cdn.discordapp.com/avatars/" + command.msg.user.id + "/" + command.msg.user.avatar + ".png";
     }
   }
   iconServer(command) {

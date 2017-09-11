@@ -14,7 +14,7 @@ class PluginManager {
     commandHelp += self.disnode.util.CommandHelpBuilder("config set <plugin-id> <key> <value>", "Set the config value of a plugin\n");
     commandHelp += self.disnode.util.CommandHelpBuilder("config add <plugin-id> <key> <value>", "Add an element to a config array\n");
     commandHelp += self.disnode.util.CommandHelpBuilder("config remove <plugin-id> <key> <value>", "Remove an element from a config array\n");
-    self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Plugin Manager Commands", commandHelp)
+    self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Plugin Manager Commands", commandHelp)
   }
 
   commandAdd(command) {
@@ -22,26 +22,26 @@ class PluginManager {
 
 
     if (!command.params[0]) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
+      this.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
       return;
     }
-    self.disnode.bot.SendMessage(command.msg.channel_id, "**Downloading Plugin:** `" + command.params[0] + "`")
+    self.disnode.bot.SendMessage(command.msg.channelID, "**Downloading Plugin:** `" + command.params[0] + "`")
     self.pluginManager.AddServerPluginRemote(command.params[0]).then(function () {
-      self.disnode.bot.SendCompactEmbed(command.msg.channel_id,
+      self.disnode.bot.SendCompactEmbed(command.msg.channelID,
         "Success :white_check_mark: ", "**Added Plugin! This plugin can now be used and configured for this server!:** `" + command.params[0] + "`");
     }).catch(function(err){
-        self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", err);
+        self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error :warning: ", err);
     });
   }
 
   commandRemove(command) {
     if(command.flags.permissionDenied){
-        this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "You do not have permission to run this command!");
+        this.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error :warning: ", "You do not have permission to run this command!");
         return;
     }
     var self = this;
     if (!command.params[0]) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
+      this.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
       return;
     }
 
@@ -64,7 +64,7 @@ class PluginManager {
       LaucnhedText += " - **" + _plugin.name + "** - *" + _plugin.id + "* \n";
     }
 
-    self.disnode.bot.SendEmbed(command.msg.channel_id, {
+    self.disnode.bot.SendEmbed(command.msg.channelID, {
       color: 3447003,
       author: {},
       fields: [{
@@ -96,16 +96,16 @@ class PluginManager {
 
     var self = this;
     if (!command.params[0]) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
+      this.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error :warning: ", "Please Enter a Plugin ID! (Can be found at http://disnodeteam.com/#/plugins)");
       return;
     }
-    self.disnode.bot.SendMessage(command.msg.channel_id, "**Getting Plugin:** `" + command.params[0] + "`")
+    self.disnode.bot.SendMessage(command.msg.channelID, "**Getting Plugin:** `" + command.params[0] + "`")
 
     axios.get("https://api.disnodeteam.com/plugins/" + command.params[0]).then(function (res) {
       var suc = res.data.type;
       switch (suc) {
         case "SUC":
-          self.disnode.bot.SendEmbed(command.msg.channel_id, {
+          self.disnode.bot.SendEmbed(command.msg.channelID, {
             color: 3447003,
             author: {},
             fields: [{
@@ -136,7 +136,7 @@ class PluginManager {
 
           break;
         case "ERR":
-          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", res.data.data);
+          self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error :warning: ", res.data.data);
           break;
       }
     });
@@ -173,12 +173,12 @@ class PluginManager {
 
 
           }
-          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Plugins (Only Verified Plugins, see http://disnodeteam.com/#/plugins for all)", msg);
+          self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Plugins (Only Verified Plugins, see http://disnodeteam.com/#/plugins for all)", msg);
 
 
           break;
         case "ERR":
-          self.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", res.data.data);
+          self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error :warning: ", res.data.data);
           break;
       }
     });
@@ -191,23 +191,23 @@ class PluginManager {
     var value = command.params[2];
 
     if (!plugin) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a Plugin ID!");
+      this.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error :warning: ", "Please Enter a Plugin ID!");
       return;
     }
 
     if (!key) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a key!");
+      this.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error :warning: ", "Please Enter a key!");
       return;
     }
     if (!value) {
-      this.disnode.bot.SendCompactEmbed(command.msg.channel_id, "Error :warning: ", "Please Enter a value!");
+      this.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error :warning: ", "Please Enter a value!");
       return;
     }
 
     var pluginManager = self.disnode.server.GetPluginInstance(self.server);
     
     pluginManager.ChangePluginConfig(plugin, key, value).then(function(){
-      self.disnode.bot.SendMessage(command.msg.channel_id, "Reloaded!")
+      self.disnode.bot.SendMessage(command.msg.channelID, "Reloaded!")
     })
 
   }

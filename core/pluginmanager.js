@@ -191,9 +191,8 @@ class PluginManager {
     }
 
     if(commandObj.owner){
-      if(commandObject.msg.author.id != this.disnode.bot.guilds[this.server].owner_id){
+      commandObject.isOwner = commandObject.msg.user.id == this.disnode.bot.guilds.Get(this.server).owner_id
 
-      }
     }
 
     pluginID[commandObj.run](commandObject);
@@ -254,9 +253,10 @@ class PluginManager {
 
       //Check if plugin is in Core or already added to server
       if (!pluginClass.isServer) {
-
+        console.log("ADDING!")
         self.AddServerPluginLocal(plugin)
           .then(function() {
+            console.log("ADDED!")
             pluginClass = self.GetPluginByID(plugin);
             return self.GetConfigFile(pluginClass);
           })
@@ -277,7 +277,10 @@ class PluginManager {
             var command = self.disnode.server.GetCommandInstance(self.server);
             command.UpdateAllPrefixes();
             resolve();
-          }).catch(reject);
+          }).catch((err)=>{
+            console.log(err);
+            reject(err);
+          });
 
 
       } else {
@@ -365,27 +368,20 @@ class PluginManager {
     return new Promise(function(resolve, rejecy) {
       self.command = self.disnode.server.GetCommandInstance(self.server);
       self.MakeServerFolder();
-      for (var i = 0; i < self.plugins.length; i++) {
-        if (self.plugins[i].isServer) {
-          return;
-        }
+      var plugin = self.GetPluginByID(pluginId);
+      var newPath = plugin.path.replace("plugins/", "servers/" + self.server);
+      console.log(newPath);
 
-        if (self.plugins[i].id == pluginId) {
-          var newPath = self.plugins[i].path.replace("plugins/", "servers/" + self.server);
-          console.log(newPath);
-
-          fs.copy(self.plugins[i].path, newPath, function(err) {
-            if (err) return console.error(err)
-            setTimeout(function() {
-              self.LoadAllPlugins().then(function() {
-                self.command.UpdateAllPrefixes();
-                resolve();
-              });
-
-            }, 1000);
+      fs.copy(plugin.path, newPath, function(err) {
+        if (err) return console.error(err)
+        setTimeout(function() {
+          self.LoadAllPlugins().then(function() {
+            self.command.UpdateAllPrefixes();
+            resolve();
           });
-        }
-      }
+
+        }, 1000);
+      });
     });
   }
 
