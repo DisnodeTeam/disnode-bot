@@ -2154,6 +2154,9 @@ class CasinoPlugin {
       });
     });
   }
+  dateify(date){
+    return dateFormat(date, "dddd, mmmm dS, yyyy, h:MM:ss TT Z");
+  }
 }
 
 module.exports = CasinoPlugin;
