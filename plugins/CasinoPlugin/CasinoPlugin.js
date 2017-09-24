@@ -144,16 +144,6 @@ class CasinoPlugin {
     self.Blackjack = new Blackjack(self.disnode);
     self.utils.init().then(function() {
       if(self.utils.AutoStatus() && self.stateAuth) {
-        var n = self.utils.getRandomIntInclusive(0,4);
-        if(n == 0){
-          self.disnode.bot.SetStatus("!casino slot");
-        }else if (n == 1) {
-          self.disnode.bot.SetStatus("!casino wheel");
-        }else if (n == 2) {
-          self.disnode.bot.SetStatus("!casino flip");
-        }else if (n == 3) {
-          self.disnode.bot.SetStatus("!casino 21");
-        }else {
           self.disnode.bot.SetStatus("!casino");
         }
       }
@@ -730,7 +720,7 @@ class CasinoPlugin {
             self.utils.checkLV(player, command.msg.channel);
           }
           self.utils.DB.Update("players", {"id":player.id}, player);
-          
+
         }else {
           self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a bet! Example `!casino flip tails 100`", 16772880);
         }
@@ -894,7 +884,7 @@ class CasinoPlugin {
           self.utils.updateLastSeen(player);
           self.utils.checkLV(player, command.msg.channel);
           self.utils.DB.Update("players", {"id":player.id}, player);
-          
+
           break;
         case "info":
           self.disnode.bot.SendEmbed(command.msg.channel, {
@@ -1027,7 +1017,7 @@ class CasinoPlugin {
                       self.utils.updateLastSeen(player);
                       self.utils.checkLV(player, command.msg.channel);
                       self.utils.DB.Update("players", {"id":player.id}, player);
-                      
+
                     }else{
                       self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must enter a bet that is greater than 0, Or you cant afford the bet that you want to place.", 16772880);
                     }
@@ -1314,7 +1304,7 @@ class CasinoPlugin {
                 self.utils.updateLastSeen(player);
                 self.utils.checkLV(player, command.msg.channel);
                 self.utils.DB.Update("players", {"id":player.id}, player);
-                
+
               }else {
                 self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough Keys!\nNEED: " + Crate.cost + "\nHAVE: " + player.keys, 16772880);
               }
@@ -1574,7 +1564,7 @@ class CasinoPlugin {
             }
             break;
           case "save":
-            
+
             self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", ":white_check_mark: Database Saved!", 3447003);
             break;
           case "player":
@@ -1925,7 +1915,7 @@ class CasinoPlugin {
             );
             self.utils.updateLastSeen(player);
             self.utils.DB.Update("players", {"id":player.id}, player);
-            
+
           }
           break;
         default:
