@@ -144,8 +144,7 @@ class CasinoPlugin {
     self.Blackjack = new Blackjack(self.disnode);
     self.utils.init().then(function() {
       if(self.utils.AutoStatus() && self.stateAuth) {
-          self.disnode.bot.SetStatus("!casino");
-        }
+        self.disnode.bot.SetStatus("!casino");
       }
       console.log("INIT!")
       done();

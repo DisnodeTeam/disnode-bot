@@ -569,6 +569,7 @@ class Bot extends EventEmitter {
           resolve(response.data);
         })
         .catch(function (err) {
+          self.SendMessage(channel, "If you are seeing this then there might be a general error or I dont have `Embed Links` permission. For me to work you must enable these permissions and try again.")
           reject(err);
         });
     });
