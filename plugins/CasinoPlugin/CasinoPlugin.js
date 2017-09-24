@@ -832,7 +832,7 @@ class CasinoPlugin {
             if(bet < minbet){
               warn = "\n`You didn't bet your Minimum bet to get XP, please note the amount you need to bet below`"
             }else {
-              if(whatcontains.has1st && whatcontains.has2nd && whatcontains/has3rd){}else {
+              if(wheelInfo.whatcontains.has1st && wheelInfo.whatcontains.has2nd && wheelInfo.whatcontains.has3rd){}else {
                 player.xp += wheelInfo.xpAward;
               }
             }
