@@ -16,6 +16,7 @@ const DBManager = require('./dbmanager')
  */
 class Disnode {
     constructor(config, shardID=0,totalShards=1) {
+      console.log("Disnode " + shardID + " " + totalShards);
         this.botConfigPath = config;
         this.ready = false;
         this.shardID = shardID;
@@ -32,7 +33,7 @@ class Disnode {
 
           Logging.Info("Disnode", "Start", "Loading Config");
           self.LoadBotConfig().then(function(){
-            self.bot = new DiscordBot(self.botConfig.key, self);
+            self.bot = new DiscordBot(self.botConfig.key, self, self.shardID, self.totalShards);
             self.stats = new Stats(self);
             self.platform = new Platform(self);
             Logging.Success("Disnode", "Start", "Loaded Config");

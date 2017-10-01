@@ -3,8 +3,7 @@ module.exports = {
     apps: [{
         name:       "CasinoBot",
         script:     "./CasinoBot.js",
-        instances:  3,
-        exec_mode:  "cluster",
-        instance_var: "INSTID"
+        instances:  2,
+        exec_mode:  "cluster"
     }]
-}   
+}

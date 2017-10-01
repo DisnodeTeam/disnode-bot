@@ -21,6 +21,7 @@ var EventEmitter = require('events').EventEmitter;
 class Bot extends EventEmitter {
   constructor(key, disnode, shardID=0, totalShards=1) {
     super();
+    console.log("Bot " + shardID + " " + totalShards);
     this.key = key;
     this.client = {};
     this.disnode = disnode;
@@ -53,7 +54,8 @@ class Bot extends EventEmitter {
           resolve();
         })
       }).catch(function (err) {
-        Logger.Error("Bot", "Connect", "Connection Error: " + err);
+        Logger.Error("Bot " + self.shardID, "Connect", "Connection Error: " + err);
+        self.Connect();
       })
     });
   }
@@ -61,18 +63,19 @@ class Bot extends EventEmitter {
   GetGatewayURL() {
     var self = this;
     return new Promise(function (resolve, reject) {
-      Logger.Info("Bot", "GetGatewayURL", "Aquiring Gatway URL...");
+      Logger.Info("Bot " + self.shardID, "GetGatewayURL", "Aquiring Gatway URL...");
       axios.get('https://discordapp.com/api/gateway/bot', {
         headers: {
           'Authorization': "Bot " + self.key
         }
       }).then(function (response) {
 
-        Logger.Success("Bot", "GetGatewayURL", "Aquired Gatway URL!");
+        Logger.Success("Bot " + self.shardID, "GetGatewayURL", "Aquired Gatway URL!");
         var url = response.data.url + "/?encoding=json&v=5";
         resolve(url)
       }).catch(function (err) {
-        Logger.Error("Bot", "GetGatewayURL", "Error Aquiring Gatway URL: " + err);
+        Logger.Error("Bot " + self.shardID, "GetGatewayURL", "Error Aquiring Gatway URL: " + err);
+
         reject(err);
       });
     });
@@ -81,16 +84,22 @@ class Bot extends EventEmitter {
   ConnectToGateway(url) {
     var self = this;
     return new Promise(function (resolve, reject) {
-      Logger.Info("Bot", "ConnectToGateway", "Connecting to gateway");
+      Logger.Info("Bot " + self.shardID, "ConnectToGateway", "Connecting to gateway");
       self.ws = new WebSocket(url);
 
       self.BindSocketEvents();
 
       self.ws.on('open', function () {
-        Logger.Success("Bot", "ConnectToGateway", "Connected to gateway!");
+        Logger.Success("Bot " + self.shardID, "ConnectToGateway", "Connected to gateway!");
         resolve();
       });
-
+      self.ws.on('close', function(code, reason){
+        Logger.Error("DisnodeLite-Bot", "WS", "WS closed! Code: " + code + " Reason: " + reason);
+      });
+      self.ws.on('error', function(err){
+        Logger.Error("DisnodeLite-Bot", "WS", "WS error! Error: " + err);
+        self.Connect();
+      });
     });
   }
 
@@ -109,7 +118,7 @@ class Bot extends EventEmitter {
 
   StartHeartbeat(interval) {
     var self = this;
-    Logger.Info("Bot", "StartHeartbeat", "Starting Heatbeat with Interval: " + interval);
+    Logger.Info("Bot " + self.shardID, "StartHeartbeat", "Starting Heatbeat with Interval: " + interval);
     var packet = requests.heartbeat(self.s);
     self.ws.send(JSON.stringify(packet));
     console.log(packet)
@@ -143,8 +152,9 @@ class Bot extends EventEmitter {
 
   wsIdentify() {
     var self = this;
-    Logger.Info("Bot", "wsIdentify", "Sending ID to Gateway");
-    var packet = requests.identify(this.key, this.shardID, this.totalShards);
+    Logger.Info("Bot " + self.shardID, "wsIdentify", "Sending ID to Gateway");
+    var packet = requests.identify(this.key, self.shardID, self.totalShards);
+    console.log(packet);
     self.ws.send(JSON.stringify(packet));
   }
 
@@ -430,7 +440,7 @@ class Bot extends EventEmitter {
           if (inst) {
             inst.RunMessage(data);
           } else {
-            Logging.Warning("Bot", "Message", "No Command Handler!");
+            Logging.Warning("Bot " + self.shardID, "Message", "No Command Handler!");
           }
         });
 

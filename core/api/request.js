@@ -1,4 +1,5 @@
 exports.identify = function (token, shardID = 0, shardCount = 1) {
+  console.log("identify " + shardID + " " + shardCount);
   return{
     op: 2,
     d:{
@@ -12,7 +13,7 @@ exports.identify = function (token, shardID = 0, shardCount = 1) {
       },
       "compress": false,
       "large_threshold": 250,
-      "shard": [shardID, shardCount]}
+      "shard": [parseInt(shardID), parseInt(shardCount)]}
   }
 };
 

@@ -34,6 +34,7 @@
     "numeral": "^2.0.6",
     "os-utils": "0.0.14",
     "shortid": "^2.2.8",
+    "sleep": "^5.1.1",
     "timer-stopwatch": "^0.2.0",
     "universal-analytics": "^0.4.15",
     "unzip": "^0.1.11",

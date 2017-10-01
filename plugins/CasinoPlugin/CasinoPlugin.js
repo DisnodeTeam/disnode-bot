@@ -1095,6 +1095,7 @@ class CasinoPlugin {
           case "income":
           case "money":
           case "lv":
+          case "rank":
           case "overall":
             mode = command.params[0].toLowerCase()
             break;
@@ -1128,20 +1129,40 @@ class CasinoPlugin {
           case "lv":
             ordered = self.utils.orgArray(players, mode);
             break;
+          case "rank":
+            var Modes = ["income", "money", "lv", "overall"];
+            var placed = [];
+            for (var i = 0; i < Modes.length; i++) {
+              if (Modes[i] == "overall") {
+                for (var j = 0; j < players.length; j++) {
+                  players[j].score = ((players[j].income / 1000) + (players[j].lv * 1000))
+                }
+                var temp = self.utils.orgArray(players, "score");
+              }else {
+                var temp = self.utils.orgArray(players, Modes[i]);
+              }
+              for (var j = 0; j < temp.length; j++) {
+                var el = temp[j];
+                if(el.id == pid){
+                  placed[i] = j + 1;
+                  break;
+                }
+              }
+            }
+            var msg = "Your Rank for Each Top Measurement\n";
+            msg += "**Income**: " + placed[0] + "\n";
+            msg += "**Money**: " + placed[1] + "\n";
+            msg += "**Lv**: " + placed[2] + "\n";
+            msg += "**Overall**: " + placed[3];
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Order: " + mode, msg);
+            return;
+            break;
           default:
             for (var i = 0; i < players.length; i++) {
               players[i].score = ((players[i].income / 1000) + (players[i].lv * 1000))
             }
             ordered = self.utils.orgArray(players, "score");
             break;
-        }
-        var playerplace = 0;
-        for (var i = 0; i < ordered.length; i++) {
-          var el = ordered[i];
-          if(el.id == pid){
-            playerplace = i + 1;
-            break;
-          }
         }
         var page = 1;
         if(command.params[1] && numeral(command.params[1]).value() > 0){
@@ -1151,40 +1172,48 @@ class CasinoPlugin {
           ordered = self.utils.pageArray(ordered);
         }
         var msg = "**Page:** " + page + "\n";
-        for (var i = 0; i < ordered.length; i++) {
-          var player = ordered[i];
-          switch (mode) {
-            case "income":
+        switch (mode) {
+          case "income":
+            for (var i = 0; i < ordered.length; i++) {
+              var player = ordered[i];
               if(page>1){
                 msg += "" + (i + ((page * 10) - 9)) + ". **" + player.name + "** -=- $" + numeral(player.income).format('0,0.00') + "\n";
               }else{
                 msg += "" + (i + 1) + ". **" + player.name + "** -=- $" + numeral(player.income).format('0,0.00') + "\n";
               }
-              break;
-            case "money":
+            }
+            break;
+          case "money":
+            for (var i = 0; i < ordered.length; i++) {
+              var player = ordered[i];
               if(page>1){
                 msg += "" + (i + ((page * 10) - 9)) + ". **" + player.name + "** -=- $" + numeral(player.money).format('0,0.00') + "\n";
               }else{
                 msg += "" + (i + 1) + ". **" + player.name + "** -=- $" + numeral(player.money).format('0,0.00') + "\n";
               }
-              break;
-            case "lv":
+            }
+            break;
+          case "lv":
+            for (var i = 0; i < ordered.length; i++) {
+              var player = ordered[i];
               if(page>1){
                 msg += "" + (i + ((page * 10) - 9)) + ". **" + player.name + "** -=- Level: " + player.lv + "\n";
               }else{
                 msg += "" + (i + 1) + ". **" + player.name + "** -=- Level: " + player.lv + "\n";
               }
-              break;
-            default:
+            }
+            break;
+          default:
+            for (var i = 0; i < ordered.length; i++) {
+              var player = ordered[i];
               if(page>1){
                 msg += "" + (i + ((page * 10) - 9)) + ". **" + player.name + "** -=- Score: " + numeral(player.score).format('0,0.00') + "\n";
               }else{
                 msg += "" + (i + 1) + ". **" + player.name + "** -=- Score: " + numeral(player.score).format('0,0.00') + "\n";
               }
-              break;
-          }
+            }
+            break;
         }
-        msg += "\n**Your Rank:** " + playerplace;
         self.disnode.bot.SendCompactEmbed(command.msg.channel, "Order: " + mode, msg);
       });
     });
