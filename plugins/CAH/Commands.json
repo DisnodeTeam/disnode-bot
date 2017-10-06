@@ -1,0 +1,13 @@
+{
+  "commands":[
+    {
+      "cmd": "new",
+      "desc":"Start a new game!",
+      "run": "commandNew"
+    },{
+      "cmd": "join",
+      "desc":"Join a game!",
+      "run": "commandJoin"
+    }
+  ]
+}
