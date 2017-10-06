@@ -1,9 +1,0 @@
-{
-  "name":"ID Plugin",
-  "description": "Get Discord API ID values from certain objects. Useful for configuring ID-Based plugins such as moderation.",
-  "id": "id-plugin",
-  "load": "true",
-  "script": "IDPlugin.js",
-  "commandsFile": "Commands.json",
-  "configFile" : "Config.json"
-}

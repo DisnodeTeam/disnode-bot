@@ -1,9 +1,0 @@
-{
-  "name":"Moderation",
-  "id": "moderation",
-  "script": "Moderation.js",
-  "load" : false,
-  "launch": true,
-  "commandsFile": "Moderation-Commands.json",
-  "configFile" : "Moderation-Config.json"
-}

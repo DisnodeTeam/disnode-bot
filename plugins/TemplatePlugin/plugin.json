@@ -1,8 +1,0 @@
-{
-  "name":"Template Plugin",
-  "id": "template-plugin",
-  "script": "Plugin.js",
-  "load": false,
-  "commandsFile": "Commands.json",
-  "configFile" : "Config.json"
-}

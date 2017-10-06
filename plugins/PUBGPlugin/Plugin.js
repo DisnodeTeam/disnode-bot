@@ -17,7 +17,7 @@ class Template {
     }
    
     var _type = MATCH.SOLO;
-    var _typeString = command.params[2];
+    var _typeString = command.params[1].toLowerCase();
 
     switch (_typeString) {
       case "duo":
@@ -25,6 +25,14 @@ class Template {
         break;
 
       case "squad":
+        _type = MATCH.SQUAD;
+        break;
+
+        case "duos":
+        _type = MATCH.DUO;
+        break;
+
+      case "squads":
         _type = MATCH.SQUAD;
         break;
 

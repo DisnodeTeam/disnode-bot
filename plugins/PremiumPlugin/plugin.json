@@ -1,8 +1,0 @@
-{
-  "name":"Premium Plugin",
-  "id": "premium-plugin",
-  "load":true,
-  "script": "PremiumPlugin.js",
-  "commandsFile": "Commands.json",
-  "configFile" : "Config.json"
-}

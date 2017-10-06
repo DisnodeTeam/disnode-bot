@@ -1,8 +1,0 @@
-{
-  "name":"RPG Plugin",
-  "id": "rpg-plugin",
-  "script": "Plugin.js",
-  "load" : true,
-  "commandsFile": "Commands.json",
-  "configFile" : "Config.json"
-}
