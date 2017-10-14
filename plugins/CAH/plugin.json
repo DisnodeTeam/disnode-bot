@@ -1,7 +1,7 @@
 {
-  "name":"Giveaway Plugin",
+  "name":"CAH Plugin",
   "description": "For those times where you want a discord compatable drawing system this is the plugin for you!",
-  "id": "giveaway-plugin",
+  "id": "cah-plugin",
   "script": "Plugin.js",
   "load": true,
   "commandsFile": "Commands.json",
