@@ -1,35 +1,45 @@
 const Session = require('./Session.js');
 const axios = require("axios")
+const CAHUtil = require("./CAHUtil");
 
-const ENDPOINT = "http://127.0.0.1:9999"
 class CAH {
   constructor() {
     this.sessions = [];
-    this.request = axios.create({
-      baseURL: ENDPOINT,
-      timeout: 2500,
-      headers: {'auth': 'FlWo39AEgJuw8hvl6diIqcekictExUbcqkMV16DPGJAXdz4v71Lzm2QBJUo5M2gU'}
-    });
+    this.util = new CAHUtil()
   }
-  default(command){
+  default(command) {
     var self = this;
     var msg = "";
-   
+
   }
-  commandNew(command){
+  commandNew(command) {
     var self = this;
-    var creatorObject = {
-      creator: command.msg.user.id
-    }
-   
-    self.request.post(ENDPOINT + "/game", creatorObject).then((res)=>{
-      var GameCode = res.data.data.toUpperCase();
-      self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Game Created!","**"+ command.msg.user.username + "** created a game! \nCode: `" + GameCode + "`");
-    }).catch((err)=>{
-      
-      self.disnode.bot.SendMessage(command.msg.channelID, JSON.stringify(err.response.data.message));
+    self.util.NewGame(command.msg.user).then((result) => {
+
+      self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Game Created!", "**" + command.msg.user.username + "** created a game! \nCode: `" + result.gameCode + "`");
+    }).catch((err) => {
+      console.log(err.data)
+      self.disnode.bot.SendMessage(command.msg.channelID, err.response.data.data || "Error");
     });
   }
-  
+
+  commandInfo(command) {
+    var self = this;
+
+    var gameCode = command.params[0];
+
+    if (!gameCode) {
+      return self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error", "**Please enter a game code**");
+    }
+
+    self.util.GetGame(gameCode).then((result) => {
+      return self.disnode.bot.SendCompactEmbed(command.msg.channelID, "Error", JSON.stringify(result, 0, 2));
+    }).catch((err) => {
+      
+      self.disnode.bot.SendMessage(command.msg.channelID, err.response.data.data || err.message ||  "Error");
+    });
+  }
 }
+
+
 module.exports = CAH;

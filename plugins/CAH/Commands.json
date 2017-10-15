@@ -8,6 +8,10 @@
       "cmd": "join",
       "desc":"Join a game!",
       "run": "commandJoin"
+    },{
+      "cmd":"info",
+      "desc":"Get info on a game!",
+      "run":"commandInfo"
     }
   ]
 }
