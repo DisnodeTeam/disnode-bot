@@ -92,7 +92,7 @@ class CommandManager {
     }
 
     GetCommandData(msgObj, ignoreFirst, callback) {
-      
+
         var self = this;
         var msg = msgObj.message;
         var firstLetter = msg.substring(0, 1);
@@ -124,17 +124,6 @@ class CommandManager {
           callback(plugin, command, params);
         }else {
           command = firstWord;
-          /*
-          if(this.GetPluginFromCommand(command)){
-            plugin = this.GetPluginFromCommand(command);
-            if(this.GetCommandObject(plugin, command)){
-              Logging.Warning("Command", "CommandParse", "Running a command without plugin prefix, this is heavily not supported");
-              command = this.GetCommandObject(plugin, command);
-              self.disnode.stats.messagesParsed++;
-              callback(plugin, command, params);
-            }
-          }
-          */
         }
     }
     CheckForPrefix(prefix){

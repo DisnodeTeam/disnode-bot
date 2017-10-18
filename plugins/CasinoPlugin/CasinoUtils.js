@@ -10,9 +10,10 @@ class CasinoUtils {
     this.state = state;
     this.plugin = plugin;
     this.recentBetters = [];
+    //https://casino-api.disnodeteam.com/casino/
     this.csAPI = axios.create({
       baseURL: 'https://casino-api.disnodeteam.com/casino/',
-      timeout: 1000,
+      timeout: 5000,
       headers: {'auth': self.disnode.botConfig.apikey}
     });
     self.DB;
@@ -216,67 +217,61 @@ class CasinoUtils {
     var self = this;
     var players = [];
     return new Promise(function(resolve, reject) {
-      self.DB.Find("players", {"id": data.msg.userID}).then(function(found) {
-        players = found;
-        for (var i = 0; i < players.length; i++) {
-          if(data.msg.userID == players[i].id){
-            resolve(players[i]);
-            return;
+      self.csAPI.get("/player/" + data.msg.userID).then(function(resp){
+        resolve(resp.data);
+      }).catch(function (err) {
+        if(err.status == 404){
+          var newPlayer = {
+            name:  data.msg.user,
+            id: data.msg.userID,
+            money: 10000,
+            income: 1000,
+            maxIncome: 1000,
+            xp: 0,
+            lv: 1,
+            nextlv: 500,
+            Premium: false,
+            Admin: false,
+            Mod: false,
+            banned: false,
+            banreason: "",
+            stats: {
+              slotPlays: 0,
+              coinPlays: 0,
+              slotWins: 0,
+              coinWins: 0,
+              slotSingleC: 0,
+              slotTripleC: 0,
+              slot3s: 0,
+              slot2s: 0,
+              slot1s: 0,
+              slotJackpots: 0,
+              coinHeads: 0,
+              coinTails: 0,
+              wheelPlays: 0,
+              wheelWins: 0,
+              wheel0: 0,
+              wheelNumber: 0,
+              wheelsections: 0,
+              wheellowhigh: 0,
+              wheelevenodd: 0,
+              wheelcolor: 0,
+              wheelLanded0: 0,
+              wheelLandedNumber: 0,
+              wheelLandedsections: 0,
+              wheelLandedlowhigh: 0,
+              wheelLandedevenodd: 0,
+              wheelLandedcolor: 0
+            },
+            keys: 0,
+            created: parseInt(new Date().getTime()),
+            crates: [0,0,0,0,0,0]
           }
+          self.updatePlayer(newPlayer);
+          resolve(newPlayer);
+        }else {
+          reject(err);
         }
-        var newPlayer = {
-          name:  data.msg.user,
-          id: data.msg.userID,
-          money: 10000,
-          income: 1000,
-          maxIncome: 1000,
-          xp: 0,
-          lv: 1,
-          nextlv: 500,
-          Premium: false,
-          Admin: false,
-          Mod: false,
-          banned: false,
-          banreason: "",
-          stats: {
-            slotPlays: 0,
-            coinPlays: 0,
-            slotWins: 0,
-            coinWins: 0,
-            slotSingleC: 0,
-            slotTripleC: 0,
-            slot3s: 0,
-            slot2s: 0,
-            slot1s: 0,
-            slotJackpots: 0,
-            coinHeads: 0,
-            coinTails: 0,
-            wheelPlays: 0,
-            wheelWins: 0,
-            wheel0: 0,
-            wheelNumber: 0,
-            wheelsections: 0,
-            wheellowhigh: 0,
-            wheelevenodd: 0,
-            wheelcolor: 0,
-            wheelLanded0: 0,
-            wheelLandedNumber: 0,
-            wheelLandedsections: 0,
-            wheelLandedlowhigh: 0,
-            wheelLandedevenodd: 0,
-            wheelLandedcolor: 0
-          },
-          keys: 0
-        }
-        for (var i = 0; i < players.length; i++) {
-          if(newPlayer.name == players[i].name){
-            newPlayer.name += "1";
-            break;
-          }
-        }
-        self.DB.Insert("players", newPlayer);
-        resolve(newPlayer);
-        return;
       });
     });
   }
@@ -289,40 +284,16 @@ class CasinoUtils {
   findPlayer(info){
     var self = this;
     return new Promise(function(resolve, reject) {
-      self.DB.Find("players", {}).then(function(players) {
-        var id = self.parseMention(info);
-        for (var i = 0; i < players.length; i++) {
-          if(players[i].id == id){
-            resolve({found: true, p: players[i]});
-            return;
-          }else if (players[i].name == info) {
-            resolve({found: true, p: players[i]});
-            return;
-          }
-        }
-        var found = [];
-        var msg = "Did you mean?\n";
-        for (var i = 0; i < players.length; i++) {
-        if(info.length < 3)break;
-          if(players[i].name.toLowerCase().includes(info.toLowerCase())){
-            found.push(players[i])
-          }
-        }
-        for (var i = 0; i < found.length; i++) {
-          msg += "**" + found[i].name + "**\n"
-        }
-        if(found.length == 1){
-          resolve({found: true, p: found[0]});
-          return;
-        }else if (found.length > 0) {
-          resolve({found: false, msg: msg});
-          return;
-        }else if (found.length == 0) {
-          resolve({found: false, msg: "Could not find any player matching that description!"});
-          return;
-        }
-      })
+      self.csAPI.get("/players/" + info).then(function(resp){
+        resolve(resp.data);
+      }).catch(function (err) {
+        reject(err);
+      });
     });
+  }
+  updatePlayer(player){
+    var self = this;
+    self.csAPI.post("/players/" + player.id, player).then(function(resp){});
   }
   getDateTime() {
     var date = new Date();
@@ -656,48 +627,48 @@ class CasinoUtils {
           currentUltras.push(players[i]);
         }
       }
-      apiUltra = self.disnode.platform.GetUltraUsers();
+      self.disnode.platform.GetUltraUsers().then(function(apiUltra) {
+        for(var i = 0; i < currentUltras.length; i++){
+          var found = false;
+          for(var j = 0; j < apiUltra.length; j++){
+            if(currentUltras[i].id == apiUltra[j].id){
+              found = true;
+              break;
+            }
+          }
+          if(!found){
+            notInApi.push(currentUltras[i]);
+          }
+        }
+        for(var i = 0; i < apiUltra.length; i++){
+          var found = false;
+          for(var j = 0; j < currentUltras.length; j++){
+            if(currentUltras[j].id == apiUltra[i].id){
+              found = true;
+              break;
+            }
+          }
+          if(!found){
+            newUltra.push(currentUltras[i]);
+          }
+        }
+        for(var i = 0; i < newUltra.length; i++){
+          self.findPlayer(newUltra[i].id).then(function(f){
+            f.Premium = true;
+            self.DB.Update("players", {"id":f.p.id}, f.p);
+          }).catch(function(err){
 
-      for(var i = 0; i < currentUltras.length; i++){
-        var found = false;
-        for(var j = 0; j < apiUltra.length; j++){
-          if(currentUltras[i].id == apiUltra[j].id){
-            found = true;
-            break;
-          }
+          });
         }
-        if(!found){
-          notInApi.push(currentUltras[i]);
+        for(var i = 0; i < notInApi.length; i++){
+          self.findPlayer(notInApi[i].id).then(function(f){
+            f.Premium = false;
+            self.DB.Update("players", {"id":f.p.id}, f.p);
+          }).catch(function(err){
+
+          });
         }
-      }
-      for(var i = 0; i < apiUltra.length; i++){
-        var found = false;
-        for(var j = 0; j < currentUltras.length; j++){
-          if(currentUltras[j].id == apiUltra[i].id){
-            found = true;
-            break;
-          }
-        }
-        if(!found){
-          newUltra.push(currentUltras[i]);
-        }
-      }
-      for(var i = 0; i < newUltra.length; i++){
-        self.findPlayer(newUltra[i].id).then(function(f){
-          f.Premium = true;
-          self.DB.Update("players", {"id":f.id}, f);
-        }).catch(function(err){
-          
-        });
-      }
-      for(var i = 0; i < notInApi.length; i++){
-        self.findPlayer(notInApi[i].id).then(function(f){
-          f.Premium = false;
-          self.DB.Update("players", {"id":f.id}, f);
-        }).catch(function(err){
-          
-        });
-      }
+      });
     });
   }
   getCasinoObj(){
@@ -705,6 +676,8 @@ class CasinoUtils {
     return new Promise(function(resolve, reject) {
       self.csAPI.get("/cobj").then(function(resp){
         resolve(resp.data);
+      }).catch(function (err) {
+        reject(err);
       });
     });
   }
@@ -715,6 +688,7 @@ class CasinoUtils {
         if(resp.status == 200){
           resolve();
         }else{
+          console.log(resp.data);
           reject(resp.data.error);
         }
       });

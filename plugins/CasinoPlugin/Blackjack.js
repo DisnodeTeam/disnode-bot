@@ -292,7 +292,7 @@ class Blackjack {
           }
         );
         self.endSession(player, channel);
-      }else if (session.game.dealerHand.high == 21) {
+      }else if (session.game.dealerHand.high == 21 || session.game.dealerHand.low == 21) {
         self.showGameStatus(session.game, channel, player);
         self.disnode.bot.SendCompactEmbed(channel, "Blackjack " + player.name, "Dealer got a Blackjack! Thanks for playing!");
         self.endSession(player, channel);

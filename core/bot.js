@@ -9,6 +9,7 @@ const WebSocket = require('ws');
 const codes = require("./api/codes");
 const requests = require('./api/request')
 const async = require('async');
+const botlists = require('disnode-extra').botlists;
 var EventEmitter = require('events').EventEmitter;
 
 
@@ -51,6 +52,15 @@ class Bot extends EventEmitter {
         return self.ConnectToGateway(url)
       }).then(function () {
         self.on("READY", function () {
+          self.bl = new botlists(self.disnode.botConfig.blconfig);
+          setTimeout(function() {
+            self.on("guild_create", function(guild) {
+              self.bl.postServerCount(self.servers.length, self.shardID, self.totalShards);
+            });
+            self.on("guild_delete", function(guild) {
+              self.bl.postServerCount(self.servers.length, self.shardID, self.totalShards);
+            });
+          }, 30000)
           resolve();
         })
       }).catch(function (err) {
