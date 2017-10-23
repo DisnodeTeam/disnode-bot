@@ -128,12 +128,31 @@ class CasinoUtils {
       slot.player.keys += 3;
       return;
     }
-    if((slot.reel1 == ":key:") || (slot.reel2 == ":key:") || (slot.reel3 == ":key:")){
+    if((slot.reel1 == ":package:") && (slot.reel2 == ":package:") && (slot.reel3 == ":package:")){
       if(slot.bet < minJackpotBet){
-        slot.winText = "Hey a key... but it's rusted! You didnt bet your minimum bet to restore the key. oh well... ";
+        slot.winText = "WOW! Thats a lot of crates, But they are empty! You didn't bet your min jackpot bet. ";
         return;
       }else {
-        slot.winText = "Hey! a Key! ";
+        slot.winText = "WOW! Thats a lot of crates! ";
+        for (var i = 0; i < 4; i++) {
+          slot.player.crates[self.getRandomIntInclusive(0,5)]++;
+        }
+        return;
+      }
+    }
+    if((slot.reel1 == ":package:") || (slot.reel2 == ":package:") || (slot.reel3 == ":package:")){
+      if(slot.bet < minJackpotBet){
+        slot.winText = "Hey! A crate, But it's empty! You didn't bet your min jackpot bet. ";
+      }else {
+        slot.winText = "Hey! A crate! ";
+        slot.player.crates[self.getRandomIntInclusive(0,5)]++;
+      }
+    }
+    if((slot.reel1 == ":key:") || (slot.reel2 == ":key:") || (slot.reel3 == ":key:")){
+      if(slot.bet < minJackpotBet){
+        slot.winText += "Hey a key... but it's rusted! You didnt bet your minimum bet to restore the key. oh well... ";
+      }else {
+        slot.winText += "Hey! a Key! ";
         slot.player.keys++;
       }
     }
@@ -220,7 +239,62 @@ class CasinoUtils {
       self.csAPI.get("/player/" + data.msg.userID).then(function(resp){
         resolve(resp.data);
       }).catch(function (err) {
-        if(err.status == 404){
+        console.log(err);
+        if(err.response != undefined){
+          if(err.response.status == 404){
+            var newPlayer = {
+              name:  data.msg.user,
+              id: data.msg.userID,
+              money: 10000,
+              income: 1000,
+              maxIncome: 1000,
+              xp: 0,
+              lv: 1,
+              nextlv: 500,
+              Premium: false,
+              Admin: false,
+              Mod: false,
+              banned: false,
+              banreason: "",
+              stats: {
+                slotPlays: 0,
+                coinPlays: 0,
+                slotWins: 0,
+                coinWins: 0,
+                slotSingleC: 0,
+                slotTripleC: 0,
+                slot3s: 0,
+                slot2s: 0,
+                slot1s: 0,
+                slotJackpots: 0,
+                coinHeads: 0,
+                coinTails: 0,
+                wheelPlays: 0,
+                wheelWins: 0,
+                wheel0: 0,
+                wheelNumber: 0,
+                wheelsections: 0,
+                wheellowhigh: 0,
+                wheelevenodd: 0,
+                wheelcolor: 0,
+                wheelLanded0: 0,
+                wheelLandedNumber: 0,
+                wheelLandedsections: 0,
+                wheelLandedlowhigh: 0,
+                wheelLandedevenodd: 0,
+                wheelLandedcolor: 0
+              },
+              keys: 0,
+              created: parseInt(new Date().getTime()),
+              crates: [0,0,0,0,0,0]
+            }
+            self.updatePlayer(newPlayer);
+            self.csAPI.post("/player/new" + newPlayer.id, newPlayer).then(function(resp){}).catch(function (err) {
+              reject(err);
+            });
+            resolve(newPlayer);
+          }
+        }else if(err.status == 404){
           var newPlayer = {
             name:  data.msg.user,
             id: data.msg.userID,
@@ -268,6 +342,9 @@ class CasinoUtils {
             crates: [0,0,0,0,0,0]
           }
           self.updatePlayer(newPlayer);
+          self.csAPI.post("/player/new" + newPlayer.id, newPlayer).then(function(resp){}).catch(function (err) {
+            reject(err);
+          });
           resolve(newPlayer);
         }else {
           reject(err);

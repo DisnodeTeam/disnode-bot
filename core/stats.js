@@ -16,35 +16,9 @@ class Stats {
     this.pluginManagers = 0;
     this.commandManagers = 0;
     this.pluginInstances = 0;
-    var self = this;
-    var metric1 = probe.metric({
-      name    : 'Plugin Managers',
-      value   : function() {
-        return self.pluginManagers
-      }
-    });
-
-    var metric2 = probe.metric({
-      name    : 'Command Managers',
-      value   : function() {
-        return self.commandManagers
-      }
-    });
-
-    var metric3 = probe.metric({
-      name    : 'Plugin Instances',
-      value   : function() {
-        return self.pluginInstances
-      }
-    });
-
-    var metric4 = probe.metric({
-      name    : 'messagesParsed',
-      value   : function() {
-        return self.messagesParsed
-      }
-    });
-
+    var int = setInterval(function () {
+      self.postServerCount();
+    }, 3600000);
   }
   getUptime(){
     var self = this;
@@ -83,6 +57,13 @@ class Stats {
     self.memberCount = Object.keys(self.disnode.bot.members).length;
     //self.channelCount = Object.keys(self.disnode.bot.channels).length;
     //self.directMessageCount = Object.keys(self.disnode.bot.client.directMessages).length;
+  }
+  postServerCount(){
+    var self = this;
+    self.updateServerMemberCount();
+    self.disnode.bot.bl.postServerCount(self.serverCount, self.disnode.bot.shardID, self.disnode.bot.totalShards).catch(function(err) {
+      console.log(err);
+    })
   }
 }
 module.exports = Stats;

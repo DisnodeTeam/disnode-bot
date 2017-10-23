@@ -1,6 +1,7 @@
 const numeral = require('numeral');
 const logger = require('disnode-logger');
 const Countdown = require('countdownjs');
+const Lang = require('disnode-lang');
 const CasinoUtils = require('./CasinoUtils');
 const Blackjack = require('./Blackjack');
 const dateformat = require('dateformat');
@@ -8,7 +9,7 @@ const ua = require('universal-analytics');
 class CasinoPlugin {
   constructor() {
     var self = this;
-    this.wheelItems = [
+    self.wheelItems = [
       {display:":white_circle: :zero:", type: 0},
       {display:":red_circle: :one:", type: 1},
       {display:":red_circle: :two:", type: 1},
@@ -48,23 +49,38 @@ class CasinoPlugin {
       {display:":black_circle: :three: :six:", type: 2}
     ]
     self.slotItems = [
-      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
-      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
-      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
-      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
-      {item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},
-      {item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},
-      {item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},
-      {item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},
-      {item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},
-      {item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},
-      {item:":100:"},{item:":100:"},{item:":100:"},{item:":100:"},{item:":key:"}
+      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
+      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
+      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
+      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
+      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
+      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
+      {item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},{item:":cherries:"},
+      {item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},
+      {item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},
+      {item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},
+      {item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},
+      {item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},
+      {item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},{item:":third_place:"},
+      {item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},
+      {item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},
+      {item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},
+      {item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},
+      {item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},{item:":second_place:"},
+      {item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},
+      {item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},
+      {item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},
+      {item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},{item:":first_place:"},
+      {item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},
+      {item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},{item:":package:"},
+      {item:":100:"},{item:":100:"},{item:":100:"},{item:":100:"},{item:":100:"},{item:":100:"},{item:":100:"},{item:":100:"},{item:":100:"},{item:":100:"},
+      {item:":key:"},{item:":key:"},{item:":key:"},{item:":key:"},{item:":key:"}
     ]
-    this.store = [
+    self.store = [
       {cost: 200, type:0, amount: 1000, item: "Instant $1,000"},
       {cost: 100000, type:1, amount: 50, item: "Add $50 to your income"},
     ]
-    this.cratesys = {
+    self.cratesys = {
       crates: [
         {
           name: "Basic",
@@ -142,7 +158,9 @@ class CasinoPlugin {
         }
       ]
     }
-    this.recentBetters = [];
+    console.log(__dirname);
+    self.lang = new Lang(__dirname);
+    self.recentBetters = [];
   }
   Init(done){
     var self = this;
@@ -173,33 +191,64 @@ class CasinoPlugin {
       self.commandMod(command);
       return;
     }
-    var msg = "";
-    for (var i = 0; i < self.commands.length; i++) {
-      msg += self.disnode.botConfig.prefix + self.config.prefix + " " + self.commands[i].cmd + " - " + self.commands[i].desc + "\n";
-    }
-      self.disnode.bot.SendEmbed(command.msg.channel, {
-      color: 3447003,
-      author: {},
-      fields: [ {
-        name: 'Casino',
-        inline: true,
-        value: "Hello! \nCasino Bot is a Discord bot that allows users to play casino games on Discord. __**FOR AMUSEMENT ONLY**__.",
-      },{
-        name: 'Commands:',
-        inline: true,
-        value: msg,
-      }, {
-        name: 'Discord Server',
-        inline: false,
-        value: "**Join our Discord Server for Support and More!:** https://discord.gg/AbZhCen",
-      }, {
-        name: 'Disnode Ultra',
-        inline: false,
-        value: "**Do you want to support us, so we can keep our bots up and running? Then buy Disnode Ultra for some sweet perks today!** https://www.disnodeteam.com/ultra (when purchased run `!casino ultra` to activate)",
-      }],
-        footer: {}
+    self.utils.getPlayer(command).then(function(player) {
+      var pack = self.lang.getPack(player.prefs.lang, "casino");
+      var msg = "";
+      for (var i = 0; i < self.commands.length; i++) {
+        msg += self.disnode.botConfig.prefix + self.config.prefix + " " + self.commands[i].cmd + " - " + pack.defaultCommand.commands[self.commands[i].cmd] + "\n";
+      }
+        self.disnode.bot.SendEmbed(command.msg.channel, {
+        color: 3447003,
+        author: {},
+        fields: [ {
+          name: pack.defaultCommand.title,
+          inline: true,
+          value: pack.defaultCommand.desc,
+        },{
+          name: pack.defaultCommand.titleCommands,
+          inline: true,
+          value: msg,
+        }, {
+          name: pack.defaultCommand.titleDiscord,
+          inline: false,
+          value: pack.defaultCommand.descDiscord,
+        }, {
+          name: pack.defaultCommand.titleUltra,
+          inline: false,
+          value: pack.defaultCommand.descUltra,
+        }],
+          footer: {}
+      });
+      return;
+    }).catch(function(err) {
+      var msg = "";
+      for (var i = 0; i < self.commands.length; i++) {
+        msg += self.disnode.botConfig.prefix + self.config.prefix + " " + self.commands[i].cmd + " - " + self.commands[i].desc + "\n";
+      }
+        self.disnode.bot.SendEmbed(command.msg.channel, {
+        color: 3447003,
+        author: {},
+        fields: [ {
+          name: 'Casino',
+          inline: true,
+          value: "Hello! \nCasino Bot is a Discord bot that allows users to play casino games on Discord. __**FOR AMUSEMENT ONLY**__.",
+        },{
+          name: 'Commands:',
+          inline: true,
+          value: msg,
+        }, {
+          name: 'Discord Server',
+          inline: false,
+          value: "**Join our Discord Server for Support and More!:** https://discord.gg/AbZhCen",
+        }, {
+          name: 'Disnode Ultra',
+          inline: false,
+          value: "**Do you want to support us, so we can keep our bots up and running? Then buy Disnode Ultra for some sweet perks today!** https://www.disnodeteam.com/ultra (when purchased run `!casino ultra` to activate)",
+        }],
+          footer: {}
+      });
+      return;
     });
-    return;
   }
   commandInvite(command){
     var self = this;
@@ -281,6 +330,10 @@ class CasinoPlugin {
                 inline: true,
                 value: res.p.keys,
               }, {
+                name: 'Crates',
+                inline: true,
+                value: self.cratesys.crates[0].name + ": " + res.p.crates[0] + "\n" + self.cratesys.crates[1].name + ": " + res.p.crates[1] + "\n" + self.cratesys.crates[2].name + ": " + res.p.crates[2] + "\n" + self.cratesys.crates[3].name + ": " + res.p.crates[3] + "\n" + self.cratesys.crates[4].name + ": " + res.p.crates[4] + "\n" + self.cratesys.crates[5].name + ": " + res.p.crates[5],
+              }, {
                 name: 'Ultra',
                 inline: true,
                 value: res.p.Premium,
@@ -335,6 +388,10 @@ class CasinoPlugin {
             name: 'Keys',
             inline: true,
             value: player.keys,
+          }, {
+            name: 'Crates',
+            inline: true,
+            value: self.cratesys.crates[0].name + ": " + player.crates[0] + "\n" + self.cratesys.crates[1].name + ": " + player.crates[1] + "\n" + self.cratesys.crates[2].name + ": " + player.crates[2] + "\n" + self.cratesys.crates[3].name + ": " + player.crates[3] + "\n" + self.cratesys.crates[4].name + ": " + player.crates[4] + "\n" + self.cratesys.crates[5].name + ": " + player.crates[5],
           }, {
             name: 'Ultra',
             inline: true,
@@ -460,8 +517,50 @@ class CasinoPlugin {
                 footer: {}
               });
             break;
+          case "stats":
+            self.disnode.bot.SendEmbed(command.msg.channel, {
+              color: 1433628,
+              author: {},
+              title: 'Casino Slots',
+              description: 'Info',
+              fields: [ {
+                name: 'Slot Item Stats',
+                inline: false,
+                value: "This is here to show you some stats about slots there are a total of 255 items that slot can pick.**Note**: I added in a full screen of items for fun getting a full screen will result in nothing more than the three in a row award.",
+              }, {
+                name: ':cherries:',
+                inline: false,
+                value: "**Amount**: 70, **Chance to get at least one**: 70/255 or 27.45%, **Chance to get 3 in a row**: 70/765 or 9.15%, **Chance of getting a full screen**: 70/2295 or 3.05%",
+              }, {
+                name: ':third_place:',
+                inline: false,
+                value: "**Amount**: 60, **Chance to get at least one**: 60/255 or 23.53%, **Chance to get 3 in a row**: 60/765 or 7.84%, **Chance of getting a full screen**: 60/2295 or 2.61%",
+              }, {
+                name: ':second_place:',
+                inline: false,
+                value: "**Amount**: 50, **Chance to get at least one**: 50/255 or 19.61%, **Chance to get 3 in a row**: 50/765 or 6.54%, **Chance of getting a full screen**: 50/2295 or 2.18%",
+              }, {
+                name: ':first_place:',
+                inline: false,
+                value: "**Amount**: 40, **Chance to get at least one**: 40/255 or 15.69%, **Chance to get 3 in a row**: 40/765 or 5.23%, **Chance of getting a full screen**: 40/2295 or 1.74%",
+              }, {
+                name: ':package:',
+                inline: false,
+                value: "**Amount**: 20, **Chance to get at least one**: 20/255 or 7.84%, **Chance to get 3 in a row**: 20/765 or 2.61%, **Chance of getting a full screen**: 20/2295 or 0.87%",
+              }, {
+                name: ':100:',
+                inline: false,
+                value: "**Amount**: 10, **Chance to get at least one**: 10/255 or 3.92%, **Chance to get 3 in a row**: 10/765 or 1.31%, **Chance of getting a full screen**: 10/2295 or 0.44%",
+              }, {
+                name: ':key:',
+                inline: false,
+                value: "**Amount**: 5, **Chance to get at least one**: 5/255 or 1.96%, **Chance to get 3 in a row**: 5/765 or 0.65%, **Chance of getting a full screen**: 5/2295 or 0.22%",
+              }],
+                footer: {}
+              });
+            break;
           case undefined:
-            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Slots", "Hi, and welcome to slots. If you need any info on the slots, run the command `!casino slot info`.\n\nIf you want to try the slots, then type `!casino slot [bet]. For example, `!casino slot 100` will run the slots with $100 as the bet.");
+            self.disnode.bot.SendCompactEmbed(command.msg.channel, "Slots", "Hi, and welcome to slots. If you need any info on the slots, run the command `!casino slot info`. You can also see stats on items with `!casino slot stats`.\n\nIf you want to try the slots, then type `!casino slot [bet]. For example, `!casino slot 100` will run the slots with $100 as the bet.");
             break;
           default:
             if(command.params[0]){
@@ -1289,82 +1388,91 @@ class CasinoPlugin {
 							var quantity = numeral(command.params[2]).value();
 							if(quantity == 0)quantity = 1;
 							if(player.keys >= (Crate.cost * quantity)){
-								player.keys -= (Crate.cost * quantity);
-								var amountWon = [0,0,0,0];
-								for (var i = 0; i < quantity; i++) {
-									var Item = Crate.items[self.utils.getRandomIntInclusive(0, (Crate.items.length - 1))];
-									switch (Item.type) {
-										case 0:
-											player.money += Item.amount;
-											amountWon[0] += Item.amount;
-											break;
-										case 1:
-											player.xp += Item.amount;
-											amountWon[1] += Item.amount;
-											break;
-										case 2:
-											player.money += player.income;
-											amountWon[2] += player.income;
-											break;
-										case 3:
-											player.money += (player.income * 2);
-											amountWon[3] += (player.income * 2);
-											break;
-									}
-								}
-								var msg = quantity + " " + Crate.name + " Crates Opened\n";
-								for (var i = 0; i < amountWon.length; i++) {
-									if(amountWon[i] == 0)continue;
-									switch (i) {
-										case 0:
-											msg += "You got **$" + numeral(amountWon[i]).format('0,0.00') + "**\n";
-											break;
-										case 1:
-											msg += "You got **" + numeral(amountWon[i]).format('0,0') + "** XP\n";
-											break;
-										case 2:
-											msg += "You got **$" + numeral(amountWon[i]).format('0,0.00') + "** of Instant Income\n";
-											break;
-										case 3:
-											msg += "You got **$" + numeral(amountWon[i]).format('0,0.00') + "** of Instant Income\n";
-											break;
-									}
-								}
-								self.disnode.bot.SendCompactEmbed(command.msg.channel, "Crates", msg, 3447003);
-								self.utils.updatePlayerLastMessage(player);
-								self.utils.updateLastSeen(player);
-								self.utils.checkLV(player, command.msg.channel);
-								self.utils.updatePlayer(player)
+                if(player.crates[CrateID] >= quantity){
+                  player.keys -= (Crate.cost * quantity);
+                  player.crates[CrateID] -= quantity;
+  								var amountWon = [0,0,0,0];
+  								for (var i = 0; i < quantity; i++) {
+  									var Item = Crate.items[self.utils.getRandomIntInclusive(0, (Crate.items.length - 1))];
+  									switch (Item.type) {
+  										case 0:
+  											player.money += Item.amount;
+  											amountWon[0] += Item.amount;
+  											break;
+  										case 1:
+  											player.xp += Item.amount;
+  											amountWon[1] += Item.amount;
+  											break;
+  										case 2:
+  											player.money += player.income;
+  											amountWon[2] += player.income;
+  											break;
+  										case 3:
+  											player.money += (player.income * 2);
+  											amountWon[3] += (player.income * 2);
+  											break;
+  									}
+  								}
+  								var msg = quantity + " " + Crate.name + " Crates Opened\n";
+  								for (var i = 0; i < amountWon.length; i++) {
+  									if(amountWon[i] == 0)continue;
+  									switch (i) {
+  										case 0:
+  											msg += "You got **$" + numeral(amountWon[i]).format('0,0.00') + "**\n";
+  											break;
+  										case 1:
+  											msg += "You got **" + numeral(amountWon[i]).format('0,0') + "** XP\n";
+  											break;
+  										case 2:
+  											msg += "You got **$" + numeral(amountWon[i]).format('0,0.00') + "** of Instant Income\n";
+  											break;
+  										case 3:
+  											msg += "You got **$" + numeral(amountWon[i]).format('0,0.00') + "** of Instant Income\n";
+  											break;
+  									}
+  								}
+  								self.disnode.bot.SendCompactEmbed(command.msg.channel, "Crates", msg, 3447003);
+  								self.utils.updatePlayerLastMessage(player);
+  								self.utils.updateLastSeen(player);
+  								self.utils.checkLV(player, command.msg.channel);
+  								self.utils.updatePlayer(player)
+                }else {
+  								self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough crates to open " + Crate.name + "\nNEED: " + quantity + "\nHAVE: " + player.crates[CrateID], 16772880);
+  							}
 							}else {
 								self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough Keys!\nNEED: " + Crate.cost + "\nHAVE: " + player.keys, 16772880);
 							}
 						}else{
               if(player.keys >= Crate.cost){
-                player.keys -= Crate.cost;
-                var Item = Crate.items[self.utils.getRandomIntInclusive(0, (Crate.items.length - 1))];
-                switch (Item.type) {
-                  case 0:
-                    player.money += Item.amount;
-                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
-                    break;
-                  case 1:
-                    player.xp += Item.amount;
-                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
-                    break;
-                  case 2:
-                    player.money += player.income;
-                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
-                    break;
-                  case 3:
-                    player.money += (player.income * 2);
-                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
-                    break;
-                }
-                self.utils.updatePlayerLastMessage(player);
-                self.utils.updateLastSeen(player);
-                self.utils.checkLV(player, command.msg.channel);
-                self.utils.updatePlayer(player);
-
+                if(player.crates[CrateID] >= 1){
+                  player.keys -= Crate.cost;
+                  player.crates[CrateID]--;
+                  var Item = Crate.items[self.utils.getRandomIntInclusive(0, (Crate.items.length - 1))];
+                  switch (Item.type) {
+                    case 0:
+                      player.money += Item.amount;
+                      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                      break;
+                    case 1:
+                      player.xp += Item.amount;
+                      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                      break;
+                    case 2:
+                      player.money += player.income;
+                      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                      break;
+                    case 3:
+                      player.money += (player.income * 2);
+                      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Complete", "You Opened the **" + Crate.name + "** Crate and got: **" + Item.item + "**", 3447003);
+                      break;
+                  }
+                  self.utils.updatePlayerLastMessage(player);
+                  self.utils.updateLastSeen(player);
+                  self.utils.checkLV(player, command.msg.channel);
+                  self.utils.updatePlayer(player);
+                }else {
+  								self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough crates to open " + Crate.name, 16772880);
+  							}
               }else {
                 self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough Keys!\nNEED: " + Crate.cost + "\nHAVE: " + player.keys, 16772880);
               }
@@ -1607,6 +1715,7 @@ class CasinoPlugin {
                     }else {
                       res.p.banreason = "You have been banned! The admin that banned you didn't provide a reason."
                     }
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + res.p.name + " Is now Banned", 3447003);
                     self.utils.updatePlayer(res.p)
                   }else {
                     res.p.money = 10000;
@@ -1618,9 +1727,34 @@ class CasinoPlugin {
                     res.p.banned = false;
                       res.p.banreason = "";
                     res.p.maxIncome = 1000;
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + res.p.name + " Is now Un Banned", 3447003);
                     self.utils.updatePlayer(res.p)
                   }
-                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + res.p.name + " Is now Banned", 3447003);
+                }else {
+                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
+                }
+              });
+            }
+            break;
+          case "softban":
+            if(command.params[1]){
+              self.utils.findPlayer(command.params[1]).then(function(res) {
+                if(res.found){
+                  if(!res.p.banned){
+                    res.p.banned = true;
+                    if(command.params[2]){
+                      res.p.banreason = command.params[2]
+                    }else {
+                      res.p.banreason = "You have been banned! The admin that banned you didn't provide a reason."
+                    }
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + res.p.name + " Is now Soft Banned", 3447003);
+                    self.utils.updatePlayer(res.p)
+                  }else {
+                    res.p.banned = false;
+                    res.p.banreason = "";
+                    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Action Complete", ":white_check_mark: Player: " + res.p.name + " Is now Un Soft Banned", 3447003);
+                    self.utils.updatePlayer(res.p)
+                  }
                 }else {
                   self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", res.msg, 16772880);
                 }
@@ -2218,7 +2352,7 @@ class CasinoPlugin {
             timestamp: new Date(),
             });
         }else {
-          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Ultra", "You Dont have Ultra!");
+          self.disnode.bot.SendCompactEmbed(command.msg.channel, "Ultra", "You Don't have Ultra!");
         }
         self.utils.updatePlayer(player);
       }).catch(function(err) {
