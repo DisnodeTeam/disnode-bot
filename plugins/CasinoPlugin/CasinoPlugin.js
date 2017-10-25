@@ -1087,6 +1087,10 @@ class CasinoPlugin {
           var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}`}
           list.push(obj)
         }
+        if (list.length == 0) {
+          var obj = {name: 'xD',value:'if (length == 0) return \'nothing found kiddo\''}
+          list.push(obj)
+        }
         self.disnode.bot.SendEmbed(command.msg.channel, {
           color: 0x36f15f,
         title: `Marketplace Listings: Page 1`,
@@ -1102,6 +1106,10 @@ class CasinoPlugin {
         var list = [];
         for (var i = 0; i < pageItems.length; i++) {
           var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}`}
+          list.push(obj)
+        }
+        if (list.length == 0) {
+          var obj = {name: 'xD',value:'if (length == 0) return \'nothing found kiddo\''}
           list.push(obj)
         }
         self.disnode.bot.SendEmbed(command.msg.channel, {
@@ -1120,6 +1128,10 @@ class CasinoPlugin {
       var list = [];
       for (var i = 0; i < pageItems.length; i++) {
         var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}`}
+        list.push(obj)
+      }
+      if (list.length == 0) {
+        var obj = {name: 'xD',value:'if (length == 0) return \'nothing found kiddo\''}
         list.push(obj)
       }
       self.disnode.bot.SendEmbed(command.msg.channel, {
