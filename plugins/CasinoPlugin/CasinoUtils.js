@@ -771,5 +771,15 @@ class CasinoUtils {
       });
     });
   }
+  handleTransIDs(arr, id) {
+    var found = false;
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i].id == id) {
+        found = true;
+        continue;
+      }
+    }
+    return found;
+  }
 }
 module.exports = CasinoUtils;

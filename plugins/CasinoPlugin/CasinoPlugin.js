@@ -1058,6 +1058,59 @@ class CasinoPlugin {
     });
     return;
   }
+  commandMarket(command){
+  var self = this;
+  var timeoutInfo;
+  var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+  visitor.pageview("Market Command").send()
+  self.utils.getPlayer(command).then(function(player) {
+    if(!player.rules){
+      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+      return;
+    }
+    if(self.utils.checkBan(player, command))return;
+    if(player.Admin || player.Mod){}else {
+      if(!self.utils.doChannelCheck(command)){
+        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
+        return;
+      }
+    }
+    switch (command.params[0]) {
+      // update user self.utils.updatePlayer(player);
+      case 'sell':
+      if (command.params[1] != undefined) {
+      if (parseInt(command.params[1]) != NaN) {
+        var amount = parseInt(command.params[1]);
+        if ((amount <= player.keys) && (amount != 0)) {
+        if (command.params[2] != undefined) {
+          var price = (numeral(command.params[2]).value() == null) ? 0 : numeral(command.params[2]).value();
+          var transID = self.utils.getRandomIntInclusive(1000,9999);
+          self.utils.DB.Find('market', {}).then(function(data){
+            if (!self.utils.handleTransIDs(data, transID)){
+              var obj = {
+                id: transID,
+                amount: amount,
+                price: price,
+                sellerID: player.id
+              }
+              self.utils.DB.Insert('market', obj);
+              player.keys -= amount;
+              self.utils.updatePlayer(player);
+              self.disnode.bot.SendMessage(command.msg.channel, JSON.stringify(obj,null,4))
+            }
+          })
+        }
+      }
+    }
+  } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Marketplace Selling", "!casino market sell [amount] [price] - Sell your keys for the price you want.")
+        break;
+      default:
+        self.disnode.bot.SendEmbed(command.msg.channel, {fields: [{name:'Casino Marketplace',value:'!casino market - Shows this.\n!casino market sell - Sell some keys.'}]});
+    }
+  }).catch(function(err) {
+    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+  });
+}
   commandDice(command){
     var self = this;
     var timeoutInfo;
