@@ -1112,7 +1112,17 @@ class CasinoPlugin {
                 }]
               });
             } else {
+              var newTrans = u;
               // idk how to handle this part
+              do {
+                newTrans = self.utils.getRandomIntInclusive(1000,9999);
+                if(check.taken.includes(newTrans)){
+                  newTrans = undefined;
+                }
+              } while (newTrans == undefined);
+
+              //newTrans has been defined
+              
             }
           });
         } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please specify a selling price.", 16772880);
