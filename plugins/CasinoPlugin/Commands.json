@@ -41,11 +41,6 @@
       "run": "commandDice"
     },
     {
-      "cmd": "market",
-      "desc": "*Marketplace to buy and sell keys*",
-      "run": "commandMarket"
-    },
-    {
       "cmd": "bal",
       "desc": "*check yours or other's money or XP quickly.*",
       "run": "commandBal"

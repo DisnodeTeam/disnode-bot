@@ -15,6 +15,7 @@ module.exports = {
       flip: "*flip a coin. Which will it be, heads or tails?*",
       wheel: "*play a nice game of roulette.*",
       "21": "*Play a game of blackjack!* (Ultra only)",
+      market: "*Marketplace to buy and sell keys*",
       dice: "*Roll a die and see if you are lucky enought to pick the right number!*",
       bal: "*check yours or other's money or XP quickly.*",
       time: "*Check how long until the next Income!*",
