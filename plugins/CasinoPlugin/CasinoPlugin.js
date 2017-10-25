@@ -1203,6 +1203,7 @@ class CasinoPlugin {
 												value: `$${numeral(price).format('0,0.00')}`
 											}]
 										});
+										logger.Info("Casino", "Market", `TransID #${transID}: Selling ${amount} key(s) for $${numeral(price).format('0,0.00')}. Seller: ${player.name}`);
 									} else {
 										var newTrans = undefined;
 										do {
@@ -1235,7 +1236,8 @@ class CasinoPlugin {
 												value: `$${numeral(price).format('0,0.00')}`
 											}]
 										});
-									}
+										logger.Info("Casino", "Market", `TransID #${transID}: Selling ${amount} key(s) for $${numeral(price).format('0,0.00')}. Seller: ${player.name}`);
+										}
 								});
 							} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please specify a selling price.", 16772880);
 						} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You dont have that many keys!", 16772880);
@@ -1257,6 +1259,7 @@ class CasinoPlugin {
 										self.utils.updatePlayer(seller.p);
 										self.disnode.bot.SendCompactEmbed(command.msg.channel, "Success", `You bought ${data[0].amount} key(s) for $${numeral(data[0].price).format('0,0.00')}`)
 										self.utils.DB.Delete('market', {'id':data[0].id})
+										logger.Info("Casino", "Market", `TransID #${data[0].id}: ${player.name} bought ${data[0].amount} key(s) for $${numeral(data[0].price).format('0,0.00')}. Seller: ${data[0].sellerName}`);
 									})
 								} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You dont have that much money!", 16772880);
 							} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You can't buy keys from your self.", 16772880);
@@ -1274,6 +1277,7 @@ class CasinoPlugin {
 								self.utils.updatePlayer(player);
 								self.disnode.bot.SendCompactEmbed(command.msg.channel, "Success", `You cancelled transaction # ${transID} and got your ${data[0].amount} key(s) back.`)
 								self.utils.DB.Delete('market', {'id':data[0].id})
+								logger.Info("Casino", "Market", `TransID #${data[0].id}: Cancelled ${data[0].amount} key(s) for $${numeral(data[0].price).format('0,0.00')}. Seller: ${data[0].sellerName}`);
 							} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You can't cancel a listing that is not yours.", 16772880);
 						} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Could not find a Transaction with that ID.", 16772880);
 					})
