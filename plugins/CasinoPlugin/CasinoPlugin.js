@@ -1075,9 +1075,42 @@ class CasinoPlugin {
         return;
       }
     }
+    if((player.Premium)||(player.Admin)){
     switch (command.params[0]) {
       // update user self.utils.updatePlayer(player);
       case 'list':
+      if (command.params[1] == undefined) {
+        self.utils.DB.Find('market', {}).then(function(data){
+        var pageItems = self.utils.pageArray(data, 1, 9);
+        var list = [];
+        for (var i = 0; i < pageItems.length; i++) {
+          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}`}
+          list.push(obj)
+        }
+        self.disnode.bot.SendEmbed(command.msg.channel, {
+          color: 0x36f15f,
+        title: `Marketplace Listings: Page 1`,
+        fields:list
+        })
+      })
+        return;
+      } else if (command.params[1].indexOf('<@') != -1) {
+        var user = self.utils.parseMention(command.params[1]);
+        var pageNumber = 1;
+        self.utils.DB.Find('market', {'sellerID':user}).then(function(data){
+        var pageItems = self.utils.pageArray(data, pageNumber, 9);
+        var list = [];
+        for (var i = 0; i < pageItems.length; i++) {
+          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}`}
+          list.push(obj)
+        }
+        self.disnode.bot.SendEmbed(command.msg.channel, {
+          color: 0x36f15f,
+        title: `Marketplace Listings: Page ${pageNumber}`,
+        fields:list
+        })
+      })
+      } else {
       var pageNumber = 1;
       if (numeral(command.params[1]).value() > 0) {
         pageNumber = numeral(command.params[1]).value();
@@ -1095,6 +1128,7 @@ class CasinoPlugin {
       fields:list
       })
     })
+  }
       break;
       case 'sell':
       if (command.params[1] != undefined) {
@@ -1105,6 +1139,16 @@ class CasinoPlugin {
           var price = (numeral(command.params[2]).value() == null) ? 0 : numeral(command.params[2]).value();
           var transID = self.utils.getRandomIntInclusive(1000,999999);
           self.utils.DB.Find('market', {}).then(function(data){
+            var selfCount = 0;
+            for (var i = 0; i < data.length; i++) {
+              if (selfCount == 9) {
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You have reached the maximum amount of transactions you can have open at once which is 9.", 16772880);
+                return;
+              }
+              if (data[i].sellerID == player.id) {
+                selfCount++;
+              }
+            }
             var check = self.utils.handleTransIDs(data, transID);
             if (!check.found){
               var obj = {
@@ -1170,9 +1214,45 @@ class CasinoPlugin {
     } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please specify an appropriate amount of keys.", 16772880);
   } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Marketplace Selling", "!casino market sell [amount] [price] - Sell your keys for the price you want.");
         break;
+      case 'buy':
+        if (command.params[1] != undefined) {
+          var transID = numeral(command.params[1]).value();
+          self.utils.DB.Find('market', {'id': transID}).then(function(data) {
+            if (data[0] != undefined) {
+              if (data[0].sellerID != player.id) {
+              if (data[0].price <= player.money) {
+                self.utils.findPlayer(data[0].sellerID).then(function(seller) {
+                player.keys += data[0].amount;
+                player.money -= data[0].price;
+                seller.p.money += data[0].price;
+                self.utils.updatePlayer(player);
+                self.utils.updatePlayer(seller.p);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Success", `You bought ${data[0].amount} key(s) for $${numeral(data[0].price).format('0,0.00')}`)
+                self.utils.DB.Delete('market', {'id':data[0].id})
+                })
+              } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You dont have that much money!", 16772880);
+            } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You can't buy keys from your self.", 16772880);
+          } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Could not find a Transaction with that ID.", 16772880);
+          })
+        } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please input a Transaction ID.", 16772880);
+        break;
+        case 'cancel':
+        if (command.params[1] != undefined) {
+          var transID = numeral(command.params[1]).value();
+          self.utils.DB.Find('market', {'id': transID}).then(function(data) {
+            if (data[0] != undefined) {
+                player.keys += data[0].amount;
+                self.utils.updatePlayer(player);
+                self.disnode.bot.SendCompactEmbed(command.msg.channel, "Success", `You cancelled transaction # ${transID} and got your ${data[0].amount} key(s) back.`)
+                self.utils.DB.Delete('market', {'id':data[0].id})
+              } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Could not find a Transaction with that ID.", 16772880);
+          })
+        } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please input a Transaction ID.", 16772880);
+          break;
       default:
         self.disnode.bot.SendEmbed(command.msg.channel, {fields: [{name:'Casino Marketplace',value:'!casino market - Shows this.\n!casino market sell - Sell some keys.'}]});
     }
+  } else self.disnode.bot.SendCompactEmbed(command.msg.channel,"Heck","Off Kiddo")
   }).catch(function(err) {
     console.log(err);
     self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
