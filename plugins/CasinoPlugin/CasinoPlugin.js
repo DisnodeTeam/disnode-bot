@@ -1077,14 +1077,33 @@ class CasinoPlugin {
     }
     switch (command.params[0]) {
       // update user self.utils.updatePlayer(player);
+      case 'list':
+      var pageNumber = 1;
+      if (numeral(command.params[1]).value() > 0) {
+        pageNumber = numeral(command.params[1]).value();
+      }
+      self.utils.DB.Find('market', {}).then(function(data){
+      var pageItems = self.utils.pageArray(data, pageNumber, 9);
+      var list = [];
+      for (var i = 0; i < pageItems.length; i++) {
+        var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}`}
+        list.push(obj)
+      }
+      self.disnode.bot.SendEmbed(command.msg.channel, {
+        color: 0x36f15f,
+      title: `Marketplace Listings: Page ${pageNumber}`,
+      fields:list
+      })
+    })
+      break;
       case 'sell':
       if (command.params[1] != undefined) {
-      if (parseInt(command.params[1]) != NaN) {
-        var amount = parseInt(command.params[1]);
+      if ((numeral(command.params[1]).value() > 0)&&(numeral(command.params[1]).value() <= player.keys)) {
+        var amount = numeral(command.params[1]).value();
         if ((amount <= player.keys) && (amount != 0)) {
         if (command.params[2] != undefined) {
           var price = (numeral(command.params[2]).value() == null) ? 0 : numeral(command.params[2]).value();
-          var transID = self.utils.getRandomIntInclusive(1000,9999);
+          var transID = self.utils.getRandomIntInclusive(1000,999999);
           self.utils.DB.Find('market', {}).then(function(data){
             var check = self.utils.handleTransIDs(data, transID);
             if (!check.found){
@@ -1099,6 +1118,7 @@ class CasinoPlugin {
               player.keys -= amount;
               self.utils.updatePlayer(player);
               self.disnode.bot.SendEmbed(command.msg.channel, {
+                color: 0x36f15f,
                 title: `Transaction ID #${transID}`,
                 description: player.name,
                 fields: [{
@@ -1108,21 +1128,41 @@ class CasinoPlugin {
                 }, {
                   name: 'Price',
                   inline: true,
-                  value: `$${price}`
+                  value: `$${numeral(price).format('0,0.00')}`
                 }]
               });
             } else {
-              var newTrans = u;
-              // idk how to handle this part
+              var newTrans = undefined;
               do {
-                newTrans = self.utils.getRandomIntInclusive(1000,9999);
+                newTrans = self.utils.getRandomIntInclusive(1000,999999);
                 if(check.taken.includes(newTrans)){
                   newTrans = undefined;
                 }
               } while (newTrans == undefined);
-
-              //newTrans has been defined
-              
+              var obj = {
+                id: newTrans,
+                amount: amount,
+                price: price,
+                sellerID: player.id,
+                sellerName: player.name
+              }
+              self.utils.DB.Insert('market', obj);
+              player.keys -= amount;
+              self.utils.updatePlayer(player);
+              self.disnode.bot.SendEmbed(command.msg.channel, {
+                color: 0x36f15f,
+                title: `Transaction ID #${newTrans}`,
+                description: player.name,
+                fields: [{
+                  name: 'Amount',
+                  inline: true,
+                  value: amount
+                }, {
+                  name: 'Price',
+                  inline: true,
+                  value: `$${numeral(price).format('0,0.00')}`
+                }]
+              });
             }
           });
         } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please specify a selling price.", 16772880);
@@ -1134,6 +1174,7 @@ class CasinoPlugin {
         self.disnode.bot.SendEmbed(command.msg.channel, {fields: [{name:'Casino Marketplace',value:'!casino market - Shows this.\n!casino market sell - Sell some keys.'}]});
     }
   }).catch(function(err) {
+    console.log(err);
     self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
   });
 }
