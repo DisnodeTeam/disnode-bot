@@ -1091,7 +1091,8 @@ class CasinoPlugin {
                 id: transID,
                 amount: amount,
                 price: price,
-                sellerID: player.id
+                sellerID: player.id,
+                sellerName: player.name
               }
               self.utils.DB.Insert('market', obj);
               player.keys -= amount;
