@@ -1086,7 +1086,8 @@ class CasinoPlugin {
           var price = (numeral(command.params[2]).value() == null) ? 0 : numeral(command.params[2]).value();
           var transID = self.utils.getRandomIntInclusive(1000,9999);
           self.utils.DB.Find('market', {}).then(function(data){
-            if (!self.utils.handleTransIDs(data, transID)){
+            var check = self.utils.handleTransIDs(data, transID);
+            if (!check.found){
               var obj = {
                 id: transID,
                 amount: amount,
@@ -1097,13 +1098,27 @@ class CasinoPlugin {
               self.utils.DB.Insert('market', obj);
               player.keys -= amount;
               self.utils.updatePlayer(player);
-              self.disnode.bot.SendMessage(command.msg.channel, JSON.stringify(obj,null,4))
+              self.disnode.bot.SendEmbed(command.msg.channel, {
+                title: `Transaction ID #${transID}`,
+                description: player.name,
+                fields: [{
+                  name: 'Amount',
+                  inline: true,
+                  value: amount
+                }, {
+                  name: 'Price',
+                  inline: true,
+                  value: `$${price}`
+                }]
+              });
+            } else {
+              // idk how to handle this part
             }
-          })
-        }
-      }
-    }
-  } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Marketplace Selling", "!casino market sell [amount] [price] - Sell your keys for the price you want.")
+          });
+        } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please specify a selling price.", 16772880);
+      } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You dont have that many keys!", 16772880);
+    } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please specify an appropriate amount of keys.", 16772880);
+  } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Marketplace Selling", "!casino market sell [amount] [price] - Sell your keys for the price you want.");
         break;
       default:
         self.disnode.bot.SendEmbed(command.msg.channel, {fields: [{name:'Casino Marketplace',value:'!casino market - Shows this.\n!casino market sell - Sell some keys.'}]});

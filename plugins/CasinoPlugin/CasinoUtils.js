@@ -773,13 +773,14 @@ class CasinoUtils {
   }
   handleTransIDs(arr, id) {
     var found = false;
+    var taken = [];
     for (var i = 0; i < arr.length; i++) {
+      taken.push(arr[i].id)
       if (arr[i].id == id) {
         found = true;
-        continue;
       }
     }
-    return found;
+    return {"found":found,"taken":taken};
   }
 }
 module.exports = CasinoUtils;
