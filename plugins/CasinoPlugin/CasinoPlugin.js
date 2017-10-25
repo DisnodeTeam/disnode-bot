@@ -1241,18 +1241,30 @@ class CasinoPlugin {
           var transID = numeral(command.params[1]).value();
           self.utils.DB.Find('market', {'id': transID}).then(function(data) {
             if (data[0] != undefined) {
+              if (data[0].sellerID == player.id) {
                 player.keys += data[0].amount;
                 self.utils.updatePlayer(player);
                 self.disnode.bot.SendCompactEmbed(command.msg.channel, "Success", `You cancelled transaction # ${transID} and got your ${data[0].amount} key(s) back.`)
                 self.utils.DB.Delete('market', {'id':data[0].id})
-              } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Could not find a Transaction with that ID.", 16772880);
+              } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You can't cancel a listing that is not yours.", 16772880);
+            } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Could not find a Transaction with that ID.", 16772880);
           })
         } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please input a Transaction ID.", 16772880);
           break;
       default:
-        self.disnode.bot.SendEmbed(command.msg.channel, {fields: [{name:'Casino Marketplace',value:'!casino market - Shows this.\n!casino market sell - Sell some keys.'}]});
-    }
-  } else self.disnode.bot.SendCompactEmbed(command.msg.channel,"Heck","Off Kiddo")
+      var msg = '';
+      msg += '!casino market list - List available listings you can buy. Search mulitple pages with `!casino market list [page #]` You can also search transactions from a certain user with `!casino market list [mention]`\n\n\n'
+      msg += '!casino market buy - Buy a listing with its transaction id. Ex: `!casino market buy 12345` or `!casino market buy #12345`\n\n\n'
+      msg += '!casino market sell - Sell any amount of your keys for a price you want. Ex: `!casino market sell [amount of keys] [price you want]`\n\n\n'
+      msg += '!casino market cancel - Cancels and returns your keys back to your balance. Ex: `!casino market cancel [transaction ID]`'
+        self.disnode.bot.SendEmbed(command.msg.channel, {
+          color: 0x36f15f,
+          fields: [{
+            name:'Casino Marketplace',
+            value: msg
+    }]})
+  }
+} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: The Marketplace is in beta testing by our Ultra members. If you wish to become ultra or learn more about it, do `!casino`", 16772880);
   }).catch(function(err) {
     console.log(err);
     self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
