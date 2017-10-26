@@ -325,10 +325,10 @@ class CasinoPlugin {
 					self.disnode.bot.SendCompactEmbed(command.msg.channel, "Invalid", resp.data.msg, 16772880);
 				}
 			}).catch(function(err) {
-				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 			});
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 	}
 	commandBal(command){
@@ -394,7 +394,7 @@ class CasinoPlugin {
 					}
 				});
 			}).catch(function(err) {
-				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 			});
 		}else {
 			self.utils.getPlayer(command).then(function(player) {
@@ -449,7 +449,7 @@ class CasinoPlugin {
 						footer: {}
 				});
 			}).catch(function(err) {
-				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 			});
 		}
 		return;
@@ -497,10 +497,10 @@ class CasinoPlugin {
 						}
 					)
 			}).catch(function(err) {
-				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 			});
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 		return;
 	}
@@ -719,10 +719,10 @@ class CasinoPlugin {
 				}
 			}).catch(function(err) {
 				console.log(err);
-				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error cobj", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error cobj", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 			});
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error player", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error player", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 		return;
 	}
@@ -894,7 +894,7 @@ class CasinoPlugin {
 					self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: Please enter a bet! Example `!casino flip tails 100`", 16772880);
 				}
 			}).catch(function(err) {
-				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 			});
 			return;
 	}
@@ -1103,13 +1103,12 @@ class CasinoPlugin {
 					break;
 			}
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 		return;
 	}
 	commandMarket(command){
 	  var self = this;
-	  var timeoutInfo;
 	  var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 	  visitor.pageview("Market Command").send()
 	  self.utils.getPlayer(command).then(function(player) {
@@ -1124,16 +1123,16 @@ class CasinoPlugin {
 	        return;
 	      }
 	    }
+			var timeoutInfo = self.utils.checkTimeout(player, 5);
+		  if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
+		  if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
+		  if(!timeoutInfo.pass){
+		    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before using this command again.", 16772880);
+		    return;
+		  }
 	  switch (command.params[0]) {
 	  // update user self.utils.updatePlayer(player);
 	  case 'list':
-	  timeoutInfo = self.utils.checkTimeout(player, 2);
-	  if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 1);
-	  if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
-	  if(!timeoutInfo.pass){
-	    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before using this command again.", 16772880);
-	    return;
-	  }
 	    if (command.params[1] == undefined) {
 	      self.utils.DB.Find('market', {}).then(function(data){
 	        var pageItems = self.utils.pageArray(data, 1, 9);
@@ -1143,7 +1142,7 @@ class CasinoPlugin {
 	          list.push(obj)
 	        }
 	        if (list.length == 0) {
-	          var obj = {name: 'xD',value:'if (length == 0) return \'nothing found kiddo\''}
+	          var obj = {name: 'Result',value:'No results found!'}
 	          list.push(obj)
 	        }
 	        self.disnode.bot.SendEmbed(command.msg.channel, {
@@ -1151,8 +1150,6 @@ class CasinoPlugin {
 	          title: `Marketplace Listings: Page 1`,
 	          fields:list
 	        })
-	        self.utils.updatePlayerLastMessage(player);
-	        self.utils.updateLastSeen(player);
 	      })
 	    } else if (command.params[1].indexOf('<@') != -1) {
 	      var user = self.utils.parseMention(command.params[1]);
@@ -1165,7 +1162,7 @@ class CasinoPlugin {
 	          list.push(obj)
 	        }
 	        if (list.length == 0) {
-	          var obj = {name: 'xD',value:'if (length == 0) return \'nothing found kiddo\''}
+	          var obj = {name: 'Result',value:'No results found!'}
 	          list.push(obj)
 	        }
 	        self.disnode.bot.SendEmbed(command.msg.channel, {
@@ -1173,8 +1170,6 @@ class CasinoPlugin {
 	          title: `Marketplace Listings: Page ${pageNumber}`,
 	          fields:list
 	        })
-	        self.utils.updatePlayerLastMessage(player);
-	        self.utils.updateLastSeen(player);
 	      })
 	    } else {
 	      var pageNumber = 1;
@@ -1189,7 +1184,7 @@ class CasinoPlugin {
 	          list.push(obj)
 	        }
 	        if (list.length == 0) {
-	          var obj = {name: 'xD',value:'if (length == 0) return \'nothing found kiddo\''}
+	          var obj = {name: 'Result',value:'No results found!'}
 	          list.push(obj)
 	        }
 	        self.disnode.bot.SendEmbed(command.msg.channel, {
@@ -1197,19 +1192,10 @@ class CasinoPlugin {
 	          title: `Marketplace Listings: Page ${pageNumber}`,
 	          fields:list
 	        })
-	        self.utils.updatePlayerLastMessage(player);
-	        self.utils.updateLastSeen(player);
 	      })
 	    }
 	    break;
 	  case 'sell':
-	  timeoutInfo = self.utils.checkTimeout(player, 5);
-	  if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
-	  if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
-	  if(!timeoutInfo.pass){
-	    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before use this command again.", 16772880);
-	    return;
-	  }
 	    if (command.params[1] != undefined) {
 	      if ((numeral(command.params[1]).value() > 0)&&(numeral(command.params[1]).value() <= player.keys)) {
 	        var amount = numeral(command.params[1]).value();
@@ -1304,13 +1290,6 @@ class CasinoPlugin {
 	      } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Marketplace Selling", "!casino market sell [amount] [price] - Sell your keys for the price you want.");
 	      break;
 	    case 'buy':
-	    timeoutInfo = self.utils.checkTimeout(player, 5);
-	    if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
-	    if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
-	    if(!timeoutInfo.pass){
-	      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before using this command again.", 16772880);
-	      return;
-	    }
 	      if (command.params[1] != undefined) {
 	        var transID = numeral(command.params[1]).value();
 	        self.utils.DB.Find('market', {'id': transID}).then(function(data) {
@@ -1325,24 +1304,15 @@ class CasinoPlugin {
 	                  self.utils.updatePlayer(seller.p);
 	                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Success", `You bought ${data[0].amount} key(s) for $${numeral(data[0].price).format('0,0.00')}`)
 	                  self.utils.DB.Delete('market', {'id':data[0].id})
-	                  self.utils.updatePlayerLastMessage(player);
-	                  self.utils.updateLastSeen(player);
 	                  logger.Info("Casino", "Market", `TransID #${data[0].id}: ${player.name} bought ${data[0].amount} key(s) for $${numeral(data[0].price).format('0,0.00')}. Seller: ${data[0].sellerName}`);
 	                })
 	              } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You dont have that much money!", 16772880);
 	            } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You can't buy keys from your self.", 16772880);
-	          } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Could not find a Transaction with that ID.", 16772880);
+	          } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Could not find a transaction with that ID.", 16772880);
 	        })
 	      } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please input a Transaction ID.", 16772880);
 	      break;
 	    case 'cancel':
-	    timeoutInfo = self.utils.checkTimeout(player, 2);
-	    if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 1);
-	    if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
-	    if(!timeoutInfo.pass){
-	      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
-	      return;
-	    }
 	      if (command.params[1] != undefined) {
 	        var transID = numeral(command.params[1]).value();
 	        self.utils.DB.Find('market', {'id': transID}).then(function(data) {
@@ -1360,20 +1330,18 @@ class CasinoPlugin {
 	              self.utils.updatePlayer(player);
 	              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Success", `You cancelled transaction # ${transID} and got your ${data[0].amount} key(s) back.`)
 	              self.utils.DB.Delete('market', {'id':data[0].id})
-	              self.utils.updatePlayerLastMessage(player);
-	              self.utils.updateLastSeen(player);
 	              logger.Info("Casino", "Market", `TransID #${data[0].id}: Cancelled ${data[0].amount} key(s) for $${numeral(data[0].price).format('0,0.00')}. Seller: ${data[0].sellerName}`);
 	            } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You can't cancel a listing that is not yours.", 16772880);
-	          } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Could not find a Transaction with that ID.", 16772880);
+	          } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Could not find a transaction with that ID.", 16772880);
 	        })
 	      } else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please input a Transaction ID.", 16772880);
 	      break;
 	    default:
 	      var msg = '';
-	      msg += '!casino market list - List available listings you can buy. Search mulitple pages with `!casino market list [page #]` You can also search transactions from a certain user with `!casino market list [mention]`\n\n\n'
-	      msg += '!casino market buy - Buy a listing with its transaction id. Ex: `!casino market buy 12345` or `!casino market buy #12345`\n\n\n'
-	      msg += '!casino market sell - Sell any amount of your keys for a price you want. Ex: `!casino market sell [amount of keys] [price you want]`\n\n\n'
-	      msg += '!casino market cancel - Cancels and returns your keys back to your balance. Ex: `!casino market cancel [transaction ID]`'
+	      msg += '!casino market list - lists available items that are currently available for purchase. Search multiple pages with: `!casino market list [page #]`. Transactions from a certain user can be searched by using: `!casino market list [mention]`\n\n\n'
+	      msg += '!casino market buy - this allows you to buy a listing with its transaction ID. Ex: `!casino market buy 12345` or `!casino market buy #12345`.\n\n\n'
+	      msg += '!casino market sell - this allows you to sell any amount of your keys, and for any price you want! Ex: `!casino market sell [amount of keys] [price you want]`\n\n\n'
+	      msg += '!casino market cancel - this allows you to cancel the transaction and get your keys added back to your balance. Ex: `!casino market cancel [transaction ID]`'
 	      self.disnode.bot.SendEmbed(command.msg.channel, {
 	        color: 0x36f15f,
 	        fields: [{
@@ -1381,9 +1349,12 @@ class CasinoPlugin {
 	          value: msg
 	        }]})
 	      }
+				self.utils.updatePlayerLastMessage(player);
+				self.utils.updateLastSeen(player);
+				self.utils.updatePlayer(player);
 	  }).catch(function(err) {
 	    console.log(err);
-	    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+	    self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 	  });
 	}
 	commandDice(command){
@@ -1500,7 +1471,7 @@ class CasinoPlugin {
 					break;
 			}
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 	}
 	commandRecentBetters(command){
@@ -1525,7 +1496,7 @@ class CasinoPlugin {
 			}
 			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Recent Betters -=- Current Time: " + self.utils.getDateTime(), msg);
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 		return;
 	}
@@ -1567,15 +1538,15 @@ class CasinoPlugin {
 							fields: [ {
 								name: 'Info',
 								inline: false,
-								value: "The top command can be used to see who is the best player in several different fields.",
+								value: "The top command can be used to be who the best player is in several different fields.",
 							},{
 								name: 'Commands',
 								inline: false,
-								value: "all commands are formatted like this `!casino top (mode) (page)` page is an optional field if you don't supply a page the top 10 is shown for that mode.",
+								value: "All commands are formatted like this: `!casino top (mode) (page)`. Page is an optional field. If you don't supply a page, the top 20 is shown for that mode.",
 							},{
 								name: 'Modes',
 								inline: false,
-								value: "Modes:\n**income**: Sorts users by income\n**money**: Sorts users by how much money they have\n**lv**: Sorts users by their Level\n**overall**: Sorts users by a calculated score the calulation is as follows: `((income / 1000) + (lv * 1000))`\n**rank**: View your rank on all of the different leaderboards.",
+								value: "Modes:\n**income**: sorts users by income.\n**money**: sorts users by the amount of money that they have.\n**lv**: sorts users by their level.\n**overall**: sorts users by a calculated score. The calculation is as follows: `((income / 1000) + (lv * 1000))`.\n**rank**: view your rank in all of the different leaderboards.",
 							}],
 								footer: {}
 							}
@@ -1677,7 +1648,7 @@ class CasinoPlugin {
 				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Order: " + mode, msg);
 			});
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 	}
 	commandCrate(command){
@@ -1878,7 +1849,7 @@ class CasinoPlugin {
 				);
 			}
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 		return;
 	}
@@ -2036,7 +2007,7 @@ class CasinoPlugin {
 				});
 			}
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 		return;
 	}
@@ -2315,7 +2286,7 @@ class CasinoPlugin {
 				}
 			}
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 		return;
 	}
@@ -2345,7 +2316,7 @@ class CasinoPlugin {
 				}
 			}
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 		return;
 	}
@@ -2496,7 +2467,7 @@ class CasinoPlugin {
 					self.disnode.bot.SendCompactEmbed(command.msg.channel, "Store", "Welcome to the store! To see a list of items, use `!casino store list`. When buying, use the ID of that item; for example: `!casino store buy 0`. If you want to purchase one or more of the item, use `!casino store buy 0 10`. To buy as much as you can, use `!casino store buy 0 max`.");
 			}
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 		return;
 	}
@@ -2585,7 +2556,7 @@ class CasinoPlugin {
 				self.disnode.bot.SendCompactEmbed(command.msg.channel, "transfer", "This command allows you to transfer money from one person to another as long as the other person is lv 3. Example `!casino transfer FireGamer3 100`");
 			}
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 		return;
 	}
@@ -2638,7 +2609,7 @@ class CasinoPlugin {
 			self.utils.updatePlayerLastMessage(player);
 			self.utils.updatePlayer(player);
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 		return;
 	}
@@ -2653,7 +2624,7 @@ class CasinoPlugin {
 					self.utils.updatePlayer(player);
 					self.disnode.bot.SendCompactEmbed(command.msg.channel, "Rules", "Thanks for accepting the rules! Enjoy our bot.");
 				}).catch(function(err) {
-					self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+					self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 				});
 				break;
 			default:
@@ -2733,7 +2704,7 @@ class CasinoPlugin {
 				return;
 			});
 		}).catch(function(err) {
-			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Oh, no! The API is down. Please try again in 5 minutes. If it's still down, yell at FireGamer3.", 16772880);
 		});
 	}
 	dateify(date){

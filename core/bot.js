@@ -545,7 +545,7 @@ class Bot extends EventEmitter {
         })
         .catch(function (err) {
           console.log(err);
-          self.SendMessage(channel, "If you are seeing this then there might be a general error or I dont have `Embed Links` permission. For me to work you must enable these permissions and try again.")
+          self.SendMessage(channel, "If you are seeing this, then there might be a general error. That or I don't have the `Embed Links` permission. For me to work, you must enable these permissions and try again.")
           reject(err);
         });
     });
@@ -583,7 +583,7 @@ class Bot extends EventEmitter {
         })
         .catch(function (err) {
           console.log(err);
-          self.SendMessage(channel, "If you are seeing this then there might be a general error or I dont have `Embed Links` permission. For me to work you must enable these permissions and try again.")
+          self.SendMessage(channel, "If you are seeing this, then there might be a general error. That or I don't have the `Embed Links` permission. For me to work, you must enable these permissions and try again.")
           reject(err);
         });
     });
