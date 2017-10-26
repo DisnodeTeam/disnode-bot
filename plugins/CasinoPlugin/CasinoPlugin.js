@@ -85,6 +85,7 @@ class CasinoPlugin {
 				{
 					name: "Basic",
 					cost: 2,
+					sellPrice: 500,
 					items: [
 						{item:"$1,000", type: 0, amount: 1000},
 						{item:"$2,500", type: 0, amount: 2500},
@@ -97,6 +98,7 @@ class CasinoPlugin {
 				{
 					name: "Good",
 					cost: 4,
+					sellPrice: 1000,
 					items: [
 						{item:"$10,000", type: 0, amount: 10000},
 						{item:"$20,000", type: 0, amount: 20000},
@@ -109,6 +111,7 @@ class CasinoPlugin {
 				{
 					name: "Great",
 					cost: 8,
+					sellPrice: 2000,
 					items: [
 						{item:"$60,000", type: 0, amount: 60000},
 						{item:"$120,000", type: 0, amount: 120000},
@@ -121,6 +124,7 @@ class CasinoPlugin {
 				{
 					name: "Epic",
 					cost: 16,
+					sellPrice: 3000,
 					items: [
 						{item:"$480,000", type: 0, amount: 480000},
 						{item:"$960,000", type: 0, amount: 960000},
@@ -133,6 +137,7 @@ class CasinoPlugin {
 				{
 					name: "Ultimate",
 					cost: 64,
+					sellPrice: 5000,
 					items: [
 						{item:"$3,840,000", type: 0, amount: 3840000},
 						{item:"$7,680,000", type: 0, amount: 7680000},
@@ -146,6 +151,7 @@ class CasinoPlugin {
 				{
 					name: "Omega",
 					cost: 128,
+					sellPrice: 10000,
 					items: [
 						{item:"$30,720,000", type: 0, amount: 30720000},
 						{item:"$61,440,000", type: 0, amount: 61440000},
@@ -1725,6 +1731,49 @@ class CasinoPlugin {
 						self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "The ID that you entered is not valid!", 16772880);
 					}
 					break;
+				case 'sell':
+				if (command.params[1]) {
+				var CrateID = numeral(command.params[1]).value();
+				if(CrateID >= 0 && CrateID < self.cratesys.crates.length){
+					var Crate = self.cratesys.crates[CrateID];
+					if(Crate == undefined){
+						self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "The ID that you entered is not valid!", 16772880);
+						return;
+					}
+						var quantity = 1
+						if (command.params[2]) {
+						quantity = numeral(command.params[2]).value();
+						if(quantity == 0)quantity = 1;
+						}
+						if (quantity <= player.crates[CrateID]) {
+							player.crates[CrateID] -= quantity;
+							player.money += (Crate.sellPrice * quantity);
+							self.utils.checkLV(player, command.msg.channel);
+							self.utils.updatePlayer(player);
+							self.disnode.bot.SendCompactEmbed(command.msg.channel, "Success", `Sold ${quantity} ${Crate.name} crate(s) for $${numeral((Crate.sellPrice * quantity)).format('0,0.00')}`)
+								} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough " + Crate.name + " crates to sell " + quantity + "\nYou have: " + player.crates[CrateID], 16772880);
+							} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "The ID that you entered is not valid!", 16772880);
+						} else {
+							var crates = "";
+							for (var i = 0; i < self.cratesys.crates.length; i++) {
+								crates += " --= ID: **" + i + "** Name: **" + self.cratesys.crates[i].name + "** - Worth: **$" + numeral(self.cratesys.crates[i].sellPrice).format('0,0.00') + "**\n";
+							}
+							self.disnode.bot.SendEmbed(command.msg.channel, {
+								color: 3447003,
+								author: {},
+								fields: [ {
+									name: 'Crate System',
+									inline: true,
+									value: "Sell the crates you don't want for a fixed price.\nUse `!casino crate sell ID Amount` to sell your crates!",
+								},{
+									name: 'Crates',
+									inline: false,
+									value: crates
+								}],
+									footer: {}
+								})
+						}
+				break;
 				default:
 				var crates = "";
 				for (var i = 0; i < self.cratesys.crates.length; i++) {
