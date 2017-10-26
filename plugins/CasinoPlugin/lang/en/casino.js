@@ -2,7 +2,7 @@ module.exports = {
   defaultCommand: {
     title: "Casino",
     desc: "Hello! \nCasino Bot is a Discord bot that allows users to play casino games on Discord. __**FOR AMUSEMENT ONLY**__.",
-    titleCommands: "Commands:",
+    titleCommands: ["Games:","Commands:"],
     titleDiscord: "Discord Server",
     titleUltra: "Disnode Ultra",
     descDiscord: "**Join our Discord Server for Support and More!:** https://discord.gg/AbZhCen",
@@ -18,7 +18,7 @@ module.exports = {
       market: "*Marketplace to buy and sell keys*",
       dice: "*Roll a die and see if you are lucky enought to pick the right number!*",
       bal: "*check yours or other's money or XP quickly.*",
-      time: "*Check how long until the next Income!*",
+      income: "*Redeem your Income with this command!*",
       top: "*check who's on top, and compete with your friends!*",
       betters: "*see who's recently played slots on your server.*",
       crate: "*Use keys to open crates for money and XP!*",

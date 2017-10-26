@@ -11,6 +11,7 @@ class CasinoUtils {
     this.plugin = plugin;
     this.recentBetters = [];
     //https://casino-api.disnodeteam.com/casino/
+    //http://localhost:5000/casino/
     this.csAPI = axios.create({
       baseURL: 'https://casino-api.disnodeteam.com/casino/',
       timeout: 5000,
@@ -286,7 +287,13 @@ class CasinoUtils {
               },
               keys: 0,
               created: parseInt(new Date().getTime()),
-              crates: [0,0,0,0,0,0]
+              lastIncome: parseInt(new Date().getTime()),
+              lastSeen: parseInt(new Date().getTime()),
+              crates: [0,0,0,0,0,0],
+              pref: {
+                lang: "en",
+                embed: true
+              }
             }
             self.updatePlayer(newPlayer);
             self.csAPI.post("/player/new" + newPlayer.id, newPlayer).then(function(resp){}).catch(function (err) {

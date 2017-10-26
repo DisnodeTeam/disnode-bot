@@ -1,21 +1,6 @@
 {
   "commands":[
     {
-      "cmd": "rules",
-      "desc": "*rules for Casino Bot.*",
-      "run": "commandRules"
-    },
-    {
-      "cmd": "invite",
-      "desc": "*invite link for Casino Bot.*",
-      "run": "commandInvite"
-    },
-    {
-      "cmd": "ultra",
-      "desc": "*Check your Ultra stats!*",
-      "run": "commandUltra"
-    },
-    {
       "cmd": "slot",
       "desc": "*slots (general help).*",
       "run": "commandSlot"
@@ -31,11 +16,6 @@
       "run": "commandWheel"
     },
     {
-      "cmd": "market",
-      "desc": "*Sell your keys*",
-      "run": "commandMarket"
-    },
-    {
       "cmd": "21",
       "desc": "*Play a game of blackjack!* (Ultra only)",
       "run": "commandBlackjack"
@@ -46,14 +26,34 @@
       "run": "commandDice"
     },
     {
+      "cmd": "rules",
+      "desc": "*rules for Casino Bot.*",
+      "run": "commandRules"
+    },
+    {
+      "cmd": "invite",
+      "desc": "*invite link for Casino Bot.*",
+      "run": "commandInvite"
+    },
+    {
+      "cmd": "ultra",
+      "desc": "*Check your Ultra stats!*",
+      "run": "commandUltra"
+    },
+    {
+      "cmd": "market",
+      "desc": "*Sell your keys*",
+      "run": "commandMarket"
+    },
+    {
       "cmd": "bal",
       "desc": "*check yours or other's money or XP quickly.*",
       "run": "commandBal"
     },
     {
-      "cmd": "time",
-      "desc": "*Check how long until the next Income!*",
-      "run": "commandTime"
+      "cmd": "income",
+      "desc": "*Redeem your Income with this command!*",
+      "run": "commandIncome"
     },
     {
       "cmd": "top",

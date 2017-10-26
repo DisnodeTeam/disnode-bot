@@ -201,10 +201,10 @@ class CasinoPlugin {
 			var pack = self.lang.getPack(player.prefs.lang, "casino");
 			var msg = "";
 			var msg2 = ""
-			for (var i = 0; i < 10; i++) {
+			for (var i = 0; i < 5; i++) {
 				msg += self.disnode.botConfig.prefix + self.config.prefix + " " + self.commands[i].cmd + " - " + pack.defaultCommand.commands[self.commands[i].cmd] + "\n";
 			}
-			for (var i = 10; i < self.commands.length; i++) {
+			for (var i = 5; i < self.commands.length; i++) {
 				msg2 += self.disnode.botConfig.prefix + self.config.prefix + " " + self.commands[i].cmd + " - " + pack.defaultCommand.commands[self.commands[i].cmd] + "\n";
 			}
 			self.disnode.bot.SendEmbed(command.msg.channel, {
@@ -215,11 +215,11 @@ class CasinoPlugin {
 					inline: true,
 					value: pack.defaultCommand.desc,
 				},{
-					name: pack.defaultCommand.titleCommands,
+					name: pack.defaultCommand.titleCommands[0],
 					inline: true,
 					value: msg,
 				},{
-					name: pack.defaultCommand.titleCommands,
+					name: pack.defaultCommand.titleCommands[1],
 					inline: true,
 					value: msg2,
 				}, {
@@ -237,10 +237,10 @@ class CasinoPlugin {
 		}).catch(function(err) {
 			var msg = "";
 			var msg2 = "";
-			for (var i = 0; i < 10; i++) {
+			for (var i = 0; i < 5; i++) {
 				msg += self.disnode.botConfig.prefix + self.config.prefix + " " + self.commands[i].cmd + " - " + self.commands[i].desc + "\n";
 			}
-			for (var i = 10; i < self.commands.length; i++) {
+			for (var i = 5; i < self.commands.length; i++) {
 				msg2 += self.disnode.botConfig.prefix + self.config.prefix + " " + self.commands[i].cmd + " - " + self.commands[i].desc + "\n";
 			}
 			self.disnode.bot.SendEmbed(command.msg.channel, {
@@ -251,7 +251,7 @@ class CasinoPlugin {
 					inline: true,
 					value: "Hello! \nCasino Bot is a Discord bot that allows users to play casino games on Discord. __**FOR AMUSEMENT ONLY**__.",
 				},{
-					name: 'Commands:',
+					name: 'Games:',
 					inline: true,
 					value: msg,
 				},{
@@ -279,7 +279,7 @@ class CasinoPlugin {
 		self.disnode.bot.SendCompactEmbed(command.msg.channel, "Invite", "https://discordapp.com/oauth2/authorize?client_id=263330369409908736&scope=bot&permissions=19456");
 		return;
 	}
-	commandTime(command){
+	commandIncome(command){
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Time Command").send();
@@ -295,8 +295,35 @@ class CasinoPlugin {
 					return;
 				}
 			}
-			self.utils.csAPI.get("/time").then(function(resp){
-				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Time Until Income", resp.data.readable);
+			self.utils.csAPI.get("/income/" + player.id).then(function(resp){
+				if(resp.data.complete){
+					console.log(resp.data);
+					self.disnode.bot.SendEmbed(command.msg.channel, {
+						color: 3447003,
+						author: {},
+						fields: [ {
+							name: 'Income',
+							inline: false,
+							value: "You got Income!",
+						},{
+							name: 'Given',
+							inline: true,
+							value: "$" + numeral(resp.data.given).format('0,0.00'),
+						},{
+							name: '% of income',
+							inline: true,
+							value: numeral(resp.data.mult*100).format('0,0.00') + "%",
+						}, {
+							name: 'Time since last Income recieved',
+							inline: false,
+							value: resp.data.time,
+						}],
+							footer: {}
+						}
+					);
+				}else {
+					self.disnode.bot.SendCompactEmbed(command.msg.channel, "Invalid", resp.data.msg, 16772880);
+				}
 			}).catch(function(err) {
 				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
 			});
@@ -1620,9 +1647,9 @@ class CasinoPlugin {
 			}
 			switch (command.params[0]) {
 				case "open":
-				var timeoutInfo = self.utils.checkTimeout(player, 5);
-				if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
-				if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
+					var timeoutInfo = self.utils.checkTimeout(player, 5);
+					if(player.Premium)timeoutInfo = self.utils.checkTimeout(player, 2);
+					if(player.Admin)timeoutInfo = self.utils.checkTimeout(player, 0);
 					if(!timeoutInfo.pass){
 						self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", ":warning: You must wait **" + timeoutInfo.remain + "** before playing again.", 16772880);
 						return;
@@ -1732,48 +1759,49 @@ class CasinoPlugin {
 					}
 					break;
 				case 'sell':
-				if (command.params[1]) {
-				var CrateID = numeral(command.params[1]).value();
-				if(CrateID >= 0 && CrateID < self.cratesys.crates.length){
-					var Crate = self.cratesys.crates[CrateID];
-					if(Crate == undefined){
-						self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "The ID that you entered is not valid!", 16772880);
-						return;
-					}
-						var quantity = 1
-						if (command.params[2]) {
-						quantity = numeral(command.params[2]).value();
-						if(quantity == 0)quantity = 1;
-						}
-						if (quantity <= player.crates[CrateID]) {
-							player.crates[CrateID] -= quantity;
-							player.money += (Crate.sellPrice * quantity);
-							self.utils.checkLV(player, command.msg.channel);
-							self.utils.updatePlayer(player);
-							self.disnode.bot.SendCompactEmbed(command.msg.channel, "Success", `Sold ${quantity} ${Crate.name} crate(s) for $${numeral((Crate.sellPrice * quantity)).format('0,0.00')}`)
-								} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough " + Crate.name + " crates to sell " + quantity + "\nYou have: " + player.crates[CrateID], 16772880);
-							} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "The ID that you entered is not valid!", 16772880);
-						} else {
-							var crates = "";
-							for (var i = 0; i < self.cratesys.crates.length; i++) {
-								crates += " --= ID: **" + i + "** Name: **" + self.cratesys.crates[i].name + "** - Worth: **$" + numeral(self.cratesys.crates[i].sellPrice).format('0,0.00') + "**\n";
+					if (command.params[1]) {
+						var CrateID = numeral(command.params[1]).value();
+						if(CrateID >= 0 && CrateID < self.cratesys.crates.length){
+							var Crate = self.cratesys.crates[CrateID];
+							if(Crate == undefined){
+								self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "The ID that you entered is not valid!", 16772880);
+								return;
 							}
-							self.disnode.bot.SendEmbed(command.msg.channel, {
-								color: 3447003,
-								author: {},
-								fields: [ {
-									name: 'Crate System',
-									inline: true,
-									value: "Sell the crates you don't want for a fixed price.\nUse `!casino crate sell ID Amount` to sell your crates!",
-								},{
-									name: 'Crates',
-									inline: false,
-									value: crates
-								}],
-									footer: {}
-								})
+							var quantity = 1
+							if (command.params[2]) {
+								quantity = numeral(command.params[2]).value();
+								if(quantity == 0)quantity = 1;
+							}
+							if (quantity <= player.crates[CrateID]) {
+								player.crates[CrateID] -= quantity;
+								player.money += (Crate.sellPrice * quantity);
+								self.utils.checkLV(player, command.msg.channel);
+								self.utils.updatePlayer(player);
+								self.disnode.bot.SendCompactEmbed(command.msg.channel, "Success", `Sold ${quantity} ${Crate.name} crate(s) for $${numeral((Crate.sellPrice * quantity)).format('0,0.00')}`)
+							} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You Dont have enough " + Crate.name + " crates to sell " + quantity + "\nYou have: " + player.crates[CrateID], 16772880);
+						} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "The ID that you entered is not valid!", 16772880);
+					} else {
+						var crates = "";
+						for (var i = 0; i < self.cratesys.crates.length; i++) {
+							crates += " --= ID: **" + i + "** Name: **" + self.cratesys.crates[i].name + "** - Worth: **$" + numeral(self.cratesys.crates[i].sellPrice).format('0,0.00') + "**\n";
 						}
-				break;
+						self.disnode.bot.SendEmbed(command.msg.channel, {
+							color: 3447003,
+							author: {},
+							fields: [ {
+								name: 'Crate System',
+								inline: true,
+								value: "Sell the crates you don't want for a fixed price.\nUse `!casino crate sell ID Amount` to sell your crates!",
+							},{
+								name: 'Crates',
+								inline: false,
+								value: crates
+							}],
+								footer: {}
+							}
+						)
+					}
+					break;
 				default:
 				var crates = "";
 				for (var i = 0; i < self.cratesys.crates.length; i++) {
