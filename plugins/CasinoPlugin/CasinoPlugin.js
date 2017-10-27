@@ -1138,7 +1138,7 @@ class CasinoPlugin {
 	        var pageItems = self.utils.pageArray(data, 1, 9);
 	        var list = [];
 	        for (var i = 0; i < pageItems.length; i++) {
-	          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}`}
+	          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}\n**PPK:** $${numeral(pageItems[i].price).format('0,0.00')}`}
 	          list.push(obj)
 	        }
 	        if (list.length == 0) {
@@ -1158,7 +1158,7 @@ class CasinoPlugin {
 	        var pageItems = self.utils.pageArray(data, pageNumber, 9);
 	        var list = [];
 	        for (var i = 0; i < pageItems.length; i++) {
-	          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}`}
+	          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}\n**PPK:** $${numeral(pageItems[i].price).format('0,0.00')}`}
 	          list.push(obj)
 	        }
 	        if (list.length == 0) {
@@ -1180,7 +1180,7 @@ class CasinoPlugin {
 	        var pageItems = self.utils.pageArray(data, pageNumber, 9);
 	        var list = [];
 	        for (var i = 0; i < pageItems.length; i++) {
-	          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}`}
+	          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}\n**PPK:** $${numeral(pageItems[i].price).format('0,0.00')}`}
 	          list.push(obj)
 	        }
 	        if (list.length == 0) {
@@ -1202,22 +1202,34 @@ class CasinoPlugin {
 	        if ((amount <= player.keys) && (amount != 0)) {
 	          if (command.params[2] != undefined) {
 	            var price = (numeral(command.params[2]).value() == null) ? 0 : numeral(command.params[2]).value();
-	            if (price > 10000000000) {
-	              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", `Price can not be higher than $${numeral(10000000000).format('0,0.00')}`);
+	            if (price > 1000000000) {
+	              self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", `Price can not be higher than $${numeral(1000000000).format('0,0.00')}`);
 	              return;
 	            }
 	            var transID = self.utils.getRandomIntInclusive(1000,999999);
 	            self.utils.DB.Find('market', {}).then(function(data){
 	              var selfCount = 0;
-	              for (var i = 0; i < data.length; i++) {
-	                if (selfCount == 9) {
-	                  self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You have reached the maximum amount of transactions you can have open at once which is 9.", 16772880);
-	                  return;
-	                }
-	                if (data[i].sellerID == player.id) {
-	                  selfCount++;
-	                }
-	              }
+								for (var i = 0; i < data.length; i++) {
+								  if (player.Admin) {
+								    if (selfCount == 8) {
+								      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You have reached the maximum amount of transactions you can have open at once which is 9.", 16772880);
+								      return;
+								    }
+								  } else if (player.Premium) {
+								      if (selfCount == 5) {
+								        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You have reached the maximum amount of transactions you can have open at once which is 6.", 16772880);
+								        return;
+								      }
+								    } else {
+								      if (selfCount == 2) {
+								        self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "You have reached the maximum amount of transactions you can have open at once which is 3.\nTo upgrade this limit please subscribe to Disnode Ultra. For info type `!casino`", 16772880);
+								        return;
+								      }
+								    }
+								  if (data[i].sellerID == player.id) {
+								    selfCount++;
+								  }
+								}
 	              var check = self.utils.handleTransIDs(data, transID);
 	              if (!check.found){
 	                var obj = {
@@ -1225,7 +1237,8 @@ class CasinoPlugin {
 	                  amount: amount,
 	                  price: price,
 	                  sellerID: player.id,
-	                  sellerName: player.name
+	                  sellerName: player.name,
+										ppk: (price / amount).toFixed()
 	                }
 	                self.utils.DB.Insert('market', obj);
 	                  player.keys -= amount;
@@ -1244,6 +1257,10 @@ class CasinoPlugin {
 	                      name: 'Price',
 	                      inline: true,
 	                      value: `$${numeral(price).format('0,0.00')}`
+	                    }, {
+	                      name: 'Price Per Key',
+	                      inline: true,
+	                      value: `$${numeral((price / amount).toFixed()).format('0,0.00')}`
 	                    }]
 	                  });
 	                  logger.Info("Casino", "Market", `TransID #${transID}: Selling ${amount} key(s) for $${numeral(price).format('0,0.00')}. Seller: ${player.name}`);
@@ -1279,6 +1296,10 @@ class CasinoPlugin {
 	                      name: 'Price',
 	                      inline: true,
 	                      value: `$${numeral(price).format('0,0.00')}`
+	                    }, {
+	                      name: 'Price Per Key',
+	                      inline: true,
+	                      value: `$${numeral((price / amount).toFixed()).format('0,0.00')}`
 	                    }]
 	                  });
 	                  logger.Info("Casino", "Market", `TransID #${transID}: Selling ${amount} key(s) for $${numeral(price).format('0,0.00')}. Seller: ${player.name}`);
