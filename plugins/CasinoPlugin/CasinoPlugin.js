@@ -1138,7 +1138,7 @@ class CasinoPlugin {
 	        var pageItems = self.utils.pageArray(data, 1, 9);
 	        var list = [];
 	        for (var i = 0; i < pageItems.length; i++) {
-	          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}\n**PPK:** $${numeral(pageItems[i].price).format('0,0.00')}`}
+	          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}\n**PPK:** $${numeral(pageItems[i].ppk).format('0,0.00')}`}
 	          list.push(obj)
 	        }
 	        if (list.length == 0) {
@@ -1158,7 +1158,7 @@ class CasinoPlugin {
 	        var pageItems = self.utils.pageArray(data, pageNumber, 9);
 	        var list = [];
 	        for (var i = 0; i < pageItems.length; i++) {
-	          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}\n**PPK:** $${numeral(pageItems[i].price).format('0,0.00')}`}
+	          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}\n**PPK:** $${numeral(pageItems[i].ppk).format('0,0.00')}`}
 	          list.push(obj)
 	        }
 	        if (list.length == 0) {
@@ -1180,7 +1180,7 @@ class CasinoPlugin {
 	        var pageItems = self.utils.pageArray(data, pageNumber, 9);
 	        var list = [];
 	        for (var i = 0; i < pageItems.length; i++) {
-	          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}\n**PPK:** $${numeral(pageItems[i].price).format('0,0.00')}`}
+	          var obj = {name: `# ${pageItems[i].id}`,inline:true,value:`**Seller:** ${pageItems[i].sellerName}\n**Amount:** ${pageItems[i].amount}\n**Price:** $${numeral(pageItems[i].price).format('0,0.00')}\n**PPK:** $${numeral(pageItems[i].ppk).format('0,0.00')}`}
 	          list.push(obj)
 	        }
 	        if (list.length == 0) {
@@ -1277,7 +1277,8 @@ class CasinoPlugin {
 	                    amount: amount,
 	                    price: price,
 	                    sellerID: player.id,
-	                    sellerName: player.name
+						sellerName: player.name,
+						ppk: (price / amount).toFixed()
 	                  }
 	                  self.utils.DB.Insert('market', obj);
 	                  player.keys -= amount;
