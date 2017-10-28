@@ -1107,6 +1107,125 @@ class CasinoPlugin {
 		});
 		return;
 	}
+	commandPrestige(command){
+	var self = this;
+	var timeoutInfo;
+	var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+	visitor.pageview("Prestige Command").send()
+	self.utils.getPlayer(command).then(function(player) {
+		if(!player.rules){
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+			return;
+		}
+		if(self.utils.checkBan(player, command))return;
+		if(player.Admin || player.Mod){}else {
+			if(!self.utils.doChannelCheck(command)){
+				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
+				return;
+			}
+		}
+		switch (command.params[0]) {
+			case 'stats':
+				self.disnode.bot.SendEmbed(command.msg.channel, {
+					title: `${player.name}'s Prestige Stats`,
+					fields: [{
+						name:'Lv',
+						inline:true,
+						value:player.prestige.lv
+					},
+					{
+						name:'# of Tokens',
+						inline:true,
+						value:player.prestige.tokens
+					},
+					{
+						name:'Multiplier',
+						inline:false,
+						value:'x'+player.prestige.mult
+					},
+					{
+						name:'Last Prestige',
+						inline:false,
+						value:(player.prestige.last == null) ? 'Never!' : dateformat(new Date(player.prestige.last), "mmmm dS, yyyy")
+					}]
+				})
+				break;
+			default:
+
+		}
+	}).catch(function(err) {
+		console.log(err);
+		self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+	});
+}
+commandClaim(command){
+var self = this;
+var timeoutInfo;
+var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+visitor.pageview("Claim Command").send()
+self.utils.getPlayer(command).then(function(player) {
+	if(!player.rules){
+		self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
+		return;
+	}
+	if(self.utils.checkBan(player, command))return;
+	if(player.Admin || player.Mod){}else {
+		if(!self.utils.doChannelCheck(command)){
+			self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please use the <#269839796069859328> channel for this command", 16772880);
+			return;
+		}
+	}
+ 	var time = self.utils.getElapsedTime((new Date().getTime() - player.lastClaim));
+	var hours = 0;
+		if (time.days >= 2) {
+    	hours = 48;
+		} else {
+			hours = (time.hours + (24 * time.days))
+		}
+		if (hours != 0) {
+	var keys =  numeral(((self.utils.getRandomIntInclusive(1,2) + player.prestige.lv) * hours).toFixed()).value();
+	var money =  numeral(((self.utils.getRandomIntInclusive(5000, 10000) * player.prestige.mult /* prestige 0 has mult of 1 */) * hours).toFixed(2)).value();
+	var xp = numeral(((self.utils.getRandomIntInclusive(100, 1000) * player.prestige.mult) * hours).toFixed()).value();
+	player.keys += keys;
+	player.money += money;
+	player.xp += xp;
+	player.lastClaim = new Date().getTime();
+	self.disnode.bot.SendEmbed(command.msg.channel, {
+		title: 'Successfully Claimed',
+		description: 'Can be claimed every hour. If you decide not to claim, it stacks up to x48 (2 days).',
+		color: 0x36f15f,
+		fields: [{
+			name: '# of Keys',
+			inline: true,
+			value: ''+keys
+		},{
+			name: 'Money',
+			inline:true,
+			value: '$'+numeral(money).format('0,0.00')
+		},{
+			name: 'XP',
+			inline: true,
+			value: ''+xp
+		},{
+			name: 'Last Claimed',
+			inline: true,
+			value: (time.days == 0) ? `${time.hours} hour(s) ago` : (time.days == 1) ? `1 day and ${time.hours} hour(s) ago` : `2 days and ${time.hours} hour(s) ago`
+		},{
+			name: 'Hours Stacked',
+			inline:true,
+			value: 'x'+hours
+		},{
+			name: 'Prestige Multiplier',
+			inline:true,
+			value: 'x'+player.prestige.mult
+		}]})
+	 	self.utils.updatePlayer(player);
+} else self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", `After one full hour, you can claim again. The last time that you claimed was  ${time.minutes} minutes and ${time.seconds} seconds ago.`, 16772880);
+}).catch(function(err) {
+ // 	console.log(err.response);
+	self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Agh! The API is down, please try again in 5 minutes. If it's still down, yell at FireGamer3 that it's down. This normally happens when the database is updating user's and their income so hold tight.", 16772880);
+});
+}
 	commandMarket(command){
 	  var self = this;
 	  var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});

@@ -46,6 +46,16 @@
       "run": "commandMarket"
     },
     {
+      "cmd": "prestige",
+      "desc": "idk what to put here yet",
+      "run": "commandPrestige"
+    },
+    {
+      "cmd": "claim",
+      "desc": "idk what to put here yet",
+      "run": "commandClaim"
+    },
+    {
       "cmd": "bal",
       "desc": "*check yours or other's money or XP quickly.*",
       "run": "commandBal"

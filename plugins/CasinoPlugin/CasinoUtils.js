@@ -289,10 +289,17 @@ class CasinoUtils {
               created: parseInt(new Date().getTime()),
               lastIncome: parseInt(new Date().getTime()),
               lastSeen: parseInt(new Date().getTime()),
+              lastClaim: parseInt(new Date().getTime()),
               crates: [0,0,0,0,0,0],
               pref: {
                 lang: "en",
                 embed: true
+              },
+              prestige: {
+                lv: 0,
+                mult: 1,
+                tokens: 0,
+                last: null
               }
             }
             self.updatePlayer(newPlayer);
