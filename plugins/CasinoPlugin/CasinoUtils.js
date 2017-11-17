@@ -2,7 +2,7 @@ const numeral = require('numeral');
 const logger = require('disnode-logger');
 const Countdown = require('countdownjs');
 const axios = require("axios");
-
+const chatbase = require("@google/chatbase")
 class CasinoUtils {
   constructor(disnode, state, plugin) {
     var self = this;
@@ -28,6 +28,18 @@ class CasinoUtils {
       });
     });
   }
+
+  reportToChatBase(userId, msg,msgId, command){
+    var msg = chatbase.newMessage('cbe1bcca-39aa-40b0-9fc8-8b4804436271', userId)
+    .setAsTypeUser() // sets the message as type user
+    .setTimestamp(Date.now().toString()) // Only unix epochs with Millisecond precision
+    .setPlatform('DISCORD') // sets the platform to the given value
+    .setMessage(msg) // the message sent by either user or agent
+    .setIntent(command) // the intent of the sent message (does not have to be set for agent messages)
+    .setUserId(userId) // a unique string identifying the user which the bot is interacting with
+    .setMessageId(msgId); // the id of the message, this is optional
+  }
+
   didWin(slot){
     var self = this;
     if(slot.player.money > 8500){

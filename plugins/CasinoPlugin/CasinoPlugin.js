@@ -6,6 +6,7 @@ const CasinoUtils = require('./CasinoUtils');
 const Blackjack = require('./Blackjack');
 const dateformat = require('dateformat');
 const ua = require('universal-analytics');
+
 class CasinoPlugin {
 	constructor() {
 		var self = this;
@@ -187,6 +188,8 @@ class CasinoPlugin {
 
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Default Command").send()
+		
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "default");
 
 		if(command.params[0] == 'dev'){
 			command.params.splice(0,1);
@@ -276,6 +279,7 @@ class CasinoPlugin {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Invite Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "invite");
 		self.disnode.bot.SendCompactEmbed(command.msg.channel, "Invite", "https://discordapp.com/oauth2/authorize?client_id=263330369409908736&scope=bot&permissions=19456");
 		return;
 	}
@@ -283,6 +287,7 @@ class CasinoPlugin {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Time Command").send();
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "income");
 		self.utils.getPlayer(command).then(function(player) {
 			if(!player.rules){
 				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -335,6 +340,7 @@ class CasinoPlugin {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Balanace Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "balance");
 		if(command.params[0] != undefined){
 			self.utils.getPlayer(command).then(function(player) {
 				if(!player.rules){
@@ -459,7 +465,7 @@ class CasinoPlugin {
 
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Jackpot Info Command").send()
-
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "jackpot-info");
 		self.utils.getPlayer(command).then(function(player) {
 			self.utils.getCasinoObj().then(function(casinoObj){
 				if(!player.rules){
@@ -508,6 +514,7 @@ class CasinoPlugin {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Slot Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "slot");
 		self.utils.getPlayer(command).then(function(player) {
 			self.utils.getCasinoObj().then(function(casinoObj){
 				if(!player.rules){
@@ -730,6 +737,7 @@ class CasinoPlugin {
 			var self = this;
 			var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 			visitor.pageview("Cloin Flip Command").send()
+			self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "coin-flip");
 			self.utils.getPlayer(command).then(function(player) {
 				if(!player.rules){
 					self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -911,6 +919,7 @@ class CasinoPlugin {
 		var timeoutInfo;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Wheel Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "wheel");
 		self.utils.getPlayer(command).then(function(player) {
 			if(!player.rules){
 				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1163,6 +1172,7 @@ var self = this;
 var timeoutInfo;
 var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 visitor.pageview("Claim Command").send()
+self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "claim");
 self.utils.getPlayer(command).then(function(player) {
 	if(!player.rules){
 		self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1230,6 +1240,7 @@ self.utils.getPlayer(command).then(function(player) {
 	  var self = this;
 	  var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 	  visitor.pageview("Market Command").send()
+	  self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "market");
 	  self.utils.getPlayer(command).then(function(player) {
 	    if(!player.rules){
 	      self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1503,6 +1514,7 @@ self.utils.getPlayer(command).then(function(player) {
 		var timeoutInfo;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Dice Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "dice");
 		self.utils.getPlayer(command).then(function(player) {
 			if(!player.rules){
 				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1619,6 +1631,7 @@ self.utils.getPlayer(command).then(function(player) {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Recent Betters Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "recent-betters");
 		self.utils.getPlayer(command).then(function(player) {
 			if(!player.rules){
 				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1645,6 +1658,7 @@ self.utils.getPlayer(command).then(function(player) {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Top Command").send();
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "top");
 		self.utils.getPlayer(command).then(function(player) {
 			var pid = player.id;
 			if(!player.rules){
@@ -1796,6 +1810,7 @@ self.utils.getPlayer(command).then(function(player) {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Create Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "crate");
 		self.utils.getPlayer(command).then(function(player) {
 			if(!player.rules){
 				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -1998,6 +2013,8 @@ self.utils.getPlayer(command).then(function(player) {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Stats Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "stats");
+		
 		self.utils.getPlayer(command).then(function(player) {
 			if(!player.rules){
 				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -2156,6 +2173,7 @@ self.utils.getPlayer(command).then(function(player) {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Admin Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "admin");
 		self.utils.getPlayer(command).then(function(player) {
 			if(self.utils.checkBan(player, command))return;
 			if(player.Admin == undefined)player.Admin = false;
@@ -2434,6 +2452,7 @@ self.utils.getPlayer(command).then(function(player) {
 	commandMod(command){
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "mod");
 		visitor.pageview("Mod Command").send()
 		self.utils.getPlayer(command).then(function(player) {
 			if(self.utils.checkBan(player, command))return;
@@ -2465,6 +2484,7 @@ self.utils.getPlayer(command).then(function(player) {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Store Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "store");
 		self.utils.getPlayer(command).then(function(player) {
 			if(!player.rules){
 				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -2616,6 +2636,7 @@ self.utils.getPlayer(command).then(function(player) {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Transfer Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "transfer");
 		self.utils.getPlayer(command).then(function(player) {
 			if(!player.rules){
 				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -2705,6 +2726,7 @@ self.utils.getPlayer(command).then(function(player) {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("BlackJack Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "blackjack");
 		self.utils.getPlayer(command).then(function(player) {
 			if(!player.rules){
 				self.disnode.bot.SendCompactEmbed(command.msg.channel, "Error", "Please read and accept the rules! `!casino rules`", 16772880);
@@ -2758,6 +2780,7 @@ self.utils.getPlayer(command).then(function(player) {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Rules Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "rules");
 		switch (command.params[0]) {
 			case "accept":
 				self.utils.getPlayer(command).then(function(player) {
@@ -2810,6 +2833,7 @@ self.utils.getPlayer(command).then(function(player) {
 		var self = this;
 		var visitor = ua('UA-101624094-2', command.msg.userID, {strictCidFormat: false});
 		visitor.pageview("Ultras Command").send()
+		self.utils.reportToChatBase(command.msg.userID, command.msg.message, command.msg.id, "ultra");
 		self.utils.getPlayer(command).then(function(player) {
 			self.utils.ultraCheck(player).then(function(data) {
 				if(data.isUltra){
