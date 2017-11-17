@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/AtecStudios/Disnode#readme",
   "dependencies": {
+    "@google/chatbase": "^1.0.0",
     "async": "^2.4.1",
     "axios": "^0.16.2",
     "cardcast-api": "^0.2.3",

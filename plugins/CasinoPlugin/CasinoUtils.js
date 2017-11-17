@@ -15,11 +15,11 @@ class CasinoUtils {
     this.csAPI = axios.create({
       baseURL: 'https://casino-api.disnodeteam.com/casino/',
       timeout: 5000,
-      headers: {'auth': self.disnode.botConfig.apikey}
+      headers: { 'auth': self.disnode.botConfig.apikey }
     });
     self.DB;
   }
-  init(){
+  init() {
     var self = this;
     return new Promise(function(resolve, reject) {
       self.disnode.db.InitPromise({}).then(function(dbo) {
@@ -29,29 +29,31 @@ class CasinoUtils {
     });
   }
 
-  reportToChatBase(userId, msg,msgId, command){
+  reportToChatBase(userId, msg, msgId, command) {
     var msg = chatbase.newMessage('cbe1bcca-39aa-40b0-9fc8-8b4804436271', userId)
-    .setAsTypeUser() // sets the message as type user
-    .setTimestamp(Date.now().toString()) // Only unix epochs with Millisecond precision
-    .setPlatform('DISCORD') // sets the platform to the given value
-    .setMessage(msg) // the message sent by either user or agent
-    .setIntent(command) // the intent of the sent message (does not have to be set for agent messages)
-    .setUserId(userId) // a unique string identifying the user which the bot is interacting with
-    .setMessageId(msgId); // the id of the message, this is optional
+      .setAsTypeUser() // sets the message as type user
+      .setTimestamp(Date.now().toString()) // Only unix epochs with Millisecond precision
+      .setPlatform('DISCORD') // sets the platform to the given value
+      .setMessage(msg) // the message sent by either user or agent
+      .setIntent(command) // the intent of the sent message (does not have to be set for agent messages)
+      .setUserId(userId) // a unique string identifying the user which the bot is interacting with
+      .setMessageId(msgId) // the id of the message, this is optional
+      .send()
+      .catch((err) => console.log(err))
   }
 
-  didWin(slot){
+  didWin(slot) {
     var self = this;
-    if(slot.player.money > 8500){
+    if (slot.player.money > 8500) {
       var minJackpotBet = (slot.player.money * 0.03);
-    }else var minJackpotBet = 250;
+    } else var minJackpotBet = 250;
     minJackpotBet = parseFloat(minJackpotBet.toFixed(2));
     slot.player.stats.slotPlays++;
-    if((slot.reel1 == ":100:") && (slot.reel2 == ":100:") && (slot.reel3 == ":100:")){
-      if(slot.bet < minJackpotBet){
+    if ((slot.reel1 == ":100:") && (slot.reel2 == ":100:") && (slot.reel3 == ":100:")) {
+      if (slot.bet < minJackpotBet) {
         slot.winAmount = parseFloat((slot.bet * 60).toFixed(2));
         slot.winText = "YOU GOT A JACKPOT! however you didnt meet the minimum bet requirement ($" + minJackpotBet + ") to get the JACKPOT value so here is 60x your bet";
-      }else {
+      } else {
         slot.winAmount = parseFloat(slot.casinoObj.jackpotValue);
         slot.casinoObj.jackpotValue = 100000;
         slot.winText = "JACKPOT JACKPOT JACKPOT!!!!!";
@@ -64,76 +66,76 @@ class CasinoUtils {
       slot.player.xp += 1000;
       return;
     }
-    if((slot.reel1 == ":first_place:") && (slot.reel2 == ":first_place:") && (slot.reel3 == ":first_place:")){
+    if ((slot.reel1 == ":first_place:") && (slot.reel2 == ":first_place:") && (slot.reel3 == ":first_place:")) {
       slot.winAmount = parseFloat((slot.bet * 16).toFixed(2));
       slot.winText = "WINNER WINNER HUUUUGE MONEY!";
-      if(slot.player.Premium || slot.player.Admin){
+      if (slot.player.Premium || slot.player.Admin) {
         slot.winText += " **(Disnode Ultra Bonus!)**";
         slot.winAmount += parseFloat(slot.winAmount);
       }
       slot.player.stats.slot1s++;
       slot.player.stats.slotWins++;
       slot.player.money += parseFloat(slot.winAmount);
-      if(slot.bet >= 250){
+      if (slot.bet >= 250) {
         slot.player.xp += 80;
-      }else {
+      } else {
         slot.winText += " `You bet lower than $250. Fair warning here, you won't get any XP and you can't win the TRUE jackpot.`"
       }
       return;
     }
-    if((slot.reel1 == ":second_place:") && (slot.reel2 == ":second_place:") && (slot.reel3 == ":second_place:")){
+    if ((slot.reel1 == ":second_place:") && (slot.reel2 == ":second_place:") && (slot.reel3 == ":second_place:")) {
       slot.winAmount = parseFloat((slot.bet * 8).toFixed(2));
       slot.winText = "WINNER WINNER BIG MONEY!";
-      if(slot.player.Premium || slot.player.Admin){
+      if (slot.player.Premium || slot.player.Admin) {
         slot.winText += " **(Disnode Ultra Bonus!)**";
         slot.winAmount += parseFloat(slot.winAmount);
       }
       slot.player.stats.slot2s++;
       slot.player.stats.slotWins++;
       slot.player.money += parseFloat(slot.winAmount);
-      if(slot.bet >= 250){
+      if (slot.bet >= 250) {
         slot.player.xp += 40;
-      }else {
+      } else {
         slot.winText += " `You bet lower than $250. Fair warning here, you won't get any XP and you can't win the TRUE jackpot.`"
       }
       return;
     }
-    if((slot.reel1 == ":third_place:") && (slot.reel2 == ":third_place:") && (slot.reel3 == ":third_place:")){
+    if ((slot.reel1 == ":third_place:") && (slot.reel2 == ":third_place:") && (slot.reel3 == ":third_place:")) {
       slot.winAmount = parseFloat((slot.bet * 4).toFixed(2));
       slot.winText = "WINNER!";
-      if(slot.player.Premium || slot.player.Admin){
+      if (slot.player.Premium || slot.player.Admin) {
         slot.winText += " **(Disnode Ultra Bonus!)**";
         slot.winAmount += parseFloat(slot.winAmount);
       }
       slot.player.stats.slot3s++;
       slot.player.stats.slotWins++;
       slot.player.money += parseFloat(slot.winAmount);
-      if(slot.bet >= 250){
+      if (slot.bet >= 250) {
         slot.player.xp += 20;
-      }else {
+      } else {
         slot.winText += " `You bet lower than $250. Fair warning here, you won't get any XP and you can't win the TRUE jackpot.`"
       }
       return;
     }
-    if((slot.reel1 == ":cherries:") && (slot.reel2 == ":cherries:") && (slot.reel3 == ":cherries:")){
+    if ((slot.reel1 == ":cherries:") && (slot.reel2 == ":cherries:") && (slot.reel3 == ":cherries:")) {
       slot.winAmount = parseFloat((slot.bet * 2).toFixed(2));
       slot.winText = "Winner";
-      if(slot.player.Premium || slot.player.Admin){
+      if (slot.player.Premium || slot.player.Admin) {
         slot.winText += " **(Disnode Ultra Bonus!)**";
         slot.winAmount += parseFloat(slot.winAmount);
       }
       slot.player.stats.slotTripleC++;
       slot.player.stats.slotWins++;
       slot.player.money += parseFloat(slot.winAmount);
-      if(slot.bet >= 250){
+      if (slot.bet >= 250) {
         slot.player.xp += 10;
-      }else {
+      } else {
         slot.winText += " `You bet lower than $250. Fair warning here, you won't get any XP and you can't win the TRUE jackpot.`"
       }
       return;
     }
-    if((slot.reel1 == ":key:") && (slot.reel2 == ":key:") && (slot.reel3 == ":key:")){
-      if(slot.bet < minJackpotBet){
+    if ((slot.reel1 == ":key:") && (slot.reel2 == ":key:") && (slot.reel3 == ":key:")) {
+      if (slot.bet < minJackpotBet) {
         slot.winText = "Hey There are some keys here but they are rusted! You didnt bet your minimum bet to restore the keys. oh well... ";
         return;
       }
@@ -141,122 +143,122 @@ class CasinoUtils {
       slot.player.keys += 3;
       return;
     }
-    if((slot.reel1 == ":package:") && (slot.reel2 == ":package:") && (slot.reel3 == ":package:")){
-      if(slot.bet < minJackpotBet){
+    if ((slot.reel1 == ":package:") && (slot.reel2 == ":package:") && (slot.reel3 == ":package:")) {
+      if (slot.bet < minJackpotBet) {
         slot.winText = "WOW! Thats a lot of crates, But they are empty! You didn't bet your min jackpot bet. ";
         return;
-      }else {
+      } else {
         slot.winText = "WOW! Thats a lot of crates! ";
         for (var i = 0; i < 4; i++) {
-          slot.player.crates[self.getRandomIntInclusive(0,5)]++;
+          slot.player.crates[self.getRandomIntInclusive(0, 5)]++;
         }
         return;
       }
     }
-    if((slot.reel1 == ":package:") || (slot.reel2 == ":package:") || (slot.reel3 == ":package:")){
-      if(slot.bet < minJackpotBet){
+    if ((slot.reel1 == ":package:") || (slot.reel2 == ":package:") || (slot.reel3 == ":package:")) {
+      if (slot.bet < minJackpotBet) {
         slot.winText = "Hey! A crate, But it's empty! You didn't bet your min jackpot bet. ";
-      }else {
+      } else {
         slot.winText = "Hey! A crate! ";
-        slot.player.crates[self.getRandomIntInclusive(0,5)]++;
+        slot.player.crates[self.getRandomIntInclusive(0, 5)]++;
       }
     }
-    if((slot.reel1 == ":key:") || (slot.reel2 == ":key:") || (slot.reel3 == ":key:")){
-      if(slot.bet < minJackpotBet){
+    if ((slot.reel1 == ":key:") || (slot.reel2 == ":key:") || (slot.reel3 == ":key:")) {
+      if (slot.bet < minJackpotBet) {
         slot.winText += "Hey a key... but it's rusted! You didnt bet your minimum bet to restore the key. oh well... ";
-      }else {
+      } else {
         slot.winText += "Hey! a Key! ";
         slot.player.keys++;
       }
     }
-    if((slot.reel1 == ":cherries:") || (slot.reel2 == ":cherries:") || (slot.reel3 == ":cherries:")){
+    if ((slot.reel1 == ":cherries:") || (slot.reel2 == ":cherries:") || (slot.reel3 == ":cherries:")) {
       slot.winAmount = parseFloat((slot.bet / 2).toFixed(2));
       slot.winText += "Well at least you didn't lose it all...";
       slot.player.stats.slotSingleC++;
       slot.player.stats.slotWins++;
       slot.player.money += parseFloat(slot.winAmount);
-      if(slot.bet >= 250){
+      if (slot.bet >= 250) {
         slot.player.xp += 5;
-      }else {
+      } else {
         slot.winText += " `You bet lower than $250. Fair warning here, you won't get any XP and you can't win the TRUE jackpot.`"
       }
       return;
     }
     slot.winAmount = 0;
     slot.winText += "Dang, better luck next time...";
-    if(slot.bet >= 250){
+    if (slot.bet >= 250) {
       slot.player.xp += 1;
-    }else {
+    } else {
       slot.winText += " `You bet lower than $250. Fair warning here, you won't get any XP and you can't win the TRUE jackpot.`"
     }
   }
-  orgArray(array, orgMember){
+  orgArray(array, orgMember) {
     var temp = [];
     for (var i = 0; i < array.length; i++) {
       var placed = false;
       for (var x = 0; x < temp.length; x++) {
-        if(array[i][orgMember] > temp[x][orgMember]){
+        if (array[i][orgMember] > temp[x][orgMember]) {
           temp.splice(x, 0, array[i]);
           placed = true;
           break;
         }
       }
-      if(!placed){
+      if (!placed) {
         temp.push(array[i]);
       }
     }
     return temp;
   }
-  pageArray(array, page=1, maxElements=10){
+  pageArray(array, page = 1, maxElements = 10) {
     var temp = [];
     if (page == 1) {
       page = 1;
       var startindex = 0
       var maxindex = maxElements;
-    }else {
+    } else {
       var maxindex = (page * maxElements);
       var startindex = maxindex - maxElements;
     }
     for (var i = startindex; i < array.length; i++) {
-      if(i == maxindex)break;
+      if (i == maxindex) break;
       temp.push(array[i]);
     }
     return temp;
   }
-  updatePlayerLastMessage(player){
+  updatePlayerLastMessage(player) {
     var currentDate = new Date().getTime();
     player.lastMessage = parseInt(currentDate);
   }
-  handleRecentBetters(player){
+  handleRecentBetters(player) {
     var self = this;
     var placed = false;
     for (var i = 0; i < self.recentBetters.length; i++) {
-      if(self.recentBetters[i].name == player.name){
-        self.recentBetters.splice(i,1);
-        self.recentBetters.unshift({name: player.name, time: self.getDateTime()});
+      if (self.recentBetters[i].name == player.name) {
+        self.recentBetters.splice(i, 1);
+        self.recentBetters.unshift({ name: player.name, time: self.getDateTime() });
         placed = true;
         break;
       }
     }
-    if(!placed){
-      self.recentBetters.unshift({name: player.name, time: self.getDateTime()});
+    if (!placed) {
+      self.recentBetters.unshift({ name: player.name, time: self.getDateTime() });
     }
-    while(self.recentBetters.length > 10){
+    while (self.recentBetters.length > 10) {
       self.recentBetters.splice(10, 1)
     }
   }
-  getPlayer(data){
+  getPlayer(data) {
     var self = this;
     var players = [];
     return new Promise(function(resolve, reject) {
-      self.csAPI.get("/player/" + data.msg.userID).then(function(resp){
+      self.csAPI.get("/player/" + data.msg.userID).then(function(resp) {
         resolve(resp.data);
-      }).catch(function (err) {
+      }).catch(function(err) {
         console.log(err);
-        if(err.response != undefined){
-          if(err.response.status == 404){
+        if (err.response != undefined) {
+          if (err.response.status == 404) {
             var newPlayer = {
-              name:  data.msg.user,
+              name: data.msg.user,
               id: data.msg.userID,
               money: 10000,
               income: 1000,
@@ -302,7 +304,7 @@ class CasinoUtils {
               lastIncome: parseInt(new Date().getTime()),
               lastSeen: parseInt(new Date().getTime()),
               lastClaim: parseInt(new Date().getTime()),
-              crates: [0,0,0,0,0,0],
+              crates: [0, 0, 0, 0, 0, 0],
               pref: {
                 lang: "en",
                 embed: true
@@ -315,14 +317,14 @@ class CasinoUtils {
               }
             }
             self.updatePlayer(newPlayer);
-            self.csAPI.post("/player/new" + newPlayer.id, newPlayer).then(function(resp){}).catch(function (err) {
+            self.csAPI.post("/player/new" + newPlayer.id, newPlayer).then(function(resp) {}).catch(function(err) {
               reject(err);
             });
             resolve(newPlayer);
           }
-        }else if(err.status == 404){
+        } else if (err.status == 404) {
           var newPlayer = {
-            name:  data.msg.user,
+            name: data.msg.user,
             id: data.msg.userID,
             money: 10000,
             income: 1000,
@@ -365,51 +367,51 @@ class CasinoUtils {
             },
             keys: 0,
             created: parseInt(new Date().getTime()),
-            crates: [0,0,0,0,0,0]
+            crates: [0, 0, 0, 0, 0, 0]
           }
           self.updatePlayer(newPlayer);
-          self.csAPI.post("/player/new" + newPlayer.id, newPlayer).then(function(resp){}).catch(function (err) {
+          self.csAPI.post("/player/new" + newPlayer.id, newPlayer).then(function(resp) {}).catch(function(err) {
             reject(err);
           });
           resolve(newPlayer);
-        }else {
+        } else {
           reject(err);
         }
       });
     });
   }
-  parseMention(dataString){
+  parseMention(dataString) {
     var self = this;
     var returnV = dataString;
-    returnV = returnV.replace(/\D/g,'');
+    returnV = returnV.replace(/\D/g, '');
     return returnV;
   }
-  findPlayer(info){
+  findPlayer(info) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      self.csAPI.get("/players/" + info).then(function(resp){
+      self.csAPI.get("/players/" + info).then(function(resp) {
         resolve(resp.data);
-      }).catch(function (err) {
+      }).catch(function(err) {
         reject(err);
       });
     });
   }
-  updatePlayer(player){
+  updatePlayer(player) {
     var self = this;
-    self.csAPI.post("/players/" + player.id, player).then(function(resp){});
+    self.csAPI.post("/players/" + player.id, player).then(function(resp) {});
   }
   getDateTime() {
     var date = new Date();
     var hour = date.getHours();
     hour = (hour < 10 ? "0" : "") + hour;
-    var min  = date.getMinutes();
+    var min = date.getMinutes();
     min = (min < 10 ? "0" : "") + min;
-    var sec  = date.getSeconds();
+    var sec = date.getSeconds();
     sec = (sec < 10 ? "0" : "") + sec;
     var year = date.getFullYear();
     var month = date.getMonth() + 1;
     month = (month < 10 ? "0" : "") + month;
-    var day  = date.getDate();
+    var day = date.getDate();
     day = (day < 10 ? "0" : "") + day;
     return hour + ":" + min + ":" + sec + " :: " + month + "/" + day + "/" + year;
   }
@@ -418,24 +420,24 @@ class CasinoUtils {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
-  checkTimeout(player, seconds){
+  checkTimeout(player, seconds) {
     var self = this;
     var currentDate = new Date().getTime();
-    if(player.lastMessage == null){
-      return {pass: true};
+    if (player.lastMessage == null) {
+      return { pass: true };
     }
     var targetMS = player.lastMessage + (seconds * 1000);
     var remainingMS = currentDate - targetMS;
-    if(remainingMS >= 0){
+    if (remainingMS >= 0) {
       var elapsedObj = self.getElapsedTime(remainingMS);
-      return {pass: true, remain: elapsedObj.days + " Days" + elapsedObj.hours + " Hours " + elapsedObj.minutes + " Minutes " + elapsedObj.seconds + " Seconds " + elapsedObj.miliseconds + " Miliseconds"};
-    }else {
+      return { pass: true, remain: elapsedObj.days + " Days" + elapsedObj.hours + " Hours " + elapsedObj.minutes + " Minutes " + elapsedObj.seconds + " Seconds " + elapsedObj.miliseconds + " Miliseconds" };
+    } else {
       remainingMS = -remainingMS;
       var elapsedObj = self.getElapsedTime(remainingMS);
-      return {pass: false, remain: elapsedObj.minutes + " Minutes " + elapsedObj.seconds + " Seconds"};
+      return { pass: false, remain: elapsedObj.minutes + " Minutes " + elapsedObj.seconds + " Seconds" };
     }
   }
-  getElapsedTime(ms){
+  getElapsedTime(ms) {
     var days = 0;
     var hours = 0;
     var minutes = 0;
@@ -448,7 +450,7 @@ class CasinoUtils {
         hours++;
         minutes = 0;
       }
-      if(hours == 24){
+      if (hours == 24) {
         days++
         hours = 0;
       }
@@ -461,26 +463,26 @@ class CasinoUtils {
       miliseconds: miliseconds
     }
   }
-  updateLastSeen(player){
-      var date = new Date().getTime();
-      player.lastSeen = parseInt(date);
+  updateLastSeen(player) {
+    var date = new Date().getTime();
+    player.lastSeen = parseInt(date);
   }
-  canGetIncome(player){
+  canGetIncome(player) {
     var self = this;
     var date = new Date().getTime();
     var elapsed = date - player.lastSeen;
     var elapsedObj = self.getElapsedTime(elapsed);
-    if((elapsedObj.days >= 2)){
+    if ((elapsedObj.days >= 2)) {
       return false;
     }
     return true;
   }
-  checkBan(player, command){
-    if(player.banned){
+  checkBan(player, command) {
+    if (player.banned) {
       this.disnode.bot.SendEmbed(command.msg.channel, {
         color: 16711680,
         author: {},
-        fields: [ {
+        fields: [{
           name: "You have been banned!",
           inline: false,
           value: ":octagonal_sign: You are banned! heres why: ``` " + player.banreason + "```",
@@ -489,56 +491,56 @@ class CasinoUtils {
           inline: false,
           value: "**If you wish to appeal your ban you will have to do so in this discord channel: ** https://discord.gg/gxQ7nbQ",
         }],
-          footer: {}
-        });
+        footer: {}
+      });
       return true;
-    }else {
+    } else {
       return false;
     }
   }
-  checkLV(player, channel){
+  checkLV(player, channel) {
     var self = this;
     var lvup = false;
-    while(player.xp >= (player.nextlv)){
+    while (player.xp >= (player.nextlv)) {
       player.lv++;
       player.maxIncome = player.maxIncome * 1.2;
       player.nextlv += (100 * player.lv);
       lvup = true;
     }
-    if(lvup)self.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lv + "\n**Your max income has been increased to:** $" + numeral(player.maxIncome).format('0,0.00'), 1433628);
+    if (lvup) self.disnode.bot.SendCompactEmbed(channel, player.name + " Level Up!", "**You are now a Lv:** " + player.lv + "\n**Your max income has been increased to:** $" + numeral(player.maxIncome).format('0,0.00'), 1433628);
   }
-  calculateWheelWins(wheelInfo){
-    if(wheelInfo.wheelNumber >= 25 && wheelInfo.wheelNumber <= 36) {//WIN 3rd
+  calculateWheelWins(wheelInfo) {
+    if (wheelInfo.wheelNumber >= 25 && wheelInfo.wheelNumber <= 36) { //WIN 3rd
       wheelInfo.player.stats.wheelLandedsections++;
-    }else if(wheelInfo.wheelNumber >= 13 & wheelInfo.wheelNumber <= 24) {//WIN 2nd
+    } else if (wheelInfo.wheelNumber >= 13 & wheelInfo.wheelNumber <= 24) { //WIN 2nd
       wheelInfo.player.stats.wheelLandedsections++;
-    }else if(wheelInfo.wheelNumber >= 1 & wheelInfo.wheelNumber <= 12) {//WIN 1st
+    } else if (wheelInfo.wheelNumber >= 1 & wheelInfo.wheelNumber <= 12) { //WIN 1st
       wheelInfo.player.stats.wheelLandedsections++;
     }
-    if((wheelInfo.wheelNumber % 2) != 0) { //WIN Odd
+    if ((wheelInfo.wheelNumber % 2) != 0) { //WIN Odd
       wheelInfo.player.stats.wheelLandedevenodd++;
-    }else if((wheelInfo.wheelNumber % 2) == 0){ //WIN Even
+    } else if ((wheelInfo.wheelNumber % 2) == 0) { //WIN Even
       wheelInfo.player.stats.wheelLandedevenodd++;
     }
-    if(wheelInfo.ball.type == 2) {//WIN Black
+    if (wheelInfo.ball.type == 2) { //WIN Black
       wheelInfo.player.stats.wheelLandedcolor++;
-    }else if(wheelInfo.ball.type == 1) {//WIN Red
+    } else if (wheelInfo.ball.type == 1) { //WIN Red
       wheelInfo.player.stats.wheelLandedcolor++;
     }
-    if(wheelInfo.wheelNumber >= 1 && wheelInfo.wheelNumber <= 18){//WIN Low
+    if (wheelInfo.wheelNumber >= 1 && wheelInfo.wheelNumber <= 18) { //WIN Low
       wheelInfo.player.stats.wheelLandedlowhigh++;
-    }else if(wheelInfo.wheelNumber >= 19 && wheelInfo.wheelNumber <= 36){//WIN high
+    } else if (wheelInfo.wheelNumber >= 19 && wheelInfo.wheelNumber <= 36) { //WIN high
       wheelInfo.player.stats.wheelLandedlowhigh++;
     }
-    if(wheelInfo.wheelNumber == 0){//WIN 0
+    if (wheelInfo.wheelNumber == 0) { //WIN 0
       wheelInfo.player.stats.wheelLanded0++;
-    }else {
+    } else {
       wheelInfo.player.stats.wheelLandedNumber++;
     }
     for (var i = 0; i < wheelInfo.winspots.length; i++) {
-      if((wheelInfo.wheelNumber % 2) == 0){ //WIN Even
-        if(wheelInfo.winspots[i] == "even"){
-          if(wheelInfo.wheelNumber != 0){
+      if ((wheelInfo.wheelNumber % 2) == 0) { //WIN Even
+        if (wheelInfo.winspots[i] == "even") {
+          if (wheelInfo.wheelNumber != 0) {
             wheelInfo.player.stats.wheelevenodd++;
             wheelInfo.winAmount += (wheelInfo.betperspot * 2);
             wheelInfo.xpAward += 5;
@@ -546,9 +548,9 @@ class CasinoUtils {
           }
         }
       }
-      if((wheelInfo.wheelNumber % 2) != 0) { //WIN Odd
-        if(wheelInfo.winspots[i] == "odd"){
-          if(wheelInfo.wheelNumber != 0){
+      if ((wheelInfo.wheelNumber % 2) != 0) { //WIN Odd
+        if (wheelInfo.winspots[i] == "odd") {
+          if (wheelInfo.wheelNumber != 0) {
             wheelInfo.player.stats.wheelevenodd++;
             wheelInfo.winAmount += (wheelInfo.betperspot * 2);
             wheelInfo.xpAward += 5;
@@ -556,46 +558,46 @@ class CasinoUtils {
           }
         }
       }
-      if(wheelInfo.ball.type == 1) {//WIN Red
-        if(wheelInfo.winspots[i] == "red"){
+      if (wheelInfo.ball.type == 1) { //WIN Red
+        if (wheelInfo.winspots[i] == "red") {
           wheelInfo.player.stats.wheelcolor++;
           wheelInfo.winAmount += (wheelInfo.betperspot * 2);
           wheelInfo.xpAward += 5;
           continue;
         }
       }
-      if(wheelInfo.ball.type == 2) {//WIN Black
-        if(wheelInfo.winspots[i] == "black"){
+      if (wheelInfo.ball.type == 2) { //WIN Black
+        if (wheelInfo.winspots[i] == "black") {
           wheelInfo.player.stats.wheelcolor++;
           wheelInfo.winAmount += (wheelInfo.betperspot * 2);
           wheelInfo.xpAward += 5;
           continue;
         }
       }
-      if(wheelInfo.wheelNumber >= 1 && wheelInfo.wheelNumber <= 18){//WIN Low
-        if(wheelInfo.winspots[i] == "low"){
+      if (wheelInfo.wheelNumber >= 1 && wheelInfo.wheelNumber <= 18) { //WIN Low
+        if (wheelInfo.winspots[i] == "low") {
           wheelInfo.player.stats.wheellowhigh++;
           wheelInfo.winAmount += (wheelInfo.betperspot * 2);
           wheelInfo.xpAward += 10;
           continue;
         }
       }
-      if(wheelInfo.wheelNumber >= 19 && wheelInfo.wheelNumber <= 36){//WIN high
-        if(wheelInfo.winspots[i] == "high"){
+      if (wheelInfo.wheelNumber >= 19 && wheelInfo.wheelNumber <= 36) { //WIN high
+        if (wheelInfo.winspots[i] == "high") {
           wheelInfo.player.stats.wheellowhigh++;
           wheelInfo.winAmount += (wheelInfo.betperspot * 2);
           wheelInfo.xpAward += 10;
           continue;
         }
       }
-      if(wheelInfo.wheelNumber >= 1 & wheelInfo.wheelNumber <= 12) {//WIN 1st
-        if(wheelInfo.winspots[i] == "1st"){
-          if(wheelInfo.whatcontains.has1st && wheelInfo.whatcontains.has2nd && wheelInfo.whatcontains.has3rd){
+      if (wheelInfo.wheelNumber >= 1 & wheelInfo.wheelNumber <= 12) { //WIN 1st
+        if (wheelInfo.winspots[i] == "1st") {
+          if (wheelInfo.whatcontains.has1st && wheelInfo.whatcontains.has2nd && wheelInfo.whatcontains.has3rd) {
             wheelInfo.player.stats.wheelsections++;
             wheelInfo.winAmount += (wheelInfo.betperspot * 2);
             wheelInfo.xpAward += 25;
             continue;
-          }else {
+          } else {
             wheelInfo.player.stats.wheelsections++;
             wheelInfo.winAmount += (wheelInfo.betperspot * 3);
             wheelInfo.xpAward += 25;
@@ -603,14 +605,14 @@ class CasinoUtils {
           }
         }
       }
-      if(wheelInfo.wheelNumber >= 13 & wheelInfo.wheelNumber <= 24) {//WIN 2nd
-        if(wheelInfo.winspots[i] == "2nd"){
-          if(wheelInfo.whatcontains.has1st && wheelInfo.whatcontains.has2nd && wheelInfo.whatcontains.has3rd){
+      if (wheelInfo.wheelNumber >= 13 & wheelInfo.wheelNumber <= 24) { //WIN 2nd
+        if (wheelInfo.winspots[i] == "2nd") {
+          if (wheelInfo.whatcontains.has1st && wheelInfo.whatcontains.has2nd && wheelInfo.whatcontains.has3rd) {
             wheelInfo.player.stats.wheelsections++;
             wheelInfo.winAmount += (wheelInfo.betperspot * 2);
             wheelInfo.xpAward += 25;
             continue;
-          }else {
+          } else {
             wheelInfo.player.stats.wheelsections++;
             wheelInfo.winAmount += (wheelInfo.betperspot * 3);
             wheelInfo.xpAward += 25;
@@ -618,14 +620,14 @@ class CasinoUtils {
           }
         }
       }
-      if(wheelInfo.wheelNumber >= 25 && wheelInfo.wheelNumber <= 36) {//WIN 3rd
-        if(wheelInfo.winspots[i] == "3rd"){
-          if(wheelInfo.whatcontains.has1st && wheelInfo.whatcontains.has2nd && wheelInfo.whatcontains.has3rd){
+      if (wheelInfo.wheelNumber >= 25 && wheelInfo.wheelNumber <= 36) { //WIN 3rd
+        if (wheelInfo.winspots[i] == "3rd") {
+          if (wheelInfo.whatcontains.has1st && wheelInfo.whatcontains.has2nd && wheelInfo.whatcontains.has3rd) {
             wheelInfo.player.stats.wheelsections++;
             wheelInfo.winAmount += (wheelInfo.betperspot * 2);
             wheelInfo.xpAward += 25;
             continue;
-          }else {
+          } else {
             wheelInfo.player.stats.wheelsections++;
             wheelInfo.winAmount += (wheelInfo.betperspot * 3);
             wheelInfo.xpAward += 25;
@@ -633,16 +635,16 @@ class CasinoUtils {
           }
         }
       }
-      if(wheelInfo.wheelNumber == 0){//WIN 0
-        if(numeral(wheelInfo.winspots[i]).value() == 0){
+      if (wheelInfo.wheelNumber == 0) { //WIN 0
+        if (numeral(wheelInfo.winspots[i]).value() == 0) {
           wheelInfo.player.stats.wheel0++;
           wheelInfo.winAmount += (wheelInfo.betperspot * 37);
           wheelInfo.xpAward += 100;
           continue;
         }
-      }else {//WIN OTHERNUM
-        if(wheelInfo.winspots[i] != "1st" && wheelInfo.winspots[i] != "2nd" && wheelInfo.winspots[i] != "3rd"){
-          if(numeral(wheelInfo.winspots[i]).value() == wheelInfo.wheelNumber){
+      } else { //WIN OTHERNUM
+        if (wheelInfo.winspots[i] != "1st" && wheelInfo.winspots[i] != "2nd" && wheelInfo.winspots[i] != "3rd") {
+          if (numeral(wheelInfo.winspots[i]).value() == wheelInfo.wheelNumber) {
             wheelInfo.player.stats.wheelNumber++;
             wheelInfo.winAmount += (wheelInfo.betperspot * 36);
             wheelInfo.xpAward += 75;
@@ -652,58 +654,58 @@ class CasinoUtils {
       }
     }
   }
-  checkValidWheel(bet){
-    if(bet.toLowerCase() == "black"){return true;}
-    if(bet.toLowerCase() == "red"){return true;}
-    if(bet.toLowerCase() == "even"){return true;}
-    if(bet.toLowerCase() == "odd"){return true;}
-    if(bet.toLowerCase() == "low"){return true;}
-    if(bet.toLowerCase() == "high"){return true;}
-    if(bet.toLowerCase() == "1st"){return true;}
-    if(bet.toLowerCase() == "2nd"){return true;}
-    if(bet.toLowerCase() == "3rd"){return true;}
-    if(bet.toLowerCase() == "0"){return true;}
-    if(parseInt(bet) >= 0 && parseInt(bet) <= 36 && parseInt(bet) == bet){return true;}
+  checkValidWheel(bet) {
+    if (bet.toLowerCase() == "black") { return true; }
+    if (bet.toLowerCase() == "red") { return true; }
+    if (bet.toLowerCase() == "even") { return true; }
+    if (bet.toLowerCase() == "odd") { return true; }
+    if (bet.toLowerCase() == "low") { return true; }
+    if (bet.toLowerCase() == "high") { return true; }
+    if (bet.toLowerCase() == "1st") { return true; }
+    if (bet.toLowerCase() == "2nd") { return true; }
+    if (bet.toLowerCase() == "3rd") { return true; }
+    if (bet.toLowerCase() == "0") { return true; }
+    if (parseInt(bet) >= 0 && parseInt(bet) <= 36 && parseInt(bet) == bet) { return true; }
     return false;
   }
-  doChannelCheck(command){
-    if(command.msg.server == '236338097955143680'){
-      if(command.msg.channel == '275395383071342594')return false;
-      if(command.msg.channel == '236338097955143680')return false;
-      if(command.msg.channel == '268049832596340746')return false;
+  doChannelCheck(command) {
+    if (command.msg.server == '236338097955143680') {
+      if (command.msg.channel == '275395383071342594') return false;
+      if (command.msg.channel == '236338097955143680') return false;
+      if (command.msg.channel == '268049832596340746') return false;
       return true;
-    }else return true;
+    } else return true;
   }
   AutoStatus() {
     var self = this;
     try {
-      if(self.plugin.config.autoStatus) {
+      if (self.plugin.config.autoStatus) {
         return true
-      }else {
+      } else {
         return false
       }
-    }catch (err) {
+    } catch (err) {
       console.log(err);
       return false;
     }
   }
-  ultraCheck(player){
+  ultraCheck(player) {
     var self = this;
     return new Promise(function(resolve, reject) {
       self.disnode.platform.GetUserData(player.id).then(function(data) {
-        if(data.isUltra){
-          if(!player.Premium)player.Premium = true;
-          self.DB.Update("players", {"id":player.id}, player);
+        if (data.isUltra) {
+          if (!player.Premium) player.Premium = true;
+          self.DB.Update("players", { "id": player.id }, player);
           resolve(JSON.parse(JSON.stringify(data)));
-        }else {
-          if(player.Premium)player.Premium = false;
-          self.DB.Update("players", {"id":player.id}, player);
+        } else {
+          if (player.Premium) player.Premium = false;
+          self.DB.Update("players", { "id": player.id }, player);
           resolve(JSON.parse(JSON.stringify(data)));
         }
         self.updateUltraUsers();
       }).catch(function(err) {
-        if(player.Premium)player.Premium = false;
-        self.DB.Update("players", {"id":player.id}, player);
+        if (player.Premium) player.Premium = false;
+        self.DB.Update("players", { "id": player.id }, player);
         reject(err);
       });
     });
@@ -718,7 +720,7 @@ class CasinoUtils {
       }
     }
   }
-  updateUltraUsers(){
+  updateUltraUsers() {
     var self = this;
     var currentUltras = [];
     var apiUltra = [];
@@ -726,71 +728,71 @@ class CasinoUtils {
     var notInApi = [];
     self.DB.Find("players", {}).then(function(players) {
       for (var i = 0; i < players.length; i++) {
-        if(players[i].Premium){
+        if (players[i].Premium) {
           currentUltras.push(players[i]);
         }
       }
       self.disnode.platform.GetUltraUsers().then(function(apiUltra) {
-        for(var i = 0; i < currentUltras.length; i++){
+        for (var i = 0; i < currentUltras.length; i++) {
           var found = false;
-          for(var j = 0; j < apiUltra.length; j++){
-            if(currentUltras[i].id == apiUltra[j].id){
+          for (var j = 0; j < apiUltra.length; j++) {
+            if (currentUltras[i].id == apiUltra[j].id) {
               found = true;
               break;
             }
           }
-          if(!found){
+          if (!found) {
             notInApi.push(currentUltras[i]);
           }
         }
-        for(var i = 0; i < apiUltra.length; i++){
+        for (var i = 0; i < apiUltra.length; i++) {
           var found = false;
-          for(var j = 0; j < currentUltras.length; j++){
-            if(currentUltras[j].id == apiUltra[i].id){
+          for (var j = 0; j < currentUltras.length; j++) {
+            if (currentUltras[j].id == apiUltra[i].id) {
               found = true;
               break;
             }
           }
-          if(!found){
+          if (!found) {
             newUltra.push(currentUltras[i]);
           }
         }
-        for(var i = 0; i < newUltra.length; i++){
-          self.findPlayer(newUltra[i].id).then(function(f){
+        for (var i = 0; i < newUltra.length; i++) {
+          self.findPlayer(newUltra[i].id).then(function(f) {
             f.Premium = true;
-            self.DB.Update("players", {"id":f.p.id}, f.p);
-          }).catch(function(err){
+            self.DB.Update("players", { "id": f.p.id }, f.p);
+          }).catch(function(err) {
 
           });
         }
-        for(var i = 0; i < notInApi.length; i++){
-          self.findPlayer(notInApi[i].id).then(function(f){
+        for (var i = 0; i < notInApi.length; i++) {
+          self.findPlayer(notInApi[i].id).then(function(f) {
             f.Premium = false;
-            self.DB.Update("players", {"id":f.p.id}, f.p);
-          }).catch(function(err){
+            self.DB.Update("players", { "id": f.p.id }, f.p);
+          }).catch(function(err) {
 
           });
         }
       });
     });
   }
-  getCasinoObj(){
+  getCasinoObj() {
     var self = this;
     return new Promise(function(resolve, reject) {
-      self.csAPI.get("/cobj").then(function(resp){
+      self.csAPI.get("/cobj").then(function(resp) {
         resolve(resp.data);
-      }).catch(function (err) {
+      }).catch(function(err) {
         reject(err);
       });
     });
   }
-  updateCasinoObj(cobj){
+  updateCasinoObj(cobj) {
     var self = this;
     return new Promise(function(resolve, reject) {
-      self.csAPI.post("/cobj", cobj).then(function(resp){
-        if(resp.status == 200){
+      self.csAPI.post("/cobj", cobj).then(function(resp) {
+        if (resp.status == 200) {
           resolve();
-        }else{
+        } else {
           console.log(resp.data);
           reject(resp.data.error);
         }
@@ -806,7 +808,7 @@ class CasinoUtils {
         found = true;
       }
     }
-    return {"found":found,"taken":taken};
+    return { "found": found, "taken": taken };
   }
 }
 module.exports = CasinoUtils;
